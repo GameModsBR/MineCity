@@ -69,19 +69,19 @@ public final class City
 
     public int getSizeX()
     {
-        if(id == 0) return 1;
+        if(storage == null) return 1;
         return islands.stream().mapToInt(Island::getSizeX).sum();
     }
 
     public int getSizeZ()
     {
-        if(id == 0) return 1;
+        if(storage == null) return 1;
         return islands.stream().mapToInt(Island::getSizeZ).sum();
     }
 
     public int getChunkCount()
     {
-        if(id == 0) return 1;
+        if(storage == null) return 1;
         return islands.stream().mapToInt(Island::getChunkCount).sum();
     }
 
