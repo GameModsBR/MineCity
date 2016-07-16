@@ -2,14 +2,13 @@ package br.com.gamemods.minecity.datasource.sql;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
-import br.com.gamemods.minecity.PlayerID;
+import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.BlockPos;
 import br.com.gamemods.minecity.api.ChunkPos;
 import br.com.gamemods.minecity.api.WorldDim;
-import br.com.gamemods.minecity.datasource.CityCreationResult;
-import br.com.gamemods.minecity.datasource.DataSourceException;
-import br.com.gamemods.minecity.datasource.ICityStorage;
-import br.com.gamemods.minecity.datasource.IDataSource;
+import br.com.gamemods.minecity.datasource.api.CityCreationResult;
+import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import br.com.gamemods.minecity.datasource.api.IDataSource;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Inconsistency;

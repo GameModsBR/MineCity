@@ -1,12 +1,13 @@
 package br.com.gamemods.minecity.structure;
 
 import br.com.gamemods.minecity.MineCity;
-import br.com.gamemods.minecity.PlayerID;
+import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.BlockPos;
 import br.com.gamemods.minecity.api.ChunkPos;
-import br.com.gamemods.minecity.datasource.CityCreationResult;
-import br.com.gamemods.minecity.datasource.DataSourceException;
-import br.com.gamemods.minecity.datasource.ICityStorage;
+import br.com.gamemods.minecity.datasource.api.CityCreationResult;
+import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import br.com.gamemods.minecity.datasource.api.ICityStorage;
+import br.com.gamemods.minecity.datasource.api.IDataSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -146,7 +147,7 @@ public final class City
     }
 
     /**
-     * Defines the City ID, this can be done only once and should only be done by the {@link br.com.gamemods.minecity.datasource.IDataSource} implementation.
+     * Defines the City ID, this can be done only once and should only be done by the {@link IDataSource} implementation.
      * @throws IllegalStateException If the defined ID is different then the passed ID
      * @throws IllegalArgumentException If {@code < 0}
      */

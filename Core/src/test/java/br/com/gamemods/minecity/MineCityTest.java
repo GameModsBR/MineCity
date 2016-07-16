@@ -3,10 +3,10 @@ package br.com.gamemods.minecity;
 import br.com.gamemods.minecity.api.BlockPos;
 import br.com.gamemods.minecity.api.ChunkPos;
 import br.com.gamemods.minecity.api.WorldDim;
+import br.com.gamemods.minecity.datasource.test.TestData;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Nature;
-import br.com.gamemods.minecity.test.TestData;
 import org.junit.Before;
 import org.junit.Test;
 

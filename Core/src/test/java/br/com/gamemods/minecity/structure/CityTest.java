@@ -1,8 +1,8 @@
 package br.com.gamemods.minecity.structure;
 
 import br.com.gamemods.minecity.api.BlockPos;
-import br.com.gamemods.minecity.datasource.DataSourceException;
-import br.com.gamemods.minecity.test.TestData;
+import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import br.com.gamemods.minecity.datasource.test.TestData;
 import org.junit.Before;
 import org.junit.Test;
 

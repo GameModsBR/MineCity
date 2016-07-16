@@ -4,9 +4,8 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.ChunkPos;
 import br.com.gamemods.minecity.api.WorldDim;
-import br.com.gamemods.minecity.datasource.DataSourceException;
+import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import org.bukkit.Chunk;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,7 +18,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.nio.file.Path;
-import java.util.Properties;
 import java.util.logging.Level;
 
 public class MineCityPlugin extends JavaPlugin implements Listener
