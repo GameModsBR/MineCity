@@ -1,0 +1,3 @@
+name: MineCity
+version: 1.0.0-SNAPSHOT
+main: br.com.gamemods.minecity.bukkit.MineCityPlugin
