@@ -22,16 +22,14 @@
             <artifactId>MineCityBukkit</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>br.com.gamemods.minecity</groupId>
-            <artifactId>MineCityForge</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/../Forge/build/libs/MineCityForge-1.7.10-1.0-SNAPSHOT.jar</systemPath>
-        </dependency>
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/../Forge/build/unzip</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -62,6 +60,12 @@
                         </goals>
                         <configuration>
                             <finalName>${project.artifactId}-${project.version}-bukkit-forge${minecraft.version}</finalName>
+                            <archive>
+                                <manifestEntries>
+                                    <FMLCorePlugin>br.com.gamemods.minecity.forge.core.MineCityCoreMod</FMLCorePlugin>
+                                    <FMLCorePluginContainsFMLMod>true</FMLCorePluginContainsFMLMod>
+                                </manifestEntries>
+                            </archive>
                         </configuration>
                     </execution>
                 </executions>

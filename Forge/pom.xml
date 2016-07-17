@@ -32,6 +32,8 @@
                                     <arg line="setupDecompWorkspace build" />
                                 </exec>
 
+                                <unzip src="${project.basedir}/build/libs/MineCityForge-${project.version}.jar" dest="${project.basedir}/build/unzip" />
+
                             </tasks>
                         </configuration>
                         <goals>

@@ -19,7 +19,7 @@ apply plugin: 'forge'
 
 version = "1.0-SNAPSHOT"
 group= "br.com.gamemods.minecity"
-archivesBaseName = "MineCityForge-1.7.10"
+archivesBaseName = "MineCityForge"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
