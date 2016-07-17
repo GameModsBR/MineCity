@@ -1,10 +1,14 @@
 package br.com.gamemods.minecity.structure;
 
-import br.com.gamemods.minecity.api.BlockPos;
+import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.ChunkPos;
+import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.test.TestData;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -18,12 +22,54 @@ public class CityTest
     }
 
     @Test
-    public void testAA_CreateCity() throws DataSourceException
+    public void testCreateCity() throws DataSourceException
     {
-        City city = new City(test.mineCity, "Test City", test.joserobjr, new BlockPos(test.overWorld, 0, 64, 0));
+        BlockPos spawn = new BlockPos(test.overWorld, 0, 64, 0);
+        City city = new City(test.mineCity, "Test City", test.joserobjr, spawn);
         city.create();
-        assertEquals("ID not set", city.getId(), 1);
+        assertTrue(city.getId() > 0);
+        assertEquals(test.joserobjr, city.getOwner());
+        assertEquals(spawn, city.getSpawn());
+        assertEquals(1, city.getSizeX());
+        assertEquals(1, city.getSizeZ());
+        assertEquals(1, city.getChunkCount());
+        assertEquals(1, city.islands().size());
+        assertEquals("Test City", city.getName());
 
-        assertEquals(test.mineCity.loadChunk(city.getSpawn().getChunk()), new ClaimedChunk(city.islands().iterator().next(), city.getSpawn().getChunk()));
+        Island island = city.islands().iterator().next();
+        assertEquals(city, island.getCity());
+        assertEquals(1, island.getSizeX());
+        assertEquals(1, island.getSizeZ());
+        assertEquals(1, island.getChunkCount());
+        assertTrue(island.getId() > 0);
+
+        assertEquals(test.mineCity.loadChunk(city.getSpawn().getChunk()), new ClaimedChunk(
+                island, city.getSpawn().getChunk()));
+    }
+
+    @Test
+    public void testClaim() throws DataSourceException
+    {
+        BlockPos spawn = new BlockPos(test.overWorld, 250, 32, -200);
+        ChunkPos chunk = spawn.getChunk();
+        City city = new City(test.mineCity, "City 2", test.joserobjr, spawn);
+        city.create();
+
+        Island island = city.islands().iterator().next();
+        assertEquals(island, city.claim(chunk.add(Direction.NORTH), false));
+        assertEquals(2, island.getChunkCount());
+        assertEquals(2, island.getSizeZ());
+        assertEquals(1, island.getSizeX());
+        assertEquals(2, city.getChunkCount());
+        assertEquals(2, city.getSizeZ());
+        assertEquals(1, city.getSizeX());
+
+        assertEquals(island, city.claim(chunk.add(Direction.WEST), false));
+        assertEquals(3, island.getChunkCount());
+        assertEquals(2, island.getSizeZ());
+        assertEquals(2, island.getSizeX());
+        assertEquals(3, city.getChunkCount());
+        assertEquals(2, city.getSizeZ());
+        assertEquals(2, city.getSizeX());
     }
 }

@@ -1,17 +1,18 @@
 package br.com.gamemods.minecity.structure;
 
 import br.com.gamemods.minecity.MineCity;
-import br.com.gamemods.minecity.api.PlayerID;
-import br.com.gamemods.minecity.api.BlockPos;
-import br.com.gamemods.minecity.api.ChunkPos;
-import br.com.gamemods.minecity.datasource.api.CityCreationResult;
-import br.com.gamemods.minecity.datasource.api.DataSourceException;
-import br.com.gamemods.minecity.datasource.api.ICityStorage;
-import br.com.gamemods.minecity.datasource.api.IDataSource;
+import br.com.gamemods.minecity.api.*;
+import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.ChunkPos;
+import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.datasource.api.*;
+import br.com.gamemods.minecity.datasource.api.unchecked.DBFunction;
+import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class City
 {
@@ -27,7 +28,7 @@ public final class City
     private String name;
     private PlayerID owner;
     private BlockPos spawn;
-    private List<Island> islands = new ArrayList<>(1);
+    private Map<Integer, Island> islands = new HashMap<>(1);
 
     public City(@NotNull MineCity mineCity, @NotNull String name, @Nullable PlayerID owner, @NotNull BlockPos spawn) throws IllegalArgumentException
     {
@@ -35,7 +36,7 @@ public final class City
         this.name = name;
         this.owner = owner;
         this.spawn = spawn;
-        ClaimedChunk other = mineCity.getChunk(spawn);
+        ClaimedChunk other = mineCity.getChunk(spawn).orElse(null);
         if(other != null && !(other.owner instanceof Nature))
             throw new IllegalArgumentException("The chunk "+spawn.getChunk()+" is reserved to "+other.owner);
     }
@@ -49,17 +50,20 @@ public final class City
         this.spawn = spawn;
         setId(id);
         this.storage = storage;
-        this.islands = new ArrayList<>(islands);
+        this.islands = new HashMap<>(islands.size());
+        islands.stream().forEach(island -> this.islands.put(island.getId(), island));
     }
 
+    @Nullable
     public Island getIsland(int id)
     {
-        return islands.stream().filter(i->i.getId() == id).findAny().orElse(null);
+        return islands.get(id);
     }
 
+    @NotNull
     public Collection<Island> islands()
     {
-        return Collections.unmodifiableCollection(islands);
+        return Collections.unmodifiableCollection(islands.values());
     }
 
     @Nullable
@@ -71,19 +75,19 @@ public final class City
     public int getSizeX()
     {
         if(storage == null) return 1;
-        return islands.stream().mapToInt(Island::getSizeX).sum();
+        return islands.values().stream().mapToInt(Island::getSizeX).sum();
     }
 
     public int getSizeZ()
     {
         if(storage == null) return 1;
-        return islands.stream().mapToInt(Island::getSizeZ).sum();
+        return islands.values().stream().mapToInt(Island::getSizeZ).sum();
     }
 
     public int getChunkCount()
     {
         if(storage == null) return 1;
-        return islands.stream().mapToInt(Island::getChunkCount).sum();
+        return islands.values().stream().mapToInt(Island::getChunkCount).sum();
     }
 
     @NotNull
@@ -97,23 +101,48 @@ public final class City
         return spawn;
     }
 
-    public void claim(ChunkPos chunk) throws IllegalArgumentException
+    public Island claim(ChunkPos chunk, boolean createIsland)
+            throws IllegalArgumentException, DataSourceException, UncheckedDataSourceException, IllegalStateException
     {
-        if(mineCity.getChunk(chunk) != null)
+        if(storage == null)
+            throw new IllegalStateException();
+
+        if(mineCity.getOrFetchChunk(chunk).map(ClaimedChunk::getCity).equals(Optional.of(this)))
             throw new IllegalArgumentException("The chunk "+chunk+" is reserved");
 
-        //TODO
-        throw new UnsupportedOperationException();
+        Set<Island> islands = Direction.cardinal.stream()
+                .map((DBFunction<Direction, Optional<ClaimedChunk>>) d-> mineCity.getOrFetchChunk(chunk.add(d)) )
+                .filter(Optional::isPresent).map(Optional::get)
+                .map(ClaimedChunk::getIsland).filter(island-> island.getCity().equals(this))
+                .collect(Collectors.toSet());
+
+        if(islands.isEmpty())
+        {
+            if(!createIsland)
+                throw new IllegalArgumentException("The chunk "+chunk+" is not touching an island owned by city "+id);
+            Island island = storage.createIsland(this, chunk);
+            this.islands.put(island.getId(), island);
+            return island;
+        }
+        else if(islands.size() == 1)
+        {
+            Island island = islands.iterator().next();
+            storage.claim(island, chunk);
+            return island;
+        }
+        else
+        {
+            Island mainIsland = storage.claim(islands, chunk);
+            islands.stream().filter(island -> !island.equals(mainIsland))
+                    .forEach(island -> this.islands.remove(island.getId()));
+            return mainIsland;
+        }
     }
 
     public void setSpawn(BlockPos pos) throws DataSourceException,IllegalArgumentException
     {
-        ChunkPos chunk = pos.getChunk();
-        ClaimedChunk claim = mineCity.getChunk(pos);
-        if(claim == null)
-            claim = mineCity.dataSource.getCityChunk(chunk);
-
-        if(claim == null || !(claim.owner instanceof Island) || !Objects.equals(this, ((Island) claim.owner).getCity()))
+        if(!mineCity.getOrFetchChunk(pos.getChunk()).map(c->c.owner).filter(o->o instanceof Island).map(o->(Island)o)
+                .filter(i-> i.getCity().equals(this)).isPresent() )
             throw new IllegalArgumentException("The block "+pos+" is not part of the city");
 
         if(storage != null) storage.setSpawn(this, pos);
@@ -142,7 +171,7 @@ public final class City
         if(storage != null) throw new IllegalStateException("The city \""+name+"\" is already registered with ID "+id);
         CityCreationResult result = mineCity.dataSource.createCity(this);
         storage = result.storage;
-        islands.add(result.island);
+        islands.put(result.island.getId(), result.island);
         return id;
     }
 

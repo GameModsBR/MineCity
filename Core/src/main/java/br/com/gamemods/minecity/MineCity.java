@@ -1,10 +1,11 @@
 package br.com.gamemods.minecity;
 
-import br.com.gamemods.minecity.api.BlockPos;
-import br.com.gamemods.minecity.api.ChunkPos;
-import br.com.gamemods.minecity.api.WorldDim;
+import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.ChunkPos;
+import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.IDataSource;
+import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import br.com.gamemods.minecity.datasource.sql.SQLSource;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Nature;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MineCity
@@ -33,16 +35,24 @@ public class MineCity
         this(config, null);
     }
 
-    @Nullable
-    public ClaimedChunk getChunk(@NotNull BlockPos pos)
+    @NotNull
+    public Optional<ClaimedChunk> getChunk(@NotNull BlockPos pos)
     {
         return getChunk(pos.getChunk());
     }
 
-    @Nullable
-    public ClaimedChunk getChunk(@NotNull ChunkPos pos)
+    @NotNull
+    public Optional<ClaimedChunk> getChunk(@NotNull ChunkPos pos)
     {
-        return chunks.get(pos);
+        return Optional.ofNullable(chunks.get(pos));
+    }
+
+    public Optional<ClaimedChunk> getOrFetchChunk(@NotNull ChunkPos pos) throws DataSourceException
+    {
+        ClaimedChunk claimedChunk = chunks.get(pos);
+        if(claimedChunk != null) return Optional.of(claimedChunk);
+
+        return Optional.ofNullable(dataSource.getCityChunk(pos));
     }
 
     @Nullable
@@ -75,6 +85,15 @@ public class MineCity
         else chunks.put(pos, chunk = new ClaimedChunk(nature(pos.world), pos));
 
         return chunk;
+    }
+
+    @Nullable
+    public ClaimedChunk reloadChunk(@NotNull ChunkPos pos) throws DataSourceException
+    {
+        if(!chunks.containsKey(pos))
+            return null;
+
+        return loadChunk(pos);
     }
 
     @Nullable

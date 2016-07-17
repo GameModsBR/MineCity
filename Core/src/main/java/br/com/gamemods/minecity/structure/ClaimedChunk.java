@@ -1,7 +1,8 @@
 package br.com.gamemods.minecity.structure;
 
-import br.com.gamemods.minecity.api.ChunkPos;
+import br.com.gamemods.minecity.api.world.ChunkPos;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class ClaimedChunk
 {
@@ -14,6 +15,21 @@ public final class ClaimedChunk
     {
         this.owner = owner;
         this.chunk = chunk;
+    }
+
+    @Nullable
+    public Island getIsland()
+    {
+        if(owner instanceof Island) return (Island) owner;
+        return null;
+    }
+
+    @Nullable
+    public City getCity()
+    {
+        Island island = getIsland();
+        if(island == null) return null;
+        return island.getCity();
     }
 
     @Override

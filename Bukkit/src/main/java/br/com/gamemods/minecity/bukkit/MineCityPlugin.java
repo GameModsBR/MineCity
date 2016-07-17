@@ -2,8 +2,8 @@ package br.com.gamemods.minecity.bukkit;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
-import br.com.gamemods.minecity.api.ChunkPos;
-import br.com.gamemods.minecity.api.WorldDim;
+import br.com.gamemods.minecity.api.world.ChunkPos;
+import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -39,6 +39,7 @@ public class MineCityPlugin extends JavaPlugin implements Listener
     {
         Path container = getServer().getWorldContainer().toPath();
         Path worldPath = container.relativize(world.getWorldFolder().toPath());
+        //noinspection deprecation
         return new WorldDim(world.getEnvironment().getId(), worldPath.toString());
     }
 

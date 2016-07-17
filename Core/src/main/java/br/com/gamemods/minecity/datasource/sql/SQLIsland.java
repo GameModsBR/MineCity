@@ -1,25 +1,48 @@
 package br.com.gamemods.minecity.datasource.sql;
 
-import br.com.gamemods.minecity.api.WorldDim;
+import br.com.gamemods.minecity.api.world.ChunkPos;
+import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.Island;
 import org.jetbrains.annotations.NotNull;
 
 final class SQLIsland implements Island
 {
-    int id, sizeX, sizeZ, chunkCount;
+    int id, minX, maxX, minZ, maxZ, chunkCount;
     @NotNull
     WorldDim world;
 
+    @SuppressWarnings("NullableProblems")
+    @NotNull
     City city;
 
-    SQLIsland(int id, int sizeX, int sizeZ, int chunkCount, @NotNull WorldDim world)
+    SQLIsland(int id, int minX, int maxX, int minZ, int maxZ, int chunkCount, @NotNull WorldDim world)
     {
         this.id = id;
-        this.sizeX = sizeX;
-        this.sizeZ = sizeZ;
+        this.minX = minX;
+        this.maxX = maxX;
+        this.minZ = minZ;
+        this.maxZ = maxZ;
         this.chunkCount = chunkCount;
         this.world = world;
+    }
+
+    SQLIsland(int id, ChunkPos chunk)
+    {
+        this.id = id;
+        minX = maxX = chunk.x;
+        minZ = maxZ = chunk.z;
+        world = chunk.world;
+        chunkCount = 1;
+    }
+
+    void add(ChunkPos chunk)
+    {
+        minX = Math.min(minX, chunk.x);
+        maxX = Math.max(maxX, chunk.x);
+        minZ = Math.min(minZ, chunk.z);
+        maxZ = Math.max(maxZ, chunk.z);
+        chunkCount++;
     }
 
     @Override
@@ -45,13 +68,13 @@ final class SQLIsland implements Island
     @Override
     public int getSizeX()
     {
-        return sizeX;
+        return maxX - minX + 1;
     }
 
     @Override
     public int getSizeZ()
     {
-        return sizeZ;
+        return maxZ - minZ + 1;
     }
 
     @Override

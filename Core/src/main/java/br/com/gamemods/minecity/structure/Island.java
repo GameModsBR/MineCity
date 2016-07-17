@@ -1,6 +1,6 @@
 package br.com.gamemods.minecity.structure;
 
-import br.com.gamemods.minecity.api.WorldDim;
+import br.com.gamemods.minecity.api.world.WorldDim;
 import org.jetbrains.annotations.NotNull;
 
 public interface Island extends ChunkOwner

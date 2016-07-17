@@ -3,8 +3,7 @@ package br.com.gamemods.minecity.datasource.test;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.PlayerID;
-import br.com.gamemods.minecity.api.WorldDim;
-import br.com.gamemods.minecity.datasource.test.FakeDataSource;
+import br.com.gamemods.minecity.api.world.WorldDim;
 
 import java.util.UUID;
 

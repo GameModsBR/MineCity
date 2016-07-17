@@ -3,9 +3,9 @@ package br.com.gamemods.minecity.datasource.sql;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.PlayerID;
-import br.com.gamemods.minecity.api.BlockPos;
-import br.com.gamemods.minecity.api.ChunkPos;
-import br.com.gamemods.minecity.api.WorldDim;
+import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.ChunkPos;
+import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.datasource.api.CityCreationResult;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.IDataSource;
@@ -25,14 +25,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SQLSource implements IDataSource
 {
     @NotNull
-    private final MineCity mineCity;
+    public final MineCity mineCity;
     @NotNull
     private SQLConnection connection;
     @NotNull
     private SQLCityStorage cityStorage;
     @NotNull
     private final Map<Integer, City> cityMap = new HashMap<>();
-    private final Map<Integer, WorldDim> worldDimMap = new ConcurrentHashMap<>(3);
+    final Map<Integer, WorldDim> worldDimMap = new ConcurrentHashMap<>(3);
 
     public SQLSource(@NotNull MineCity mineCity, @NotNull MineCityConfig config)
     {
@@ -46,7 +46,7 @@ public class SQLSource implements IDataSource
     private Collection<Island> loadIslands(Connection connection, int cityId) throws SQLException
     {
         try(PreparedStatement pst = connection.prepareStatement(
-                "SELECT c.island_id, MAX(x)-MIN(x)+1, MAX(z)-MIN(z)+1, COUNT(*), i.world_id, w.dim, w.world, w.`name` " +
+                "SELECT c.island_id, MIN(x), MAX(x), MIN(z), MAX(z), COUNT(*), i.world_id, w.dim, w.world, w.`name` " +
                 "FROM minecity_chunks c " +
                 "INNER JOIN minecity_islands AS i ON c.island_id=i.island_id " +
                 "INNER JOIN minecity_world AS w ON i.world_id=w.world_id " +
@@ -59,10 +59,10 @@ public class SQLSource implements IDataSource
             ResultSet result = pst.executeQuery();
             while(result.next())
             {
-                int worldId = result.getInt(5);
+                int worldId = result.getInt(7);
                 WorldDim world = worldDimMap.get(worldId);
-                if(world == null) worldDimMap.put(worldId, world = new WorldDim(worldId, result.getInt(6), result.getString(7), result.getString(8)));
-                islands.add(new SQLIsland(result.getInt(1), result.getInt(2), result.getInt(3), result.getInt(4), world));
+                if(world == null) worldDimMap.put(worldId, world = new WorldDim(worldId, result.getInt(8), result.getString(9), result.getString(10)));
+                islands.add(new SQLIsland(result.getInt(1), result.getInt(2), result.getInt(3), result.getInt(4), result.getInt(5), result.getInt(6), world));
             }
             islands.trimToSize();
             return islands;
@@ -314,6 +314,42 @@ public class SQLSource implements IDataSource
         }
     }
 
+    int createIsland(Connection transaction, int cityId, ChunkPos chunk) throws DataSourceException, SQLException
+    {
+        int worldId = worldId(transaction, chunk.world);
+        int islandId;
+        try(PreparedStatement pst = transaction.prepareStatement(
+                "INSERT INT `minecity_islands`(world_id, city_id) VALUES(?,?)",
+                Statement.RETURN_GENERATED_KEYS
+        ))
+        {
+            pst.setInt(1, worldId);
+            pst.setInt(2, cityId);
+            pst.executeUpdate();
+            ResultSet keys = pst.getGeneratedKeys();
+            keys.next();
+            islandId = keys.getInt(1);
+        }
+
+        createClaim(transaction, islandId, chunk);
+        return islandId;
+    }
+
+    void createClaim(Connection connection, int islandId, ChunkPos chunk) throws SQLException, DataSourceException
+    {
+        try(PreparedStatement pst = connection.prepareStatement(
+                "INSERT INTO `minecity_chunks`(world_id, x, z, island_id) VALUES(?,?,?,?)"
+        ))
+        {
+            pst.setInt(1, worldId(connection, chunk.world));
+            pst.setInt(2, chunk.x);
+            pst.setInt(3, chunk.z);
+            pst.setInt(4, islandId);
+            if(pst.executeUpdate() <= 0)
+                throw new DataSourceException("Failed to claim the spawn chunk");
+        }
+    }
+
     @NotNull
     @Override
     public CityCreationResult createCity(@NotNull City city) throws DataSourceException, IllegalStateException
@@ -357,31 +393,7 @@ public class SQLSource implements IDataSource
                         cityMap.put(cityId, city);
                     }
 
-                    try(PreparedStatement pst = connection.prepareStatement(
-                            "INSERT INT `minecity_islands`(world_id, city_id) VALUES(?,?)",
-                            Statement.RETURN_GENERATED_KEYS
-                    ))
-                    {
-                        pst.setInt(1, worldId);
-                        pst.setInt(2, cityId);
-                        pst.executeUpdate();
-                        ResultSet keys = pst.getGeneratedKeys();
-                        keys.next();
-                        islandId = keys.getInt(1);
-                    }
-
-                    try(PreparedStatement pst = connection.prepareStatement(
-                            "INSERT INTO `minecity_chunks`(world_id, x, z, island_id) VALUES(?,?,?,?)"
-                    ))
-                    {
-                        pst.setInt(1, worldId);
-                        pst.setInt(2, spawnChunk.x);
-                        pst.setInt(3, spawnChunk.z);
-                        pst.setInt(4, islandId);
-                        if(pst.executeUpdate() <= 0)
-                            throw new DataSourceException("Failed to claim the spawn chunk");
-                    }
-
+                    islandId = createIsland(connection, cityId, spawnChunk);
                     connection.commit();
                 }
                 catch(Exception e)
@@ -393,9 +405,7 @@ public class SQLSource implements IDataSource
 
             try
             {
-                ClaimedChunk chunk = mineCity.getChunk(spawnChunk);
-                if(chunk != null)
-                    mineCity.loadChunk(spawnChunk);
+                mineCity.reloadChunk(spawnChunk);
             }
             catch(DataSourceException e)
             {
@@ -403,7 +413,7 @@ public class SQLSource implements IDataSource
                 e.printStackTrace(System.err);
             }
 
-            return new CityCreationResult(cityStorage, new SQLIsland(islandId, 1, 1, 1, spawn.world));
+            return new CityCreationResult(cityStorage, new SQLIsland(islandId, spawnChunk));
         }
         catch(SQLException e)
         {
