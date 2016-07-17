@@ -9,3 +9,5 @@ out
 .settings
 .idea
 dependency-reduced-pom.xml
+build
+.gradle

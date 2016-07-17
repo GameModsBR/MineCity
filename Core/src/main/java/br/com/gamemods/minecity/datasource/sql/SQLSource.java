@@ -37,7 +37,7 @@ public class SQLSource implements IDataSource
     public SQLSource(@NotNull MineCity mineCity, @NotNull MineCityConfig config)
     {
         this.mineCity = mineCity;
-        connection = new SQLConnection(config.dbUrl, config.dbUser, config.dbPass.clone());
+        connection = new SQLConnection(config.dbUrl, config.dbUser, config.dbPass != null? config.dbPass.clone() : null);
         if(config.dbPass != null)
             Arrays.fill(config.dbPass, (byte) 0);
         cityStorage = new SQLCityStorage(this, connection);

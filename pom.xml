@@ -11,6 +11,7 @@
     <modules>
         <module>Core</module>
         <module>Bukkit</module>
+		<module>Forge</module>
         <module>UniversalJar</module>
     </modules>
 
