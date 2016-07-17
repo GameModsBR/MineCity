@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SQLCityStorage implements ICityStorage
@@ -115,9 +116,9 @@ public class SQLCityStorage implements ICityStorage
             return island;
         }
 
-        Stream<SQLIsland> sqlIslands = islands.stream().map(island -> (SQLIsland) island);
-        SQLIsland mainIsland = sqlIslands.max((a, b) -> a.getChunkCount() - b.getChunkCount()).get();
-        Stream<SQLIsland> merge = sqlIslands.filter(island -> island != mainIsland);
+        List<SQLIsland> sqlIslands = islands.stream().map(island -> (SQLIsland) island).collect(Collectors.toList());
+        SQLIsland mainIsland = sqlIslands.stream().max((a, b) -> a.getChunkCount() - b.getChunkCount()).get();
+        List<SQLIsland> merge = sqlIslands.stream().filter(island -> island != mainIsland).collect(Collectors.toList());
         try(Connection transaction = connection.transaction(); Statement stm = transaction.createStatement())
         {
             StringBuilder sb = new StringBuilder();

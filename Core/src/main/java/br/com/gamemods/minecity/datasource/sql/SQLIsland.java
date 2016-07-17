@@ -68,13 +68,13 @@ final class SQLIsland implements Island
     @Override
     public int getSizeX()
     {
-        return maxX - minX + 1;
+        return chunkCount == 0? 0 : maxX - minX + 1;
     }
 
     @Override
     public int getSizeZ()
     {
-        return maxZ - minZ + 1;
+        return chunkCount == 0? 0 : maxZ - minZ + 1;
     }
 
     @Override

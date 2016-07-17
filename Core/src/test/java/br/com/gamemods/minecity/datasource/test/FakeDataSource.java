@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class FakeDataSource implements IDataSource, ICityStorage
 {
@@ -109,9 +108,9 @@ public class FakeDataSource implements IDataSource, ICityStorage
             return island;
         }
 
-        Stream<FakeIsland> sqlIslands = islands.stream().map(island -> (FakeIsland) island);
-        FakeIsland mainIsland = sqlIslands.max((a, b) -> a.getChunkCount() - b.getChunkCount()).get();
-        List<FakeIsland> merge = sqlIslands.filter(island -> island != mainIsland).collect(Collectors.toList());
+        List<FakeIsland> sqlIslands = islands.stream().map(island -> (FakeIsland) island).collect(Collectors.toList());
+        FakeIsland mainIsland = sqlIslands.stream().max((a, b) -> a.getChunkCount() - b.getChunkCount()).get();
+        List<FakeIsland> merge = sqlIslands.stream().filter(island -> island != mainIsland).collect(Collectors.toList());
 
         List<ChunkPos> chunksToUpdate = claims.entrySet().stream()
             .filter(e-> merge.contains(e.getValue())).map(Map.Entry::getKey).collect(Collectors.toList());
@@ -195,13 +194,13 @@ public class FakeDataSource implements IDataSource, ICityStorage
         @Override
         public int getSizeX()
         {
-            return maxX - minX + 1;
+            return chunkCount == 0? 0 : maxX - minX + 1;
         }
 
         @Override
         public int getSizeZ()
         {
-            return maxZ - minZ + 1;
+            return chunkCount == 0? 0 : maxZ - minZ + 1;
         }
 
         @Override

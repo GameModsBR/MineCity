@@ -55,21 +55,43 @@ public class CityTest
         City city = new City(test.mineCity, "City 2", test.joserobjr, spawn);
         city.create();
 
-        Island island = city.islands().iterator().next();
-        assertEquals(island, city.claim(chunk.add(Direction.NORTH), false));
-        assertEquals(2, island.getChunkCount());
-        assertEquals(2, island.getSizeZ());
-        assertEquals(1, island.getSizeX());
+        Island islandA = city.islands().iterator().next();
+        assertEquals(islandA, city.claim(chunk.add(Direction.NORTH), false));
+        assertEquals(2, islandA.getChunkCount());
+        assertEquals(2, islandA.getSizeZ());
+        assertEquals(1, islandA.getSizeX());
         assertEquals(2, city.getChunkCount());
         assertEquals(2, city.getSizeZ());
         assertEquals(1, city.getSizeX());
 
-        assertEquals(island, city.claim(chunk.add(Direction.WEST), false));
-        assertEquals(3, island.getChunkCount());
-        assertEquals(2, island.getSizeZ());
-        assertEquals(2, island.getSizeX());
+        assertEquals(islandA, city.claim(chunk.add(Direction.WEST), false));
+        assertEquals(3, islandA.getChunkCount());
+        assertEquals(2, islandA.getSizeZ());
+        assertEquals(2, islandA.getSizeX());
         assertEquals(3, city.getChunkCount());
         assertEquals(2, city.getSizeZ());
         assertEquals(2, city.getSizeX());
+
+        Island islandB = city.claim(chunk.add(Direction.EAST, 2), true);
+        assertNotEquals(islandA, islandB);
+        assertEquals(1, islandB.getChunkCount());
+        assertEquals(1, islandB.getSizeZ());
+        assertEquals(1, islandB.getSizeX());
+        assertEquals(4, city.getChunkCount());
+        assertEquals(3, city.getSizeZ());
+        assertEquals(3, city.getSizeX());
+        assertEquals(2, city.islands().size());
+
+        assertEquals(islandA, city.claim(chunk.add(Direction.EAST), false));
+        assertEquals(5, islandA.getChunkCount());
+        assertEquals(2, islandA.getSizeZ());
+        assertEquals(4, islandA.getSizeX());
+        assertEquals(5, city.getChunkCount());
+        assertEquals(2, city.getSizeZ());
+        assertEquals(4, city.getSizeX());
+        assertEquals(1, city.islands().size());
+        assertEquals(0, islandB.getChunkCount());
+        assertEquals(0, islandB.getSizeX());
+        assertEquals(0, islandB.getSizeX());
     }
 }
