@@ -75,7 +75,7 @@ public class SQLSource implements IDataSource
         {
             try(PreparedStatement pst = connection.prepareStatement(
                     "SELECT `name`, `owner`, `o`.`player_uuid`, `o`.`player_name`, `spawn_world`, `spawn_x`, `spawn_y`, `spawn_z`, " +
-                        "`w`.`dim`, `w`.`world`, `w`.`name` " +
+                        "`w`.`dim`, `w`.`world`, `w`.`name`, `display_name` " +
                     "FROM `minecity_city` AS `c` " +
                         "LEFT JOIN `minecity_players` AS `o` ON `owner` = `o`.`player_id` "+
                         "LEFT JOIN `minecity_world` AS `w` ON `spawn_world` = `w`.`world_id` "+
@@ -105,10 +105,11 @@ public class SQLSource implements IDataSource
                 BlockPos spawn = new BlockPos(world, result.getInt(6), result.getInt(7), result.getInt(8));
 
                 String name = result.getString(1);
+                String displayName = result.getString(12);
                 pst.close();
 
                 Collection<Island> islands = loadIslands(connection, id);
-                City city = new City(mineCity, name, owner, spawn, islands, id, cityStorage);
+                City city = new City(mineCity, name, displayName, owner, spawn, islands, id, cityStorage);
                 islands.forEach(i-> ((SQLIsland)i).city = city);
                 cityMap.put(id, city);
                 return city;
@@ -349,6 +350,24 @@ public class SQLSource implements IDataSource
         }
     }
 
+    @Nullable
+    @Override
+    public String checkNameConflict(@NotNull String identityName) throws DataSourceException
+    {
+        try(PreparedStatement pst = connection.connect().prepareStatement(
+                "SELECT display_name FROM minecity_city WHERE `name`=?"
+        ))
+        {
+            pst.setString(1, identityName);
+            ResultSet result = pst.executeQuery();
+            return result.next()? result.getString(1) : null;
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
     @NotNull
     @Override
     public CityCreationResult createCity(@NotNull City city) throws DataSourceException, IllegalStateException
@@ -372,18 +391,19 @@ public class SQLSource implements IDataSource
                     int worldId = worldId(connection, spawn.world);
                     int cityId;
                     try(PreparedStatement pst = connection.prepareStatement(
-                            "INSERT INTO `minecity_city`(name, owner, spawn_world, spawn_x, spawn_y, spawn_z) " +
-                                    "VALUES (  ? ,   ?  ,      ?     ,    ?   ,    ?    ,   ?   )",
+                        "INSERT INTO `minecity_city`(name, owner, spawn_world, spawn_x, spawn_y, spawn_z, display_name) " +
+                                            "VALUES (  ? ,   ?  ,      ?     ,    ?   ,    ?    ,   ?   ,     ?       )",
                             Statement.RETURN_GENERATED_KEYS
                     ))
                     {
-                        pst.setString(1, city.getName());
+                        pst.setString(1, city.getIdentityName());
                         setNullableInt(pst, 2, playerId(connection, city.getOwner()));
                         pst.setInt(3, worldId);
                         pst.setInt(4, spawn.x);
                         //noinspection SuspiciousNameCombination
                         pst.setInt(5, spawn.y);
                         pst.setInt(6, spawn.z);
+                        pst.setString(7, city.getName());
                         pst.executeUpdate();
                         ResultSet keys = pst.getGeneratedKeys();
                         keys.next();

@@ -13,4 +13,7 @@ public interface IDataSource
 
     @NotNull
     CityCreationResult createCity(@NotNull City city) throws DataSourceException, IllegalStateException;
+
+    @Nullable
+    String checkNameConflict(@NotNull String identityName) throws DataSourceException;
 }

@@ -13,6 +13,9 @@ import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+/**
+ * Internal city data management, these methods should only be called internally by {@link City}
+ */
 public interface ICityStorage
 {
     void setOwner(@NotNull City city, @Nullable PlayerID owner)
@@ -44,4 +47,6 @@ public interface ICityStorage
 
     @NotNull
     IslandArea getArea(@NotNull Island island) throws DataSourceException, ClassCastException, IllegalArgumentException;
+
+    void setName(@NotNull City city, @NotNull String identity, @NotNull String name) throws DataSourceException;
 }

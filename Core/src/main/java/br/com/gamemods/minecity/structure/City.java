@@ -31,6 +31,8 @@ public final class City
     private int id;
     @NotNull
     private String name;
+    @NotNull
+    private String identityName;
     private PlayerID owner;
     private BlockPos spawn;
     private Map<Integer, Island> islands = new HashMap<>(1);
@@ -47,8 +49,15 @@ public final class City
     {
         this.mineCity = mineCity;
         this.name = name;
+        identityName = StringUtil.identity(name);
         this.owner = owner;
         this.spawn = spawn;
+        if(identityName.length() < 3)
+            throw new IllegalArgumentException("Bad name");
+        String conflict = mineCity.dataSource.checkNameConflict(identityName);
+        if(conflict != null)
+            throw new IllegalArgumentException("The name is already taken by: "+conflict);
+
         ClaimedChunk other = mineCity.getChunk(spawn).orElse(null);
         if(other != null && !(other.owner instanceof Nature))
             throw new IllegalArgumentException("The chunk "+spawn.getChunk()+" is reserved to "+other.owner);
@@ -59,19 +68,44 @@ public final class City
     }
 
     /**
-     * Constructs an instace of a city that was loaded from the database, do not use this constructor for new cities.
+     * Constructs an instance of a city that was loaded from the database, do not use this constructor for new cities.
      */
-    public City(@NotNull MineCity mineCity, @NotNull String name, @Nullable PlayerID owner, @NotNull BlockPos spawn,
-                Collection<Island> islands, int id, @NotNull ICityStorage storage)
+    public City(@NotNull MineCity mineCity, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
+                @NotNull BlockPos spawn, Collection<Island> islands, int id, @NotNull ICityStorage storage)
     {
         this.mineCity = mineCity;
         this.name = name;
+        this.identityName = identityName;
         this.owner = owner;
         this.spawn = spawn;
         setId(id);
         this.storage = storage;
         this.islands = new HashMap<>(islands.size());
         islands.stream().forEach(island -> this.islands.put(island.getId(), island));
+    }
+
+    public void setName(@NotNull String name) throws IllegalArgumentException, DataSourceException
+    {
+        String identity = StringUtil.identity(name);
+        if(identity.length() < 3)
+            throw new IllegalArgumentException("Bad name");
+
+        if(!identityName.equals(identity))
+        {
+            String conflict = mineCity.dataSource.checkNameConflict(identity);
+            if(conflict != null)
+                throw new IllegalArgumentException("The name is already taken by: "+conflict);
+        }
+
+        storage.setName(this, identity, name);
+        this.identityName = identity;
+        this.name = name;
+    }
+
+    @NotNull
+    public String getIdentityName()
+    {
+        return identityName;
     }
 
     @Nullable

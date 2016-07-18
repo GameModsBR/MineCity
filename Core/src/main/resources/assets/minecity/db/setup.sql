@@ -18,6 +18,7 @@ UNIQUE INDEX `player_uuid` (`player_uuid`)
 CREATE TABLE `minecity_city` (
 `city_id`  int(11) NOT NULL AUTO_INCREMENT ,
 `name`  varchar(40) NOT NULL ,
+`display_name`  varchar(40) NOT NULL ,
 `owner`  int NULL ,
 `spawn_world`  int(11) NOT NULL ,
 `spawn_x`  int(11) NOT NULL ,

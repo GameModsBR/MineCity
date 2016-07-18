@@ -71,6 +71,17 @@ public class FakeDataSource implements IDataSource, ICityStorage
         return new CityCreationResult(this, island);
     }
 
+    @Nullable
+    @Override
+    public String checkNameConflict(@NotNull String identityName) throws DataSourceException
+    {
+        for(City city : cities.values())
+            if(city.getIdentityName().equals(identityName))
+                return city.getName();
+
+        return null;
+    }
+
     @NotNull
     @Override
     public Island createIsland(@NotNull City city, @NotNull ChunkPos chunk)
@@ -264,6 +275,12 @@ public class FakeDataSource implements IDataSource, ICityStorage
         return new IslandArea(fakeIsland, claims.entrySet().stream().filter(e-> e.getValue().equals(fakeIsland))
                 .map(Map.Entry::getKey).collect(Collectors.toList())
         );
+    }
+
+    @Override
+    public void setName(@NotNull City city, @NotNull String identity, @NotNull String name) throws DataSourceException
+    {
+
     }
 
     private class FakeIsland implements Island

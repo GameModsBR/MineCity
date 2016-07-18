@@ -190,6 +190,36 @@ public class CityTest
     }
 
     @Test
+    public void testSetName() throws Exception
+    {
+        City first = new City(test.mineCity, "First City", test.joserobjr, new BlockPos(test.overWorld, -598, 44, -998));
+        //noinspection SpellCheckingInspection
+        assertEquals("firstcity", first.getIdentityName());
+        assertThrown(()-> new City(test.mineCity, "first_ciTy!", test.joserobjr, new BlockPos(test.overWorld, 98988,55,9874)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("taken");
+
+        City second = new City(test.mineCity, "City 2", test.joserobjr, new BlockPos(test.overWorld, 788,68,9885));
+        assertEquals("city2", second.getIdentityName());
+        first.setName("City1");
+        assertEquals("city1", first.getIdentityName());
+        assertEquals("City1", first.getName());
+
+        assertThrown(() -> first.setName("CITY2"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("taken");
+        first.setName("CITY 1");
+        assertEquals("city1", first.getIdentityName());
+        assertEquals("CITY 1", first.getName());
+
+        assertThrown(()-> first.setName("c1"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Bad");
+
+        assertThrown(()-> new City(test.mineCity, "c1", test.joserobjr, new BlockPos(test.overWorld, 5846487,4,448)));
+    }
+
+    @Test
     public void testSetSpawn() throws Exception
     {
         BlockPos spawn = new BlockPos(test.overWorld, 54648, 32, 5855);

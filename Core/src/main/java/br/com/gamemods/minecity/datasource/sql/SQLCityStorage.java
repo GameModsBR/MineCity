@@ -254,6 +254,43 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Override
+    public void setName(@NotNull City city, @NotNull String identity, @NotNull String name) throws DataSourceException
+    {
+        try(Connection transaction = connection.transaction())
+        {
+            if(identity.equals(city.getIdentityName()))
+                try(PreparedStatement pst = transaction.prepareStatement(
+                        "UPDATE minecity_city SET `display_name`=? WHERE city_id=?"
+                ))
+                {
+                    pst.setString(1, name);
+                    pst.setInt(2, city.getId());
+                    int changes = pst.executeUpdate();
+                    if(changes != 1)
+                        throw new DataSourceException("Changes: "+changes+" Expected: 1");
+                }
+            else
+                try(PreparedStatement pst = transaction.prepareStatement(
+                        "UPDATE minecity_city SET `name`=?, display_name=? WHERE city_id=?"
+                ))
+                {
+                    pst.setString(1, identity);
+                    pst.setString(2, name);
+                    pst.setInt(3, city.getId());
+                    int changes = pst.executeUpdate();
+                    if(changes != 1)
+                        throw new DataSourceException("Changes: "+changes+" Expected: 1");
+                }
+
+            transaction.commit();
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
     @NotNull
     @Override
     public Island createIsland(@NotNull City city, @NotNull ChunkPos chunk)
