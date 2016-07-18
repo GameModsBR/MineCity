@@ -31,10 +31,6 @@ public class CityTest
         BlockPos spawn = new BlockPos(test.overWorld, 200,64,100);
         ChunkPos spawnChunk = spawn.getChunk();
         City city = new City(test.mineCity, "Disclaim", test.joserobjr, spawn);
-        assertThrown(()-> city.disclaim(spawnChunk, true))
-                .isInstanceOf(IllegalStateException.class);
-
-        city.create();
         Island spawnIsland = city.islands().iterator().next();
 
         assertThrown(()-> city.disclaim(spawnChunk, false))
@@ -156,7 +152,6 @@ public class CityTest
     {
         BlockPos spawn = new BlockPos(test.overWorld, 0, 64, 0);
         City city = new City(test.mineCity, "Test City", test.joserobjr, spawn);
-        city.create();
         assertTrue(city.getId() > 0);
         assertEquals(test.joserobjr, city.getOwner());
         assertEquals(spawn, city.getSpawn());
@@ -189,7 +184,6 @@ public class CityTest
         assertThrown(()-> badCity.setId(-3))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("id = "+-3);
-        badCity.setId(4);
         assertThrown(()-> badCity.setId(3))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("change");
@@ -200,7 +194,6 @@ public class CityTest
     {
         BlockPos spawn = new BlockPos(test.overWorld, 54648, 32, 5855);
         City spawnCity = new City(test.mineCity, "SpawnCity", test.joserobjr, spawn);
-        spawnCity.create();
 
         assertEquals(spawn, spawnCity.getSpawn());
         assertThrown(()-> spawnCity.setSpawn(spawn.getChunk().add(Direction.EAST).getMaxBlock()))
@@ -216,7 +209,6 @@ public class CityTest
     public void testSetOwner() throws Exception
     {
         City owned = new City(test.mineCity, "Owned", test.joserobjr, new BlockPos(test.overWorld, 456484878, 32, 445454));
-        owned.create();
 
         assertEquals(test.joserobjr, owned.getOwner());
         PlayerID newOwner = new PlayerID(UUID.randomUUID(), "Randy");
@@ -230,9 +222,6 @@ public class CityTest
         BlockPos spawn = new BlockPos(test.overWorld, 250, 32, -200);
         ChunkPos chunk = spawn.getChunk();
         City city = new City(test.mineCity, "City 2", test.joserobjr, spawn);
-        assertThrown(()-> city.claim(chunk.add(Direction.NORTH), false))
-                .isInstanceOf(IllegalStateException.class);
-        city.create();
 
         Island islandA = city.islands().iterator().next();
         assertEquals(islandA, city.claim(chunk.add(Direction.NORTH), false));
@@ -278,7 +267,6 @@ public class CityTest
     public void testClaimIsland() throws Exception
     {
         City farCity = new City(test.mineCity, "FarCity", test.joserobjr, new BlockPos(test.overWorld, 655,55,488));
-        farCity.create();
 
         BlockPos far = new BlockPos(test.overWorld, -4847,44,688);
         assertThrown(()-> farCity.claim(far.getChunk(), false))
