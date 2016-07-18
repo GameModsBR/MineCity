@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<minecity-messages modified="false" add-missing="true">
+    <cmd>
+        <city>
+            <create>
+                <msg id="name.conflict">
+                    The name ${name} conflicts with ${conflict}
+                </msg>
+                <msg id="chunk.not-loaded">
+                    The chunk that you are standing is not loaded properly
+                </msg>
+                <msg id="chunk.claimed">
+                    The chunk that you are is already claimed to ${city}
+                </msg>
+                <msg id="chunk.reserved">
+                    The chunk that you are is reserved to ${city}
+                </msg>
+                <msg id="chunk.success">
+                    The city ${name} was created successfully, if you get lost you can teleport back with /city spawn ${identity}
+                </msg>
+            </create>
+        </city>
+    </cmd>
+</minecity-messages>
