@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.structure;
 
+import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
@@ -24,6 +25,7 @@ public class CityTest
     }
 
     @Test
+    @SuppressWarnings("SpellCheckingInspection")
     public void testDisclaim() throws Exception
     {
         BlockPos spawn = new BlockPos(test.overWorld, 200,64,100);
@@ -145,6 +147,8 @@ public class CityTest
         assertEquals(10, city.getSizeX());
         assertEquals(8, city.getSizeZ());
         assertEquals(4, city.islands().size());
+
+        city.islands().forEach(island -> assertEquals(island, city.getIsland(island.getId())));
     }
 
     @Test
@@ -168,9 +172,56 @@ public class CityTest
         assertEquals(1, island.getSizeZ());
         assertEquals(1, island.getChunkCount());
         assertTrue(island.getId() > 0);
+        assertEquals(island, city.getIsland(island.getId()));
 
         assertEquals(test.mineCity.loadChunk(city.getSpawn().getChunk()), new ClaimedChunk(
                 island, city.getSpawn().getChunk()));
+
+        assertThrown(()-> new City(test.mineCity, "Bad City", test.joserobjr, spawn))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("reserved");
+    }
+
+    @Test
+    public void testSetId() throws Exception
+    {
+        City badCity = new City(test.mineCity, "Bad City", test.joserobjr, new BlockPos(test.overWorld, 400,40, 65));
+        assertThrown(()-> badCity.setId(-3))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("id = "+-3);
+        badCity.setId(4);
+        assertThrown(()-> badCity.setId(3))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("change");
+    }
+
+    @Test
+    public void testSetSpawn() throws Exception
+    {
+        BlockPos spawn = new BlockPos(test.overWorld, 54648, 32, 5855);
+        City spawnCity = new City(test.mineCity, "SpawnCity", test.joserobjr, spawn);
+        spawnCity.create();
+
+        assertEquals(spawn, spawnCity.getSpawn());
+        assertThrown(()-> spawnCity.setSpawn(spawn.getChunk().add(Direction.EAST).getMaxBlock()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not part of the city");
+
+        BlockPos newSpawn = spawn.getChunk().getMaxBlock();
+        spawnCity.setSpawn(newSpawn);
+        assertEquals(newSpawn, spawnCity.getSpawn());
+    }
+
+    @Test
+    public void testSetOwner() throws Exception
+    {
+        City owned = new City(test.mineCity, "Owned", test.joserobjr, new BlockPos(test.overWorld, 456484878, 32, 445454));
+        owned.create();
+
+        assertEquals(test.joserobjr, owned.getOwner());
+        PlayerID newOwner = new PlayerID(UUID.randomUUID(), "Randy");
+        owned.setOwner(newOwner);
+        assertEquals(newOwner, owned.getOwner());
     }
 
     @Test
@@ -179,6 +230,8 @@ public class CityTest
         BlockPos spawn = new BlockPos(test.overWorld, 250, 32, -200);
         ChunkPos chunk = spawn.getChunk();
         City city = new City(test.mineCity, "City 2", test.joserobjr, spawn);
+        assertThrown(()-> city.claim(chunk.add(Direction.NORTH), false))
+                .isInstanceOf(IllegalStateException.class);
         city.create();
 
         Island islandA = city.islands().iterator().next();
@@ -219,5 +272,20 @@ public class CityTest
         assertEquals(0, islandB.getChunkCount());
         assertEquals(0, islandB.getSizeX());
         assertEquals(0, islandB.getSizeX());
+    }
+
+    @Test
+    public void testClaimIsland() throws Exception
+    {
+        City farCity = new City(test.mineCity, "FarCity", test.joserobjr, new BlockPos(test.overWorld, 655,55,488));
+        farCity.create();
+
+        BlockPos far = new BlockPos(test.overWorld, -4847,44,688);
+        assertThrown(()-> farCity.claim(far.getChunk(), false))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("not touching");
+
+        farCity.claim(far.getChunk(), true);
+        assertEquals(2, farCity.islands().size());
     }
 }
