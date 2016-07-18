@@ -164,20 +164,17 @@ public final class City
         if(storage == null)
             throw new IllegalStateException();
 
+        if(islands.size() == 1 && getChunkCount() == 1)
+            throw new IllegalStateException("Cannot disclaim the last city's chunk, delete the city instead");
+
         if(getSpawn().getChunk().equals(chunk))
             throw new IllegalArgumentException("Cannot disclaim the spawn chunk");
 
         Island island = mineCity.getOrFetchChunk(chunk).map(ClaimedChunk::getIsland).filter(i-> i.getCity().equals(this))
                 .orElseThrow(()-> new IllegalArgumentException("The chunk " + chunk + " is not owned by the city " + id));
 
-        if(getChunkCount() == 1)
-            throw new IllegalStateException("Cannot disclaim the last city's chunk, delete the city instead");
-
-        HashMap<Direction, Island> islands = connectedIslandsEntries(chunk).filter(e->e.getValue().equals(island))
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue,
-                        (u,v) -> { throw new IllegalStateException(String.format("Duplicate key %s", u)); },
-                        HashMap::new)
-                );
+        Map<Direction, Island> islands = connectedIslandsEntries(chunk).filter(e->e.getValue().equals(island))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
         if(islands.isEmpty())
         {

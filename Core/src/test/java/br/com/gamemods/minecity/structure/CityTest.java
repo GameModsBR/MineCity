@@ -5,7 +5,7 @@ import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.test.TestData;
-import static com.github.kolorobot.exceptions.java8.ThrowableAssertion.assertThrown;
+import static com.github.kolorobot.exceptions.java8.AssertJThrowableAssert.assertThrown;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,15 +29,28 @@ public class CityTest
         BlockPos spawn = new BlockPos(test.overWorld, 200,64,100);
         ChunkPos spawnChunk = spawn.getChunk();
         City city = new City(test.mineCity, "Disclaim", test.joserobjr, spawn);
+        assertThrown(()-> city.disclaim(spawnChunk, true))
+                .isInstanceOf(IllegalStateException.class);
+
         city.create();
         Island spawnIsland = city.islands().iterator().next();
 
         assertThrown(()-> city.disclaim(spawnChunk, false))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("last");
 
 
         ChunkPos chunk = spawnChunk.add(Direction.NORTH);
         assertEquals(spawnIsland, city.claim(chunk, false));
+
+        assertThrown(()-> city.disclaim(spawnChunk, false))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("spawn");
+
+        assertThrown(()-> city.claim(spawnChunk, false))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("reserved");
+
         assertEquals(Collections.singleton(spawnIsland), city.disclaim(chunk, false));
         assertEquals(1, city.getSizeX());
         assertEquals(1, city.getSizeZ());
@@ -115,6 +128,10 @@ public class CityTest
          *   5|   YY    |
          *   6|   Y     |
          */
+        assertThrown(()-> city.disclaim(new ChunkPos(test.overWorld, 14, 1), false))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("required");
+
         Collection<Island> islands = city.disclaim(new ChunkPos(test.overWorld, 14, 1), true);
         assertEquals(2, islands.size());
         Island islandX = islands.stream().min((a,b)-> a.getChunkCount()-b.getChunkCount()).get();
