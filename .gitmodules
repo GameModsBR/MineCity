@@ -1,0 +1,4 @@
+[submodule "unit-testing-demo"]
+	path = unit-testing-demo
+	url = https://github.com/GameModsBR/unit-testing-demo.git
+	branch = master

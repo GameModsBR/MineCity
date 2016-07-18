@@ -5,6 +5,8 @@ import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.test.TestData;
+import static com.github.kolorobot.exceptions.java8.ThrowableAssertion.assertThrown;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,6 +31,10 @@ public class CityTest
         City city = new City(test.mineCity, "Disclaim", test.joserobjr, spawn);
         city.create();
         Island spawnIsland = city.islands().iterator().next();
+
+        assertThrown(()-> city.disclaim(spawnChunk, false))
+                .isInstanceOf(IllegalArgumentException.class);
+
 
         ChunkPos chunk = spawnChunk.add(Direction.NORTH);
         assertEquals(spawnIsland, city.claim(chunk, false));

@@ -13,6 +13,7 @@
         <module>Bukkit</module>
 		<module>Forge</module>
         <module>UniversalJar</module>
+        <module>unit-testing-demo</module>
     </modules>
 
     <dependencies>

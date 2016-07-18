@@ -11,5 +11,14 @@
 
     <artifactId>MineCityCore</artifactId>
 
+    <dependencies>
+        <dependency>
+            <!-- Doc: http://blog.codeleak.pl/2014/07/junit-testing-exception-with-java-8-and-lambda-expressions.html -->
+            <groupId>com.github.kolorobot</groupId>
+            <artifactId>unit-testing-demo</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 </project>
