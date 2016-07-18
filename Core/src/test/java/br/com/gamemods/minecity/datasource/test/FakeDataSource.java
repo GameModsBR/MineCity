@@ -13,6 +13,7 @@ import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Island;
+import br.com.gamemods.minecity.structure.IslandArea;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -145,6 +146,124 @@ public class FakeDataSource implements IDataSource, ICityStorage
     public void setSpawn(@NotNull City city, @NotNull BlockPos spawn) throws DataSourceException, IllegalStateException
     {
 
+    }
+
+    @Override
+    public void deleteIsland(@NotNull Island island)
+            throws DataSourceException, IllegalArgumentException, ClassCastException
+    {
+        FakeIsland fakeIsland = (FakeIsland) island;
+        if(fakeIsland.chunkCount == 0) throw new IllegalArgumentException();
+
+
+        Collection<FakeIsland> values = claims.values();
+        //noinspection StatementWithEmptyBody
+        while(values.remove(fakeIsland)){}
+
+        fakeIsland.chunkCount = fakeIsland.maxX = fakeIsland.minX = fakeIsland.maxZ = fakeIsland.minZ = 0;
+        mineCity.loadedChunks().values().stream().filter(c-> island.equals(c.getIsland()))
+                .forEach(c -> {
+                    try
+                    {
+                        mineCity.reloadChunk(c.chunk);
+                    }
+                    catch(DataSourceException e)
+                    {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    private void updateCount(FakeIsland fakeIsland)
+    {
+        List<ChunkPos> claims = this.claims.entrySet().stream().filter(e -> e.getValue().equals(fakeIsland))
+                .map(Map.Entry::getKey).collect(Collectors.toList());
+
+        int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
+        for(ChunkPos claim : claims)
+        {
+            minX = Math.min(minX, claim.x);
+            maxX = Math.max(maxX, claim.x);
+            minZ = Math.min(minZ, claim.z);
+            maxZ = Math.max(maxZ, claim.z);
+        }
+
+        fakeIsland.minX = minX;
+        fakeIsland.maxX = maxX;
+        fakeIsland.minZ = minZ;
+        fakeIsland.maxZ = maxZ;
+        fakeIsland.chunkCount = claims.size();
+    }
+
+    @Override
+    public void disclaim(@NotNull ChunkPos chunk, @NotNull Island island)
+            throws DataSourceException, IllegalArgumentException
+    {
+        FakeIsland fakeIsland = (FakeIsland) island;
+        if(fakeIsland.chunkCount == 0) throw new IllegalArgumentException();
+
+        if(claims.remove(chunk) == null)
+            throw new DataSourceException();
+
+        updateCount(fakeIsland);
+
+        try
+        {
+            mineCity.reloadChunk(chunk);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    @NotNull
+    @Override
+    public Collection<Island> disclaim(@NotNull ChunkPos chunk, @NotNull Island island,
+                                       @NotNull Set<Set<ChunkPos>> groups)
+            throws DataSourceException, IllegalStateException, NoSuchElementException, ClassCastException, IllegalArgumentException
+    {
+        FakeIsland fakeIsland = (FakeIsland) island;
+        if(fakeIsland.chunkCount == 0) throw new IllegalArgumentException();
+
+        Set<ChunkPos> mainGroup = groups.stream().max((a,b)-> a.size()-b.size() ).get();
+        groups = groups.stream().filter(s-> s != mainGroup).collect(Collectors.toSet());
+
+        claims.remove(chunk);
+
+        List<Island> islands = new ArrayList<>();
+        for(Set<ChunkPos> group : groups)
+        {
+            Iterator<ChunkPos> iter = group.iterator();
+            ChunkPos first = iter.next();
+            FakeIsland groupIsland = new FakeIsland(fakeIsland.world, fakeIsland.city, first);
+            this.claims.put(first, groupIsland);
+
+            while(iter.hasNext())
+            {
+                ChunkPos pos = iter.next();
+                this.claims.put(pos, groupIsland);
+                groupIsland.add(pos);
+            }
+
+            islands.add(groupIsland);
+        }
+
+        updateCount(fakeIsland);
+
+        return islands;
+    }
+
+    @NotNull
+    @Override
+    public IslandArea getArea(@NotNull Island island)
+            throws DataSourceException, ClassCastException, IllegalArgumentException
+    {
+        FakeIsland fakeIsland = (FakeIsland) island;
+
+        return new IslandArea(fakeIsland, claims.entrySet().stream().filter(e-> e.getValue().equals(fakeIsland))
+                .map(Map.Entry::getKey).collect(Collectors.toList())
+        );
     }
 
     private class FakeIsland implements Island

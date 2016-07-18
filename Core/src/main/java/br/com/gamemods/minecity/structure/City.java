@@ -7,12 +7,16 @@ import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.datasource.api.*;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBFunction;
+import br.com.gamemods.minecity.datasource.api.unchecked.DisDBConsumer;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class City
 {
@@ -101,6 +105,25 @@ public final class City
         return spawn;
     }
 
+    public Stream<Island> connectedIslands(ChunkPos chunk)
+    {
+        return Direction.cardinal.stream()
+                .map((DBFunction<Direction, Optional<ClaimedChunk>>) d-> mineCity.getOrFetchChunk(chunk.add(d)))
+                .filter(Optional::isPresent).map(Optional::get)
+                .map(ClaimedChunk::getIsland).filter(island-> island.getCity().equals(this));
+    }
+
+    public Stream<Entry<Direction, Island>> connectedIslandsEntries(ChunkPos chunk)
+    {
+        return Direction.cardinal.stream()
+                .map((DBFunction<Direction, Entry<Direction, Island>>)
+                            d-> new SimpleImmutableEntry<>(d, mineCity.getOrFetchChunk(chunk.add(d)).map(ClaimedChunk::getIsland).orElse(null))
+                )
+                .filter(e-> e.getValue() != null)
+                .filter(e-> this.equals(e.getValue().getCity()))
+                ;
+    }
+
     public Island claim(ChunkPos chunk, boolean createIsland)
             throws IllegalArgumentException, DataSourceException, UncheckedDataSourceException, IllegalStateException
     {
@@ -110,11 +133,7 @@ public final class City
         if(mineCity.getOrFetchChunk(chunk).map(ClaimedChunk::getCity).equals(Optional.of(this)))
             throw new IllegalArgumentException("The chunk "+chunk+" is reserved");
 
-        Set<Island> islands = Direction.cardinal.stream()
-                .map((DBFunction<Direction, Optional<ClaimedChunk>>) d-> mineCity.getOrFetchChunk(chunk.add(d)) )
-                .filter(Optional::isPresent).map(Optional::get)
-                .map(ClaimedChunk::getIsland).filter(island-> island.getCity().equals(this))
-                .collect(Collectors.toSet());
+        Set<Island> islands = connectedIslands(chunk).collect(Collectors.toSet());
 
         if(islands.isEmpty())
         {
@@ -136,6 +155,61 @@ public final class City
             islands.stream().filter(island -> !island.equals(mainIsland))
                     .forEach(island -> this.islands.remove(island.getId()));
             return mainIsland;
+        }
+    }
+
+    public Collection<Island> disclaim(ChunkPos chunk, boolean createIslands)
+            throws IllegalStateException, IllegalArgumentException, DataSourceException
+    {
+        if(storage == null)
+            throw new IllegalStateException();
+
+        if(getSpawn().getChunk().equals(chunk))
+            throw new IllegalArgumentException("Cannot disclaim the spawn chunk");
+
+        Island island = mineCity.getOrFetchChunk(chunk).map(ClaimedChunk::getIsland).filter(i-> i.getCity().equals(this))
+                .orElseThrow(()-> new IllegalArgumentException("The chunk " + chunk + " is not owned by the city " + id));
+
+        if(getChunkCount() == 1)
+            throw new IllegalStateException("Cannot disclaim the last city's chunk, delete the city instead");
+
+        HashMap<Direction, Island> islands = connectedIslandsEntries(chunk).filter(e->e.getValue().equals(island))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue,
+                        (u,v) -> { throw new IllegalStateException(String.format("Duplicate key %s", u)); },
+                        HashMap::new)
+                );
+
+        if(islands.isEmpty())
+        {
+            storage.deleteIsland(island);
+            this.islands.remove(island.getId());
+            return Collections.singleton(island);
+        }
+        else if(islands.size() == 1)
+        {
+            storage.disclaim(chunk, island);
+            return Collections.singleton(island);
+        }
+        else
+        {
+            IslandArea area = storage.getArea(island);
+            area.setClaimed(chunk, false);
+            Set<ChunkPos> touching = area.touching(chunk);
+            Set<Set<ChunkPos>> groups = touching.stream().map(area::contiguous).collect(Collectors.toSet());
+
+            if(groups.size() == 1)
+            {
+                storage.disclaim(chunk, island);
+                return Collections.singletonList(island);
+            }
+
+            if(!createIslands)
+                throw new IllegalArgumentException("The chunk "+chunk+" is required by other chunks");
+
+            Collection<Island> created = storage.disclaim(chunk, island, groups);
+            groups.forEach(s-> s.forEach((DisDBConsumer<ChunkPos>) mineCity::reloadChunk));
+            created.forEach(i-> this.islands.put(i.getId(), i));
+            return created;
         }
     }
 
@@ -164,7 +238,7 @@ public final class City
      * Register this city as a new city. Must not be called if this city is not new.
      * @return The city ID.
      * @throws DataSourceException If an error occurred while registering
-     * @throws IllegalStateException If this city is aready registered
+     * @throws IllegalStateException If this city is already registered
      */
     public int create() throws DataSourceException, IllegalStateException
     {

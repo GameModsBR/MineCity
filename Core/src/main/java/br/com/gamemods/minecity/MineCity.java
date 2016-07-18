@@ -13,6 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,6 +35,11 @@ public class MineCity
     public MineCity(MineCityConfig config)
     {
         this(config, null);
+    }
+
+    public Map<ChunkPos, ClaimedChunk> loadedChunks()
+    {
+        return Collections.unmodifiableMap(chunks);
     }
 
     @NotNull

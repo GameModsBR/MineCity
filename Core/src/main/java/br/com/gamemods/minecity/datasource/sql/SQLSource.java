@@ -314,9 +314,9 @@ public class SQLSource implements IDataSource
         }
     }
 
-    int createIsland(Connection transaction, int cityId, ChunkPos chunk) throws DataSourceException, SQLException
+    int createIsland(Connection transaction, int cityId, WorldDim world) throws DataSourceException, SQLException
     {
-        int worldId = worldId(transaction, chunk.world);
+        int worldId = worldId(transaction, world);
         int islandId;
         try(PreparedStatement pst = transaction.prepareStatement(
                 "INSERT INT `minecity_islands`(world_id, city_id) VALUES(?,?)",
@@ -331,7 +331,6 @@ public class SQLSource implements IDataSource
             islandId = keys.getInt(1);
         }
 
-        createClaim(transaction, islandId, chunk);
         return islandId;
     }
 
@@ -393,7 +392,8 @@ public class SQLSource implements IDataSource
                         cityMap.put(cityId, city);
                     }
 
-                    islandId = createIsland(connection, cityId, spawnChunk);
+                    islandId = createIsland(connection, cityId, spawnChunk.world);
+                    createClaim(connection, islandId, spawnChunk);
                     connection.commit();
                 }
                 catch(Exception e)

@@ -8,15 +8,14 @@ import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.ICityStorage;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
 import br.com.gamemods.minecity.structure.City;
-import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Island;
+import br.com.gamemods.minecity.structure.IslandArea;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SQLCityStorage implements ICityStorage
 {
@@ -62,6 +61,199 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    private void disclaim(Connection transaction, ChunkPos chunk, int islandId, boolean enforce) throws DataSourceException, SQLException
+    {
+        try(PreparedStatement pst = transaction.prepareStatement(
+                "DELETE FROM `minecity_chunks` WHERE `world_id`=? AND `x`=? AND `z`=? AND `island_id`=?"
+        ))
+        {
+            pst.setInt(1, source.worldId(transaction, chunk.world));
+            pst.setInt(2, chunk.x);
+            pst.setInt(3, chunk.z);
+            pst.setInt(4, islandId);
+            int changes = pst.executeUpdate();
+            if(enforce && changes != 1)
+                throw new DataSourceException("Expecting 1 change, "+changes+" changed");
+        }
+    }
+
+    @Override
+    public void deleteIsland(@NotNull Island island) throws DataSourceException, IllegalArgumentException
+    {
+        SQLIsland sqlIsland = (SQLIsland) island;
+        if(sqlIsland.chunkCount == 0) throw new IllegalArgumentException();
+
+        try(Connection transaction = this.connection.transaction())
+        {
+            try(PreparedStatement pst = transaction.prepareStatement(
+                    "DELETE FROM `minecity_islands` WHERE `island_id`=?"
+            ))
+            {
+                pst.setInt(1, sqlIsland.id);
+                int i = pst.executeUpdate();
+                if(i != 1)
+                    throw new DataSourceException("Expecting 1 change, "+i+" changed");
+            }
+
+            transaction.commit();
+
+            sqlIsland.chunkCount = sqlIsland.maxX = sqlIsland.minX = sqlIsland.maxZ = sqlIsland.minZ = 0;
+            source.mineCity.loadedChunks().values().stream().filter(c-> island.equals(c.getIsland()))
+                    .forEach(c -> {
+                        try
+                        {
+                            source.mineCity.reloadChunk(c.chunk);
+                        }
+                        catch(DataSourceException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    });
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
+    private void updateCount(Connection transaction, SQLIsland sqlIsland) throws SQLException
+    {
+        try(PreparedStatement pst = transaction.prepareStatement(
+                "SELECT MIN(x), MAX(x), MIN(z), MAX(z), COUNT(*) FROM minecity_chunks WHERE island_id=?"
+        ))
+        {
+            pst.setInt(1, sqlIsland.id);
+            ResultSet result = pst.executeQuery();
+            result.next();
+            sqlIsland.minX = result.getInt(1);
+            sqlIsland.maxX = result.getInt(2);
+            sqlIsland.minZ = result.getInt(3);
+            sqlIsland.maxZ = result.getInt(4);
+            sqlIsland.chunkCount = result.getInt(5);
+        }
+    }
+
+    @Override
+    public void disclaim(@NotNull ChunkPos chunk, @NotNull Island island)
+            throws DataSourceException, IllegalArgumentException
+    {
+        SQLIsland sqlIsland = (SQLIsland) island;
+        if(sqlIsland.chunkCount == 0) throw new IllegalArgumentException();
+
+        try(Connection transaction = connection.transaction())
+        {
+            disclaim(transaction, chunk, sqlIsland.id, true);
+            transaction.commit();
+
+            updateCount(transaction, sqlIsland);
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+
+        try
+        {
+            source.mineCity.reloadChunk(chunk);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    @NotNull
+    @Override
+    public Collection<Island> disclaim(@NotNull ChunkPos chunk, @NotNull Island island, @NotNull Set<Set<ChunkPos>> groups)
+            throws DataSourceException, IllegalStateException, NoSuchElementException, ClassCastException, IllegalArgumentException
+    {
+        SQLIsland sqlIsland = (SQLIsland) island;
+        if(sqlIsland.chunkCount == 0) throw new IllegalArgumentException();
+        int cityId = sqlIsland.city.getId();
+
+        Set<ChunkPos> mainGroup = groups.stream().max((a,b)-> a.size()-b.size() ).get();
+        groups = groups.stream().filter(s-> s != mainGroup).collect(Collectors.toSet());
+
+        try(Connection transaction = connection.transaction(); Statement stm = transaction.createStatement())
+        {
+            disclaim(transaction, chunk, sqlIsland.id, true);
+            int worldId = source.worldId(transaction, sqlIsland.world);
+
+            List<Island> islands = new ArrayList<>(groups.size());
+            int[] expected = new int[groups.size()]; int i = 0;
+            for(Set<ChunkPos> group : groups)
+            {
+                int islandId = source.createIsland(transaction, cityId, sqlIsland.world);
+                StringBuilder sb = new StringBuilder();
+                int minX = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
+                for(ChunkPos pos : group)
+                {
+                    minX = Math.min(minX, pos.x);
+                    minZ = Math.min(minZ, pos.z);
+                    maxX = Math.max(maxX, pos.x);
+                    maxZ = Math.max(maxZ, pos.z);
+                    sb.append("(x=").append(pos.x).append(" AND z=").append(pos.z).append(") OR");
+                }
+
+                sb.setLength(sb.length() - 3);
+
+                stm.addBatch("UPDATE minecity_chunks SET island_id=? " +
+                              "WHERE world_id="+worldId+" AND island_id="+sqlIsland.id+" AND ("+sb+");"
+                );
+
+                SQLIsland newIsland = new SQLIsland(islandId, minX, maxX, minZ, maxZ, group.size(), sqlIsland.world);
+                expected[i++] = newIsland.chunkCount;
+                islands.add(newIsland);
+            }
+
+            int[] result = stm.executeBatch();
+            if(!Arrays.equals(expected, result))
+            {
+                throw new DataSourceException("Unexpected result after reclaiming to new islands. " +
+                        "Expected: "+Arrays.toString(expected)+" Result: "+Arrays.toString(result));
+            }
+
+            transaction.commit();
+
+            updateCount(transaction, sqlIsland);
+            return islands;
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
+    @NotNull
+    @Override
+    public IslandArea getArea(@NotNull Island island)
+            throws DataSourceException, ClassCastException, IllegalArgumentException
+    {
+        SQLIsland sqlIsland = (SQLIsland) island;
+
+        try
+        {
+            Connection connection = this.connection.connect();
+            try(PreparedStatement pst = connection.prepareStatement(
+                    "SELECT x, z FROM minecity_chunks WHERE island_id=? AND world_id=?"
+            ))
+            {
+                pst.setInt(1, sqlIsland.id);
+                pst.setInt(2, source.worldId(connection, sqlIsland.world));
+                ResultSet result = pst.executeQuery();
+                List<ChunkPos> list = new ArrayList<>();
+                while(result.next())
+                    list.add(new ChunkPos(sqlIsland.world, result.getInt(1), result.getInt(2)));
+
+                return new IslandArea(island, list);
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
     @NotNull
     @Override
     public Island createIsland(@NotNull City city, @NotNull ChunkPos chunk)
@@ -72,7 +264,8 @@ public class SQLCityStorage implements ICityStorage
 
         try(Connection transaction = connection.transaction())
         {
-            SQLIsland island = new SQLIsland(source.createIsland(transaction, cityId, chunk), chunk);
+            SQLIsland island = new SQLIsland(source.createIsland(transaction, cityId, chunk.world), chunk);
+            source.createClaim(transaction, island.id, chunk);
             island.city = city;
 
             source.createClaim(transaction, island.id, chunk);

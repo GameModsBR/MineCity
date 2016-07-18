@@ -14,7 +14,9 @@ public interface UncheckedConsumer<T, E extends Exception> extends Consumer<T>, 
         }
         catch(Exception e)
         {
-            throw wrapException(e);
+            RuntimeException ex = wrapException(e);
+            if(ex != null)
+                throw ex;
         }
     }
 
