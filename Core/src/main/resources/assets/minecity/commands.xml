@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <minecity-commands modified="false" add-missing="true">
-    <group id="city" cmd="city">
-        <desc>All city related commands</desc>
-    </group>
-    <command id="city.create" parent="city" cmd="create">
-        <desc>Creates a city</desc>
-        <syntac>name (may have spaces)</syntac>
-    </command>
+    <groups>
+        <group id="city" cmd="city,town,c,t">
+            <desc>All city related commands</desc>
+            <permission>minecity.cmd.city</permission>
+        </group>
+    </groups>
+    <commands>
+        <command id="city.create" parent="city" cmd="create,new">
+            <desc>Creates a city</desc>
+            <syntac>name (may have spaces)</syntac>
+            <permission>minecity.cmd.city.create</permission>
+        </command>
+    </commands>
 </minecity-commands>

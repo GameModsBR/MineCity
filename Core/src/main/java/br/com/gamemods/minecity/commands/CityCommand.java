@@ -14,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
+import static br.com.gamemods.minecity.api.StringUtil.identity;
+
 public class CityCommand
 {
     @NotNull
@@ -27,6 +29,13 @@ public class CityCommand
     @Command(value = "city.create", console = false)
     public CommandResult<City> create(CommandSender sender, String name) throws DataSourceException
     {
+        String identity = identity(name);
+        if(identity.length() <3)
+            return new CommandResult<>(new Message("cmd.city.create.name.short",
+                    "The name ${name} is not valid, try a bigger name",
+                    new Object[]{"name",name}
+            ));
+
         String conflict = mineCity.dataSource.checkNameConflict(name);
         if(conflict != null)
             return new CommandResult<>(new Message("cmd.city.create.name.conflict",
