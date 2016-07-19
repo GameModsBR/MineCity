@@ -4,11 +4,9 @@ import br.com.gamemods.minecity.api.command.CommandResult;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.datasource.test.TestData;
 import br.com.gamemods.minecity.structure.City;
-import static com.github.kolorobot.exceptions.java8.AssertJThrowableAssert.assertThrown;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.mockito.internal.matchers.Contains;
 
 public class CityCommandTest
 {
@@ -31,5 +29,13 @@ public class CityCommandTest
         assertEquals(City.class, result.result.getClass());
         assertEquals("The city Test City was created successfully, if you get lost you can teleport back with /city spawn testcity",
                 result.message.toString());
+
+        CommandResult result2 = cmd.create(joserobjr, "same chunk");
+        assertEquals("Error> The chunk that you are is already claimed to Test City", result2.toString());
+
+        joserobjr.position = joserobjr.position.add(400,0,0);
+        test.mineCity.loadChunk(joserobjr.position.getChunk());
+        result2 = cmd.create(joserobjr, "test city");
+        assertEquals("Error> The name test city conflicts with Test City", result2.toString());
     }
 }

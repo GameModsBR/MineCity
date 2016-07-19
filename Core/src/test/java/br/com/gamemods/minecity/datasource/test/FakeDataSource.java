@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.datasource.test;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.StringUtil;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
@@ -75,6 +76,7 @@ public class FakeDataSource implements IDataSource, ICityStorage
     @Override
     public String checkNameConflict(@NotNull String identityName) throws DataSourceException
     {
+        identityName = StringUtil.identity(identityName);
         for(City city : cities.values())
             if(city.getIdentityName().equals(identityName))
                 return city.getName();
