@@ -12,6 +12,7 @@ import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Island;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Optional;
 
 import static br.com.gamemods.minecity.api.StringUtil.identity;
@@ -27,8 +28,9 @@ public class CityCommand
     }
 
     @Command(value = "city.create", console = false)
-    public CommandResult<City> create(CommandSender sender, String name) throws DataSourceException
+    public CommandResult<City> create(CommandSender sender, List<String> path, String[] args) throws DataSourceException
     {
+        String name = String.join(" ", args);
         String identity = identity(name);
         if(identity.length() <3)
             return new CommandResult<>(new Message("cmd.city.create.name.short",

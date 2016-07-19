@@ -9,7 +9,7 @@
     <commands>
         <command id="city.create" parent="city" cmd="create,new">
             <desc>Creates a city</desc>
-            <syntac>name (may have spaces)</syntac>
+            <syntax>name (may have spaces)</syntax>
             <permission>minecity.cmd.city.create</permission>
         </command>
     </commands>

@@ -27,6 +27,13 @@ public class CommandResult<R>
         this.result = result;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> CommandResult<T> success()
+    {
+        return SUCCESS;
+    }
+
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o)
     {
