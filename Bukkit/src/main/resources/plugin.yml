@@ -1,3 +1,15 @@
 name: MineCity
 version: 1.0.0-SNAPSHOT
 main: br.com.gamemods.minecity.bukkit.MineCityPlugin
+author: joserobjr
+
+commands:
+  city:
+    description: All city related commands
+    aliases: [town,c,t]
+    permission: minecity.cmd.city
+
+permissions:
+  minecity.cmd.city:
+    description: Gives access to the /city command
+    default: true

@@ -8,4 +8,5 @@ public interface CommandSender
     BlockPos getPosition();
     boolean isPlayer();
     PlayerID getPlayerId();
+    void send(Message message);
 }

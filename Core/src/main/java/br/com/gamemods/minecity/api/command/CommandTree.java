@@ -60,8 +60,11 @@ public class CommandTree
     public void registerCommand(String id, boolean console, Object instance, Method method)
     {
         registerCommand(id, (sender, path, args) -> {
-            Class<?> returnType = method.getReturnType();
+            if(!console && !sender.isPlayer())
+                return CommandResult.ONLY_PLAYERS;
+
             Object result = method.invoke(instance, sender, path, args);
+            Class<?> returnType = method.getReturnType();
             if(result == null)
             {
                 if(returnType.equals(Void.TYPE) || returnType.equals(Message.class))

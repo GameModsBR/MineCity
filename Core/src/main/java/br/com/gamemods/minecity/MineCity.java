@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity;
 
+import br.com.gamemods.minecity.api.command.CommandTree;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
@@ -22,6 +23,7 @@ public class MineCity
 {
     @NotNull
     public final IDataSource dataSource;
+    public final CommandTree commands = new CommandTree();
     private final ConcurrentHashMap<WorldDim, Nature> natures = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<ChunkPos, ClaimedChunk> chunks = new ConcurrentHashMap<>();
 

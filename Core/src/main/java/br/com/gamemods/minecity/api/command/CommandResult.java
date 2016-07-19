@@ -3,6 +3,9 @@ package br.com.gamemods.minecity.api.command;
 public class CommandResult<R>
 {
     public static CommandResult SUCCESS = new CommandResult(null, true);
+    public static CommandResult ONLY_PLAYERS = new CommandResult(new Message("cmd.err.players-only",
+            "Only players can execute this command."
+    ));
 
     public Message message;
     public boolean success;

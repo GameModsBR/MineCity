@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.commands;
 
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.CommandSender;
+import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.BlockPos;
 
 public class TestPlayer implements CommandSender
@@ -31,5 +32,11 @@ public class TestPlayer implements CommandSender
     public PlayerID getPlayerId()
     {
         return playerId;
+    }
+
+    @Override
+    public void send(Message message)
+    {
+        
     }
 }
