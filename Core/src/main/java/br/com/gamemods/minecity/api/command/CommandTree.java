@@ -324,6 +324,11 @@ public class CommandTree
         return Optional.of(result);
     }
 
+    public Set<String> getRootCommands()
+    {
+        return Collections.unmodifiableSet(tree.keySet());
+    }
+
     interface CommandEntry
     {
         Map<String, CommandEntry> getSubTree();
@@ -377,7 +382,7 @@ public class CommandTree
 
     public static class Result
     {
-        public final CommandInfo command;
+        public final CommandInfo<?> command;
         public final String[] args;
         public final List<String> path;
         private CommandEntry entry;

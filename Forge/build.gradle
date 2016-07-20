@@ -34,8 +34,13 @@ repositories {
 }
 
 dependencies {
-    //compile "br.com.gamemods.minecity:MineCityCore:1.0-SNAPSHOT"
     compile files('../Core/target/MineCityCore-'+version+'.jar')
+    compile "org.jetbrains:annotations:13.0"
+
+    testCompile "junit:junit:4.12"
+    testCompile "org.powermock:powermock-module-junit4:1.6.5"
+    testCompile "org.powermock:powermock-api-mockito:1.6.5"
+
     //compile "mysql:mysql-connector-java:5.1.32"
 
     // you may put jars on which you depend on in ./libs
