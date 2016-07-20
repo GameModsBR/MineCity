@@ -93,9 +93,14 @@ public class SQLCityStorage implements ICityStorage
                 int i = pst.executeUpdate();
                 if(i != 1)
                     throw new DataSourceException("Expecting 1 change, "+i+" changed");
-            }
 
-            transaction.commit();
+                transaction.commit();
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
 
             sqlIsland.chunkCount = sqlIsland.maxX = sqlIsland.minX = sqlIsland.maxZ = sqlIsland.minZ = 0;
             source.mineCity.loadedChunks().values().stream().filter(c-> island.equals(c.getIsland()))
@@ -142,10 +147,18 @@ public class SQLCityStorage implements ICityStorage
 
         try(Connection transaction = connection.transaction())
         {
-            disclaim(transaction, chunk, sqlIsland.id, true);
-            transaction.commit();
+            try
+            {
+                disclaim(transaction, chunk, sqlIsland.id, true);
+                transaction.commit();
 
-            updateCount(transaction, sqlIsland);
+                updateCount(transaction, sqlIsland);
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
         }
         catch(SQLException e)
         {
@@ -176,47 +189,55 @@ public class SQLCityStorage implements ICityStorage
 
         try(Connection transaction = connection.transaction(); Statement stm = transaction.createStatement())
         {
-            disclaim(transaction, chunk, sqlIsland.id, true);
-            int worldId = source.worldId(transaction, sqlIsland.world);
-
-            List<Island> islands = new ArrayList<>(groups.size());
-            int[] expected = new int[groups.size()]; int i = 0;
-            for(Set<ChunkPos> group : groups)
+            try
             {
-                int islandId = source.createIsland(transaction, cityId, sqlIsland.world);
-                StringBuilder sb = new StringBuilder();
-                int minX = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
-                for(ChunkPos pos : group)
+                disclaim(transaction, chunk, sqlIsland.id, true);
+                int worldId = source.worldId(transaction, sqlIsland.world);
+
+                List<Island> islands = new ArrayList<>(groups.size());
+                int[] expected = new int[groups.size()]; int i = 0;
+                for(Set<ChunkPos> group : groups)
                 {
-                    minX = Math.min(minX, pos.x);
-                    minZ = Math.min(minZ, pos.z);
-                    maxX = Math.max(maxX, pos.x);
-                    maxZ = Math.max(maxZ, pos.z);
-                    sb.append("(x=").append(pos.x).append(" AND z=").append(pos.z).append(") OR");
+                    int islandId = source.createIsland(transaction, cityId, sqlIsland.world);
+                    StringBuilder sb = new StringBuilder();
+                    int minX = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
+                    for(ChunkPos pos : group)
+                    {
+                        minX = Math.min(minX, pos.x);
+                        minZ = Math.min(minZ, pos.z);
+                        maxX = Math.max(maxX, pos.x);
+                        maxZ = Math.max(maxZ, pos.z);
+                        sb.append("(x=").append(pos.x).append(" AND z=").append(pos.z).append(") OR");
+                    }
+
+                    sb.setLength(sb.length() - 3);
+
+                    stm.addBatch("UPDATE minecity_chunks SET island_id=? " +
+                                  "WHERE world_id="+worldId+" AND island_id="+sqlIsland.id+" AND ("+sb+");"
+                    );
+
+                    SQLIsland newIsland = new SQLIsland(islandId, minX, maxX, minZ, maxZ, group.size(), sqlIsland.world);
+                    expected[i++] = newIsland.chunkCount;
+                    islands.add(newIsland);
                 }
 
-                sb.setLength(sb.length() - 3);
+                int[] result = stm.executeBatch();
+                if(!Arrays.equals(expected, result))
+                {
+                    throw new DataSourceException("Unexpected result after reclaiming to new islands. " +
+                            "Expected: "+Arrays.toString(expected)+" Result: "+Arrays.toString(result));
+                }
 
-                stm.addBatch("UPDATE minecity_chunks SET island_id="+islandId+" " +
-                              "WHERE world_id="+worldId+" AND island_id="+sqlIsland.id+" AND ("+sb+");"
-                );
+                transaction.commit();
 
-                SQLIsland newIsland = new SQLIsland(islandId, minX, maxX, minZ, maxZ, group.size(), sqlIsland.world);
-                expected[i++] = newIsland.chunkCount;
-                islands.add(newIsland);
+                updateCount(transaction, sqlIsland);
+                return islands;
             }
-
-            int[] result = stm.executeBatch();
-            if(!Arrays.equals(expected, result))
+            catch(Exception e)
             {
-                throw new DataSourceException("Unexpected result after reclaiming to new islands. " +
-                        "Expected: "+Arrays.toString(expected)+" Result: "+Arrays.toString(result));
+                transaction.rollback();
+                throw e;
             }
-
-            transaction.commit();
-
-            updateCount(transaction, sqlIsland);
-            return islands;
         }
         catch(SQLException e)
         {
@@ -268,7 +289,10 @@ public class SQLCityStorage implements ICityStorage
                     pst.setInt(2, city.getId());
                     int changes = pst.executeUpdate();
                     if(changes != 1)
+                    {
+                        transaction.rollback();
                         throw new DataSourceException("Changes: "+changes+" Expected: 1");
+                    }
                 }
             else
                 try(PreparedStatement pst = transaction.prepareStatement(
@@ -280,7 +304,10 @@ public class SQLCityStorage implements ICityStorage
                     pst.setInt(3, city.getId());
                     int changes = pst.executeUpdate();
                     if(changes != 1)
+                    {
+                        transaction.rollback();
                         throw new DataSourceException("Changes: "+changes+" Expected: 1");
+                    }
                 }
 
             transaction.commit();
@@ -301,14 +328,23 @@ public class SQLCityStorage implements ICityStorage
 
         try(Connection transaction = connection.transaction())
         {
-            SQLIsland island = new SQLIsland(source.createIsland(transaction, cityId, chunk.world), chunk);
-            source.createClaim(transaction, island.id, chunk);
-            island.city = city;
+            try
+            {
+                SQLIsland island = new SQLIsland(source.createIsland(transaction, cityId, chunk.world), chunk);
+                source.createClaim(transaction, island.id, chunk);
+                island.city = city;
 
-            transaction.commit();
+                source.createClaim(transaction, island.id, chunk);
+                transaction.commit();
 
-            source.mineCity.reloadChunk(chunk);
-            return island;
+                source.mineCity.reloadChunk(chunk);
+                return island;
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
         }
         catch(SQLException e)
         {
@@ -350,49 +386,58 @@ public class SQLCityStorage implements ICityStorage
         List<SQLIsland> merge = sqlIslands.stream().filter(island -> island != mainIsland).collect(Collectors.toList());
         try(Connection transaction = connection.transaction(); Statement stm = transaction.createStatement())
         {
-            StringBuilder sb = new StringBuilder();
-            merge.forEach(island -> sb.append(island.id).append(", "));
-            sb.setLength(sb.length()-2);
-            String array = sb.toString();
+            try
+            {
+                StringBuilder sb = new StringBuilder();
+                merge.forEach(island -> sb.append(island.id).append(", "));
+                sb.setLength(sb.length()-2);
+                String array = sb.toString();
 
-            List<ChunkPos> chunksToUpdate = new ArrayList<>();
-            try(ResultSet result = stm.executeQuery("SELECT c.world_id, c.x, c.z, w.dim, w.world, w.name " +
-                    "FROM minecity_chunks c INNER JOIN minecity_world w ON c.world_id = w.world_id " +
-                    "WHERE c.island_id IN("+array+");")
-            ){
-                while(result.next())
-                {
-                    int worldId = result.getInt(1);
-                    WorldDim world = source.worldDimMap.get(worldId);
-                    if(world == null)
+                List<ChunkPos> chunksToUpdate = new ArrayList<>();
+                try(ResultSet result = stm.executeQuery("SELECT c.world_id, c.x, c.z, w.dim, w.world, w.name " +
+                        "FROM minecity_chunks c INNER JOIN minecity_world w ON c.world_id = w.world_id " +
+                        "WHERE c.island_id IN("+array+");")
+                ){
+                    while(result.next())
                     {
-                        world = new WorldDim(worldId, result.getInt(4), result.getString(5), result.getString(6));
-                        source.worldDimMap.put(worldId, world);
+                        int worldId = result.getInt(1);
+                        WorldDim world = source.worldDimMap.get(worldId);
+                        if(world == null)
+                        {
+                            world = new WorldDim(worldId, result.getInt(4), result.getString(5), result.getString(6));
+                            source.worldDimMap.put(worldId, world);
+                        }
+
+                        chunksToUpdate.add(new ChunkPos(world, result.getInt(2), result.getInt(3)));
                     }
-
-                    chunksToUpdate.add(new ChunkPos(world, result.getInt(2), result.getInt(3)));
                 }
+
+                stm.executeUpdate("UPDATE `minecity_chunks` SET `island_id`="+mainIsland.id+" WHERE `island_id` IN("+array+");");
+                stm.executeUpdate("DELETE FROM `minecity_islands` WHERE `island_id` IN("+array+");");
+                source.createClaim(transaction, mainIsland.id, chunk);
+
+                transaction.commit();
+
+                mainIsland.add(chunk);
+
+                merge.forEach(island -> {
+                    mainIsland.minX = Math.min(mainIsland.minX, island.minX);
+                    mainIsland.maxX = Math.max(mainIsland.maxX, island.maxX);
+                    mainIsland.minZ = Math.min(mainIsland.minZ, island.minZ);
+                    mainIsland.maxZ = Math.max(mainIsland.maxZ, island.maxZ);
+                    mainIsland.chunkCount += island.chunkCount;
+
+                    island.minX = island.maxX = island.minZ = island.maxZ = island.chunkCount = 0;
+                });
+
+                chunksToUpdate.stream().forEach((DBConsumer<ChunkPos>) pos-> source.mineCity.reloadChunk(pos));
+                return mainIsland;
             }
-
-            stm.executeUpdate("UPDATE `minecity_chunks` SET `island_id`="+mainIsland.id+" WHERE `island_id` IN("+array+");");
-            stm.executeUpdate("DELETE FROM `minecity_islands` WHERE `island_id` IN("+array+");");
-            source.createClaim(transaction, mainIsland.id, chunk);
-
-            transaction.commit();
-            mainIsland.add(chunk);
-
-            merge.forEach(island -> {
-                mainIsland.minX = Math.min(mainIsland.minX, island.minX);
-                mainIsland.maxX = Math.max(mainIsland.maxX, island.maxX);
-                mainIsland.minZ = Math.min(mainIsland.minZ, island.minZ);
-                mainIsland.maxZ = Math.max(mainIsland.maxZ, island.maxZ);
-                mainIsland.chunkCount += island.chunkCount;
-
-                island.minX = island.maxX = island.minZ = island.maxZ = island.chunkCount = 0;
-            });
-
-            chunksToUpdate.stream().forEach((DBConsumer<ChunkPos>) pos-> source.mineCity.reloadChunk(pos));
-            return mainIsland;
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
         }
         catch(SQLException e)
         {
