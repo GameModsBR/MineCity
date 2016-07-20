@@ -19,6 +19,7 @@ public class SQLConnection
     public int checkTimeout = 50;
     public int minCheckInterval = 5000;
     private long lastCheck;
+    private boolean closed;
 
     public SQLConnection(@NotNull String url, @Nullable String user, @Nullable byte[] passwd)
     {
@@ -29,6 +30,9 @@ public class SQLConnection
 
     public synchronized Connection connect() throws SQLException
     {
+        if(closed)
+            throw new SQLException(new IllegalStateException("The SQL provider is closed"));
+
         if(connection != null)
         {
             try
@@ -51,7 +55,7 @@ public class SQLConnection
         return connection = DriverManager.getConnection(url, user, pass == null? null : new String(pass));
     }
 
-    public synchronized void disconnect()
+    public synchronized void disconnect() throws SQLException
     {
         try
         {
@@ -61,15 +65,23 @@ public class SQLConnection
         catch(SQLException e)
         {
             connection = null;
-            System.err.println("[MineCity][SQL] Failed to close SQL connection");
-            e.printStackTrace(System.err);
+            throw e;
         }
     }
 
     public Connection transaction() throws SQLException
     {
+        if(closed)
+            throw new SQLException(new IllegalStateException("The SQL provider is closed"));
+
         Connection connection = DriverManager.getConnection(url, user, pass == null? null : new String(pass));
         connection.setAutoCommit(false);
         return connection;
+    }
+
+    public void close() throws SQLException
+    {
+        closed = true;
+        disconnect();
     }
 }

@@ -8,6 +8,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.EventBus;
+import cpw.mods.fml.relauncher.FMLInjectionData;
 import net.minecraft.command.CommandHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
@@ -18,6 +19,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.UUID;
@@ -52,7 +54,18 @@ public class MineCityForgeModTest
 
         field.set(null, eventBus);
 
-        mod.onPreInit(mock(FMLPreInitializationEvent.class));
+        FMLPreInitializationEvent event = mock(FMLPreInitializationEvent.class);
+        File file = new File("build/test-unit/config.cfg");
+        if(!file.getParentFile().isDirectory())
+            assertTrue(file.getParentFile().mkdirs());
+
+        field = FMLInjectionData.class.getDeclaredField("minecraftHome");
+        field.setAccessible(true);
+        field.set(null, file.getParentFile());
+        field.setAccessible(false);
+
+        when(event.getSuggestedConfigurationFile()).thenReturn(file);
+        mod.onPreInit(event);
         mod.onServerStart(new FMLServerAboutToStartEvent(minecraftServer));
         mineCity = mod.mineCity;
     }

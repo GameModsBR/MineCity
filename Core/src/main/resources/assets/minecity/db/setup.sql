@@ -48,3 +48,11 @@ PRIMARY KEY (`world_id`, `x`, `z`),
 CONSTRAINT `chunk_world` FOREIGN KEY (`world_id`) REFERENCES `minecity_world` (`world_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `chunk_island` FOREIGN KEY (`island_id`) REFERENCES `minecity_islands` (`island_id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+CREATE TABLE `minecity_setup` (
+`property`  enum('version') NOT NULL ,
+`value`  enum('1') NOT NULL DEFAULT '1' ,
+PRIMARY KEY (`property`)
+);
+
+INSERT INTO `minecity_setup` VALUES('version', '1');

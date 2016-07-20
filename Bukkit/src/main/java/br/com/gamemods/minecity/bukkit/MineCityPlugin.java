@@ -1,10 +1,14 @@
 package br.com.gamemods.minecity.bukkit;
 
+import br.com.gamemods.minecity.MineCityConfig;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
+
+import java.util.Optional;
 
 public class MineCityPlugin extends JavaPlugin
 {
@@ -13,7 +17,16 @@ public class MineCityPlugin extends JavaPlugin
     @Override
     public void onEnable()
     {
-        mineCity = new MineCityBukkit(this);
+        saveDefaultConfig();
+        reloadConfig();
+
+        @SuppressWarnings("SpellCheckingInspection")
+        FileConfiguration yaml = getConfig();
+        MineCityConfig config = new MineCityConfig();
+        config.dbUrl = yaml.getString("database.url", config.dbUrl);
+        config.dbUser = Optional.ofNullable(yaml.getString("database.user")).filter(u-> !u.isEmpty()).orElse(null);
+        config.dbPass = Optional.ofNullable(yaml.getString("database.pass")).filter(p-> !p.isEmpty()).map(String::getBytes).orElse(null);
+        mineCity = new MineCityBukkit(this, config);
     }
 
     @Override

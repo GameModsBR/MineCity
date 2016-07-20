@@ -18,6 +18,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.sql.*;
 import java.util.*;
@@ -75,7 +77,7 @@ public class SQLSource implements IDataSource
         synchronized(cityMap)
         {
             try(PreparedStatement pst = connection.prepareStatement(
-                    "SELECT `name`, `owner`, `o`.`player_uuid`, `o`.`player_name`, `spawn_world`, `spawn_x`, `spawn_y`, `spawn_z`, " +
+                    "SELECT `c`.`name`, `owner`, `o`.`player_uuid`, `o`.`player_name`, `spawn_world`, `spawn_x`, `spawn_y`, `spawn_z`, " +
                         "`w`.`dim`, `w`.`world`, `w`.`name`, `display_name` " +
                     "FROM `minecity_city` AS `c` " +
                         "LEFT JOIN `minecity_players` AS `o` ON `owner` = `o`.`player_id` "+
@@ -321,7 +323,7 @@ public class SQLSource implements IDataSource
         int worldId = worldId(transaction, world);
         int islandId;
         try(PreparedStatement pst = transaction.prepareStatement(
-                "INSERT INT `minecity_islands`(world_id, city_id) VALUES(?,?)",
+                "INSERT INTO `minecity_islands`(world_id, city_id) VALUES(?,?)",
                 Statement.RETURN_GENERATED_KEYS
         ))
         {
@@ -374,7 +376,7 @@ public class SQLSource implements IDataSource
     @Override
     public CityCreationResult createCity(@NotNull City city) throws DataSourceException, IllegalStateException
     {
-        if(city.getId() >= 0)
+        if(city.getId() > 0)
             throw new IllegalStateException();
 
         try
@@ -436,6 +438,60 @@ public class SQLSource implements IDataSource
             }
 
             return new CityCreationResult(cityStorage, new SQLIsland(islandId, spawnChunk));
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
+    public void initDB() throws DataSourceException, IOException
+    {
+        try(Connection transaction = connection.transaction())
+        {
+            try(Statement stm = transaction.createStatement())
+            {
+                ResultSet result;
+                int version;
+                try
+                {
+                    result = stm.executeQuery("SELECT `value` FROM `minecity_setup` WHERE `property`='version';");
+                    result.next();
+                    version = result.getInt(1);
+                }
+                catch(SQLException e)
+                {
+                    ScriptRunner runner = new ScriptRunner(transaction, false, true);
+                    runner.setLogWriter(null);
+                    runner.runScript(new InputStreamReader(
+                            getClass().getResourceAsStream("/assets/minecity/db/setup.sql"), "UTF-8"
+                    ));
+                    transaction.commit();
+                    return;
+                }
+
+                if(version != 1)
+                    throw new DataSourceException("Unsupported database version: "+version);
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
+    public void close() throws DataSourceException
+    {
+        try
+        {
+            connection.close();
         }
         catch(SQLException e)
         {

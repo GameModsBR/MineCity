@@ -6,6 +6,8 @@ import br.com.gamemods.minecity.structure.ClaimedChunk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+
 public interface IDataSource
 {
     @Nullable
@@ -16,4 +18,8 @@ public interface IDataSource
 
     @Nullable
     String checkNameConflict(@NotNull String identityName) throws DataSourceException;
+
+    void initDB() throws DataSourceException, IOException;
+
+    void close() throws DataSourceException;
 }

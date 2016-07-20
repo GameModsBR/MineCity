@@ -11,7 +11,10 @@ import br.com.gamemods.minecity.forge.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.command.RootCommand;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.event.*;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -22,6 +25,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
@@ -40,7 +44,18 @@ public class MineCityForgeMod
     @SideOnly(Side.SERVER)
     public void onPreInit(FMLPreInitializationEvent event)
     {
-        config = new MineCityConfig();
+        Configuration config = new Configuration(event.getSuggestedConfigurationFile());
+        config.load();
+
+        this.config = new MineCityConfig();
+        this.config.dbUrl = config.get("database", "url", this.config.dbUrl).getString();
+        this.config.dbUser = Optional.of(config.get("database", "user", "").getString())
+                .filter(u->!u.isEmpty()).orElse(null);
+
+        this.config.dbPass = Optional.of(config.get("database", "pass", "").getString())
+                .filter(p->!p.isEmpty()).map(String::getBytes).orElse(null);
+
+        config.save();
     }
 
     @EventHandler

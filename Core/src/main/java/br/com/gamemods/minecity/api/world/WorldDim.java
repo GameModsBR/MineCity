@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * A world in a dimension, a dimension can have multiple distinct worlds depending on the server implementation.
  */
-public class WorldDim implements Serializable
+public final class WorldDim implements Serializable
 {
     private static final long serialVersionUID = 4760576989452111571L;
     private int dataSourceId;
@@ -69,6 +69,29 @@ public class WorldDim implements Serializable
         if(dataSourceId < 0) throw new IllegalArgumentException();
         if(this.dataSourceId > 0 && this.dataSourceId != dataSourceId) throw new IllegalStateException();
         this.dataSourceId = dataSourceId;
+    }
+
+    @SuppressWarnings("RedundantIfStatement")
+    @Override
+    public boolean equals(Object o)
+    {
+        if(this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+
+        WorldDim worldDim = (WorldDim) o;
+
+        if(dim != worldDim.dim) return false;
+        if(!dir.equals(worldDim.dir)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = dir.hashCode();
+        result = 31*result + dim;
+        return result;
     }
 
     @Override

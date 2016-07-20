@@ -1,25 +1,21 @@
 package br.com.gamemods.minecity.bukkit;
 
 import br.com.gamemods.minecity.MineCity;
+import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.command.CommandResult;
-import br.com.gamemods.minecity.api.command.CommandTree;
 import br.com.gamemods.minecity.api.command.Message;
 import org.bukkit.Location;
-import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.powermock.api.mockito.PowerMockito;
 
-import static org.junit.Assert.*;
-
 import java.io.ByteArrayInputStream;
-import java.lang.reflect.Field;
 import java.util.UUID;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class MineCityPluginTest
@@ -43,7 +39,7 @@ public class MineCityPluginTest
         when(joserobjr.getUniqueId()).thenReturn(UUID.fromString("185e2176-0095-4ff8-a201-6f2aed9a032a"));
         when(joserobjr.getLocation()).thenReturn(new Location(world, 100,64,250));
 
-        bukkit = new MineCityBukkit(plugin);
+        bukkit = new MineCityBukkit(plugin, new MineCityConfig());
         mineCity = bukkit.mineCity;
     }
 

@@ -27,7 +27,7 @@
                                     <os family="windows" />
                                 </condition>
 
-                                <exec dir="${project.basedir}"
+                                <exec dir="${project.basedir}" failonerror="true"
                                       executable="${project.basedir}/${gradle.executable}">
                                     <arg line="setupDecompWorkspace build" />
                                 </exec>

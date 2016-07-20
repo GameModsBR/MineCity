@@ -12,7 +12,6 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -29,12 +28,11 @@ public class MineCityBukkit
     public final MineCityPlugin plugin;
     public Logger logger;
 
-    public MineCityBukkit(MineCityPlugin plugin)
+    public MineCityBukkit(MineCityPlugin plugin, MineCityConfig config)
     {
         this.plugin = plugin;
         logger = plugin.getLogger();
         scheduler = plugin.getScheduler();
-        MineCityConfig config = new MineCityConfig();
 
         mineCity = new MineCity(config);
         PluginManager pluginManager = plugin.getPluginManager();

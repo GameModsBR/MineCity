@@ -285,6 +285,18 @@ public class FakeDataSource implements IDataSource, ICityStorage
 
     }
 
+    @Override
+    public void initDB() throws DataSourceException
+    {
+
+    }
+
+    @Override
+    public void close() throws DataSourceException
+    {
+
+    }
+
     private class FakeIsland implements Island
     {
         int id = nextIslandId.getAndIncrement();
