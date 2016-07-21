@@ -505,6 +505,26 @@ public class SQLSource implements IDataSource
         }
     }
 
+    @NotNull
+    @Override
+    public Optional<PlayerID> getPlayer(@NotNull String name) throws DataSourceException
+    {
+        try(PreparedStatement pst = connection.connect().prepareStatement(
+                "SELECT player_id, player_uuid, player_name FROM minecity_players WHERE player_name=?"
+        ))
+        {
+            pst.setString(1, name);
+            ResultSet result = pst.executeQuery();
+            if(!result.next())
+                return Optional.empty();
+            return Optional.of(new PlayerID(result.getInt(1), uuid(result.getBytes(2)), result.getString(3)));
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
     @Override
     public void close() throws DataSourceException
     {

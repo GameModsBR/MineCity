@@ -308,6 +308,20 @@ public class FakeDataSource implements IDataSource, ICityStorage
         return Optional.empty();
     }
 
+    @NotNull
+    @Override
+    public Optional<PlayerID> getPlayer(@NotNull String name) throws DataSourceException
+    {
+        for(City city : cities.values())
+        {
+            PlayerID owner = city.getOwner();
+            if(owner != null && owner.name.equals(name))
+                return Optional.of(owner);
+        }
+
+        return Optional.empty();
+    }
+
     private class FakeIsland implements Island
     {
         int id = nextIslandId.getAndIncrement();

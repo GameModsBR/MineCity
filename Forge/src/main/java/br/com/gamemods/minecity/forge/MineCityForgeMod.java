@@ -2,6 +2,8 @@ package br.com.gamemods.minecity.forge;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
+import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
@@ -31,11 +33,12 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
 @Mod(modid = "minecity", name = "MineCity", version = "1.0-SNAPSHOT", acceptableRemoteVersions = "*")
-public class MineCityForgeMod
+public class MineCityForgeMod implements Server
 {
     public MinecraftServer server;
     public MineCity mineCity;
@@ -67,7 +70,7 @@ public class MineCityForgeMod
         worldContainer = Paths.get(server.getFolderName());
 
         MinecraftForge.EVENT_BUS.register(this);
-        mineCity = new MineCity(config);
+        mineCity = new MineCity(this, config);
         mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
         mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
         mineCity.dataSource.initDB();
@@ -145,5 +148,19 @@ public class MineCityForgeMod
         if(sender instanceof EntityPlayer)
             return new ForgePlayer(this, (EntityPlayer) sender);
         return new ForgeCommandSender<>(this, sender);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Optional<PlayerID> getPlayerId(String name)
+    {
+        for(EntityPlayer player : (List<EntityPlayer>) server.getConfigurationManager().playerEntityList)
+        {
+            String playerName = player.getCommandSenderName();
+            if(name.equals(playerName))
+                return Optional.of(new PlayerID(player.getUniqueID(), playerName));
+        }
+
+        return Optional.empty();
     }
 }

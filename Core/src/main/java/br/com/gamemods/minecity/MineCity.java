@@ -1,5 +1,7 @@
 package br.com.gamemods.minecity;
 
+import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandTree;
 import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.api.world.BlockPos;
@@ -26,14 +28,16 @@ public class MineCity
 {
     @NotNull
     public final IDataSource dataSource;
+    public final Server server;
     public final CommandTree commands = new CommandTree();
     private final ConcurrentHashMap<WorldDim, Nature> natures = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<ChunkPos, ClaimedChunk> chunks = new ConcurrentHashMap<>();
     public MessageTransformer messageTransformer;
 
-    public MineCity(@NotNull MineCityConfig config, @Nullable IDataSource dataSource,
+    public MineCity(@NotNull Server server, @NotNull MineCityConfig config, @Nullable IDataSource dataSource,
                     @NotNull MessageTransformer messageTransformer)
     {
+        this.server = server;
         this.messageTransformer = messageTransformer;
         this.dataSource = dataSource == null? new SQLSource(this, config) : dataSource;
         if(config.dbPass != null)
@@ -43,14 +47,14 @@ public class MineCity
         Inconsistency.setMineCity(this);
     }
 
-    public MineCity(MineCityConfig config)
+    public MineCity(Server server, MineCityConfig config)
     {
-        this(config, null, new MessageTransformer());
+        this(server, config, null, new MessageTransformer());
     }
 
-    public MineCity(MineCityConfig config, MessageTransformer messageTransformer)
+    public MineCity(Server server, MineCityConfig config, MessageTransformer messageTransformer)
     {
-        this(config, null, messageTransformer);
+        this(server, config, null, messageTransformer);
     }
 
     public Map<ChunkPos, ClaimedChunk> loadedChunks()
@@ -130,5 +134,14 @@ public class MineCity
     {
         chunks.keySet().removeIf(c-> c.world.equals(world));
         return natures.remove(world);
+    }
+
+    public Optional<PlayerID> getPlayer(String name) throws DataSourceException
+    {
+        Optional<PlayerID> result = dataSource.getPlayer(name);
+        if(result.isPresent())
+            return result;
+
+        return server.getPlayerId(name);
     }
 }

@@ -268,4 +268,55 @@ public class CityCommand
                 new Object[][]{{"old",old},{"new",city.getName()}}
         ), city);
     }
+
+    @Command(value = "city.transfer", console = false)
+    public CommandResult<City> command(CommandSender sender, List<String> path, String[] args)
+            throws DataSourceException
+    {
+        if(args.length == 0 || args[0].trim().isEmpty())
+            return new CommandResult<>(new Message("cmd.city.transfer.player.empty",
+                    "This will transfer this city to an other player, type the player name that will be the new owner"));
+
+        if(args.length > 1)
+            return new CommandResult<>(new Message("cmd.city.transfer.player.space-in-name",
+                    "This will transfer this city to an other player, type the player name that will be the new owner, " +
+                            "player names does not have spaces..."));
+
+        String name = args[0].trim();
+        PlayerID target = mineCity.getPlayer(name).orElse(null);
+        if(target == null)
+            return new CommandResult<>(new Message("cmd.city.transfer.player.not-found",
+                    "The player ${name} was not found", new Object[]{"name", name}
+            ));
+
+        City city = mineCity.getChunk(sender.getPosition().getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.city.transfer.not-claimed", "You are not inside a city"));
+
+        PlayerID cityOwner = city.getOwner();
+        if(target.equals(cityOwner))
+            return new CommandResult<>(new Message("cmd.city.transfer.already-owner",
+                    "The city ${name} is already owned by ${owner}",
+                    new Object[][]{{"name",city.getName()},{"owner",target.name}}
+            ));
+
+        if(cityOwner == null)
+            return new CommandResult<>(new Message("cmd.city.transfer.adm-permission",
+                    "Only the server admins con transfer the city ${name}",
+                    new Object[]{"name",city.getName()}
+            ));
+
+        if(!sender.getPlayerId().equals(cityOwner))
+            return new CommandResult<>(new Message("cmd.city.transfer.no-permission",
+                    "Only ${owner} can transfer the city ${name}",
+                    new Object[][]{{"owner", cityOwner.name}, {"name",city.getName()}}
+            ));
+
+        city.setOwner(target);
+
+        return new CommandResult<>(new Message("cmd.city.transfer.success",
+                "The city ${name} is now owned by ${owner}",
+                new Object[][]{{"name",city.getName()},{"owner",target.name}}
+        ), city);
+    }
 }

@@ -65,6 +65,22 @@
                 <msg id="no-permission">You don't have permission to rename the city ${name}</msg>
                 <msg id="success">The city ${old} is now named ${new}</msg>
             </rename>
+            <transfer>
+                <player>
+                    <msg id="empty">
+                        This will transfer this city to an other player, type the player name that will be the new owner
+                    </msg>
+                    <msg id="space-in-name">
+                        This will transfer this city to an other player, type the player name that will be the new owner, player names does not have spaces...
+                    </msg>
+                    <msg id="not-found">The player ${name} was not found</msg>
+                </player>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="already-owner">The city ${name} is already owned by ${owner}</msg>
+                <msg id="adm-permission">Only the server admins con transfer the city ${name}</msg>
+                <msg id="no-permission">Only ${owner} can transfer the city ${name}</msg>
+                <msg id="success">The city ${name} is now owned by ${owner}</msg>
+            </transfer>
         </city>
     </cmd>
     <action>

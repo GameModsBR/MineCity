@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.datasource.api;
 
+import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
@@ -26,4 +27,7 @@ public interface IDataSource
 
     @NotNull
     Optional<City> getCityByName(@NotNull String name) throws DataSourceException;
+
+    @NotNull
+    Optional<PlayerID> getPlayer(@NotNull String name) throws DataSourceException;
 }

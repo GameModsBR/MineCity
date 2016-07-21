@@ -8,6 +8,7 @@ import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import br.com.gamemods.minecity.datasource.test.TestData;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Island;
@@ -130,7 +131,7 @@ public class SQLSourceTest
             }
         }
 
-        mineCity = new MineCity(config);
+        mineCity = new MineCity(new TestData(), config);
         mineCity.dataSource.initDB();
     }
 
@@ -139,7 +140,7 @@ public class SQLSourceTest
         mineCity.dataSource.close();
         config.dbPass = "unit_test".getBytes();
 
-        mineCity = new MineCity(config);
+        mineCity = new MineCity(new TestData(), config);
         mineCity.dataSource.initDB();
 
         overworld = new WorldDim(0, ".");

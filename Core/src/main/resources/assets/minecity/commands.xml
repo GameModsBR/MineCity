@@ -25,5 +25,9 @@
             <desc>Changes name of the city that you are inside</desc>
             <syntax>[new city name]</syntax>
         </command>
+        <command id="city.transfer" parent="city" cmd="transfer">
+            <desc>Transfer the city to an other player</desc>
+            <syntax>[player name]</syntax>
+        </command>
     </commands>
 </minecity-commands>

@@ -2,6 +2,8 @@ package br.com.gamemods.minecity.bukkit;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
+import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
@@ -21,7 +23,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-public class MineCityBukkit
+public class MineCityBukkit implements Server
 {
     public final MineCity mineCity;
     public final BukkitScheduler scheduler;
@@ -34,7 +36,7 @@ public class MineCityBukkit
         logger = plugin.getLogger();
         scheduler = plugin.getScheduler();
 
-        mineCity = new MineCity(config);
+        mineCity = new MineCity(this, config);
         PluginManager pluginManager = plugin.getPluginManager();
         pluginManager.registerEvents(new WorldListener(this), plugin);
     }
@@ -81,5 +83,15 @@ public class MineCityBukkit
     public Optional<Location> location(BlockPos pos)
     {
         return world(pos.world).map(world-> new Location(world, pos.x+0.5, pos.y+0.5, pos.z+0.5));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public Optional<PlayerID> getPlayerId(String name)
+    {
+        Player player = plugin.getServer().getPlayer(name);
+        if(player == null)
+            return Optional.empty();
+        return Optional.of(new PlayerID(player.getUniqueId(), player.getName()));
     }
 }
