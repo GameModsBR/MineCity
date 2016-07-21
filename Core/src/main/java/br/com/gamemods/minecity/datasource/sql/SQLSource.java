@@ -72,7 +72,7 @@ public class SQLSource implements IDataSource
         }
     }
 
-    private City loadCity(Connection connection, int id) throws SQLException, DataSourceException
+    private City loadCity(Connection connection, int id, @Nullable String identity) throws SQLException, DataSourceException
     {
         synchronized(cityMap)
         {
@@ -82,10 +82,14 @@ public class SQLSource implements IDataSource
                     "FROM `minecity_city` AS `c` " +
                         "LEFT JOIN `minecity_players` AS `o` ON `owner` = `o`.`player_id` "+
                         "LEFT JOIN `minecity_world` AS `w` ON `spawn_world` = `w`.`world_id` "+
-                    " WHERE `city_id`=?"
+                    " WHERE "+(identity == null?"`city_id`=?":"`c`.`name`=?")
             ))
             {
-                pst.setInt(1, id);
+                if(identity == null)
+                    pst.setInt(1, id);
+                else
+                    pst.setString(1, identity);
+
                 ResultSet result = pst.executeQuery();
                 if(!result.next())
                     throw new DataSourceException("City ID " + id + " not found");
@@ -278,7 +282,7 @@ public class SQLSource implements IDataSource
             if(city != null)
                 return city;
 
-            return loadCity(connection, cityId);
+            return loadCity(connection, cityId, null);
         }
     }
 
@@ -427,17 +431,7 @@ public class SQLSource implements IDataSource
                 }
             }
 
-            try
-            {
-                mineCity.reloadChunk(spawnChunk);
-            }
-            catch(DataSourceException e)
-            {
-                System.err.println("[MineCity][SQL] Exception reloading a chunk");
-                e.printStackTrace(System.err);
-            }
-
-            return new CityCreationResult(cityStorage, new SQLIsland(islandId, spawnChunk));
+            return new CityCreationResult(cityStorage, new SQLIsland(islandId, spawnChunk, city));
         }
         catch(SQLException e)
         {
@@ -483,6 +477,31 @@ public class SQLSource implements IDataSource
         catch(SQLException e)
         {
             throw new DataSourceException(e);
+        }
+    }
+
+    @Nullable
+    @Override
+    public City getCityByName(@NotNull String name) throws DataSourceException
+    {
+        name = StringUtil.identity(name);
+        if(name.length() < 3)
+            return null;
+
+        synchronized(cityMap)
+        {
+            for(City city : cityMap.values())
+                if(city.getIdentityName().equals(name))
+                    return city;
+
+            try
+            {
+                return loadCity(connection.connect(), 0, name);
+            }
+            catch(SQLException e)
+            {
+                throw new DataSourceException(e);
+            }
         }
     }
 

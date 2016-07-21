@@ -6,13 +6,12 @@ import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.test.TestData;
-import static com.github.kolorobot.exceptions.java8.AssertJThrowableAssert.assertThrown;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.*;
 
+import static com.github.kolorobot.exceptions.java8.AssertJThrowableAssert.assertThrown;
 import static org.junit.Assert.*;
 
 public class CityTest
@@ -151,6 +150,9 @@ public class CityTest
     public void testCreateCity() throws DataSourceException
     {
         BlockPos spawn = new BlockPos(test.overWorld, 0, 64, 0);
+        test.mineCity.loadNature(spawn.world);
+        test.mineCity.loadChunk(spawn.getChunk());
+
         City city = new City(test.mineCity, "Test City", test.joserobjr, spawn);
         assertTrue(city.getId() > 0);
         assertEquals(test.joserobjr, city.getOwner());
@@ -160,6 +162,7 @@ public class CityTest
         assertEquals(1, city.getChunkCount());
         assertEquals(1, city.islands().size());
         assertEquals("Test City", city.getName());
+        assertEquals(city, test.mineCity.getChunk(spawn.getChunk()).map(ClaimedChunk::getCity).orElse(null));
 
         Island island = city.islands().iterator().next();
         assertEquals(city, island.getCity());
@@ -175,6 +178,7 @@ public class CityTest
         assertThrown(()-> new City(test.mineCity, "Bad City", test.joserobjr, spawn))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("reserved");
+
     }
 
     @Test

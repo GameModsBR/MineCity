@@ -44,7 +44,7 @@ public class MineCityBukkit
         String[] path = new String[args.length+1];
         path[0] = label;
         System.arraycopy(args, 0, path, 1, args.length);
-        mineCity.commands.execute(sender(sender), path);
+        mineCity.commands.invoke(sender(sender), path);
         return true;
     }
 
@@ -53,8 +53,8 @@ public class MineCityBukkit
         if(sender instanceof Player)
             return new BukkitPlayer(this, (Player) sender);
         if(sender instanceof Entity || sender instanceof BlockCommandSender)
-            return new BukkitLocatableSender(this, sender);
-        return new BukkitCommandSender(this, sender);
+            return new BukkitLocatableSender<>(this, sender);
+        return new BukkitCommandSender<>(this, sender);
     }
 
     public WorldDim world(World world)

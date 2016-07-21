@@ -5,11 +5,13 @@ import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.commands.CityCommand;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.IDataSource;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import br.com.gamemods.minecity.datasource.sql.SQLSource;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
+import br.com.gamemods.minecity.structure.Inconsistency;
 import br.com.gamemods.minecity.structure.Nature;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +38,9 @@ public class MineCity
         this.dataSource = dataSource == null? new SQLSource(this, config) : dataSource;
         if(config.dbPass != null)
             Arrays.fill(config.dbPass, (byte) 0);
+
+        commands.registerCommands(new CityCommand(this));
+        Inconsistency.setMineCity(this);
     }
 
     public MineCity(MineCityConfig config)

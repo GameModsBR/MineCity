@@ -17,8 +17,6 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
@@ -28,9 +26,12 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import org.xml.sax.SAXException;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 import java.util.Optional;
 
 @Mod(modid = "minecity", name = "MineCity", version = "1.0-SNAPSHOT", acceptableRemoteVersions = "*")
@@ -41,13 +42,13 @@ public class MineCityForgeMod
     private Path worldContainer;
 
     @EventHandler
-    @SideOnly(Side.SERVER)
     public void onPreInit(FMLPreInitializationEvent event)
     {
         Configuration config = new Configuration(event.getSuggestedConfigurationFile());
         config.load();
 
         this.config = new MineCityConfig();
+        this.config.locale = Locale.forLanguageTag(config.get("general", "language", "en").getString());
         this.config.dbUrl = config.get("database", "url", this.config.dbUrl).getString();
         this.config.dbUser = Optional.of(config.get("database", "user", "").getString())
                 .filter(u->!u.isEmpty()).orElse(null);
@@ -59,18 +60,19 @@ public class MineCityForgeMod
     }
 
     @EventHandler
-    @SideOnly(Side.SERVER)
-    public void onServerStart(FMLServerAboutToStartEvent event)
+    public void onServerStart(FMLServerAboutToStartEvent event) throws IOException, DataSourceException, SAXException
     {
         MinecraftServer server = event.getServer();
         worldContainer = Paths.get(server.getFolderName());
 
         MinecraftForge.EVENT_BUS.register(this);
         mineCity = new MineCity(config);
+        mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
+        mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
+        mineCity.dataSource.initDB();
     }
 
     @EventHandler
-    @SideOnly(Side.SERVER)
     public void onServerStart(FMLServerStartingEvent event)
     {
         mineCity.commands.getRootCommands().stream()
@@ -80,51 +82,57 @@ public class MineCityForgeMod
     }
 
     @EventHandler
-    @SideOnly(Side.SERVER)
-    public void onServerStop(FMLServerStoppedEvent event)
+    public void onServerStop(FMLServerStoppedEvent event) throws DataSourceException
     {
         MinecraftForge.EVENT_BUS.unregister(this);
+        mineCity.dataSource.close();
         mineCity = null;
         worldContainer = null;
     }
 
-    @SideOnly(Side.SERVER)
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onChunkLoad(ChunkEvent.Load event) throws DataSourceException
     {
+        if(event.world.isRemote)
+            return;
+
         Chunk chunk = event.getChunk();
         mineCity.loadChunk(new ChunkPos(world(event.world), chunk.xPosition, chunk.zPosition));
     }
 
-    @SideOnly(Side.SERVER)
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onChunkUnload(ChunkEvent.Unload event) throws DataSourceException
     {
+        if(event.world.isRemote)
+            return;
+
         Chunk chunk = event.getChunk();
         mineCity.unloadChunk(new ChunkPos(world(event.world), chunk.xPosition, chunk.zPosition));
     }
 
-    @SideOnly(Side.SERVER)
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onWorldLoad(WorldEvent.Load event) throws DataSourceException
     {
+        if(event.world.isRemote)
+            return;
+
         mineCity.loadNature(world(event.world));
     }
 
-    @SideOnly(Side.SERVER)
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onWorldUnload(WorldEvent.Unload event) throws DataSourceException
     {
+        if(event.world.isRemote)
+            return;
+
         mineCity.unloadNature(world(event.world));
     }
 
-    @SideOnly(Side.SERVER)
     public ChunkPos chunk(Chunk chunk)
     {
         return new ChunkPos(world(chunk.worldObj), chunk.xPosition, chunk.zPosition);
     }
 
-    @SideOnly(Side.SERVER)
     public WorldDim world(World world)
     {
         Path worldPath = worldContainer.resolve(Optional.ofNullable(world.provider.getSaveFolder()).orElse(""));

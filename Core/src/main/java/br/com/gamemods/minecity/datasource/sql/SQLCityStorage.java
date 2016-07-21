@@ -330,13 +330,12 @@ public class SQLCityStorage implements ICityStorage
         {
             try
             {
-                SQLIsland island = new SQLIsland(source.createIsland(transaction, cityId, chunk.world), chunk);
+                SQLIsland island = new SQLIsland(source.createIsland(transaction, cityId, chunk.world), chunk, city);
                 source.createClaim(transaction, island.id, chunk);
                 island.city = city;
 
                 transaction.commit();
 
-                source.mineCity.reloadChunk(chunk);
                 return island;
             }
             catch(Exception e)

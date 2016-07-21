@@ -12,5 +12,9 @@
             <syntax>name (may have spaces)</syntax>
             <permission>minecity.cmd.city.create</permission>
         </command>
+        <command id="city.claim" parent="city" cmd="claim,expand">
+            <desc>Claims a chunk to a city</desc>
+            <syntax>[city name]</syntax>
+        </command>
     </commands>
 </minecity-commands>

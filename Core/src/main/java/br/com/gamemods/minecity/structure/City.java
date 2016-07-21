@@ -65,6 +65,16 @@ public final class City
         CityCreationResult result = mineCity.dataSource.createCity(this);
         storage = result.storage;
         islands.put(result.island.getId(), result.island);
+
+        try
+        {
+            mineCity.reloadChunk(spawn.getChunk());
+        }
+        catch(DataSourceException e)
+        {
+            System.err.println("[MineCity][SQL] Exception reloading a chunk");
+            e.printStackTrace(System.err);
+        }
     }
 
     /**
@@ -152,15 +162,15 @@ public final class City
         return spawn;
     }
 
-    public Stream<Island> connectedIslands(ChunkPos chunk)
+    public Stream<Island> connectedIslands(@NotNull ChunkPos chunk)
     {
         return Direction.cardinal.stream()
                 .map((DBFunction<Direction, Optional<ClaimedChunk>>) d-> mineCity.getOrFetchChunk(chunk.add(d)))
-                .filter(Optional::isPresent).map(Optional::get)
-                .map(ClaimedChunk::getIsland).filter(island-> island.getCity().equals(this));
+                .filter(Optional::isPresent).map(Optional::get).map(ClaimedChunk::getIsland)
+                .filter(island-> island != null && island.getCity().equals(this));
     }
 
-    public Stream<Entry<Direction, Island>> connectedIslandsEntries(ChunkPos chunk)
+    public Stream<Entry<Direction, Island>> connectedIslandsEntries(@NotNull ChunkPos chunk)
     {
         return Direction.cardinal.stream()
                 .map((DBFunction<Direction, Entry<Direction, Island>>)
@@ -171,7 +181,7 @@ public final class City
                 ;
     }
 
-    public Island claim(ChunkPos chunk, boolean createIsland)
+    public Island claim(@NotNull ChunkPos chunk, boolean createIsland)
             throws IllegalArgumentException, DataSourceException, UncheckedDataSourceException, IllegalStateException
     {
         if(mineCity.getOrFetchChunk(chunk).map(ClaimedChunk::getCity).equals(Optional.of(this)))
@@ -185,6 +195,7 @@ public final class City
                 throw new IllegalArgumentException("The chunk "+chunk+" is not touching an island owned by city "+id);
             Island island = storage.createIsland(this, chunk);
             this.islands.put(island.getId(), island);
+            mineCity.reloadChunk(chunk);
             return island;
         }
         else if(islands.size() == 1)
@@ -202,7 +213,7 @@ public final class City
         }
     }
 
-    public Collection<Island> disclaim(ChunkPos chunk, boolean createIslands)
+    public Collection<Island> disclaim(@NotNull ChunkPos chunk, boolean createIslands)
             throws IllegalStateException, IllegalArgumentException, DataSourceException
     {
         if(islands.size() == 1 && getChunkCount() == 1)
@@ -245,13 +256,13 @@ public final class City
                 throw new IllegalArgumentException("The chunk "+chunk+" is required by other chunks");
 
             Collection<Island> created = storage.disclaim(chunk, island, groups);
-            groups.forEach(s-> s.forEach((DisDBConsumer<ChunkPos>) mineCity::reloadChunk));
             created.forEach(i-> this.islands.put(i.getId(), i));
+            groups.forEach(s-> s.forEach((DisDBConsumer<ChunkPos>) mineCity::reloadChunk));
             return created;
         }
     }
 
-    public void setSpawn(BlockPos pos) throws DataSourceException,IllegalArgumentException
+    public void setSpawn(@NotNull BlockPos pos) throws DataSourceException,IllegalArgumentException
     {
         if(!mineCity.getOrFetchChunk(pos.getChunk()).map(c->c.owner).filter(o->o instanceof Island).map(o->(Island)o)
                 .filter(i-> i.getCity().equals(this)).isPresent() )
@@ -293,5 +304,24 @@ public final class City
     public int getId()
     {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if(this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+
+        City city = (City) o;
+        if(id != city.id) return false;
+        return identityName.equals(city.identityName);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = id;
+        result = 31*result + identityName.hashCode();
+        return result;
     }
 }

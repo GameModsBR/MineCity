@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.api.command;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @FunctionalInterface
@@ -13,9 +14,13 @@ public interface CommandFunction<R>
         }
         catch(Exception e)
         {
-            e.printStackTrace();
-            String message = e.getMessage();
-            String simplified = e.getClass().getSimpleName();
+            Throwable ex = e;
+            if(e instanceof InvocationTargetException && e.getCause() != null)
+                ex = e.getCause();
+
+            ex.printStackTrace();
+            String message = ex.getMessage();
+            String simplified = ex.getClass().getSimpleName();
             if(message != null)
                 simplified += ": "+message;
             return new CommandResult<>(new Message("cmd.exception",

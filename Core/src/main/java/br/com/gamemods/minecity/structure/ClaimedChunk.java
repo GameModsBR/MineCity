@@ -21,6 +21,7 @@ public final class ClaimedChunk
     public Island getIsland()
     {
         if(owner instanceof Island) return (Island) owner;
+        if(owner instanceof Inconsistency) return Inconsistency.getInconsistentIsland();
         return null;
     }
 

@@ -297,6 +297,17 @@ public class FakeDataSource implements IDataSource, ICityStorage
 
     }
 
+    @Nullable
+    @Override
+    public City getCityByName(@NotNull String name)
+    {
+        name = StringUtil.identity(name);
+        for(City city : cities.values())
+            if(city.getIdentityName().equals(name))
+                return city;
+        return null;
+    }
+
     private class FakeIsland implements Island
     {
         int id = nextIslandId.getAndIncrement();

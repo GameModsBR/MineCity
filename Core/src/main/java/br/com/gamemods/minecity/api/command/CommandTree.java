@@ -23,12 +23,12 @@ public class CommandTree
     private Map<String, CommandEntry> tree = new HashMap<>();
     private Map<String, CommandFunction> functions = new HashMap<>();
 
-    public CommandResult execute(CommandSender sender, String args)
+    public CommandResult invoke(CommandSender sender, String args)
     {
-        return execute(sender, toArray(args));
+        return invoke(sender, toArray(args));
     }
 
-    public CommandResult execute(CommandSender sender, String[] args)
+    public CommandResult invoke(CommandSender sender, String[] args)
     {
         return get(args).map(r-> r.run(sender)).orElseGet(()->
             new CommandResult(new Message("cmd.not-found", "Unknown command: /${base}",

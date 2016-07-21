@@ -30,6 +30,13 @@ public class CommandResult<R>
         this.result = result;
     }
 
+    public CommandResult(Message message, R result, boolean success)
+    {
+        this.message = message;
+        this.success = success;
+        this.result = result;
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> CommandResult<T> success()
     {

@@ -1,9 +1,7 @@
 package br.com.gamemods.minecity.api.command;
 
-import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
-import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.commands.CityCommand;
 import br.com.gamemods.minecity.commands.TestPlayer;
 import br.com.gamemods.minecity.datasource.test.TestData;
@@ -13,7 +11,6 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -59,12 +56,12 @@ public class CommandTreeTest
         testData.mineCity.loadNature(player.position.world);
         testData.mineCity.loadChunk(player.position.getChunk());
 
-        CommandResult result = tree.execute(player, "city create");
+        CommandResult result = tree.invoke(player, "city create");
         assertFalse(result.message.toString(), result.success);
-        assertEquals("Error> The name  is not valid, try a bigger name",
+        assertEquals("Error> Please type a city name",
                 result.toString());
 
-        result = tree.execute(player, "/city create My City");
+        result = tree.invoke(player, "/city create My City");
         assertTrue(result.success);
         assertNotNull(result.result);
         assertEquals(City.class, result.result.getClass());
@@ -77,7 +74,7 @@ public class CommandTreeTest
 
         testData.mineCity.loadChunk(player.position.getChunk());
         @SuppressWarnings("unchecked")
-        CommandResult<City> cityResult = tree.execute(player, "/city   create   Spacing    City");
+        CommandResult<City> cityResult = tree.invoke(player, "/city   create   Spacing    City");
         assertTrue(cityResult.message.toString(), cityResult.success);
         assertEquals("Spacing City", cityResult.result.getName());
     }
@@ -118,7 +115,7 @@ public class CommandTreeTest
         assertArrayEquals(new String[]{"creATE", "A","b","2"}, result.args);
 
         TestPlayer player = new TestPlayer(testData.joserobjr, new BlockPos(testData.overWorld, 2,2,3));
-        CommandResult cmd = tree.execute(player, "/city create test");
+        CommandResult cmd = tree.invoke(player, "/city create test");
         assertFalse(cmd.success);
         assertEquals("Group List: [new, create]", cmd.message.toString());
 
@@ -129,7 +126,7 @@ public class CommandTreeTest
         assertEquals("[C, creATE]", result.path.toString());
         assertArrayEquals(new String[]{"A","b","2"}, result.args);
 
-        cmd = tree.execute(player, "/city create test");
+        cmd = tree.invoke(player, "/city create test");
         assertFalse(cmd.success);
         assertEquals("Path: [city, create] Args: [test]", cmd.message.toString());
     }

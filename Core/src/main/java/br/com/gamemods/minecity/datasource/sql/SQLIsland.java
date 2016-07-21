@@ -27,13 +27,14 @@ final class SQLIsland implements Island
         this.world = world;
     }
 
-    SQLIsland(int id, ChunkPos chunk)
+    SQLIsland(int id, ChunkPos chunk, @NotNull City city)
     {
         this.id = id;
         minX = maxX = chunk.x;
         minZ = maxZ = chunk.z;
         world = chunk.world;
         chunkCount = 1;
+        this.city = city;
     }
 
     void add(ChunkPos chunk)

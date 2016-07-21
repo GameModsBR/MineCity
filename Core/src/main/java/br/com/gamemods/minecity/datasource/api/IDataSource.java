@@ -22,4 +22,7 @@ public interface IDataSource
     void initDB() throws DataSourceException, IOException;
 
     void close() throws DataSourceException;
+
+    @Nullable
+    City getCityByName(@NotNull String name) throws DataSourceException;
 }

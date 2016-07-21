@@ -1,6 +1,9 @@
 package br.com.gamemods.minecity.bukkit;
 
+import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
+import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,31 +13,56 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.Locale;
 import java.util.Optional;
+import java.util.logging.Level;
 
 public class MineCityPlugin extends JavaPlugin
 {
-    private MineCityBukkit mineCity;
+    private MineCityBukkit instance;
 
     @Override
     public void onEnable()
     {
-        saveDefaultConfig();
-        reloadConfig();
+        try
+        {
+            saveDefaultConfig();
+            reloadConfig();
 
-        @SuppressWarnings("SpellCheckingInspection")
-        FileConfiguration yaml = getConfig();
-        MineCityConfig config = new MineCityConfig();
-        config.dbUrl = yaml.getString("database.url", config.dbUrl);
-        config.dbUser = Optional.ofNullable(yaml.getString("database.user")).filter(u-> !u.isEmpty()).orElse(null);
-        config.dbPass = Optional.ofNullable(yaml.getString("database.pass")).filter(p-> !p.isEmpty()).map(String::getBytes).orElse(null);
-        config.locale = Locale.forLanguageTag(Optional.ofNullable(yaml.getString("language")).filter(l->!l.isEmpty()).orElse("en"));
-        mineCity = new MineCityBukkit(this, config);
+            @SuppressWarnings("SpellCheckingInspection")
+            FileConfiguration yaml = getConfig();
+            MineCityConfig config = new MineCityConfig();
+            config.dbUrl = yaml.getString("database.url", config.dbUrl);
+            config.dbUser = Optional.ofNullable(yaml.getString("database.user")).filter(u-> !u.isEmpty()).orElse(null);
+            config.dbPass = Optional.ofNullable(yaml.getString("database.pass")).filter(p-> !p.isEmpty()).map(String::getBytes).orElse(null);
+            config.locale = Locale.forLanguageTag(Optional.ofNullable(yaml.getString("language")).filter(l->!l.isEmpty()).orElse("en"));
+            instance = new MineCityBukkit(this, config);
+            instance.mineCity.dataSource.initDB();
+            instance.mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
+            instance.mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
+        }
+        catch(Exception e)
+        {
+            getLogger().log(Level.SEVERE, "Failed to load MineCity, shutting down the server", e);
+            Bukkit.shutdown();
+        }
+    }
+
+    @Override
+    public void onDisable()
+    {
+        try
+        {
+            instance.mineCity.dataSource.close();
+        }
+        catch(DataSourceException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        return mineCity.onCommand(sender, label, args);
+        return instance.onCommand(sender, label, args);
     }
 
     public BukkitScheduler getScheduler()
