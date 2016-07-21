@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import java.nio.file.Path;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class MineCityBukkit
@@ -59,10 +59,13 @@ public class MineCityBukkit
 
     public WorldDim world(World world)
     {
-        Path container = plugin.getServer().getWorldContainer().toPath();
-        Path worldPath = container.relativize(world.getWorldFolder().toPath());
         //noinspection deprecation
-        return new WorldDim(world.getEnvironment().getId(), worldPath.toString());
+        return new WorldDim(world.getEnvironment().getId(), world.getName());
+    }
+
+    public Optional<World> world(WorldDim world)
+    {
+        return Optional.ofNullable(plugin.getServer().getWorld(world.dir));
     }
 
     public ChunkPos chunk(Chunk chunk)
@@ -73,5 +76,10 @@ public class MineCityBukkit
     public BlockPos blockPos(Location location)
     {
         return new BlockPos(world(location.getWorld()), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+    }
+
+    public Optional<Location> location(BlockPos pos)
+    {
+        return world(pos.world).map(world-> new Location(world, pos.x+0.5, pos.y+0.5, pos.z+0.5));
     }
 }

@@ -137,7 +137,7 @@ public class CityCommand
         else
         {
             String name = String.join(" ", args);
-            city = mineCity.dataSource.getCityByName(name);
+            city = mineCity.dataSource.getCityByName(name).orElse(null);
 
             if(city == null)
                 return new CommandResult<>(new Message("cmd.city.claim.not-found",
@@ -202,5 +202,32 @@ public class CityCommand
                     "This chunk was disclaimed from ${city} successfully. ${count} islands were created as result of this disclaim.",
                     new Object[][]{{"city",city.getName()}, {"count",newIslands.size()-1}})
                     , newIslands);
+    }
+
+    @Command(value = "city.spawn", console = false)
+    public CommandResult<Void> spawn(CommandSender sender, List<String> path, String[] args)
+            throws DataSourceException
+    {
+        String cityName = String.join(" ", args);
+        String id = identity(cityName);
+
+        if(id.length() < 3)
+            return new CommandResult<>(new Message("cmd.city.spawn.invalid-name",
+                    "Please type a valid name",
+                    new Object[]{"name", cityName})
+            );
+
+        City city = mineCity.dataSource.getCityByName(id).orElse(null);
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.city.spawn.not-found",
+                    "There're no city named ${name}",
+                    new Object[]{"name",cityName})
+            );
+
+        Message error = sender.teleport(city.getSpawn());
+        if(error == null)
+            return CommandResult.success();
+
+        return new CommandResult<>(error);
     }
 }

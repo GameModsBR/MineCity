@@ -53,6 +53,17 @@
                     </msg>
                 </success>
             </disclaim>
+            <spawn>
+                <msg id="invalid-name">Please type a valid name</msg>
+                <msg id="not-found">There're no city named ${name}</msg>
+            </spawn>
         </city>
     </cmd>
+    <action>
+        <teleport>
+            <msg id="unsupported">Unsupported operation</msg>
+            <msg id="cancelled">The teleport were cancelled</msg>
+            <msg id="world-not-found">The destiny world ${name} was not found or is not loaded</msg>
+        </teleport>
+    </action>
 </minecity-messages>

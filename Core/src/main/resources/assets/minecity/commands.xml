@@ -17,5 +17,9 @@
         <command id="city.disclaim" parent="city" cmd="disclaim,unclaim">
             <desc>Disclaims a chunk from a city</desc>
         </command>
+        <command id="city.spawn" parent="city" cmd="go,spawn">
+            <desc>Teleport you to the city</desc>
+            <syntax>[city name]</syntax>
+        </command>
     </commands>
 </minecity-commands>

@@ -37,6 +37,7 @@ import java.util.Optional;
 @Mod(modid = "minecity", name = "MineCity", version = "1.0-SNAPSHOT", acceptableRemoteVersions = "*")
 public class MineCityForgeMod
 {
+    public MinecraftServer server;
     public MineCity mineCity;
     private MineCityConfig config;
     private Path worldContainer;
@@ -62,7 +63,7 @@ public class MineCityForgeMod
     @EventHandler
     public void onServerStart(FMLServerAboutToStartEvent event) throws IOException, DataSourceException, SAXException
     {
-        MinecraftServer server = event.getServer();
+        server = event.getServer();
         worldContainer = Paths.get(server.getFolderName());
 
         MinecraftForge.EVENT_BUS.register(this);

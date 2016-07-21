@@ -7,6 +7,8 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.ForgeUtil;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
 import net.minecraft.command.ICommandSender;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ForgeCommandSender<S extends ICommandSender> implements CommandSender
 {
@@ -35,6 +37,13 @@ public class ForgeCommandSender<S extends ICommandSender> implements CommandSend
     public PlayerID getPlayerId()
     {
         return null;
+    }
+
+    @Nullable
+    @Override
+    public Message teleport(@NotNull BlockPos spawn)
+    {
+        return new Message("action.teleport.unsupported", "Unsupported operation");
     }
 
     @Override

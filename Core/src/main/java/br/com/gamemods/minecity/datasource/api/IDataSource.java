@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public interface IDataSource
 {
@@ -23,6 +24,6 @@ public interface IDataSource
 
     void close() throws DataSourceException;
 
-    @Nullable
-    City getCityByName(@NotNull String name) throws DataSourceException;
+    @NotNull
+    Optional<City> getCityByName(@NotNull String name) throws DataSourceException;
 }

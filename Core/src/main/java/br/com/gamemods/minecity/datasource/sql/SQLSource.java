@@ -72,7 +72,7 @@ public class SQLSource implements IDataSource
         }
     }
 
-    private City loadCity(Connection connection, int id, @Nullable String identity) throws SQLException, DataSourceException
+    private Optional<City> loadCity(Connection connection, int id, @Nullable String identity) throws SQLException, DataSourceException
     {
         synchronized(cityMap)
         {
@@ -92,7 +92,7 @@ public class SQLSource implements IDataSource
 
                 ResultSet result = pst.executeQuery();
                 if(!result.next())
-                    throw new DataSourceException("City ID " + id + " not found");
+                    return Optional.empty();
 
                 PlayerID owner;
                 int ownerId = result.getInt(2);
@@ -119,7 +119,7 @@ public class SQLSource implements IDataSource
                 City city = new City(mineCity, name, displayName, owner, spawn, islands, id, cityStorage);
                 islands.forEach(i-> ((SQLIsland)i).city = city);
                 cityMap.put(id, city);
-                return city;
+                return Optional.of(city);
             }
         }
     }
@@ -282,7 +282,7 @@ public class SQLSource implements IDataSource
             if(city != null)
                 return city;
 
-            return loadCity(connection, cityId, null);
+            return loadCity(connection, cityId, null).orElseThrow(()-> new DataSourceException("City ID "+cityId+" not found"));
         }
     }
 
@@ -480,19 +480,19 @@ public class SQLSource implements IDataSource
         }
     }
 
-    @Nullable
+    @NotNull
     @Override
-    public City getCityByName(@NotNull String name) throws DataSourceException
+    public Optional<City> getCityByName(@NotNull String name) throws DataSourceException
     {
         name = StringUtil.identity(name);
         if(name.length() < 3)
-            return null;
+            return Optional.empty();
 
         synchronized(cityMap)
         {
             for(City city : cityMap.values())
                 if(city.getIdentityName().equals(name))
-                    return city;
+                    return Optional.of(city);
 
             try
             {
