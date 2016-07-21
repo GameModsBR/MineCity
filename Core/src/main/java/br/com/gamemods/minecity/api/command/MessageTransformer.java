@@ -1,13 +1,9 @@
 package br.com.gamemods.minecity.api.command;
 
-import br.com.gamemods.minecity.api.StringUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.traversal.DocumentTraversal;
-import org.w3c.dom.traversal.NodeFilter;
-import org.w3c.dom.traversal.NodeIterator;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -17,7 +13,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.regex.Pattern;
 
 import static br.com.gamemods.minecity.api.StringUtil.identity;
 import static br.com.gamemods.minecity.api.StringUtil.replaceTokens;
@@ -89,6 +84,7 @@ public class MessageTransformer
         return msg;
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     private String toLegacy(Element message, String baseFormat, Object[][] args)
     {
         StringBuilder sb = new StringBuilder();
@@ -139,8 +135,52 @@ public class MessageTransformer
                 String name = current.getNodeName();
                 switch(name)
                 {
-                    case "b": format = currentFormat+LegacyFormat.BOLD; break;
-                    case "i": format = currentFormat+LegacyFormat.ITALIC; break;
+                    case "b": format = currentFormat+BOLD; break;
+                    case "i": format = currentFormat+ITALIC; break;
+                    case "u": format = currentFormat+UNDERLINE; break;
+                    case "s": format = currentFormat+STRIKE; break;
+                    case "c":
+                    {
+                        String[] codes = ((Element) current).getAttribute("code").split(",");
+                        StringBuilder formatBuilder = new StringBuilder();
+                        for(String code: codes)
+                        {
+                            if(code.length() == 1)
+                                formatBuilder.append(MARK).append(code);
+                            else
+                                try
+                                {
+                                    formatBuilder.append(LegacyFormat.valueOf(code.toUpperCase()));
+                                }
+                                catch(IllegalArgumentException ignored)
+                                {}
+                        }
+
+                        format = currentFormat+formatBuilder;
+                        break;
+                    }
+                    case "black": format = currentFormat+BLACK; break;
+                    case "darkblue": format = currentFormat+DARK_BLUE; break;
+                    case "darkgreen": format = currentFormat+DARK_GREEN; break;
+                    case "darkaqua": format = currentFormat+DARK_AQUA; break;
+                    case "darkred": format = currentFormat+DARK_RED; break;
+                    case "darkpurple": format = currentFormat+DARK_PURPLE; break;
+                    case "gold": format = currentFormat+GOLD; break;
+                    case "gray": format = currentFormat+GRAY; break;
+                    case "darkgray": format = currentFormat+DARK_GRAY; break;
+                    case "blue": format = currentFormat+BLUE; break;
+                    case "green": format = currentFormat+GREEN; break;
+                    case "aqua": format = currentFormat+AQUA; break;
+                    case "red": format = currentFormat+RED; break;
+                    case "lightpurple": format = currentFormat+LIGHT_PURPLE; break;
+                    case "yellow": format = currentFormat+YELLOW; break;
+                    case "white": format = currentFormat+WHITE; break;
+                    case "magic": format = currentFormat+MAGIC; break;
+                    case "bold": format = currentFormat+BOLD; break;
+                    case "strike": format = currentFormat+STRIKE; break;
+                    case "underline": format = currentFormat+UNDERLINE; break;
+                    case "italic": format = currentFormat+ITALIC; break;
+                    case "reset": format = currentFormat+RESET; break;
                 }
             }
 
@@ -154,6 +194,17 @@ public class MessageTransformer
         }
 
         return sb.toString();
+    }
+
+    public String toLegacy(Message message)
+    {
+        return toLegacy(message, "");
+    }
+
+    public String toLegacy(Message message, String base)
+    {
+        return getElement(message.getId()).map(e-> toLegacy(e, base, message.getArgs()))
+                .orElseGet(()-> toLegacy(message.getFallback(), base, message.getArgs()));
     }
 
     public String toLegacy(String message)

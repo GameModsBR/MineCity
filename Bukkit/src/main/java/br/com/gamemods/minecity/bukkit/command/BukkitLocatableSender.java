@@ -1,6 +1,5 @@
 package br.com.gamemods.minecity.bukkit.command;
 
-import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
@@ -8,15 +7,11 @@ import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 
-public class BukkitLocatableSender implements br.com.gamemods.minecity.api.command.CommandSender
+public class BukkitLocatableSender<S extends CommandSender> extends BukkitCommandSender<S>
 {
-    public final MineCityBukkit plugin;
-    public final CommandSender sender;
-
-    public BukkitLocatableSender(MineCityBukkit plugin, CommandSender sender)
+    public BukkitLocatableSender(MineCityBukkit plugin, S sender)
     {
-        this.plugin = plugin;
-        this.sender = sender;
+        super(plugin, sender);
     }
 
     @Override
@@ -30,20 +25,8 @@ public class BukkitLocatableSender implements br.com.gamemods.minecity.api.comma
     }
 
     @Override
-    public boolean isPlayer()
-    {
-        return false;
-    }
-
-    @Override
-    public PlayerID getPlayerId()
-    {
-        return null;
-    }
-
-    @Override
     public void send(Message message)
     {
-        sender.sendMessage(message.toString());
+        sender.sendMessage(plugin.mineCity.messageTransformer.toLegacy(message));
     }
 }

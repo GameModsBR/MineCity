@@ -21,10 +21,4 @@
             </create>
         </city>
     </cmd>
-    <test>
-        <!-- Messages used by test unit, don't bother translating that -->
-        <msg id="bold">
-            This message has a <b>bold</b> word
-        </msg>
-    </test>
 </minecity-messages>

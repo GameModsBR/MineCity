@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.datasource.test;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.api.world.WorldDim;
 
 import java.util.UUID;
@@ -19,7 +20,7 @@ public class TestData
     {
         config = new MineCityConfig();
         dataSource = new FakeDataSource();
-        mineCity = new MineCity(config, dataSource);
+        mineCity = new MineCity(config, dataSource, new MessageTransformer());
         dataSource.mineCity = mineCity;
     }
 }

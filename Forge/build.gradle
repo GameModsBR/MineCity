@@ -34,7 +34,7 @@ repositories {
 }
 
 dependencies {
-    compile files('../Core/target/MineCityCore-'+version+'.jar')
+    compile files('../Core/target/classes')
     compile "org.jetbrains:annotations:13.0"
 
     testCompile "junit:junit:4.12"

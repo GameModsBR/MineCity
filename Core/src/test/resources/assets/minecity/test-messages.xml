@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<minecity-messages modified="false" add-missing="true">
+    <test>
+        <!-- Messages used by test unit, don't bother translating that -->
+        <msg id="bold">
+            This message has a <b>bold</b> word
+        </msg>
+    </test>
+</minecity-messages>

@@ -4,9 +4,9 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.forge.ForgeUtil;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
 
 public class ForgeCommandSender<S extends ICommandSender> implements CommandSender
 {
@@ -40,6 +40,6 @@ public class ForgeCommandSender<S extends ICommandSender> implements CommandSend
     @Override
     public void send(Message message)
     {
-        sender.addChatMessage(new ChatComponentText(message.toString()));
+        sender.addChatMessage(ForgeUtil.chatComponentFromLegacyText(mod.mineCity.messageTransformer.toLegacy(message)));
     }
 }

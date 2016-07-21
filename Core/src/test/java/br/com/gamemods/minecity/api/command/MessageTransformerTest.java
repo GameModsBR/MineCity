@@ -14,11 +14,11 @@ public class MessageTransformerTest
     public void setUp() throws Exception
     {
         transformer = new MessageTransformer();
-        transformer.parseXML(getClass().getResourceAsStream("/assets/minecity/messages.xml"));
+        transformer.parseXML(getClass().getResourceAsStream("/assets/minecity/test-messages.xml"));
     }
 
     @Test
-    public void testXML() throws Exception
+    public void testLegacy() throws Exception
     {
         Element element = transformer.getElement("test.bold").get();
         assertEquals("bold", element.getAttribute("id"));

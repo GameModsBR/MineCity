@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity;
 
 import br.com.gamemods.minecity.api.command.CommandTree;
+import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
@@ -26,9 +27,12 @@ public class MineCity
     public final CommandTree commands = new CommandTree();
     private final ConcurrentHashMap<WorldDim, Nature> natures = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<ChunkPos, ClaimedChunk> chunks = new ConcurrentHashMap<>();
+    public MessageTransformer messageTransformer;
 
-    public MineCity(@NotNull MineCityConfig config, @Nullable IDataSource dataSource)
+    public MineCity(@NotNull MineCityConfig config, @Nullable IDataSource dataSource,
+                    @NotNull MessageTransformer messageTransformer)
     {
+        this.messageTransformer = messageTransformer;
         this.dataSource = dataSource == null? new SQLSource(this, config) : dataSource;
         if(config.dbPass != null)
             Arrays.fill(config.dbPass, (byte) 0);
@@ -36,7 +40,12 @@ public class MineCity
 
     public MineCity(MineCityConfig config)
     {
-        this(config, null);
+        this(config, null, new MessageTransformer());
+    }
+
+    public MineCity(MineCityConfig config, MessageTransformer messageTransformer)
+    {
+        this(config, null, messageTransformer);
     }
 
     public Map<ChunkPos, ClaimedChunk> loadedChunks()

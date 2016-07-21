@@ -1,3 +1,4 @@
+language: en
 database:
   url: jdbc:mysql://localhost/minecity?autoReconnect=true
   user: minecity
