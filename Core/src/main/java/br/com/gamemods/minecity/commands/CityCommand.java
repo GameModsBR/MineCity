@@ -75,7 +75,7 @@ public class CityCommand
             ));
 
         City city = new City(mineCity, name, sender.getPlayerId(), spawn);
-        return new CommandResult<>(new Message("cmd.city.create.chunk.success",
+        return new CommandResult<>(new Message("cmd.city.create.success",
                 "The city ${name} was created successfully, if you get lost you can teleport back with /city spawn ${identity}",
                 new Object[][]{{"name", city.getName()},{"identity",city.getIdentityName()}}
         ), city);

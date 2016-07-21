@@ -1,24 +1,58 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <minecity-messages modified="false" add-missing="true">
+    <msg id="todo.group.list">Group List: ${child}</msg>
     <cmd>
+        <msg id="not-found">Unknown command: /${base}</msg>
+        <msg id="exception">
+            <!-- Possible arguments:
+                    ${error} = ${className}: ${cause} (omits ": ${cause}" when the cause is empty)
+                        IllegalArgumentException: Cannot disclaim the last chunk
+                    ${className} = The exception class name without package
+                    ${cause} = The exception message, may be empty.
+            -->
+            Oops.. An error occurred while executing this command: ${error}
+        </msg>
         <city>
             <create>
-                <msg id="name.conflict">
-                    The name ${name} conflicts with ${conflict}
-                </msg>
-                <msg id="chunk.not-loaded">
-                    The chunk that you are standing is not loaded properly
-                </msg>
-                <msg id="chunk.claimed">
-                    The chunk that you are is already claimed to ${city}
-                </msg>
-                <msg id="chunk.reserved">
-                    The chunk that you are is reserved to ${city}
-                </msg>
-                <msg id="chunk.success">
+                <name>
+                    <msg id="empty">Please type a city name</msg>
+                    <msg id="short">The name ${name} is not valid, try a bigger name</msg>
+                    <msg id="conflict">The name ${name} conflicts with ${conflict}</msg>
+                </name>
+                <chunk>
+                    <msg id="not-loaded">The chunk that you are standing is not loaded properly</msg>
+                    <msg id="claimed">The chunk that you are is already claimed to ${city}</msg>
+                    <msg id="reserved">The chunk that you are is reserved to ${city}</msg>
+                </chunk>
+                <msg id="success">
                     The city ${name} was created successfully, if you get lost you can teleport back with /city spawn ${identity}
                 </msg>
             </create>
+            <claim>
+                <msg id="already-claimed">This chunk is already claimed in name of ${city}</msg>
+                <msg id="ambiguous">Both cities ${1} and ${2} are touching this chunk, repeat the command specifying the city name.</msg>
+                <msg id="not-nearby">
+                    There're no cities touching this chunk, get closer to your city and try again. If you want to create an island then specify the city name, if you want to create a new city then type ${create}
+                </msg>
+                <msg id="not-found">There's not city named $[name}, if you want to create a new city then type ${create}</msg>
+                <msg id="no-permission">You are not allowed to claim chunks in name of ${city}</msg>
+                <msg id="success">This chunk was claimed to ${city} successfully.</msg>
+            </claim>
+            <disclaim>
+                <msg id="not-claimed">This chunk is not claimed by any city</msg>
+                <msg id="no-permission">You are not allowed to disclaim a chunk owned by ${city}</msg>
+                <msg id="last">Cannot disclaim the last city's chunk, delete the city instead</msg>
+                <msg id="spawn">Cannot disclaim the spawn chunk</msg>
+                <msg id="success">This chunk was disclaimed from ${city} successfully.</msg>
+                <success>
+                    <msg id="one-new-island">
+                        This chunk was disclaimed from ${city} successfully. One island was created as result of this disclaim.
+                    </msg>
+                    <msg id="n-new-islands">
+                        This chunk was disclaimed from ${city} successfully. ${count} islands were created as result of this disclaim.
+                    </msg>
+                </success>
+            </disclaim>
         </city>
     </cmd>
 </minecity-messages>

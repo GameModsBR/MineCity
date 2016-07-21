@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.api.command;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Optional;
 
 @FunctionalInterface
 public interface CommandFunction<R>
@@ -25,7 +26,9 @@ public interface CommandFunction<R>
                 simplified += ": "+message;
             return new CommandResult<>(new Message("cmd.exception",
                     "Oops.. An error occurred while executing this command: ${error}",
-                    new Object[]{"error",simplified}
+                    new Object[][]{{"error",simplified},
+                            {"className",ex.getClass().getSimpleName()},
+                            {"cause", Optional.ofNullable(ex.getMessage()).orElse("")}}
             ));
         }
     }
