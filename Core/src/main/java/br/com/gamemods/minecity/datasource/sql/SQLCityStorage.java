@@ -212,7 +212,7 @@ public class SQLCityStorage implements ICityStorage
 
                     sb.setLength(sb.length() - 3);
 
-                    stm.addBatch("UPDATE minecity_chunks SET island_id=? " +
+                    stm.addBatch("UPDATE minecity_chunks SET island_id="+islandId+" " +
                                   "WHERE world_id="+worldId+" AND island_id="+sqlIsland.id+" AND ("+sb+");"
                     );
 
@@ -334,7 +334,6 @@ public class SQLCityStorage implements ICityStorage
                 source.createClaim(transaction, island.id, chunk);
                 island.city = city;
 
-                source.createClaim(transaction, island.id, chunk);
                 transaction.commit();
 
                 source.mineCity.reloadChunk(chunk);
