@@ -21,5 +21,9 @@
             <desc>Teleport you to the city</desc>
             <syntax>[city name]</syntax>
         </command>
+        <command id="city.rename" parent="city" cmd="rename">
+            <desc>Changes name of the city that you are inside</desc>
+            <syntax>[new city name]</syntax>
+        </command>
     </commands>
 </minecity-commands>

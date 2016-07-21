@@ -57,6 +57,14 @@
                 <msg id="invalid-name">Please type a valid name</msg>
                 <msg id="not-found">There're no city named ${name}</msg>
             </spawn>
+            <rename>
+                <msg id="empty">You need to type the new name</msg>
+                <msg id="invalid">The name ${name} is invalid, try a bigger name</msg>
+                <msg id="same">This city is already named ${name}</msg>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="no-permission">You don't have permission to rename the city ${name}</msg>
+                <msg id="success">The city ${old} is now named ${new}</msg>
+            </rename>
         </city>
     </cmd>
     <action>

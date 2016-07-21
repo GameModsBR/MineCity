@@ -230,4 +230,42 @@ public class CityCommand
 
         return new CommandResult<>(error);
     }
+
+    @Command(value = "city.rename", console = false)
+    public CommandResult<City> rename(CommandSender sender, List<String> path, String[] args) throws DataSourceException
+    {
+        String cityName = String.join(" ", args).trim();
+        String identity = identity(cityName);
+        if(identity.isEmpty())
+            return new CommandResult<>(new Message("cmd.city.rename.empty", "You need to type the new name"));
+
+        if(identity.length()<3)
+            return new CommandResult<>(new Message("cmd.city.rename.invalid",
+                    "The name ${name} is invalid, try a bigger name",
+                    new Object[]{"name", cityName}
+            ));
+
+        City city = mineCity.getChunk(sender.getPosition().getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.city.rename.not-claimed", "You are not inside a city"));
+
+        String old = city.getName();
+        if(!sender.getPlayerId().equals(city.getOwner()))
+            return new CommandResult<>(new Message("cmd.city.rename.no-permission",
+                    "You don't have permission to rename the city ${name}",
+                    new Object[]{"name", old}
+            ));
+
+        if(old.equals(cityName))
+            return new CommandResult<>(new Message("cmd.city.rename.same",
+                    "This city is already named ${name}",
+                    new Object[]{"name",cityName}
+            ));
+
+        city.setName(cityName);
+
+        return new CommandResult<>(new Message("cmd.city.rename.success", "The city ${old} is now named ${new}",
+                new Object[][]{{"old",old},{"new",city.getName()}}
+        ), city);
+    }
 }
