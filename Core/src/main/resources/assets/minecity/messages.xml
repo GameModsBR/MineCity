@@ -81,6 +81,12 @@
                 <msg id="no-permission">Only ${owner} can transfer the city ${name}</msg>
                 <msg id="success">The city ${name} is now owned by ${owner}</msg>
             </transfer>
+            <setspawn>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="no-permission">You are not allowed to change the ${name}'s spawn</msg>
+                <msg id="already">The spawn is already set to that position</msg>
+                <msg id="success">The ${name}'s spawn was changed successfully</msg>
+            </setspawn>
         </city>
     </cmd>
     <action>

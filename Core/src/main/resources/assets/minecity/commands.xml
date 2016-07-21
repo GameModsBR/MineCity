@@ -29,5 +29,8 @@
             <desc>Transfer the city to an other player</desc>
             <syntax>[player name]</syntax>
         </command>
+        <command id="city.setspawn" parent="city" cmd="setspawn">
+            <desc>Changes the city's spawn location</desc>
+        </command>
     </commands>
 </minecity-commands>

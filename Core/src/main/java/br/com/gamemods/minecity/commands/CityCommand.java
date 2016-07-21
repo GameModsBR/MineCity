@@ -319,4 +319,30 @@ public class CityCommand
                 new Object[][]{{"name",city.getName()},{"owner",target.name}}
         ), city);
     }
+
+    @Command(value = "city.setspawn", console = false)
+    public CommandResult<City> setSpawn(CommandSender sender, List<String> path, String[] args)
+            throws DataSourceException
+    {
+        BlockPos position = sender.getPosition();
+        City city = mineCity.getChunk(position.getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.city.setspawn.not-claimed", "You are not inside a city"));
+
+        if(!sender.getPlayerId().equals(city.getOwner()))
+            return new CommandResult<>(new Message("cmd.city.setspawn.no-permission",
+                    "You are not allowed to change the ${name}'s spawn",
+                    new Object[]{"name",city.getName()}
+            ));
+
+        if(position.equals(city.getSpawn()))
+            return new CommandResult<>(new Message("cmd.city.setspawn.already", "The spawn is already set to that position"));
+
+        city.setSpawn(position);
+
+        return new CommandResult<>(new Message("cmd.city.setspawn.success",
+                "The ${name}'s spawn was changed successfully",
+                new Object[]{"name", city.getName()}
+        ), city);
+    }
 }
