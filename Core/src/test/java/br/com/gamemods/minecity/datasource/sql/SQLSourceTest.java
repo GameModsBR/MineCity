@@ -172,7 +172,7 @@ public class SQLSourceTest
         spawn = new BlockPos(overworld, spawn.x, spawn.y, spawn.z);
         claim = mineCity.loadChunk(spawn.getChunk());
         assertNotEquals(overNature, claim.owner);
-        City city = claim.getCity();
+        City city = claim.getCity().get();
         assertNotNull(city);
         //noinspection SpellCheckingInspection
         assertEquals("testcity", city.getIdentityName());
@@ -187,9 +187,9 @@ public class SQLSourceTest
         spawn = new BlockPos(overworld, spawn.x, spawn.y, spawn.z);
         claim = mineCity.loadChunk(spawn.getChunk());
         assertNotNull(claim.getCity());
-        assertEquals(city.getId(), claim.getCity().getId());
+        assertEquals(city.getId(), claim.getCity().get().getId());
 
-        city = claim.getCity();
+        city = claim.getCity().get();
         ChunkPos chunk = spawn.getChunk();
         city.claim(chunk.add(Direction.NORTH), true);
         city.claim(chunk.add(Direction.NORTH, 2), true);
@@ -206,7 +206,7 @@ public class SQLSourceTest
         spawn = new BlockPos(overworld, spawn.x, spawn.y, spawn.z);
         chunk = spawn.getChunk();
         claim = mineCity.loadChunk(chunk);
-        city = claim.getCity();
+        city = claim.getCity().get();
         assertNotNull(city);
         assertEquals(7, city.getChunkCount());
         assertEquals(4, city.getSizeX());
@@ -239,7 +239,7 @@ public class SQLSourceTest
         spawn = new BlockPos(overworld, spawn.x, spawn.y, spawn.z);
         chunk = spawn.getChunk();
         claim = mineCity.loadChunk(chunk);
-        city = claim.getCity();
+        city = claim.getCity().get();
         assertNotNull(city);
         assertEquals(6, city.getChunkCount());
         assertEquals(5, city.getSizeX());
@@ -274,7 +274,7 @@ public class SQLSourceTest
         spawn = new BlockPos(overworld, spawn.x, spawn.y, spawn.z);
         chunk = spawn.getChunk();
         claim = mineCity.loadChunk(chunk);
-        city = claim.getCity();
+        city = claim.getCity().get();
         assertNotNull(city);
         main = city.getIsland(main.getId());
         min = city.getIsland(min.getId());
@@ -316,7 +316,7 @@ public class SQLSourceTest
         reload();
         chunk = new ChunkPos(overworld, chunk.x, chunk.z);
         claim = mineCity.loadChunk(chunk);
-        city = claim.getCity();
+        city = claim.getCity().get();
         assertNotNull(city);
 
         PlayerID random = new PlayerID(UUID.randomUUID(), "Randy");
@@ -326,7 +326,7 @@ public class SQLSourceTest
         random = new PlayerID(random.uniqueId, "Randy");
         chunk = new ChunkPos(overworld, chunk.x, chunk.z);
         claim = mineCity.loadChunk(chunk);
-        city = claim.getCity();
+        city = claim.getCity().get();
         assertNotNull(city);
         assertEquals(random, city.getOwner());
 
@@ -336,7 +336,7 @@ public class SQLSourceTest
         reload();
         chunk = new ChunkPos(overworld, chunk.x, chunk.z);
         claim = mineCity.loadChunk(chunk);
-        city = claim.getCity();
+        city = claim.getCity().get();
         assertNotNull(city);
         assertEquals(random, city.getOwner());
         assertEquals(pos, city.getSpawn());

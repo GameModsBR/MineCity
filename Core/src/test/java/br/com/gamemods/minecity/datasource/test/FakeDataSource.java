@@ -174,7 +174,7 @@ public class FakeDataSource implements IDataSource, ICityStorage
         while(values.remove(fakeIsland)){}
 
         fakeIsland.chunkCount = fakeIsland.maxX = fakeIsland.minX = fakeIsland.maxZ = fakeIsland.minZ = 0;
-        mineCity.loadedChunks().values().stream().filter(c-> island.equals(c.getIsland()))
+        mineCity.loadedChunks().values().stream().filter(c-> island.equals(c.getIsland().get()))
                 .forEach(c -> {
                     try
                     {

@@ -4,6 +4,8 @@ import br.com.gamemods.minecity.api.world.ChunkPos;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 public final class ClaimedChunk
 {
     @NotNull
@@ -17,20 +19,18 @@ public final class ClaimedChunk
         this.chunk = chunk;
     }
 
-    @Nullable
-    public Island getIsland()
+    @NotNull
+    public Optional<Island> getIsland()
     {
-        if(owner instanceof Island) return (Island) owner;
-        if(owner instanceof Inconsistency) return Inconsistency.getInconsistentIsland();
-        return null;
+        if(owner instanceof Island) return Optional.of((Island) owner);
+        if(owner instanceof Inconsistency) return Optional.of(Inconsistency.getInconsistentIsland());
+        return Optional.empty();
     }
 
-    @Nullable
-    public City getCity()
+    @NotNull
+    public Optional<City> getCity()
     {
-        Island island = getIsland();
-        if(island == null) return null;
-        return island.getCity();
+        return getIsland().map(Island::getCity);
     }
 
     @Override

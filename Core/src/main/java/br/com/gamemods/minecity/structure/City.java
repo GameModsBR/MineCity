@@ -166,15 +166,16 @@ public final class City
     {
         return Direction.cardinal.stream()
                 .map((DBFunction<Direction, Optional<ClaimedChunk>>) d-> mineCity.getOrFetchChunk(chunk.add(d)))
-                .filter(Optional::isPresent).map(Optional::get).map(ClaimedChunk::getIsland)
-                .filter(island-> island != null && island.getCity().equals(this));
+                .map(o-> o.flatMap(ClaimedChunk::getIsland).filter(i-> i.getCity().equals(this)))
+                .filter(Optional::isPresent).map(Optional::get)
+                ;
     }
 
     public Stream<Entry<Direction, Island>> connectedIslandsEntries(@NotNull ChunkPos chunk)
     {
         return Direction.cardinal.stream()
                 .map((DBFunction<Direction, Entry<Direction, Island>>)
-                            d-> new SimpleImmutableEntry<>(d, mineCity.getOrFetchChunk(chunk.add(d)).map(ClaimedChunk::getIsland).orElse(null))
+                            d-> new SimpleImmutableEntry<>(d, mineCity.getOrFetchChunk(chunk.add(d)).flatMap(ClaimedChunk::getIsland).orElse(null))
                 )
                 .filter(e-> e.getValue() != null)
                 .filter(e-> this.equals(e.getValue().getCity()))
@@ -184,7 +185,7 @@ public final class City
     public Island claim(@NotNull ChunkPos chunk, boolean createIsland)
             throws IllegalArgumentException, DataSourceException, UncheckedDataSourceException, IllegalStateException
     {
-        if(mineCity.getOrFetchChunk(chunk).map(ClaimedChunk::getCity).equals(Optional.of(this)))
+        if(mineCity.getOrFetchChunk(chunk).flatMap(ClaimedChunk::getCity).equals(Optional.of(this)))
             throw new IllegalArgumentException("The chunk "+chunk+" is reserved");
 
         Set<Island> islands = connectedIslands(chunk).collect(Collectors.toSet());
@@ -222,7 +223,7 @@ public final class City
         if(getSpawn().getChunk().equals(chunk))
             throw new IllegalArgumentException("Cannot disclaim the spawn chunk");
 
-        Island island = mineCity.getOrFetchChunk(chunk).map(ClaimedChunk::getIsland).filter(i-> i.getCity().equals(this))
+        Island island = mineCity.getOrFetchChunk(chunk).flatMap(ClaimedChunk::getIsland).filter(i-> i.getCity().equals(this))
                 .orElseThrow(()-> new IllegalArgumentException("The chunk " + chunk + " is not owned by the city " + id));
 
         Map<Direction, Island> islands = connectedIslandsEntries(chunk).filter(e->e.getValue().equals(island))
@@ -313,8 +314,7 @@ public final class City
         if(o == null || getClass() != o.getClass()) return false;
 
         City city = (City) o;
-        if(id != city.id) return false;
-        return identityName.equals(city.identityName);
+        return id == city.id && identityName.equals(city.identityName);
     }
 
     @Override

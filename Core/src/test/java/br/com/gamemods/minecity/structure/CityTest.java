@@ -45,8 +45,8 @@ public class CityTest
                 .hasMessageContaining("spawn");
 
         assertThrown(()-> city.claim(spawnChunk, false))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("reserved");
+                .hasMessageContaining("reserved")
+                .isInstanceOf(IllegalArgumentException.class);
 
         assertEquals(Collections.singleton(spawnIsland), city.disclaim(chunk, false));
         assertEquals(1, city.getSizeX());
@@ -162,7 +162,7 @@ public class CityTest
         assertEquals(1, city.getChunkCount());
         assertEquals(1, city.islands().size());
         assertEquals("Test City", city.getName());
-        assertEquals(city, test.mineCity.getChunk(spawn.getChunk()).map(ClaimedChunk::getCity).orElse(null));
+        assertEquals(city, test.mineCity.getChunk(spawn.getChunk()).flatMap(ClaimedChunk::getCity).orElse(null));
 
         Island island = city.islands().iterator().next();
         assertEquals(city, island.getCity());

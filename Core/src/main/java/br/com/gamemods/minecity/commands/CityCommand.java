@@ -59,14 +59,14 @@ public class CityCommand
                     "The chunk that you are standing is not loaded properly"));
 
         ClaimedChunk claim = optionalClaim.get();
-        Island island = claim.getIsland();
+        Island island = claim.getIsland().orElse(null);
         if(island != null)
             return new CommandResult<>(new Message("cmd.city.create.chunk.claimed",
                     "The chunk that you are is already claimed to ${city}",
                     new Object[]{"city",island.getCity().getName()}
             ));
 
-        City reserved = claim.getCity();
+        City reserved = claim.getCity().orElse(null);
         if(reserved != null)
             return new CommandResult<>(new Message("cmd.city.create.chunk.reserved",
                     "The chunk that you are is reserved to ${city}", new Object[]{"city",reserved.getName()}
@@ -86,7 +86,7 @@ public class CityCommand
         PlayerID playerId = sender.getPlayerId();
         ChunkPos chunk = sender.getPosition().getChunk();
 
-        City city = mineCity.getChunk(chunk).map(ClaimedChunk::getCity).orElse(null);
+        City city = mineCity.getChunk(chunk).flatMap(ClaimedChunk::getCity).orElse(null);
         if(city != null)
             return new CommandResult<>(new Message("cmd.city.claim.already-claimed",
                     "This chunk is already claimed in name of ${city}",
@@ -98,7 +98,7 @@ public class CityCommand
             for(Direction direction: Direction.cardinal)
             {
                 ChunkPos possible = chunk.add(direction);
-                City city2 = mineCity.getChunk(possible).map(ClaimedChunk::getCity).orElse(null);
+                City city2 = mineCity.getChunk(possible).flatMap(ClaimedChunk::getCity).orElse(null);
                 if(city2 == null || city2.equals(city))
                     continue;
 
