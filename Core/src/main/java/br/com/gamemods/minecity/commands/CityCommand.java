@@ -15,6 +15,8 @@ import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Island;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -156,5 +158,49 @@ public class CityCommand
                 "This chunk was claimed to ${city} successfully.",
                 new Object[]{"city",city.getName()}
         ), claim);
+    }
+
+    @Command(value = "city.disclaim", console = false)
+    public CommandResult<Collection<Island>> disclaim(CommandSender sender, List<String> path, String[] args)
+            throws DataSourceException
+    {
+        ChunkPos chunk = sender.getPosition().getChunk();
+        City city = mineCity.getChunk(chunk).flatMap(ClaimedChunk::getCity).orElse(null);
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.city.disclaim.not-claimed",
+                    "This chunk is not claimed by any city"
+            ));
+
+        if(!sender.getPlayerId().equals(city.getOwner()))
+            return new CommandResult<>(new Message("cmd.city.disclaim.no-permission",
+                    "You are not allowed to disclaim a chunk owned by ${city}",
+                    new Object[]{"city",city.getName()}
+            ));
+
+        if(city.getChunkCount() == 1)
+            return new CommandResult<>(new Message("cmd.city.disclaim.last",
+                    "Cannot disclaim the last city's chunk, delete the city instead"));
+
+        if(city.getSpawn().getChunk().equals(chunk))
+            return new CommandResult<>(new Message("cmd.city.disclaim.spawn",
+                    "Cannot disclaim the spawn chunk"));
+
+        Collection<Island> newIslands = city.disclaim(chunk, true);
+
+        if(newIslands.size() == 1)
+            return new CommandResult<>(new Message("cmd.city.disclaim.success",
+                    "This chunk was disclaimed from ${city} successfully.",
+                    new Object[]{"city",city.getName()}
+            ), Collections.emptyList());
+        else if(newIslands.size() == 2)
+            return new CommandResult<>(new Message("cmd.city.disclaim.success.one-new-island",
+                    "This chunk was disclaimed from ${city} successfully. One island was created as result of this disclaim.",
+                    new Object[]{"city",city.getName()})
+            , newIslands);
+        else
+            return new CommandResult<>(new Message("cmd.city.disclaim.success.n-new-islands",
+                    "This chunk was disclaimed from ${city} successfully. ${count} islands were created as result of this disclaim.",
+                    new Object[][]{{"city",city.getName()}, {"count",newIslands.size()-1}})
+                    , newIslands);
     }
 }

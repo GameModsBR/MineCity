@@ -15,6 +15,11 @@
         <command id="city.claim" parent="city" cmd="claim,expand">
             <desc>Claims a chunk to a city</desc>
             <syntax>[city name]</syntax>
+            <permission>minecity.cmd.city.claim</permission>
+        </command>
+        <command id="city.disclaim" parent="city" cmd="disclaim,unclaim">
+            <desc>Disclaims a chunk from a city</desc>
+            <permission>minecity.cmd.city.disclaim</permission>
         </command>
     </commands>
 </minecity-commands>
