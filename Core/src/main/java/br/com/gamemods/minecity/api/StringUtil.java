@@ -39,6 +39,9 @@ public class StringUtil
         HashMap<String,String> replacements = new HashMap<>();
         if(tokens != null) for(Object[] token: tokens)
         {
+            if(token.length < 2)
+                continue;
+
             Object rep = token[1];
             Format format;
             if(token.length >= 3 && token[2] instanceof Format)
