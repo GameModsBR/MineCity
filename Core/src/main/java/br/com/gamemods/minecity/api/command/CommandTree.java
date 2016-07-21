@@ -155,6 +155,9 @@ public class CommandTree
                 NamedNodeMap attributes = node.getAttributes();
                 String id = attributes.getNamedItem("id").getTextContent();
 
+                if(info.permission.isEmpty())
+                    info.permission = "minecity.cmd."+id;
+
                 Set<String> parents = new HashSet<>(parseIds(attributes.getNamedItem("parent")));
                 info.aliases = new LinkedHashSet<>(parseIds(attributes.getNamedItem("cmd")));
                 if(info.getName().equals(""))

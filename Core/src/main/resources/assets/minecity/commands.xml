@@ -3,23 +3,19 @@
     <groups>
         <group id="city" cmd="city,town,c,t">
             <desc>All city related commands</desc>
-            <permission>minecity.cmd.city</permission>
         </group>
     </groups>
     <commands>
         <command id="city.create" parent="city" cmd="create,new">
             <desc>Creates a city</desc>
             <syntax>name (may have spaces)</syntax>
-            <permission>minecity.cmd.city.create</permission>
         </command>
         <command id="city.claim" parent="city" cmd="claim,expand">
             <desc>Claims a chunk to a city</desc>
             <syntax>[city name]</syntax>
-            <permission>minecity.cmd.city.claim</permission>
         </command>
         <command id="city.disclaim" parent="city" cmd="disclaim,unclaim">
             <desc>Disclaims a chunk from a city</desc>
-            <permission>minecity.cmd.city.disclaim</permission>
         </command>
     </commands>
 </minecity-commands>
