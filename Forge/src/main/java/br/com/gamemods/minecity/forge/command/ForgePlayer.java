@@ -8,6 +8,7 @@ import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.WorldServer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,8 +41,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer>
     @Override
     public Direction getCardinalDirection()
     {
-        //TODO Do actual implementation
-        return Direction.NORTH;
+        return Direction.cardinal8.get(MathHelper.floor_double((double)((sender.rotationYaw + 180.0F) * 8.0F / 360.0F) + 0.5D) & 7);
     }
 
     @Nullable
