@@ -32,5 +32,8 @@
         <command id="city.setspawn" parent="city" cmd="setspawn">
             <desc>Changes the city's spawn location</desc>
         </command>
+        <command id="city.map" parent="city" cmd="map">
+            <desc>Show the cities around you</desc>
+        </command>
     </commands>
 </minecity-commands>

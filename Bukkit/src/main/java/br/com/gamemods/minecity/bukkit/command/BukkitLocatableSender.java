@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.bukkit.command;
 
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import org.bukkit.Location;
 import org.bukkit.command.BlockCommandSender;
@@ -54,6 +55,13 @@ public class BukkitLocatableSender<S extends CommandSender> extends BukkitComman
         }
 
         return super.teleport(pos);
+    }
+
+    @Override
+    public Direction getCardinalDirection()
+    {
+        //TODO Do the actual implementation
+        return Direction.NORTH;
     }
 
     @Override

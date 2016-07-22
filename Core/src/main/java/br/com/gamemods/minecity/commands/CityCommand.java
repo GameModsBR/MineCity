@@ -2,10 +2,7 @@ package br.com.gamemods.minecity.commands;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
-import br.com.gamemods.minecity.api.command.Command;
-import br.com.gamemods.minecity.api.command.CommandResult;
-import br.com.gamemods.minecity.api.command.CommandSender;
-import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
@@ -15,10 +12,7 @@ import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Island;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static br.com.gamemods.minecity.api.StringUtil.identity;
 
@@ -344,5 +338,128 @@ public class CityCommand
                 "The ${name}'s spawn was changed successfully",
                 new Object[]{"name", city.getName()}
         ), city);
+    }
+
+    @Command(value = "city.map", console = false)
+    public CommandResult<?> map(CommandSender sender, List<String> path, String[] args)
+    {
+        /* Default chat size: 53x10
+
+        +--------------------------------------123456789012345+
+        |1234567890123456789012345678901234567| Celestial     |
+        |2        1         2         3     37| A Pretty Name |
+        |3               18 20                | Test City     |
+        |4                                    | Washington    |
+        |5                        XX          | Ottawa        |
+        |6                 ▲   XXXX          | Edmonton      |
+        |7                      XX            | New York      |
+        |8                                    | Philadelphia  |
+        |9                                    |               |
+        |0                                    |               |
+        +-----------------------------------------------------+
+         */
+        ChunkPos chunk = sender.getPosition().getChunk();
+        City cityAtPosition = mineCity.getChunk(chunk).flatMap(ClaimedChunk::getCity).orElse(null);
+        char cursor;
+        if(cityAtPosition != null)
+            switch(sender.getCardinalDirection())
+            {
+                case NORTH: cursor = '\u25B2'; break;
+                case EAST: cursor = '\u25B6'; break;
+                case SOUTH: cursor = '\u25BC'; break;
+                case WEST: cursor = '\u25C0'; break;
+                case NORTH_EAST: cursor = '\u25E5'; break;
+                case SOUTH_EAST: cursor = '\u25E2'; break;
+                case SOUTH_WEST: cursor = '\u25E3'; break;
+                case NORTH_WEST: cursor = '\u25E4'; break;
+                default: cursor = '\u25CF'; break;
+            }
+        else
+            switch(sender.getCardinalDirection())
+            {
+                case NORTH: cursor = '\u25B3'; break;
+                case EAST: cursor = '\u25B7'; break;
+                case SOUTH: cursor = '\u25BD'; break;
+                case WEST: cursor = '\u25C1'; break;
+                case NORTH_EAST: cursor = '\u25F9'; break;
+                case SOUTH_EAST: cursor = '\u25FF'; break;
+                case SOUTH_WEST: cursor = '\u25FA'; break;
+                case NORTH_WEST: cursor = '\u25F8'; break;
+                default: cursor = '\u25CB'; break;
+            }
+
+        char unloaded = ' ';
+        char unclaimed = '\u25A1';
+        char claimed = '\u25A1';
+        char oneLot = '\u25A3';
+        char multipleLots = '\u25A6';
+        char reserved = '\u25A9';
+
+        // Width: 57
+        // Cursor pos: 29
+        // Names: 58
+        chunk = chunk.subtract(28, 4);
+        StringBuilder[] lines = new StringBuilder[9];
+        Map<City, LegacyFormat> cityColors = new HashMap<>();
+        for(int z=0; z< 9; z++)
+        {
+            @SuppressWarnings("MismatchedQueryAndUpdateOfStringBuilder")
+            StringBuilder sb = lines[z] = new StringBuilder();
+            LegacyFormat current = LegacyFormat.RESET;
+            for(int x = 0; x < 57; x++)
+            {
+                if(x == 28 && z == 4)
+                {
+                    sb.append(current = LegacyFormat.RED).append(cursor);
+                    continue;
+                }
+
+                ChunkPos pos = new ChunkPos(chunk.world, chunk.x + x, chunk.z + z);
+                Optional<ClaimedChunk> claim = mineCity.getChunk(pos);
+                if(!claim.isPresent())
+                {
+                    sb.append(unloaded);
+                    continue;
+                }
+
+                Optional<Island> island = claim.get().getIsland();
+                if(island.isPresent())
+                {
+                    City city = island.get().getCity();
+                    LegacyFormat color = cityColors.get(city);
+                    if(color == null)
+                        cityColors.put(city, color = city.getColor());
+
+                    if(color != current)
+                        sb.append(current = color);
+
+                    sb.append(claimed);
+                }
+                else
+                {
+                    if(current != LegacyFormat.BLACK)
+                        sb.append(current = LegacyFormat.BLACK);
+                    sb.append(unclaimed);
+                }
+            }
+
+            sb.append(LegacyFormat.DARK_GRAY).append("| ");
+        }
+
+        int line = 8;
+        for(Map.Entry<City, LegacyFormat> entry : cityColors.entrySet())
+        {
+            String name = entry.getKey().getName();
+            if(name.length() >= 14)
+                name = name.substring(0,13)+"\u2192";
+            lines[line--].append(entry.getValue()).append(name);
+            if(line < 0)
+                break;
+        }
+
+        for(StringBuilder sb : lines)
+            sender.send(new Message("", sb.toString()));
+
+        return CommandResult.success();
     }
 }

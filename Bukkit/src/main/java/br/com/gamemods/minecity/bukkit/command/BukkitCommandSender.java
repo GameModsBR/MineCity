@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.bukkit.command;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +43,12 @@ public class BukkitCommandSender<S extends CommandSender> implements br.com.game
     public Message teleport(@NotNull BlockPos pos)
     {
         return new Message("action.teleport.unsupported", "Unsupported operation");
+    }
+
+    @Override
+    public Direction getCardinalDirection()
+    {
+        return null;
     }
 
     @Override

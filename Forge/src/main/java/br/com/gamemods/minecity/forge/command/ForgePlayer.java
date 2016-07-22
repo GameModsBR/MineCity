@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.command;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,6 +35,13 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer>
     public PlayerID getPlayerId()
     {
         return new PlayerID(sender.getUniqueID(), sender.getCommandSenderName());
+    }
+
+    @Override
+    public Direction getCardinalDirection()
+    {
+        //TODO Do actual implementation
+        return Direction.NORTH;
     }
 
     @Nullable

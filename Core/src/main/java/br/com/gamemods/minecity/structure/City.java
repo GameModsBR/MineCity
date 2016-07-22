@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.structure;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.*;
+import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
@@ -323,5 +324,10 @@ public final class City
         int result = id;
         result = 31*result + identityName.hashCode();
         return result;
+    }
+
+    public LegacyFormat getColor()
+    {
+        return LegacyFormat.CITY_COLORS[new Random(name.hashCode()).nextInt(LegacyFormat.CITY_COLORS.length)];
     }
 }

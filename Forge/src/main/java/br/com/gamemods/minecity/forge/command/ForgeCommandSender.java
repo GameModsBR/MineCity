@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.ForgeUtil;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
 import net.minecraft.command.ICommandSender;
@@ -50,5 +51,11 @@ public class ForgeCommandSender<S extends ICommandSender> implements CommandSend
     public void send(Message message)
     {
         sender.addChatMessage(ForgeUtil.chatComponentFromLegacyText(mod.mineCity.messageTransformer.toLegacy(message)));
+    }
+
+    @Override
+    public Direction getCardinalDirection()
+    {
+        return null;
     }
 }
