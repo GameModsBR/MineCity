@@ -82,8 +82,7 @@ public class SQLSource implements IDataSource
 
         int dimI = dim.get();
         String dirS = dir.get();
-        if(mineCity.worldProvider == null || (world = mineCity.worldProvider.getWorld(dimI, dirS)) ==  null)
-            world = new WorldDim(dimI, dirS);
+        world = mineCity.worldProvider.map(p-> p.getWorld(dimI, dirS)).orElseGet(()-> new WorldDim(dimI, dirS));
 
         world.setDataSourceId(id);
         worldDimMap.put(id, world);

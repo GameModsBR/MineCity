@@ -16,6 +16,7 @@ import br.com.gamemods.minecity.forge.command.ForgeCommandSender;
 import br.com.gamemods.minecity.forge.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.command.RootCommand;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
+import br.com.gamemods.minecity.structure.Inconsistency;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -30,6 +31,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.world.ChunkEvent;
@@ -44,6 +46,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Mod(modid = "minecity", name = "MineCity", version = "1.0-SNAPSHOT", acceptableRemoteVersions = "*")
 public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
@@ -79,7 +82,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
 
         MinecraftForge.EVENT_BUS.register(this);
         mineCity = new MineCity(this, config);
-        mineCity.worldProvider = this;
+        mineCity.worldProvider = Optional.of(this);
         mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
         mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
         mineCity.dataSource.initDB();
@@ -110,7 +113,12 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
             return;
 
         Chunk chunk = event.getChunk();
-        mineCity.loadChunk(new ChunkPos(world(event.world), chunk.xPosition, chunk.zPosition));
+        ChunkPos pos = new ChunkPos(world(chunk.worldObj), chunk.xPosition, chunk.zPosition);
+        pos.instance = chunk;
+        if(chunk instanceof IChunk)
+            ((IChunk) chunk).setMineCityClaim(new ClaimedChunk(Inconsistency.INSTANCE, pos));
+
+        mineCity.loadChunk(pos);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -119,8 +127,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         if(event.world.isRemote)
             return;
 
-        Chunk chunk = event.getChunk();
-        mineCity.unloadChunk(new ChunkPos(world(event.world), chunk.xPosition, chunk.zPosition));
+        mineCity.unloadChunk(chunk(event.getChunk()));
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -146,7 +153,16 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
 
     public ChunkPos chunk(Chunk chunk)
     {
-        return new ChunkPos(world(chunk.worldObj), chunk.xPosition, chunk.zPosition);
+        if(chunk instanceof IChunk)
+        {
+            ChunkPos pos = ((IChunk) chunk).getMineCityChunk();
+            if(pos != null)
+                return pos;
+        }
+
+        ChunkPos pos = new ChunkPos(world(chunk.worldObj), chunk.xPosition, chunk.zPosition);
+        pos.instance = chunk;
+        return pos;
     }
 
     @Nullable
@@ -195,6 +211,29 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         pos.instance = forgeChunk;
         ((IChunk) forgeChunk).setMineCityClaim(claim);
         return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    @NotNull
+    @Override
+    public Stream<ClaimedChunk> loadedChunks()
+    {
+        WorldServer overWorld = DimensionManager.getWorld(0);
+        if(!(overWorld instanceof IWorldServer))
+            return Stream.empty();
+
+        List overWorldChunks = overWorld.theChunkProviderServer.loadedChunks;
+        if(overWorldChunks.isEmpty() || !(overWorldChunks.get(0) instanceof IChunk))
+            return Stream.empty();
+
+        Stream<IChunk> composite = overWorld.theChunkProviderServer.loadedChunks.stream();
+        for(WorldServer worldServer : DimensionManager.getWorlds())
+        {
+            if(worldServer == overWorld) continue;
+            composite = Stream.concat(composite, overWorld.theChunkProviderServer.loadedChunks.stream());
+        }
+
+        return composite.map(IChunk::getMineCityClaim);
     }
 
     @Nullable
@@ -318,8 +357,8 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
 
     @Nullable
     @Override
-    public ChunkProvider getChunkProvider()
+    public Optional<ChunkProvider> getChunkProvider()
     {
-        return this;
+        return Optional.of(this);
     }
 }

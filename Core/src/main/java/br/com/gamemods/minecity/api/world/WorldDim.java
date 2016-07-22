@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.api.world;
 
+import br.com.gamemods.minecity.structure.Nature;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +30,9 @@ public final class WorldDim implements Serializable
 
     @Nullable
     public WorldProvider provider;
+
+    @Nullable
+    public Nature nature;
 
     /**
      * The name displayed to the players

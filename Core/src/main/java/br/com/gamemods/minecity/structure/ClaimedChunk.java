@@ -33,6 +33,18 @@ public final class ClaimedChunk
         return getIsland().map(Island::getCity);
     }
 
+    @NotNull
+    public ChunkOwner getOwner()
+    {
+        return owner;
+    }
+
+    @NotNull
+    public ChunkPos getChunk()
+    {
+        return chunk;
+    }
+
     @Override
     public String toString()
     {

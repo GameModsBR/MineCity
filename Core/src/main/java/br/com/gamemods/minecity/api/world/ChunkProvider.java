@@ -4,6 +4,8 @@ import br.com.gamemods.minecity.structure.ClaimedChunk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.stream.Stream;
+
 public interface ChunkProvider
 {
     @Nullable
@@ -16,4 +18,7 @@ public interface ChunkProvider
     ClaimedChunk getClaim(@NotNull ChunkPos pos);
 
     boolean setClaim(@NotNull ClaimedChunk claim);
+
+    @NotNull
+    Stream<ClaimedChunk> loadedChunks();
 }

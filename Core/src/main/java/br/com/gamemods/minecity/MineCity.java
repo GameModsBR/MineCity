@@ -4,13 +4,14 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandTree;
 import br.com.gamemods.minecity.api.command.MessageTransformer;
-import br.com.gamemods.minecity.api.world.BlockPos;
-import br.com.gamemods.minecity.api.world.ChunkPos;
-import br.com.gamemods.minecity.api.world.WorldDim;
-import br.com.gamemods.minecity.api.world.WorldProvider;
+import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.commands.CityCommand;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.IDataSource;
+import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
+import br.com.gamemods.minecity.datasource.api.unchecked.DBSupplier;
+import br.com.gamemods.minecity.datasource.api.unchecked.DisDBConsumer;
+import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import br.com.gamemods.minecity.datasource.sql.SQLSource;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Inconsistency;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class MineCity
 {
@@ -34,7 +36,7 @@ public class MineCity
     private final ConcurrentHashMap<WorldDim, Nature> natures = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<ChunkPos, ClaimedChunk> chunks = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<ChunkPos, CityCommand.MapCache> mapCache = new ConcurrentHashMap<>();
-    public WorldProvider worldProvider;
+    public Optional<WorldProvider> worldProvider = Optional.empty();
     public MessageTransformer messageTransformer;
 
     public MineCity(@NotNull Server server, @NotNull MineCityConfig config, @Nullable IDataSource dataSource,
@@ -60,11 +62,6 @@ public class MineCity
         this(server, config, null, messageTransformer);
     }
 
-    public Map<ChunkPos, ClaimedChunk> loadedChunks()
-    {
-        return Collections.unmodifiableMap(chunks);
-    }
-
     @NotNull
     public Optional<ClaimedChunk> getChunk(@NotNull BlockPos pos)
     {
@@ -74,28 +71,44 @@ public class MineCity
     @NotNull
     public Optional<ClaimedChunk> getChunk(@NotNull ChunkPos pos)
     {
-        return Optional.ofNullable(chunks.get(pos));
+        return Optional.ofNullable(getChunkProvider().map(p-> p.getClaim(pos)).orElseGet(()-> chunks.get(pos)));
     }
 
+    /**
+     * @deprecated It's impossible to know if the optional is empty because the chunk is unloaded or because
+     * the chunk is not claimed
+     */
     @Deprecated
     public Optional<ClaimedChunk> getOrFetchChunk(@NotNull ChunkPos pos) throws DataSourceException
     {
-        ClaimedChunk claimedChunk = chunks.get(pos);
-        if(claimedChunk != null) return Optional.of(claimedChunk);
-
-        return Optional.ofNullable(dataSource.getCityChunk(pos));
+        try
+        {
+            return Optional.ofNullable(getChunk(pos).orElseGet((DBSupplier<ClaimedChunk>) () -> dataSource.getCityChunk(pos)));
+        }
+        catch(UncheckedDataSourceException e)
+        {
+            throw e.getCause();
+        }
     }
 
     @Nullable
     public Nature getNature(@NotNull WorldDim world)
     {
+        if(world.nature != null && world.nature.isValid())
+            return world.nature;
+
         return natures.get(world);
     }
 
     @NotNull
     public Nature loadNature(@NotNull WorldDim world)
     {
-        Nature nature = new Nature(world);
+        Nature nature = natures.get(world);
+        if(nature != null)
+            nature.invalidate();
+
+        nature = new Nature(world);
+        world.nature = nature;
         natures.put(world, nature);
         return nature;
     }
@@ -103,27 +116,60 @@ public class MineCity
     @NotNull
     public Nature nature(@NotNull WorldDim world)
     {
-        Nature nature = natures.get(world);
-        if(nature != null) return nature;
+        Nature nature = getNature(world);
+        if(nature != null && nature.isValid()) return nature;
         return loadNature(world);
+    }
+
+    public Optional<ChunkProvider> getChunkProvider()
+    {
+        return worldProvider.flatMap(WorldProvider::getChunkProvider);
     }
 
     @NotNull
     public ClaimedChunk loadChunk(@NotNull ChunkPos pos) throws DataSourceException
     {
-        ClaimedChunk chunk = dataSource.getCityChunk(pos);
-        if(chunk != null) chunks.put(pos, chunk);
-        else chunks.put(pos, chunk = new ClaimedChunk(nature(pos.world), pos));
+        ClaimedChunk chunk = Optional.ofNullable(dataSource.getCityChunk(pos))
+                .orElseGet(()-> new ClaimedChunk(nature(pos.world), pos));
+
+        if(!getChunkProvider().map(p-> p.setClaim(chunk)).orElse(false))
+            chunks.put(pos, chunk);
 
         mapCache.remove(pos);
 
         return chunk;
     }
 
+    public Stream<ClaimedChunk> loadedChunks()
+    {
+        Stream<ClaimedChunk> stream = chunks.values().stream();
+        Optional<Stream<ClaimedChunk>> provider = getChunkProvider().map(ChunkProvider::loadedChunks);
+        if(provider.isPresent())
+            return Stream.concat(stream, provider.get());
+        return stream;
+    }
+
+    public void reloadChunksUnchecked(Predicate<ClaimedChunk> condition)
+    {
+        loadedChunks().filter(condition).map(ClaimedChunk::getChunk).forEach((DisDBConsumer<ChunkPos>) this::loadChunk);
+    }
+
+    public void reloadChunks(Predicate<ClaimedChunk> condition) throws DataSourceException
+    {
+        try
+        {
+            loadedChunks().filter(condition).map(ClaimedChunk::getChunk).forEach((DBConsumer<ChunkPos>) this::loadChunk);
+        }
+        catch(UncheckedDataSourceException e)
+        {
+            throw e.getCause();
+        }
+    }
+
     @Nullable
     public ClaimedChunk reloadChunk(@NotNull ChunkPos pos) throws DataSourceException
     {
-        if(!chunks.containsKey(pos))
+        if(!chunks.containsKey(pos) && !getChunkProvider().map(p-> p.getClaim(pos)).isPresent())
             return null;
 
         return loadChunk(pos);
@@ -133,7 +179,8 @@ public class MineCity
     public ClaimedChunk unloadChunk(@NotNull ChunkPos pos)
     {
         mapCache.remove(pos);
-        return chunks.remove(pos);
+        ClaimedChunk chunk = chunks.remove(pos);
+        return getChunkProvider().map(p-> p.getClaim(pos)).orElse(chunk);
     }
 
     @Nullable
@@ -142,7 +189,11 @@ public class MineCity
         Predicate<ChunkPos> condition = c -> c.world.equals(world);
         chunks.keySet().removeIf(condition);
         mapCache.keySet().removeIf(condition);
-        return natures.remove(world);
+
+        Nature nature = natures.remove(world);
+        if(nature != null)
+            nature.invalidate();
+        return nature;
     }
 
     public Optional<PlayerID> getPlayer(String name) throws DataSourceException

@@ -103,17 +103,7 @@ public class SQLCityStorage implements ICityStorage
             }
 
             sqlIsland.chunkCount = sqlIsland.maxX = sqlIsland.minX = sqlIsland.maxZ = sqlIsland.minZ = 0;
-            source.mineCity.loadedChunks().values().stream().filter(c-> island.equals(c.getIsland().get()))
-                    .forEach(c -> {
-                        try
-                        {
-                            source.mineCity.reloadChunk(c.chunk);
-                        }
-                        catch(DataSourceException e)
-                        {
-                            e.printStackTrace();
-                        }
-                    });
+            source.mineCity.reloadChunksUnchecked(c-> c.getIsland().filter(island::equals).isPresent());
         }
         catch(SQLException e)
         {

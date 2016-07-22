@@ -17,6 +17,8 @@ public final class BlockPos implements Serializable
     public final WorldDim world;
     public final int x, y, z;
 
+    private ChunkPos chunk;
+
     public BlockPos(@NotNull WorldDim world, int x, int y, int z)
     {
         this.world = world;
@@ -110,7 +112,17 @@ public final class BlockPos implements Serializable
     @NotNull
     public ChunkPos getChunk()
     {
-        return new ChunkPos(world, x >> 4, z >> 4);
+        if(chunk == null)
+            chunk = new ChunkPos(world, x >> 4, z >> 4);
+        return chunk;
+    }
+
+    public void setChunk(@NotNull ChunkPos chunk) throws IllegalArgumentException
+    {
+        if(!world.equals(chunk.world) || x >> 4 != chunk.x || z >> 4 != chunk.z)
+            throw new IllegalArgumentException("The chunk "+chunk+" does not stores the block "+this);
+        
+        this.chunk = chunk;
     }
 
     /**
