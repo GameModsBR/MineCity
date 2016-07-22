@@ -16,6 +16,7 @@ public final class ChunkPos implements Serializable
     @NotNull
     public final WorldDim world;
     public final int x, z;
+    public Object instance;
 
     public ChunkPos(@NotNull WorldDim world, int x, int z)
     {

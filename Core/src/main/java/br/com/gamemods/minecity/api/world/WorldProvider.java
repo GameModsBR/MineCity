@@ -7,4 +7,7 @@ public interface WorldProvider
 {
     @Nullable
     WorldDim getWorld(int dim, @NotNull String dir);
+
+    @Nullable
+    ChunkProvider getChunkProvider();
 }

@@ -32,7 +32,8 @@ public class MineCityCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     public String[] getASMTransformerClass()
     {
         return new String[]{
-                "br.com.gamemods.minecity.forge.core.transformer.forge.WorldServerTransformer"
+                "br.com.gamemods.minecity.forge.core.transformer.forge.WorldServerTransformer",
+                "br.com.gamemods.minecity.forge.core.transformer.forge.ChunkTransformer"
         };
     }
 

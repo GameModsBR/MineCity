@@ -6,12 +6,16 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.world.ChunkPos;
+import br.com.gamemods.minecity.api.world.ChunkProvider;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.api.world.WorldProvider;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import br.com.gamemods.minecity.forge.accessors.IChunk;
+import br.com.gamemods.minecity.forge.accessors.IWorldServer;
 import br.com.gamemods.minecity.forge.command.ForgeCommandSender;
 import br.com.gamemods.minecity.forge.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.command.RootCommand;
+import br.com.gamemods.minecity.structure.ClaimedChunk;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -42,7 +46,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 @Mod(modid = "minecity", name = "MineCity", version = "1.0-SNAPSHOT", acceptableRemoteVersions = "*")
-public class MineCityForgeMod implements Server, WorldProvider
+public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
 {
     public MinecraftServer server;
     public MineCity mineCity;
@@ -145,6 +149,76 @@ public class MineCityForgeMod implements Server, WorldProvider
         return new ChunkPos(world(chunk.worldObj), chunk.xPosition, chunk.zPosition);
     }
 
+    @Nullable
+    @Override
+    public ChunkPos getChunk(@NotNull WorldDim dim, int x, int z)
+    {
+        WorldServer world = world(dim);
+        if(world == null)
+            return null;
+
+        Chunk chunk = world.getChunkFromChunkCoords(x, z);
+        if(!(chunk instanceof IChunk))
+            return null;
+
+        ChunkPos pos = ((IChunk) chunk).getMineCityChunk();
+        if(pos != null)
+            return pos;
+
+        pos = new ChunkPos(dim, x, z);
+        pos.instance = chunk;
+        return pos;
+    }
+
+    @Nullable
+    @Override
+    public ClaimedChunk getClaim(@NotNull WorldDim dim, int x, int z)
+    {
+        WorldServer world = world(dim);
+        if(world == null)
+            return null;
+
+        Chunk chunk = world.getChunkFromChunkCoords(x, z);
+        if(!(chunk instanceof IChunk))
+            return null;
+
+        return ((IChunk) chunk).getMineCityClaim();
+    }
+
+    @Nullable
+    @Override
+    public ClaimedChunk getClaim(@NotNull ChunkPos pos)
+    {
+        if(pos.instance instanceof IChunk)
+        {
+            IChunk chunk = (IChunk) pos.instance;
+            Chunk fChunk = (Chunk) chunk;
+            if(fChunk.worldObj instanceof IWorldServer && ((IWorldServer) fChunk.worldObj).getMineCityWorld() != null)
+            {
+                ClaimedChunk claim = chunk.getMineCityClaim();
+                if(claim != null)
+                    return claim;
+            }
+        }
+
+        WorldServer world = world(pos.world);
+        if(world == null)
+            return null;
+
+        Chunk chunk = world.getChunkFromChunkCoords(pos.x, pos.z);
+        if(!(chunk instanceof IChunk))
+            return null;
+
+        pos.instance = chunk;
+        return  ((IChunk) chunk).getMineCityClaim();
+    }
+
+    @Override
+    public boolean setClaim(@Nullable ClaimedChunk claim)
+    {
+        return false;
+    }
+
     public WorldDim world(World world)
     {
         boolean impl = world instanceof IWorldServer;
@@ -219,5 +293,12 @@ public class MineCityForgeMod implements Server, WorldProvider
         }
 
         return Optional.empty();
+    }
+
+    @Nullable
+    @Override
+    public ChunkProvider getChunkProvider()
+    {
+        return this;
     }
 }
