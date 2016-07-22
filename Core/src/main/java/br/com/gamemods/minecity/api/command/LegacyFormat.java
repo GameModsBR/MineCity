@@ -28,7 +28,7 @@ public enum  LegacyFormat
     public static final char MARK = '\u00A7';
     public static final LegacyFormat[] CITY_COLORS = {
             DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_PURPLE, GOLD,
-            GRAY, BLUE, GREEN, AQUA, LIGHT_PURPLE, YELLOW
+            GRAY, BLUE, GREEN, AQUA, LIGHT_PURPLE, YELLOW, WHITE
     };
     public final char code;
 
