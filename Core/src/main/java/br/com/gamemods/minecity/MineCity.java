@@ -181,7 +181,6 @@ public class MineCity
     @Nullable
     public ClaimedChunk unloadChunk(@NotNull ChunkPos pos)
     {
-        mapCache.remove(pos);
         ClaimedChunk chunk = chunks.remove(pos);
         return getChunkProvider().map(p-> p.getClaim(pos)).orElse(chunk);
     }

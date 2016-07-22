@@ -87,7 +87,7 @@
                 <msg id="already">The spawn is already set to that position</msg>
                 <msg id="success">The ${name}'s spawn was changed successfully</msg>
             </setspawn>
-            <msg id="map.header"><darkgray>---------------<gray>-=[Map]=-</gray>--------------¬</darkgray> <gray>City Names</gray></msg>
+            <msg id="map.header"><darkgray>---------------<gray>-=[Map]=-</gray>--------------¬-<gray>-=[City Names]=-</gray></darkgray></msg>
         </city>
     </cmd>
     <action>

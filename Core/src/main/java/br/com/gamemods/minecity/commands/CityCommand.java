@@ -494,8 +494,8 @@ public class CityCommand
         for(Map.Entry<City, LegacyFormat> entry : cityColors.entrySet())
         {
             String name = entry.getKey().getName();
-            if(name.length() >= 14)
-                name = name.substring(0,13)+"\u2192";
+            if(name.length() > 15)
+                name = name.substring(0,14)+"\u2192";
             lines[line--].append(entry.getValue()).append(name);
             if(line < 0)
                 break;
@@ -503,7 +503,7 @@ public class CityCommand
 
         Message[] messages = new Message[10];
         messages[0] = new Message("cmd.city.map.header",
-                "<msg><darkgray>---------------<gray>-=[Map]=-</gray>--------------¬</darkgray> <gray>City Names</gray></msg>"
+                "<msg><darkgray>---------------<gray>-=[Map]=-</gray>--------------¬-<gray>-=[City Names]=-</gray></darkgray></msg>"
         );
         for(int i = 0; i < lines.length; i++)
             messages[i+1] = new Message("", lines[i].toString());

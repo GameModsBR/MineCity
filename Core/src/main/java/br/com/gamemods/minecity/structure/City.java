@@ -334,6 +334,6 @@ public final class City
         if(owner == null)
             return LegacyFormat.RED;
 
-        return LegacyFormat.CITY_COLORS[new Random(name.hashCode()).nextInt(LegacyFormat.CITY_COLORS.length)];
+        return LegacyFormat.CITY_COLORS[id%LegacyFormat.CITY_COLORS.length];
     }
 }
