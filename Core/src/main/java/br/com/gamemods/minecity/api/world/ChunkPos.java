@@ -151,4 +151,11 @@ public final class ChunkPos implements Serializable
                 ", z=" + z +
                 '}';
     }
+
+    public float distance(@NotNull ChunkPos pos)
+    {
+        int dx = x - pos.x;
+        int dz = z - pos.z;
+        return (float) Math.sqrt(dx*dx + dz*dz);
+    }
 }

@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.commands;
 
 import br.com.gamemods.minecity.MineCity;
+import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.world.BlockPos;
@@ -14,6 +15,7 @@ import br.com.gamemods.minecity.structure.Island;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 
 import static br.com.gamemods.minecity.api.StringUtil.identity;
 
@@ -360,6 +362,7 @@ public class CityCommand
         +-----------------------------------------------------+
          */
         ChunkPos chunk = sender.getPosition().getChunk();
+        ChunkPos cursorPos = chunk;
         City cityAtPosition = mineCity.getChunk(chunk).flatMap(ClaimedChunk::getCity).orElse(null);
         char cursor;
         LegacyFormat cursorColor;
@@ -408,7 +411,17 @@ public class CityCommand
         // Names: 58
         chunk = chunk.subtract(28, 4);
         StringBuilder[] lines = new StringBuilder[9];
-        Map<City, LegacyFormat> cityColors = new HashMap<>();
+        Map<City, Float> cityDistances = new HashMap<>();
+        if(cityAtPosition != null)
+            cityDistances.put(cityAtPosition, 0f);
+
+        BiConsumer<City, ChunkPos> updateDistance = (city, pos) -> {
+            float currentDistance = cityDistances.getOrDefault(city, Float.MAX_VALUE);
+            float dist = cursorPos.distance(pos);
+            if(dist < currentDistance)
+                cityDistances.put(city, dist);
+        };
+
         long time = System.currentTimeMillis();
         for(int z=0; z< 9; z++)
         {
@@ -433,8 +446,8 @@ public class CityCommand
                     if(current != cache.color)
                         sb.append(current = cache.color);
                     sb.append(cache.c);
-                    if(cache.owner != null && !cityColors.containsKey(cache.owner))
-                        cityColors.put(cache.owner, cache.color);
+                    if(cache.owner != null)
+                        updateDistance.accept(cache.owner, pos);
                     continue;
                 }
 
@@ -466,10 +479,9 @@ public class CityCommand
                 if(island.isPresent())
                 {
                     City city = island.get().getCity();
-                    LegacyFormat color = cityColors.get(city);
-                    if(color == null)
-                        cityColors.put(city, color = city.getColor());
+                    updateDistance.accept(city, pos);
 
+                    LegacyFormat color = city.getColor();
                     if(color != current)
                         sb.append(current = color);
 
@@ -491,12 +503,13 @@ public class CityCommand
         }
 
         int line = 8;
-        for(Map.Entry<City, LegacyFormat> entry : cityColors.entrySet())
+        for(Map.Entry<City, Float> entry : CollectionUtil.sortByValues(cityDistances))
         {
-            String name = entry.getKey().getName();
+            City city = entry.getKey();
+            String name = city.getName();
             if(name.length() > 15)
                 name = name.substring(0,14)+"\u2192";
-            lines[line--].append(entry.getValue()).append(name);
+            lines[line--].append(city.getColor()).append(name);
             if(line < 0)
                 break;
         }
