@@ -503,7 +503,7 @@ public class CityCommand
 
         Message[] messages = new Message[10];
         messages[0] = new Message("cmd.city.map.header",
-                "<msg><darkgray>--------------<gray>-={Map}=-</gray>---------------¬</darkgray> <gray>City Names</gray></msg>"
+                "<msg><darkgray>---------------<gray>-=[Map]=-</gray>--------------¬</darkgray> <gray>City Names</gray></msg>"
         );
         for(int i = 0; i < lines.length; i++)
             messages[i+1] = new Message("", lines[i].toString());
