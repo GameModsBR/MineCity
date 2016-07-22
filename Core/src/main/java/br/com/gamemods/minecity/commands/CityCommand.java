@@ -438,20 +438,31 @@ public class CityCommand
                     continue;
                 }
 
-                Optional<Island> island = Optional.ofNullable(mineCity.getChunk(pos)
-                        .orElseGet(() -> {
-                            try
+                Optional<ClaimedChunk> claim = mineCity.getChunk(pos);
+                if(!claim.isPresent())
+                {
+                    sb.append(unloaded);
+                    mineCity.mapService.submit(()->{
+                        try
+                        {
+                            ClaimedChunk dbClaim = mineCity.dataSource.getCityChunk(pos);
+                            if(dbClaim == null)
+                                mineCity.mapCache.put(pos, new MapCache(LegacyFormat.BLACK, unclaimed, null));
+                            else
                             {
-                                return mineCity.dataSource.getCityChunk(pos);
+                                City city = dbClaim.getCity().orElseGet(Inconsistency::getInconsistentCity);
+                                mineCity.mapCache.put(pos, new MapCache(city.getColor(), claimed, city));
                             }
-                            catch(DataSourceException e)
-                            {
-                                e.printStackTrace();
-                                return new ClaimedChunk(Inconsistency.INSTANCE, pos);
-                            }
-                        }))
-                        .flatMap(ClaimedChunk::getIsland);
+                        }
+                        catch(DataSourceException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    });
+                    continue;
+                }
 
+                Optional<Island> island = claim.flatMap(ClaimedChunk::getIsland);
                 if(island.isPresent())
                 {
                     City city = island.get().getCity();

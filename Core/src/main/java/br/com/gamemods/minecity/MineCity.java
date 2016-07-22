@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -36,6 +38,7 @@ public class MineCity
     private final ConcurrentHashMap<WorldDim, Nature> natures = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<ChunkPos, ClaimedChunk> chunks = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<ChunkPos, CityCommand.MapCache> mapCache = new ConcurrentHashMap<>();
+    public ExecutorService mapService = Executors.newSingleThreadExecutor(r-> new Thread(r, "MineCityMapService"));
     public Optional<WorldProvider> worldProvider = Optional.empty();
     public MessageTransformer messageTransformer;
 

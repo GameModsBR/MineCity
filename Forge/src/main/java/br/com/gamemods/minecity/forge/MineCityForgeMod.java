@@ -28,6 +28,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -173,7 +174,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         if(world == null)
             return null;
 
-        Chunk chunk = world.getChunkFromChunkCoords(x, z);
+        Chunk chunk = getLoadedChunk(world, x, z);
         if(!(chunk instanceof IChunk))
             return null;
 
@@ -204,7 +205,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         if(!(worldServer instanceof IWorldServer))
             return false;
 
-        Chunk forgeChunk = worldServer.getChunkFromChunkCoords(pos.x, pos.z);
+        Chunk forgeChunk = getLoadedChunk(worldServer, pos.x, pos.z);
         if(!(forgeChunk instanceof IChunk))
             return false;
 
@@ -237,6 +238,14 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
     }
 
     @Nullable
+    public Chunk getLoadedChunk(WorldServer world, int x, int z)
+    {
+        return (Chunk) world.theChunkProviderServer.loadedChunkHashMap.getValueByKey(
+                ChunkCoordIntPair.chunkXZ2Int(x, z)
+        );
+    }
+
+    @Nullable
     @Override
     public ClaimedChunk getClaim(@NotNull WorldDim dim, int x, int z)
     {
@@ -244,7 +253,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         if(world == null)
             return null;
 
-        Chunk chunk = world.getChunkFromChunkCoords(x, z);
+        Chunk chunk = getLoadedChunk(world, x, z);
         if(!(chunk instanceof IChunk))
             return null;
 
@@ -271,7 +280,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         if(world == null)
             return null;
 
-        Chunk chunk = world.getChunkFromChunkCoords(pos.x, pos.z);
+        Chunk chunk = getLoadedChunk(world, pos.x, pos.z);
         if(!(chunk instanceof IChunk))
             return null;
 
@@ -308,7 +317,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
                 return (WorldServer) world.instance;
         }
 
-        WorldServer worldServer = server.worldServerForDimension(world.dim);
+        WorldServer worldServer = DimensionManager.getWorld(world.dim);
         if(worldServer == null || !world.equals(world(worldServer)))
             return null;
 
@@ -320,7 +329,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
     @Override
     public WorldDim getWorld(int dim, @NotNull String dir)
     {
-        WorldServer worldServer = server.worldServerForDimension(dim);
+        WorldServer worldServer = DimensionManager.getWorld(dim);
         if(!(worldServer instanceof IWorldServer))
             return null;
 
