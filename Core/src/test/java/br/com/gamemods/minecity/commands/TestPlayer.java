@@ -44,6 +44,12 @@ public class TestPlayer implements CommandSender
     }
 
     @Override
+    public void send(Message[] messages)
+    {
+
+    }
+
+    @Override
     public Direction getCardinalDirection()
     {
         return Direction.NORTH;

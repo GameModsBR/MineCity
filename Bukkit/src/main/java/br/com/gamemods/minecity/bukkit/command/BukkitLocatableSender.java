@@ -65,6 +65,15 @@ public class BukkitLocatableSender<S extends CommandSender> extends BukkitComman
     }
 
     @Override
+    public void send(Message[] messages)
+    {
+        String[] strings = new String[messages.length];
+        for(int i = 0; i < messages.length; i++)
+            strings[i] = plugin.mineCity.messageTransformer.toLegacy(messages[i]);
+        sender.sendMessage(strings);
+    }
+
+    @Override
     public void send(Message message)
     {
         sender.sendMessage(plugin.mineCity.messageTransformer.toLegacy(message));

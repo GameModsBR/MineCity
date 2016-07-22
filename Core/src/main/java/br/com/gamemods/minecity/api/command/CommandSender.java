@@ -12,6 +12,7 @@ public interface CommandSender
     boolean isPlayer();
     PlayerID getPlayerId();
     void send(Message message);
+    void send(Message[] messages);
     Direction getCardinalDirection();
 
     @Nullable

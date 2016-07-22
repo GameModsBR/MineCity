@@ -52,6 +52,15 @@ public class BukkitCommandSender<S extends CommandSender> implements br.com.game
     }
 
     @Override
+    public void send(Message[] messages)
+    {
+        String[] strings = new String[messages.length];
+        for(int i = 0; i < messages.length; i++)
+            strings[i] = plugin.mineCity.messageTransformer.toSimpleText(messages[i]);
+        sender.sendMessage(strings);
+    }
+
+    @Override
     public void send(Message message)
     {
         sender.sendMessage(plugin.mineCity.messageTransformer.toSimpleText(message));

@@ -48,6 +48,27 @@ public class ForgeCommandSender<S extends ICommandSender> implements CommandSend
     }
 
     @Override
+    public void send(Message[] message)
+    {
+        /*  /tellraw ["a/nb"] does not work in 1.7.10
+        ChatComponentText merge = new ChatComponentText("");
+        for(int i = 0;; i++)
+        {
+            merge.appendSibling(ForgeUtil.chatComponentFromLegacyText(mod.mineCity.messageTransformer.toLegacy(message[i])));
+            if(i+1 < message.length)
+                merge.appendText("\n");
+            else
+                break;
+        }
+
+        sender.addChatMessage(merge);
+        */
+
+        for(Message msg : message)
+            send(msg);
+    }
+
+    @Override
     public void send(Message message)
     {
         sender.addChatMessage(ForgeUtil.chatComponentFromLegacyText(mod.mineCity.messageTransformer.toLegacy(message)));

@@ -328,6 +328,12 @@ public final class City
 
     public LegacyFormat getColor()
     {
+        if(name.charAt(0) == '#')
+            return LegacyFormat.DARK_RED;
+
+        if(owner == null)
+            return LegacyFormat.RED;
+
         return LegacyFormat.CITY_COLORS[new Random(name.hashCode()).nextInt(LegacyFormat.CITY_COLORS.length)];
     }
 }

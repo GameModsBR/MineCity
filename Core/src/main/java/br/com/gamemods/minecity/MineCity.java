@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 public class MineCity
 {
@@ -32,6 +33,7 @@ public class MineCity
     public final CommandTree commands = new CommandTree();
     private final ConcurrentHashMap<WorldDim, Nature> natures = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<ChunkPos, ClaimedChunk> chunks = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<ChunkPos, CityCommand.MapCache> mapCache = new ConcurrentHashMap<>();
     public WorldProvider worldProvider;
     public MessageTransformer messageTransformer;
 
@@ -75,6 +77,7 @@ public class MineCity
         return Optional.ofNullable(chunks.get(pos));
     }
 
+    @Deprecated
     public Optional<ClaimedChunk> getOrFetchChunk(@NotNull ChunkPos pos) throws DataSourceException
     {
         ClaimedChunk claimedChunk = chunks.get(pos);
@@ -112,6 +115,8 @@ public class MineCity
         if(chunk != null) chunks.put(pos, chunk);
         else chunks.put(pos, chunk = new ClaimedChunk(nature(pos.world), pos));
 
+        mapCache.remove(pos);
+
         return chunk;
     }
 
@@ -127,13 +132,16 @@ public class MineCity
     @Nullable
     public ClaimedChunk unloadChunk(@NotNull ChunkPos pos)
     {
+        mapCache.remove(pos);
         return chunks.remove(pos);
     }
 
     @Nullable
     public Nature unloadNature(@NotNull WorldDim world)
     {
-        chunks.keySet().removeIf(c-> c.world.equals(world));
+        Predicate<ChunkPos> condition = c -> c.world.equals(world);
+        chunks.keySet().removeIf(condition);
+        mapCache.keySet().removeIf(condition);
         return natures.remove(world);
     }
 

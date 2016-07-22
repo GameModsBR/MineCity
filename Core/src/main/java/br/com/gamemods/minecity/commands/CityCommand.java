@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
+import br.com.gamemods.minecity.structure.Inconsistency;
 import br.com.gamemods.minecity.structure.Island;
 import org.jetbrains.annotations.NotNull;
 
@@ -361,7 +362,10 @@ public class CityCommand
         ChunkPos chunk = sender.getPosition().getChunk();
         City cityAtPosition = mineCity.getChunk(chunk).flatMap(ClaimedChunk::getCity).orElse(null);
         char cursor;
+        LegacyFormat cursorColor;
         if(cityAtPosition != null)
+        {
+            cursorColor = cityAtPosition.getColor();
             switch(sender.getCardinalDirection())
             {
                 case NORTH: cursor = '\u25B2'; break;
@@ -374,7 +378,10 @@ public class CityCommand
                 case NORTH_WEST: cursor = '\u25E4'; break;
                 default: cursor = '\u25CF'; break;
             }
+        }
         else
+        {
+            cursorColor = LegacyFormat.RED;
             switch(sender.getCardinalDirection())
             {
                 case NORTH: cursor = '\u25B3'; break;
@@ -387,6 +394,7 @@ public class CityCommand
                 case NORTH_WEST: cursor = '\u25F8'; break;
                 default: cursor = '\u25CB'; break;
             }
+        }
 
         char unloaded = ' ';
         char unclaimed = '\u25A1';
@@ -401,6 +409,7 @@ public class CityCommand
         chunk = chunk.subtract(28, 4);
         StringBuilder[] lines = new StringBuilder[9];
         Map<City, LegacyFormat> cityColors = new HashMap<>();
+        long time = System.currentTimeMillis();
         for(int z=0; z< 9; z++)
         {
             @SuppressWarnings("MismatchedQueryAndUpdateOfStringBuilder")
@@ -410,19 +419,39 @@ public class CityCommand
             {
                 if(x == 28 && z == 4)
                 {
-                    sb.append(current = LegacyFormat.RED).append(cursor);
+                    if(current != cursorColor)
+                        sb.append(current = cursorColor);
+                    sb.append(cursor);
                     continue;
                 }
 
                 ChunkPos pos = new ChunkPos(chunk.world, chunk.x + x, chunk.z + z);
-                Optional<ClaimedChunk> claim = mineCity.getChunk(pos);
-                if(!claim.isPresent())
+                MapCache cache = mineCity.mapCache.get(pos);
+                if(cache != null)
                 {
-                    sb.append(unloaded);
+                    cache.used = time;
+                    if(current != cache.color)
+                        sb.append(current = cache.color);
+                    sb.append(cache.c);
+                    if(cache.owner != null && !cityColors.containsKey(cache.owner))
+                        cityColors.put(cache.owner, cache.color);
                     continue;
                 }
 
-                Optional<Island> island = claim.get().getIsland();
+                Optional<Island> island = Optional.ofNullable(mineCity.getChunk(pos)
+                        .orElseGet(() -> {
+                            try
+                            {
+                                return mineCity.dataSource.getCityChunk(pos);
+                            }
+                            catch(DataSourceException e)
+                            {
+                                e.printStackTrace();
+                                return new ClaimedChunk(Inconsistency.INSTANCE, pos);
+                            }
+                        }))
+                        .flatMap(ClaimedChunk::getIsland);
+
                 if(island.isPresent())
                 {
                     City city = island.get().getCity();
@@ -434,12 +463,16 @@ public class CityCommand
                         sb.append(current = color);
 
                     sb.append(claimed);
+
+                    mineCity.mapCache.put(pos, new MapCache(current, claimed, city));
                 }
                 else
                 {
                     if(current != LegacyFormat.BLACK)
                         sb.append(current = LegacyFormat.BLACK);
                     sb.append(unclaimed);
+
+                    mineCity.mapCache.put(pos, new MapCache(current, claimed, null));
                 }
             }
 
@@ -457,9 +490,34 @@ public class CityCommand
                 break;
         }
 
-        for(StringBuilder sb : lines)
-            sender.send(new Message("", sb.toString()));
+        Message[] messages = new Message[10];
+        messages[0] = new Message("cmd.city.map.header",
+                "<msg><darkgray>--------------<gray>-={Map}=-</gray>---------------¬</darkgray> <gray>City Names</gray></msg>"
+        );
+        for(int i = 0; i < lines.length; i++)
+            messages[i+1] = new Message("", lines[i].toString());
+
+        sender.send(messages);
+
+        long cut = time - 5*60*1000L;
+        mineCity.mapCache.entrySet().parallelStream().filter(e-> e.getValue().used <= cut)
+                .map(Map.Entry::getKey).forEach(mineCity.mapCache::remove);
 
         return CommandResult.success();
+    }
+
+    public class MapCache
+    {
+        LegacyFormat color;
+        char c;
+        City owner;
+        long used = System.currentTimeMillis();
+
+        public MapCache(LegacyFormat color, char c, City owner)
+        {
+            this.color = color;
+            this.c = c;
+            this.owner = owner;
+        }
     }
 }
