@@ -30,7 +30,7 @@ public class Inconsistency implements ChunkOwner
     {
         if(city == null)
             city = new City(mineCity, "#inconsistent", "#Inconsistency", null, new BlockPos(WORLD, 0,0,0),
-                    Collections.singleton(island = new InconsistentIsland()), Integer.MAX_VALUE, new VoidStorage());
+                    Collections.singleton(island = new InconsistentIsland()), -1000, new VoidStorage());
         return city;
     }
 

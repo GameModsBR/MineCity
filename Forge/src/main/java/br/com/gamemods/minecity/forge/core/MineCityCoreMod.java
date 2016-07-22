@@ -4,7 +4,10 @@ import br.com.gamemods.minecity.forge.core.deploader.DepLoader;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.IFMLCallHook;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
-import cpw.mods.fml.relauncher.IFMLLoadingPlugin.*;
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin.Name;
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin.SortingIndex;
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
 import java.io.File;
@@ -28,7 +31,9 @@ public class MineCityCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     @Override
     public String[] getASMTransformerClass()
     {
-        return new String[0];
+        return new String[]{
+                "br.com.gamemods.minecity.forge.core.transformer.forge.WorldServerTransformer"
+        };
     }
 
     @Override

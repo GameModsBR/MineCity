@@ -7,10 +7,10 @@ import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.api.world.WorldProvider;
 import br.com.gamemods.minecity.commands.CityCommand;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.IDataSource;
-import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import br.com.gamemods.minecity.datasource.sql.SQLSource;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Inconsistency;
@@ -32,6 +32,7 @@ public class MineCity
     public final CommandTree commands = new CommandTree();
     private final ConcurrentHashMap<WorldDim, Nature> natures = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<ChunkPos, ClaimedChunk> chunks = new ConcurrentHashMap<>();
+    public WorldProvider worldProvider;
     public MessageTransformer messageTransformer;
 
     public MineCity(@NotNull Server server, @NotNull MineCityConfig config, @Nullable IDataSource dataSource,

@@ -57,9 +57,10 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer>
             return null;
         }
 
-        WorldServer worldServer = mod.server.worldServerForDimension(pos.world.dim);
-        if(worldServer == null || !pos.world.equals(mod.world(worldServer)))
-            return new Message("action.teleport.world-not-found", "The destiny world ${name} was not found or is not loaded",
+        WorldServer worldServer = mod.world(pos.world);
+        if(worldServer == null)
+            return new Message("action.teleport.world-not-found",
+                    "The destiny world ${name} was not found or is not loaded",
                     new Object[]{"name", pos.world.name()}
             );
 

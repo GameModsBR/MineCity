@@ -398,14 +398,7 @@ public class SQLCityStorage implements ICityStorage
                 ){
                     while(result.next())
                     {
-                        int worldId = result.getInt(1);
-                        WorldDim world = source.worldDimMap.get(worldId);
-                        if(world == null)
-                        {
-                            world = new WorldDim(worldId, result.getInt(4), result.getString(5), result.getString(6));
-                            source.worldDimMap.put(worldId, world);
-                        }
-
+                        WorldDim world = source.world(result.getInt(1),()->result.getInt(4),()->result.getString(5),()->result.getString(6));
                         chunksToUpdate.add(new ChunkPos(world, result.getInt(2), result.getInt(3)));
                     }
                 }

@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.api.world.WorldProvider;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.forge.command.ForgeCommandSender;
 import br.com.gamemods.minecity.forge.command.ForgePlayer;
@@ -23,11 +24,14 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -38,7 +42,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 @Mod(modid = "minecity", name = "MineCity", version = "1.0-SNAPSHOT", acceptableRemoteVersions = "*")
-public class MineCityForgeMod implements Server
+public class MineCityForgeMod implements Server, WorldProvider
 {
     public MinecraftServer server;
     public MineCity mineCity;
@@ -71,6 +75,7 @@ public class MineCityForgeMod implements Server
 
         MinecraftForge.EVENT_BUS.register(this);
         mineCity = new MineCity(this, config);
+        mineCity.worldProvider = this;
         mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
         mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
         mineCity.dataSource.initDB();
@@ -139,8 +144,54 @@ public class MineCityForgeMod implements Server
 
     public WorldDim world(World world)
     {
+        boolean impl = world instanceof IWorldServer;
+        if(impl)
+        {
+            WorldDim cached = ((IWorldServer) world).getMineCityWorld();
+            if(cached != null)
+                return cached;
+        }
+
         Path worldPath = worldContainer.resolve(Optional.ofNullable(world.provider.getSaveFolder()).orElse(""));
-        return new WorldDim(world.provider.dimensionId, worldPath.toString());
+        WorldDim worldDim = new WorldDim(world.provider.dimensionId, worldPath.toString());
+        worldDim.instance = world;
+
+        if(impl)
+            ((IWorldServer) world).setMineCityWorld(worldDim);
+
+        return worldDim;
+    }
+
+    @Nullable
+    public WorldServer world(WorldDim world)
+    {
+        if(world.instance instanceof WorldServer)
+            return (WorldServer) world.instance;
+
+        WorldServer worldServer = server.worldServerForDimension(world.dim);
+        if(worldServer == null || !world.equals(world(worldServer)))
+            return null;
+
+        world.instance = worldServer;
+        return worldServer;
+    }
+
+    @Nullable
+    @Override
+    public WorldDim getWorld(int dim, @NotNull String dir)
+    {
+        WorldServer worldServer = server.worldServerForDimension(dim);
+        if(!(worldServer instanceof IWorldServer))
+            return null;
+
+        WorldDim worldDim = ((IWorldServer)worldServer).getMineCityWorld();
+        if(worldDim == null)
+            worldDim = world(worldServer);
+
+        if(dir.equals(worldDim.dir))
+            return worldDim;
+
+        return null;
     }
 
     public CommandSender sender(ICommandSender sender)

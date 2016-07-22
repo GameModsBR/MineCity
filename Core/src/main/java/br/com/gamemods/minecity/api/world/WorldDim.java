@@ -24,6 +24,9 @@ public final class WorldDim implements Serializable
      */
     public final int dim;
 
+    @Nullable
+    public Object instance;
+
     /**
      * The name displayed to the players
      */

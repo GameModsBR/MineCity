@@ -10,6 +10,8 @@ import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.datasource.api.CityCreationResult;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.IDataSource;
+import br.com.gamemods.minecity.datasource.api.unchecked.DBSupplier;
+import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Inconsistency;
@@ -24,6 +26,8 @@ import java.nio.ByteBuffer;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class SQLSource implements IDataSource
 {
@@ -62,14 +66,32 @@ public class SQLSource implements IDataSource
             ResultSet result = pst.executeQuery();
             while(result.next())
             {
-                int worldId = result.getInt(7);
-                WorldDim world = worldDimMap.get(worldId);
-                if(world == null) worldDimMap.put(worldId, world = new WorldDim(worldId, result.getInt(8), result.getString(9), result.getString(10)));
+                WorldDim world = world(result.getInt(7), ()->result.getInt(8), ()->result.getString(9), ()->result.getString(10));
                 islands.add(new SQLIsland(result.getInt(1), result.getInt(2), result.getInt(3), result.getInt(4), result.getInt(5), result.getInt(6), world));
             }
             islands.trimToSize();
             return islands;
         }
+    }
+
+    protected WorldDim world(int id, DBSupplier<Integer> dim, DBSupplier<String> dir, DBSupplier<String> name)
+    {
+        WorldDim world = worldDimMap.get(id);
+        if(world != null)
+            return world;
+
+        int dimI = dim.get();
+        String dirS = dir.get();
+        if(mineCity.worldProvider == null || (world = mineCity.worldProvider.getWorld(dimI, dirS)) ==  null)
+            world = new WorldDim(dimI, dirS);
+
+        world.setDataSourceId(id);
+        worldDimMap.put(id, world);
+
+        if(name != null)
+            world.name = name.get();
+
+        return world;
     }
 
     private Optional<City> loadCity(Connection connection, int id, @Nullable String identity) throws SQLException, DataSourceException
@@ -100,15 +122,7 @@ public class SQLSource implements IDataSource
                 else
                     owner = new PlayerID(ownerId, uuid(result.getBytes(3)), result.getString(4));
 
-                int worldId = result.getInt(5);
-                WorldDim world = worldDimMap.get(worldId);
-                if(world == null)
-                {
-                    world = new WorldDim(result.getInt(9), result.getString(10), result.getString(11));
-                    world.setDataSourceId(worldId);
-                    worldDimMap.put(worldId, world);
-                }
-
+                WorldDim world = world(result.getInt(5), ()->result.getInt(9), ()->result.getString(10), ()->result.getString(11));
                 BlockPos spawn = new BlockPos(world, result.getInt(6), result.getInt(7), result.getInt(8));
 
                 String name = result.getString(1);
@@ -319,6 +333,10 @@ public class SQLSource implements IDataSource
         catch(SQLException e)
         {
             throw new DataSourceException(e);
+        }
+        catch(UncheckedDataSourceException e)
+        {
+            throw e.getCause();
         }
     }
 

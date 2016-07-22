@@ -292,7 +292,7 @@ public final class City
      */
     public void setId(int id) throws IllegalStateException, IllegalArgumentException
     {
-        if(id < 0)
+        if(id < 0 && identityName.charAt(0) != '#')
             throw new IllegalArgumentException("id = "+id);
         if(this.id > 0 && id != this.id)
             throw new IllegalStateException("Tried to change the city's \""+name+"\" ID from "+this.id+" to "+id);
