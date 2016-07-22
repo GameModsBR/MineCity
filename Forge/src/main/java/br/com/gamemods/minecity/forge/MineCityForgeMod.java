@@ -170,6 +170,33 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         return pos;
     }
 
+    @Override
+    public boolean setClaim(@NotNull ClaimedChunk claim)
+    {
+        ChunkPos pos = claim.chunk;
+        if(pos.instance instanceof IChunk)
+        {
+            IChunk chunk = (IChunk) pos.instance;
+            if(chunk.isMineCityChunkValid())
+            {
+                chunk.setMineCityClaim(claim);
+                return true;
+            }
+        }
+
+        WorldServer worldServer = world(pos.world);
+        if(!(worldServer instanceof IWorldServer))
+            return false;
+
+        Chunk forgeChunk = worldServer.getChunkFromChunkCoords(pos.x, pos.z);
+        if(!(forgeChunk instanceof IChunk))
+            return false;
+
+        pos.instance = forgeChunk;
+        ((IChunk) forgeChunk).setMineCityClaim(claim);
+        return true;
+    }
+
     @Nullable
     @Override
     public ClaimedChunk getClaim(@NotNull WorldDim dim, int x, int z)
@@ -211,12 +238,6 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
 
         pos.instance = chunk;
         return  ((IChunk) chunk).getMineCityClaim();
-    }
-
-    @Override
-    public boolean setClaim(@Nullable ClaimedChunk claim)
-    {
-        return false;
     }
 
     public WorldDim world(World world)

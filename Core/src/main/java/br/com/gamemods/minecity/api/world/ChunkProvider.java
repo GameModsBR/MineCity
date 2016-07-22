@@ -15,5 +15,5 @@ public interface ChunkProvider
     @Nullable
     ClaimedChunk getClaim(@NotNull ChunkPos pos);
 
-    boolean setClaim(@Nullable ClaimedChunk claim);
+    boolean setClaim(@NotNull ClaimedChunk claim);
 }

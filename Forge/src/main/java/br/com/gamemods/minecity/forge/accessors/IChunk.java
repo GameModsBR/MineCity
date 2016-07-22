@@ -22,4 +22,14 @@ public interface IChunk
     {
         return (Chunk) this;
     }
+
+    default IWorldServer getForgeWorldServer()
+    {
+        return (IWorldServer) getForgeChunk().worldObj;
+    }
+
+    default boolean isMineCityChunkValid()
+    {
+        return getMineCityClaim() != null && getForgeWorldServer().isMineCityWorldServerValid();
+    }
 }

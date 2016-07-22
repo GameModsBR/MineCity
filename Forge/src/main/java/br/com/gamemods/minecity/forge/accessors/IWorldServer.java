@@ -11,4 +11,9 @@ public interface IWorldServer
     {
         return (WorldServer) this;
     }
+
+    default boolean isMineCityWorldServerValid()
+    {
+        return getMineCityWorld() != null;
+    }
 }
