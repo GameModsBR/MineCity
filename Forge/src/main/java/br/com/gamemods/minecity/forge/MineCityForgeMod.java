@@ -135,6 +135,9 @@ public class MineCityForgeMod implements Server, WorldProvider
             return;
 
         mineCity.unloadNature(world(event.world));
+
+        if(event.world instanceof IWorldServer)
+            ((IWorldServer) event.world).setMineCityWorld(null);
     }
 
     public ChunkPos chunk(Chunk chunk)
@@ -166,7 +169,10 @@ public class MineCityForgeMod implements Server, WorldProvider
     public WorldServer world(WorldDim world)
     {
         if(world.instance instanceof WorldServer)
-            return (WorldServer) world.instance;
+        {
+            if(((IWorldServer) world.instance).getMineCityWorld() != null)
+                return (WorldServer) world.instance;
+        }
 
         WorldServer worldServer = server.worldServerForDimension(world.dim);
         if(worldServer == null || !world.equals(world(worldServer)))
