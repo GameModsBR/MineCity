@@ -23,6 +23,7 @@ public class TestData implements Server
         config = new MineCityConfig();
         dataSource = new FakeDataSource();
         mineCity = new MineCity(this, config, dataSource, new MessageTransformer());
+        mineCity.lazyReloads = false;
         dataSource.mineCity = mineCity;
     }
 

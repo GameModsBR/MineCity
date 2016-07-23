@@ -166,6 +166,15 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         player(event.player).tick();
     }
 
+    @SubscribeEvent
+    public void onServerTick(TickEvent.ServerTickEvent event)
+    {
+        if(event.phase == TickEvent.Phase.END || event.side != Side.SERVER)
+            return;
+
+        mineCity.reloadQueuedChunk();
+    }
+
     public ChunkPos chunk(Chunk chunk)
     {
         if(chunk instanceof IChunk)

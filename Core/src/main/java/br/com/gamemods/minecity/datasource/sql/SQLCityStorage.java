@@ -66,11 +66,16 @@ public class SQLCityStorage implements ICityStorage
     {
         SQLIsland sqlIsland = (SQLIsland) reserve.island;
         StringBuilder sbx = new StringBuilder(), sbz = new StringBuilder();
-        reserve.claims().forEach(c->{ sbx.append(c.x).append(','); sbz.append(c.z).append(','); });
-        if(sbx.length() > 0)
-            sbx.setLength(sbx.length() - 1);
-        if(sbz.length() > 0)
-            sbz.setLength(sbz.length() - 1);
+        Runnable build = ()->
+        {
+            sbx.setLength(0); sbz.setLength(0);
+            reserve.claims().forEach(c->{ sbx.append(c.x).append(','); sbz.append(c.z).append(','); });
+            if(sbx.length() > 0)
+                sbx.setLength(sbx.length() - 1);
+            if(sbz.length() > 0)
+                sbz.setLength(sbz.length() - 1);
+        };
+        build.run();
 
         try(Connection transaction = connection.transaction(); Statement stm = transaction.createStatement())
         {
@@ -78,6 +83,27 @@ public class SQLCityStorage implements ICityStorage
             {
                 Collection<ChunkPos> chunks = new HashSet<>();
                 String x = sbx.toString(), z = sbz.toString();
+
+                if(!x.isEmpty())
+                {
+
+                    ResultSet results = stm.executeQuery("SELECT x, z FROM minecity_chunks WHERE x IN("+x+") AND z IN("+z+") AND island_id!="+sqlIsland.id+";");
+                    while(results.next())
+                        reserve.claims[results.getInt(1)-reserve.x][results.getInt(2)-reserve.z] = false;
+                    results.close();
+
+                    results = stm.executeQuery("SELECT x,z FROM minecity_chunks WHERE island_id="+sqlIsland.id+" LIMIT 1");
+                    results.next();
+                    ChunkPos pos = new ChunkPos(sqlIsland.world, results.getInt(1), results.getInt(2));
+                    results.close();
+
+                    Set<ChunkPos> valid = reserve.contiguous(pos);
+                    reserve.claims().filter(c-> !valid.contains(c)).forEach(c-> reserve.setClaimed(c, false));
+                    build.run();
+                    x = sbx.toString(); z = sbz.toString();
+                }
+
+
                 String deleteCond = "island_id="+sqlIsland.id+" AND reserve=1";
                 if(!x.isEmpty())
                     deleteCond+= " AND x NOT IN ("+x+") AND z NOT IN ("+z+")";
@@ -98,8 +124,9 @@ public class SQLCityStorage implements ICityStorage
 
                     int worldId = source.worldId(transaction, sqlIsland.world);
                     sbx.setLength(0);
-                    chunks.addAll(reserve.claims().collect(Collectors.toList()));
-                    chunks.forEach(c->
+                    List<ChunkPos> insert = reserve.claims().collect(Collectors.toList());
+                    chunks.addAll(insert);
+                    insert.forEach(c->
                             sbx.append('(').append(worldId).append(',').append(c.x).append(',').append(c.z).append(',')
                                .append(sqlIsland.id).append(",1),")
                     );

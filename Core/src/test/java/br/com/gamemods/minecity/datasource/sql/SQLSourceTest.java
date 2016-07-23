@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.github.kolorobot.exceptions.java8.AssertJThrowableAssert.assertThrown;
@@ -132,6 +133,7 @@ public class SQLSourceTest
         }
 
         mineCity = new MineCity(new TestData(), config);
+        mineCity.lazyReloads = false;
         mineCity.dataSource.initDB();
     }
 
@@ -141,6 +143,7 @@ public class SQLSourceTest
         config.dbPass = "unit_test".getBytes();
 
         mineCity = new MineCity(new TestData(), config);
+        mineCity.lazyReloads = false;
         mineCity.dataSource.initDB();
 
         overworld = new WorldDim(0, ".");
@@ -341,5 +344,100 @@ public class SQLSourceTest
         assertNotNull(city);
         assertEquals(random, city.getOwner());
         assertEquals(pos, city.getSpawn());
+    }
+
+    @Test
+    public void testReserve() throws Exception
+    {
+        ChunkPos spawnA = new ChunkPos(nether, 400,400);
+        long start = System.currentTimeMillis();
+        City cityA = new City(mineCity, "First", joserobjr, spawnA.getMaxBlock());
+        long end = System.currentTimeMillis();
+        System.out.println("DEBUG: CityA creation: "+(end-start)+"ms");
+
+        start = System.currentTimeMillis();
+        Island islandA = cityA.claim(spawnA.add(Direction.NORTH), false);
+        end = System.currentTimeMillis();
+        System.out.println("DEBUG: CityA claim 1: "+(end-start)+"ms");
+
+        ClaimedChunk claim = mineCity.loadChunk(spawnA.add(Direction.NORTH, 2));
+        assertTrue(claim.reserve);
+        assertEquals(islandA, claim.getIsland().orElse(null));
+
+        claim = mineCity.loadChunk(spawnA.add(Direction.SOUTH));
+        assertTrue(claim.reserve);
+        assertEquals(islandA, claim.getIsland().orElse(null));
+
+        claim = mineCity.loadChunk(spawnA.add(Direction.EAST));
+        assertFalse(claim.reserve);
+        assertEquals(Optional.empty(), claim.getIsland());
+
+        cityA.claim(spawnA.add(Direction.EAST), false);
+        claim = mineCity.loadChunk(spawnA.add(Direction.EAST, 2));
+        assertTrue(claim.reserve);
+        assertEquals(islandA, claim.getIsland().orElse(null));
+
+        claim = mineCity.loadChunk(spawnA.add(Direction.NORTH_EAST));
+        assertTrue(claim.reserve);
+        assertEquals(islandA, claim.getIsland().orElse(null));
+
+        assertThrown(()-> cityA.claim(spawnA.add(Direction.NORTH, 3), false))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("The chunk ChunkPos{world=WorldDim{dim=-1, dir='DIM-1'}, x=400, z=403} is not touching an island owned by city")
+                ;
+
+        cityA.claim(spawnA.add(Direction.NORTH, 2), false);
+        cityA.claim(spawnA.add(Direction.NORTH, 3), false);
+
+        ChunkPos spawnB = spawnA.add(Direction.NORTH, 5);
+        claim = mineCity.loadChunk(spawnB);
+        assertTrue(claim.reserve);
+        assertEquals(islandA, claim.getIsland().orElse(null));
+        spawnB = spawnB.add(Direction.WEST, 4);
+        assertFalse(mineCity.loadChunk(spawnB.add(Direction.EAST,6)).reserve);
+        assertFalse(mineCity.loadChunk(spawnB.add(Direction.EAST,2)).reserve);
+
+
+        City cityB = new City(mineCity, "Second", joserobjr, spawnB.getMaxBlock());
+        Island islandB = cityB.claim(spawnB.add(Direction.WEST), false);
+        claim = mineCity.loadChunk(spawnB.add(Direction.EAST));
+        assertTrue(claim.reserve);
+        assertEquals(islandB, claim.getIsland().orElse(null));
+
+        cityB.claim(spawnB.add(Direction.WEST, 2), false);
+        cityB.claim(spawnB.add(Direction.WEST, 3), false);
+        claim = mineCity.loadChunk(spawnB.add(Direction.EAST,2 ));
+        assertTrue(claim.reserve);
+        assertEquals(islandB, claim.getIsland().orElse(null));
+
+        cityB.claim(spawnB.add(Direction.WEST, 4), false);
+        cityB.claim(spawnB.add(Direction.WEST, 5), false);
+        claim = mineCity.loadChunk(spawnB.add(Direction.EAST,3 ));
+        assertTrue(claim.reserve);
+        assertEquals(islandA, claim.getIsland().orElse(null));
+
+        cityB.claim(spawnB.add(Direction.WEST, 6), false);
+        cityB.claim(spawnB.add(Direction.WEST, 7), false);
+        claim = mineCity.loadChunk(spawnB.add(Direction.EAST,4 ));
+        assertTrue(claim.reserve);
+        assertEquals(islandA, claim.getIsland().orElse(null));
+
+        cityB.claim(spawnB.add(Direction.WEST, 8), false);
+        cityB.claim(spawnB.add(Direction.WEST, 9), false);
+        claim = mineCity.loadChunk(spawnB.add(Direction.EAST,5 ));
+        assertTrue(claim.reserve);
+        assertEquals(islandA, claim.getIsland().orElse(null));
+
+        cityB.claim(spawnB.add(Direction.WEST, 10), false);
+        cityB.claim(spawnB.add(Direction.WEST, 11), false);
+        claim = mineCity.loadChunk(spawnB.add(Direction.EAST,6 ));
+        assertFalse(claim.reserve);
+        assertEquals(Optional.empty(), claim.getIsland());
+
+        cityB.claim(spawnB.add(Direction.WEST, 12), false);
+        cityB.claim(spawnB.add(Direction.WEST, 13), false);
+        claim = mineCity.loadChunk(spawnB.add(Direction.EAST,7 ));
+        assertFalse(claim.reserve);
+        assertEquals(Optional.empty(), claim.getIsland());
     }
 }

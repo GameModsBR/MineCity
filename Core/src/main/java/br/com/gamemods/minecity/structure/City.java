@@ -6,13 +6,11 @@ import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.BasicFlagHolder;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
-import br.com.gamemods.minecity.api.unchecked.UncheckedConsumer;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.datasource.api.*;
-import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBFunction;
 import br.com.gamemods.minecity.datasource.api.unchecked.DisDBConsumer;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
@@ -186,17 +184,21 @@ public final class City extends BasicFlagHolder
     {
         return Direction.cardinal.stream()
                 .map((DBFunction<Direction, Optional<ClaimedChunk>>) d-> mineCity.getOrFetchChunk(chunk.add(d)))
-                .map(o-> o.flatMap(ClaimedChunk::getIsland).filter(i-> i.getCity().equals(this)))
                 .filter(Optional::isPresent).map(Optional::get)
+                .filter(c-> !c.reserve).map(ClaimedChunk::getIsland)
+                .filter(Optional::isPresent).map(Optional::get)
+                .filter(i-> i.getCity().equals(this))
                 ;
     }
 
     public Stream<Entry<Direction, Island>> connectedIslandsEntries(@NotNull ChunkPos chunk)
     {
         return Direction.cardinal.stream()
-                .map((DBFunction<Direction, Entry<Direction, Island>>)
-                            d-> new SimpleImmutableEntry<>(d, mineCity.getOrFetchChunk(chunk.add(d)).flatMap(ClaimedChunk::getIsland).orElse(null))
+                .map((DBFunction<Direction, Entry<Direction, Optional<ClaimedChunk>>>)
+                            d-> new SimpleImmutableEntry<>(d, mineCity.getOrFetchChunk(chunk.add(d)))
                 )
+                .filter(e-> !e.getValue().map(c-> c.reserve).orElse(true))
+                .map(e-> (Map.Entry<Direction, Island>) new SimpleImmutableEntry<>(e.getKey(), e.getValue().get().getIsland().orElse(null)))
                 .filter(e-> e.getValue() != null)
                 .filter(e-> this.equals(e.getValue().getCity()))
                 ;
@@ -215,7 +217,7 @@ public final class City extends BasicFlagHolder
         if(islands.isEmpty())
         {
             if(!createIsland)
-                throw new IllegalArgumentException("The chunk "+chunk+" is not touching an island owned by city "+id);
+                throw new IllegalArgumentException("The chunk "+chunk+" is not touching an island owned by city "+identityName);
             Island island = storage.createIsland(this, chunk);
             this.islands.put(island.getId(), island);
             mineCity.reloadChunk(chunk);
@@ -226,7 +228,10 @@ public final class City extends BasicFlagHolder
         {
             Island island = islands.iterator().next();
             storage.claim(island, chunk);
+            //long start = System.currentTimeMillis();
             reserveChunks(island);
+            //long end = System.currentTimeMillis();
+            //System.out.println("Reserve chunk took "+(end-start)+"ms");
             return island;
         }
         else
@@ -249,7 +254,7 @@ public final class City extends BasicFlagHolder
             throw new IllegalArgumentException("Cannot disclaim the spawn chunk");
 
         Island island = mineCity.getOrFetchChunk(chunk).flatMap(ClaimedChunk::getIsland).filter(i-> i.getCity().equals(this))
-                .orElseThrow(()-> new IllegalArgumentException("The chunk " + chunk + " is not owned by the city " + id));
+                .orElseThrow(()-> new IllegalArgumentException("The chunk " + chunk + " is not owned by the city " + identityName));
 
         Map<Direction, Island> islands = connectedIslandsEntries(chunk).filter(e->e.getValue().equals(island))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
@@ -315,7 +320,11 @@ public final class City extends BasicFlagHolder
             });
         }
 
-        storage.reserve(reserve).forEach((DisDBConsumer<ChunkPos>) mineCity::reloadChunk);
+        //long start = System.currentTimeMillis();
+        Collection<ChunkPos> update = storage.reserve(reserve);
+        //long end = System.currentTimeMillis();
+        //System.out.println("SQL Call took "+(end-start)+"ms");
+        update.forEach(mineCity::reloadChunkSlowly);
     }
 
     public void setSpawn(@NotNull BlockPos pos) throws DataSourceException,IllegalArgumentException
@@ -349,7 +358,7 @@ public final class City extends BasicFlagHolder
         if(id < 0 && identityName.charAt(0) != '#')
             throw new IllegalArgumentException("id = "+id);
         if(this.id > 0 && id != this.id)
-            throw new IllegalStateException("Tried to change the city's \""+name+"\" ID from "+this.id+" to "+id);
+            throw new IllegalStateException("Tried to change the city's \""+identityName+"\" ID from "+this.id+" to "+id);
 
         this.id = id;
     }
@@ -389,5 +398,14 @@ public final class City extends BasicFlagHolder
             return LegacyFormat.RED;
 
         return LegacyFormat.CITY_COLORS[id%LegacyFormat.CITY_COLORS.length];
+    }
+
+    @Override
+    public String toString()
+    {
+        return "City{" +
+                "id=" + id +
+                ", identityName='" + identityName + '\'' +
+                "} " + super.toString();
     }
 }

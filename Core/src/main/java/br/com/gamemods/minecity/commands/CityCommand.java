@@ -98,7 +98,7 @@ public class CityCommand
             for(Direction direction: Direction.cardinal)
             {
                 ChunkPos possible = chunk.add(direction);
-                City city2 = mineCity.getChunk(possible).flatMap(ClaimedChunk::getCity).orElse(null);
+                City city2 = mineCity.getChunk(possible).filter(c-> !c.reserve).flatMap(ClaimedChunk::getCity).orElse(null);
                 if(city2 == null || city2.equals(city))
                     continue;
 

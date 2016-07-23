@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import java.util.logging.Level;
 public class MineCityPlugin extends JavaPlugin
 {
     private MineCityBukkit instance;
+    private BukkitTask reloadTask;
 
     @Override
     public void onEnable()
@@ -38,6 +40,8 @@ public class MineCityPlugin extends JavaPlugin
             instance.mineCity.dataSource.initDB();
             instance.mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
             instance.mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
+
+            reloadTask = getScheduler().runTaskTimer(this, instance.mineCity::reloadQueuedChunk, 1, 1);
         }
         catch(Exception e)
         {
@@ -57,6 +61,7 @@ public class MineCityPlugin extends JavaPlugin
         {
             e.printStackTrace();
         }
+        reloadTask.cancel();
     }
 
     @Override

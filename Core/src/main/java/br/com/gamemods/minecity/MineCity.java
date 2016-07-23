@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity;
 
+import br.com.gamemods.minecity.api.DistinctQueue;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandTree;
@@ -42,6 +43,8 @@ public class MineCity
     public MessageTransformer messageTransformer;
     public EnumMap<PermissionFlag, Message> defaultNatureFlags = new EnumMap<>(PermissionFlag.class);
     public EnumMap<PermissionFlag, Message> defaultCityFlags = new EnumMap<>(PermissionFlag.class);
+    private Queue<ChunkPos> reloadQueue = new DistinctQueue<>();
+    public boolean lazyReloads = true;
 
     public MineCity(@NotNull Server server, @NotNull MineCityConfig config, @Nullable IDataSource dataSource,
                     @NotNull MessageTransformer messageTransformer)
@@ -157,6 +160,46 @@ public class MineCity
         if(provider.isPresent())
             return Stream.concat(stream, provider.get());
         return stream;
+    }
+
+    public void reloadChunkSlowly(ChunkPos pos)
+    {
+        if(!lazyReloads)
+        {
+            try
+            {
+                reloadChunk(pos);
+            }
+            catch(DataSourceException e)
+            {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        ClaimedChunk claim = Inconsistency.claim(pos);
+        if(!getChunkProvider().map(p-> p.setClaim(claim)).orElse(false))
+            chunks.put(pos, claim);
+        mapCache.remove(pos);
+
+        reloadQueue.offer(pos);
+    }
+
+    public boolean reloadQueuedChunk()
+    {
+        ChunkPos pos = reloadQueue.poll();
+        if(pos == null)
+            return false;
+
+        try
+        {
+            reloadChunk(pos);
+        }
+        catch(DataSourceException e)
+        {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     public void reloadChunksUnchecked(Predicate<ClaimedChunk> condition)

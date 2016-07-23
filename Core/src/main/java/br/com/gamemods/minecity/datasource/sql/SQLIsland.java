@@ -100,4 +100,14 @@ final class SQLIsland implements Island
     {
         return id;
     }
+
+    @Override
+    public String toString()
+    {
+        return "SQLIsland{" +
+                "id=" + id +
+                ", world=" + world +
+                ", city=" + city +
+                '}';
+    }
 }
