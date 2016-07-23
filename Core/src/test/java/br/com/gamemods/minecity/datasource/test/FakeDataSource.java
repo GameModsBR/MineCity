@@ -26,6 +26,7 @@ public class FakeDataSource implements IDataSource, ICityStorage
 {
     public MineCity mineCity;
     private Map<ChunkPos, FakeIsland> claims = new HashMap<>();
+    private Map<ChunkPos, FakeIsland> reserves = new HashMap<>();
     private Map<Integer, City> cities = new HashMap<>();
     private AtomicInteger nextCityId = new AtomicInteger(1), nextIslandId = new AtomicInteger(1);
 
@@ -267,6 +268,13 @@ public class FakeDataSource implements IDataSource, ICityStorage
         return new IslandArea(fakeIsland, claims.entrySet().stream().filter(e-> e.getValue().equals(fakeIsland))
                 .map(Map.Entry::getKey).collect(Collectors.toList())
         );
+    }
+
+    @Override
+    public Collection<ChunkPos> reserve(@NotNull IslandArea reserve)
+    {
+        reserve.claims().forEachOrdered(c-> reserves.putIfAbsent(c, (FakeIsland)reserve.island));
+        return reserve.claims().collect(Collectors.toSet());
     }
 
     @Override

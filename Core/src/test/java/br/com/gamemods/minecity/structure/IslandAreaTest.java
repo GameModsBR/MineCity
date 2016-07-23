@@ -3,12 +3,12 @@ package br.com.gamemods.minecity.structure;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.datasource.test.DummyIsland;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -102,13 +102,13 @@ public class IslandAreaTest
         claims.add(new ChunkPos(world, 6,5));
         for(int i = 1; i <= 5; i++)
             claims.add(new ChunkPos(world, 7,i));
-        assertEquals(claims, area.claims());
+        assertEquals(claims, area.claims().collect(Collectors.toSet()));
     }
 
     @Test
     public void testReduction() throws Exception
     {
-        IslandArea reduced = new IslandArea(area.island, area.claims());
+        IslandArea reduced = new IslandArea(area.island, area.claims().collect(Collectors.toSet()));
         assertEquals(1, reduced.x);
         assertEquals(1, reduced.z);
         assertEquals(7, reduced.claims.length);
@@ -143,7 +143,7 @@ public class IslandAreaTest
         area.setClaimed(pos, false);
         assertFalse(area.isClaimed(pos));
 
-        IslandArea reduced = new IslandArea(area.island, area.claims());
+        IslandArea reduced = new IslandArea(area.island, area.claims().collect(Collectors.toSet()));
         assertFalse(reduced.isClaimed(pos));
         reduced.setClaimed(pos, true);
         assertTrue(reduced.isClaimed(pos));

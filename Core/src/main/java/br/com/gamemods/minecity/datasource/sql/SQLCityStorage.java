@@ -61,6 +61,69 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Override
+    public Collection<ChunkPos> reserve(@NotNull IslandArea reserve) throws DataSourceException
+    {
+        SQLIsland sqlIsland = (SQLIsland) reserve.island;
+        StringBuilder sbx = new StringBuilder(), sbz = new StringBuilder();
+        reserve.claims().forEach(c->{ sbx.append(c.x).append(','); sbz.append(c.z).append(','); });
+        if(sbx.length() > 0)
+            sbx.setLength(sbx.length() - 1);
+        if(sbz.length() > 0)
+            sbz.setLength(sbz.length() - 1);
+
+        try(Connection transaction = connection.transaction(); Statement stm = transaction.createStatement())
+        {
+            try
+            {
+                Collection<ChunkPos> chunks = new HashSet<>();
+                String x = sbx.toString(), z = sbz.toString();
+                String deleteCond = "island_id="+sqlIsland.id+" AND reserve=1";
+                if(!x.isEmpty())
+                    deleteCond+= " AND x NOT IN ("+x+") AND z NOT IN ("+z+")";
+
+                ResultSet results = stm.executeQuery("SELECT x,z FROM minecity_chunks WHERE " + deleteCond+";");
+                while(results.next())
+                    chunks.add(new ChunkPos(sqlIsland.world, results.getInt(1), results.getInt(2)));
+                results.close();
+
+                stm.executeUpdate("DELETE FROM minecity_chunks WHERE "+deleteCond+";");
+
+                if(!x.isEmpty())
+                {
+                    results = stm.executeQuery("SELECT x, z FROM minecity_chunks WHERE x IN("+x+") AND z IN("+z+");");
+                    while(results.next())
+                        reserve.claims[results.getInt(1)-reserve.x][results.getInt(2)-reserve.z] = false;
+                    results.close();
+
+                    int worldId = source.worldId(transaction, sqlIsland.world);
+                    sbx.setLength(0);
+                    chunks.addAll(reserve.claims().collect(Collectors.toList()));
+                    chunks.forEach(c->
+                            sbx.append('(').append(worldId).append(',').append(c.x).append(',').append(c.z).append(',')
+                               .append(sqlIsland.id).append(",1),")
+                    );
+                    if(sbx.length() > 0)
+                    {
+                        sbx.setLength(sbx.length()-1);
+                        stm.executeUpdate("INSERT INTO minecity_chunks(world_id,x,z,island_id,reserve) VALUES "+sbx+";");
+                    }
+                }
+                transaction.commit();
+                return chunks;
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
     private void disclaim(Connection transaction, ChunkPos chunk, int islandId, boolean enforce) throws DataSourceException, SQLException
     {
         try(PreparedStatement pst = transaction.prepareStatement(
@@ -114,7 +177,7 @@ public class SQLCityStorage implements ICityStorage
     private void updateCount(Connection transaction, SQLIsland sqlIsland) throws SQLException
     {
         try(PreparedStatement pst = transaction.prepareStatement(
-                "SELECT MIN(x), MAX(x), MIN(z), MAX(z), COUNT(*) FROM minecity_chunks WHERE island_id=?"
+                "SELECT MIN(x), MAX(x), MIN(z), MAX(z), COUNT(*) FROM minecity_chunks WHERE island_id=? AND reserve=0"
         ))
         {
             pst.setInt(1, sqlIsland.id);
@@ -184,6 +247,9 @@ public class SQLCityStorage implements ICityStorage
                 disclaim(transaction, chunk, sqlIsland.id, true);
                 int worldId = source.worldId(transaction, sqlIsland.world);
 
+
+                stm.executeUpdate("DELETE FROM minecity_chunks WHERE island_id="+sqlIsland.id+" AND reserve=1;");
+
                 List<Island> islands = new ArrayList<>(groups.size());
                 int[] expected = new int[groups.size()]; int i = 0;
                 for(Set<ChunkPos> group : groups)
@@ -203,7 +269,7 @@ public class SQLCityStorage implements ICityStorage
                     sb.setLength(sb.length() - 3);
 
                     stm.addBatch("UPDATE minecity_chunks SET island_id="+islandId+" " +
-                                  "WHERE world_id="+worldId+" AND island_id="+sqlIsland.id+" AND ("+sb+");"
+                                  "WHERE world_id="+worldId+" AND island_id="+sqlIsland.id+" AND reserve=0 AND ("+sb+");"
                     );
 
                     SQLIsland newIsland = new SQLIsland(islandId, minX, maxX, minZ, maxZ, group.size(), sqlIsland.world);
@@ -246,7 +312,7 @@ public class SQLCityStorage implements ICityStorage
         {
             Connection connection = this.connection.connect();
             try(PreparedStatement pst = connection.prepareStatement(
-                    "SELECT x, z FROM minecity_chunks WHERE island_id=? AND world_id=?"
+                    "SELECT x, z FROM minecity_chunks WHERE island_id=? AND world_id=? AND reserve=0"
             ))
             {
                 pst.setInt(1, sqlIsland.id);
@@ -344,9 +410,17 @@ public class SQLCityStorage implements ICityStorage
     public void claim(@NotNull Island island, @NotNull ChunkPos chunk) throws DataSourceException
     {
         SQLIsland sqlIsland = (SQLIsland) island;
-        try
+        try(Connection transaction = connection.transaction())
         {
-            source.createClaim(connection.connect(), sqlIsland.id, chunk);
+            try
+            {
+                source.createClaim(connection.connect(), sqlIsland.id, chunk);
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
             sqlIsland.add(chunk);
 
             source.mineCity.reloadChunk(chunk);

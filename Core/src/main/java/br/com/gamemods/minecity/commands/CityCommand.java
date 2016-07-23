@@ -59,7 +59,7 @@ public class CityCommand
 
         ClaimedChunk claim = optionalClaim.get();
         Island island = claim.getIsland().orElse(null);
-        if(island != null)
+        if(island != null && !claim.reserve)
             return new CommandResult<>(new Message("cmd.city.create.chunk.claimed",
                     "The chunk that you are is already claimed to ${city}",
                     new Object[]{"city",island.getCity().getName()}
@@ -85,8 +85,9 @@ public class CityCommand
         PlayerID playerId = sender.getPlayerId();
         ChunkPos chunk = sender.getPosition().getChunk();
 
-        City city = mineCity.getChunk(chunk).flatMap(ClaimedChunk::getCity).orElse(null);
-        if(city != null)
+        Optional<ClaimedChunk> claimOpt = mineCity.getChunk(chunk);
+        City city = claimOpt.flatMap(ClaimedChunk::getCity).orElse(null);
+        if(city != null && !claimOpt.get().reserve)
             return new CommandResult<>(new Message("cmd.city.claim.already-claimed",
                     "This chunk is already claimed in name of ${city}",
                     new Object[]{"city",city.getName()}
@@ -142,6 +143,12 @@ public class CityCommand
                         new Object[]{"create","/city create <name>"}
                 ));
         }
+
+        if(claimOpt.get().reserve && claimOpt.get().getCity().get() != city)
+            return new CommandResult<>(new Message("cmd.city.claim.reserved",
+                    "This chunk is reserved to ${name}",
+                    new Object[]{"name",claimOpt.get().getCity().get().getName()}
+            ));
 
         if(!playerId.equals(city.getOwner()))
             return new CommandResult<>(new Message("cmd.city.claim.no-permission",
@@ -363,10 +370,11 @@ public class CityCommand
          */
         ChunkPos chunk = sender.getPosition().getChunk();
         ChunkPos cursorPos = chunk;
-        City cityAtPosition = mineCity.getChunk(chunk).flatMap(ClaimedChunk::getCity).orElse(null);
+        Optional<ClaimedChunk> claimAtPosition = mineCity.getChunk(chunk);
+        City cityAtPosition = claimAtPosition.flatMap(ClaimedChunk::getCity).orElse(null);
         char cursor;
         LegacyFormat cursorColor;
-        if(cityAtPosition != null)
+        if(cityAtPosition != null && !claimAtPosition.get().reserve)
         {
             cursorColor = cityAtPosition.getColor();
             switch(sender.getCardinalDirection())
@@ -384,7 +392,7 @@ public class CityCommand
         }
         else
         {
-            cursorColor = LegacyFormat.RED;
+            cursorColor = cityAtPosition == null? LegacyFormat.RED : cityAtPosition.getColor();
             switch(sender.getCardinalDirection())
             {
                 case NORTH: cursor = '\u25B3'; break;
@@ -401,10 +409,10 @@ public class CityCommand
 
         char unloaded = ' ';
         char unclaimed = '\u25A1';
-        char claimed = '\u25A1';
+        char claimed = '\u25A9';
         char oneLot = '\u25A3';
         char multipleLots = '\u25A6';
-        char reserved = '\u25A9';
+        char reserved = '\u25A1';
 
         // Width: 57
         // Cursor pos: 29
@@ -464,7 +472,7 @@ public class CityCommand
                             else
                             {
                                 City city = dbClaim.getCity().orElseGet(Inconsistency::getInconsistentCity);
-                                mineCity.mapCache.put(pos, new MapCache(city.getColor(), claimed, city));
+                                mineCity.mapCache.put(pos, new MapCache(city.getColor(), dbClaim.reserve?reserved:claimed, city));
                             }
                         }
                         catch(DataSourceException e)
@@ -485,9 +493,10 @@ public class CityCommand
                     if(color != current)
                         sb.append(current = color);
 
-                    sb.append(claimed);
+                    char c = claim.get().reserve? reserved : claimed;
+                    sb.append(c);
 
-                    mineCity.mapCache.put(pos, new MapCache(current, claimed, city));
+                    mineCity.mapCache.put(pos, new MapCache(current, c, city));
                 }
                 else
                 {
@@ -495,7 +504,7 @@ public class CityCommand
                         sb.append(current = LegacyFormat.BLACK);
                     sb.append(unclaimed);
 
-                    mineCity.mapCache.put(pos, new MapCache(current, claimed, null));
+                    mineCity.mapCache.put(pos, new MapCache(current, unclaimed, null));
                 }
             }
 

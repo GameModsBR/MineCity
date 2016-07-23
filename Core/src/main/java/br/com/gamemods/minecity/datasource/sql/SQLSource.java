@@ -57,7 +57,7 @@ public class SQLSource implements IDataSource
                 "FROM minecity_chunks c " +
                 "INNER JOIN minecity_islands AS i ON c.island_id=i.island_id " +
                 "INNER JOIN minecity_world AS w ON i.world_id=w.world_id " +
-                "WHERE i.city_id = ? " +
+                "WHERE i.city_id = ? AND c.reserve=0 " +
                 "GROUP BY c.island_id"
         ))
         {
@@ -307,7 +307,7 @@ public class SQLSource implements IDataSource
         {
             Connection connection = this.connection.connect();
             try(PreparedStatement pst = connection.prepareStatement(
-                    "SELECT `i`.`city_id`, `i`.`island_id` FROM `minecity_chunks` AS `c` " +
+                    "SELECT `i`.`city_id`, `i`.`island_id`, reserve FROM `minecity_chunks` AS `c` " +
                         "INNER JOIN `minecity_world` AS `w` ON `c`.`world_id`=`w`.`world_id` " +
                         "INNER JOIN `minecity_islands` AS `i` ON `c`.`island_id`=`i`.`island_id` "+
                     "WHERE `w`.`dim`=? AND `w`.`world`=? AND `c`.`x`=? AND `c`.`z`=?;"
@@ -322,11 +322,12 @@ public class SQLSource implements IDataSource
                     return null;
                 int cityId = result.getInt(1);
                 int islandId = result.getInt(2);
+                boolean reserve = result.getBoolean(3);
                 pst.close();
 
                 City city = city(connection, cityId);
                 Island island = city.getIsland(islandId);
-                return new ClaimedChunk(island != null? island : Inconsistency.INSTANCE, pos);
+                return new ClaimedChunk(island != null? island : Inconsistency.INSTANCE, pos, reserve);
             }
         }
         catch(SQLException e)
@@ -361,11 +362,21 @@ public class SQLSource implements IDataSource
 
     void createClaim(Connection connection, int islandId, ChunkPos chunk) throws SQLException, DataSourceException
     {
+        int worldId = worldId(connection, chunk.world);
         try(PreparedStatement pst = connection.prepareStatement(
-                "INSERT INTO `minecity_chunks`(world_id, x, z, island_id) VALUES(?,?,?,?)"
+                "DELETE FROM minecity_chunks WHERE world_id=? AND x=? AND z=? AND reserve=1"
         ))
         {
-            pst.setInt(1, worldId(connection, chunk.world));
+            pst.setInt(1, worldId);
+            pst.setInt(2, chunk.x);
+            pst.setInt(3, chunk.z);
+            pst.executeUpdate();
+        }
+        try(PreparedStatement pst = connection.prepareStatement(
+                "INSERT INTO `minecity_chunks`(world_id, x, z, island_id, reserve) VALUES(?,?,?,?,0)"
+        ))
+        {
+            pst.setInt(1, worldId);
             pst.setInt(2, chunk.x);
             pst.setInt(3, chunk.z);
             pst.setInt(4, islandId);

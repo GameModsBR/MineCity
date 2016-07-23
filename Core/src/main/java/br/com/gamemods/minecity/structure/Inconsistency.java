@@ -181,5 +181,11 @@ public class Inconsistency implements ChunkOwner
         {
             throw new DataSourceException("Inconsistent city!");
         }
+
+        @Override
+        public Collection<ChunkPos> reserve(@NotNull IslandArea reserve) throws DataSourceException
+        {
+            throw new DataSourceException("Inconsistent city!");
+        }
     }
 }

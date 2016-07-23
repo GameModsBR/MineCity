@@ -6,11 +6,13 @@ import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.BasicFlagHolder;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.unchecked.UncheckedConsumer;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.datasource.api.*;
+import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBFunction;
 import br.com.gamemods.minecity.datasource.api.unchecked.DisDBConsumer;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
@@ -203,7 +205,9 @@ public final class City extends BasicFlagHolder
     public Island claim(@NotNull ChunkPos chunk, boolean createIsland)
             throws IllegalArgumentException, DataSourceException, UncheckedDataSourceException, IllegalStateException
     {
-        if(mineCity.getOrFetchChunk(chunk).flatMap(ClaimedChunk::getCity).equals(Optional.of(this)))
+        Optional<ClaimedChunk> claimOpt = mineCity.getOrFetchChunk(chunk);
+        Optional<City> cityOpt = claimOpt.flatMap(ClaimedChunk::getCity);
+        if(cityOpt.isPresent() && (cityOpt.get() != this || !claimOpt.get().reserve))
             throw new IllegalArgumentException("The chunk "+chunk+" is reserved");
 
         Set<Island> islands = connectedIslands(chunk).collect(Collectors.toSet());
@@ -215,12 +219,14 @@ public final class City extends BasicFlagHolder
             Island island = storage.createIsland(this, chunk);
             this.islands.put(island.getId(), island);
             mineCity.reloadChunk(chunk);
+            reserveChunks(island);
             return island;
         }
         else if(islands.size() == 1)
         {
             Island island = islands.iterator().next();
             storage.claim(island, chunk);
+            reserveChunks(island);
             return island;
         }
         else
@@ -228,6 +234,7 @@ public final class City extends BasicFlagHolder
             Island mainIsland = storage.claim(islands, chunk);
             islands.stream().filter(island -> !island.equals(mainIsland))
                     .forEach(island -> this.islands.remove(island.getId()));
+            reserveChunks(mainIsland);
             return mainIsland;
         }
     }
@@ -251,11 +258,13 @@ public final class City extends BasicFlagHolder
         {
             storage.deleteIsland(island);
             this.islands.remove(island.getId());
+            reserveChunks(island);
             return Collections.singleton(island);
         }
         else if(islands.size() == 1)
         {
             storage.disclaim(chunk, island);
+            reserveChunks(island);
             return Collections.singleton(island);
         }
         else
@@ -268,6 +277,7 @@ public final class City extends BasicFlagHolder
             if(groups.size() == 1)
             {
                 storage.disclaim(chunk, island);
+                reserveChunks(island);
                 return Collections.singletonList(island);
             }
 
@@ -277,8 +287,35 @@ public final class City extends BasicFlagHolder
             Collection<Island> created = storage.disclaim(chunk, island, groups);
             created.forEach(i-> this.islands.put(i.getId(), i));
             groups.forEach(s-> s.forEach((DisDBConsumer<ChunkPos>) mineCity::reloadChunk));
+            Stream.concat(created.stream(), Stream.of(island)).forEach((DisDBConsumer<Island>) this::reserveChunks);
             return created;
         }
+    }
+
+    protected void reserveChunks(Island island) throws DataSourceException
+    {
+        IslandArea area = storage.getArea(island);
+        int rangeX = island.getSizeX()/2;
+        int rangeZ = island.getSizeZ()/2;
+
+        IslandArea reserve;
+        if(rangeX == 0 && rangeZ == 0)
+            reserve = area;
+        else
+        {
+            reserve = new IslandArea(island, area.x - rangeX, area.z - rangeZ,
+                    new boolean[area.claims.length + rangeX*2][area.claims[0].length + rangeZ*2]
+            );
+
+            area.claims().forEach(p-> {
+                reserve.claims[p.x-reserve.x][p.z-reserve.z] = true;
+                for(int rx=-rangeX; rx <= rangeX; rx++)
+                    for(int rz=-rangeZ; rz <= rangeZ; rz++)
+                        reserve.claims[p.x+rx-reserve.x][p.z+rz-reserve.z] = true;
+            });
+        }
+
+        storage.reserve(reserve).forEach((DisDBConsumer<ChunkPos>) mineCity::reloadChunk);
     }
 
     public void setSpawn(@NotNull BlockPos pos) throws DataSourceException,IllegalArgumentException

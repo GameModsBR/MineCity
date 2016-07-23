@@ -44,6 +44,7 @@ CREATE TABLE `minecity_chunks` (
 `x`  int NOT NULL ,
 `z`  int NOT NULL ,
 `island_id`  int NOT NULL ,
+`reserve`  bit(1) NOT NULL DEFAULT b'0' ,
 PRIMARY KEY (`world_id`, `x`, `z`),
 CONSTRAINT `chunk_world` FOREIGN KEY (`world_id`) REFERENCES `minecity_world` (`world_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `chunk_island` FOREIGN KEY (`island_id`) REFERENCES `minecity_islands` (`island_id`) ON DELETE CASCADE ON UPDATE CASCADE

@@ -30,6 +30,7 @@
             </create>
             <claim>
                 <msg id="already-claimed">This chunk is already claimed in name of ${city}</msg>
+                <msg id="reserved">This chunk is reserved to ${name}</msg>
                 <msg id="ambiguous">Both cities ${1} and ${2} are touching this chunk, repeat the command specifying the city name.</msg>
                 <msg id="not-nearby">
                     There're no cities touching this chunk, get closer to your city and try again. If you want to create an island then specify the city name, if you want to create a new city then type ${create}

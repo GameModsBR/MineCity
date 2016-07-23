@@ -5,10 +5,9 @@ import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class IslandArea
 {
@@ -110,19 +109,69 @@ public class IslandArea
         }
     }
 
-    public Set<ChunkPos> claims()
+    public Iterator<ClaimedChunk> iterator()
     {
-        Set<ChunkPos> result = new HashSet<>();
+        return new Iterator<ClaimedChunk>()
+        {
+            int rx;
+            int rz;
+            boolean[] az;
+            {
+                prepare();
+            }
+
+            void prepare()
+            {
+                for(;rx < claims.length; rx++)
+                {
+                    rz = 0;
+                    az = claims[rx];
+                    if(az != null && az.length > 0)
+                        break;
+                }
+            }
+
+            @Override
+            public boolean hasNext()
+            {
+                return rx < claims.length || az != null && rz < az.length;
+            }
+
+            @Override
+            public ClaimedChunk next()
+            {
+                try
+                {
+                    ChunkPos chunk = new ChunkPos(world, x + rx, z + rz);
+                    ClaimedChunk result;
+                    if(az[rz++])
+                        result = new ClaimedChunk(island, chunk);
+                    else
+                        result = new ClaimedChunk(Inconsistency.INSTANCE, chunk);
+
+                    prepare();
+                    return result;
+                }
+                catch(NullPointerException | ArrayIndexOutOfBoundsException e)
+                {
+                    throw new NoSuchElementException();
+                }
+            }
+        };
+    }
+
+    public Stream<ChunkPos> claims()
+    {
+        Stream.Builder<ChunkPos> builder = Stream.builder();
         for(int rx = 0; rx < claims.length; rx++)
         {
             boolean[] az = claims[rx];
             if(az != null)
                 for(int rz = 0; rz < az.length; rz++)
                     if(az[rz])
-                        result.add(new ChunkPos(world, x+rx, z+rz));
+                        builder.add(new ChunkPos(world, x+rx, z+rz));
         }
-
-        return result;
+        return builder.build();
     }
 
     public boolean isClaimed(ChunkPos pos) throws IllegalArgumentException

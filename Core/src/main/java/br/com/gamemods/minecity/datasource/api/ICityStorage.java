@@ -49,4 +49,6 @@ public interface ICityStorage
     IslandArea getArea(@NotNull Island island) throws DataSourceException, ClassCastException, IllegalArgumentException;
 
     void setName(@NotNull City city, @NotNull String identity, @NotNull String name) throws DataSourceException;
+
+    Collection<ChunkPos> reserve(@NotNull IslandArea reserve) throws DataSourceException;
 }

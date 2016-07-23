@@ -12,11 +12,20 @@ public final class ClaimedChunk
     public final ChunkOwner owner;
     @NotNull
     public final ChunkPos chunk;
+    public final boolean reserve;
 
     public ClaimedChunk(@NotNull ChunkOwner owner, @NotNull ChunkPos chunk)
     {
         this.owner = owner;
         this.chunk = chunk;
+        this.reserve = false;
+    }
+
+    public ClaimedChunk(@NotNull ChunkOwner owner, @NotNull ChunkPos chunk, boolean reserve)
+    {
+        this.owner = owner;
+        this.chunk = chunk;
+        this.reserve = reserve;
     }
 
     @NotNull
