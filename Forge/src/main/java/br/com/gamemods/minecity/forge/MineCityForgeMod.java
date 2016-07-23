@@ -11,12 +11,14 @@ import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.api.world.WorldProvider;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.forge.accessors.IChunk;
+import br.com.gamemods.minecity.forge.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.accessors.IWorldServer;
 import br.com.gamemods.minecity.forge.command.ForgeCommandSender;
 import br.com.gamemods.minecity.forge.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.command.RootCommand;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Inconsistency;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -25,6 +27,8 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
@@ -82,6 +86,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         worldContainer = Paths.get(server.getFolderName());
 
         MinecraftForge.EVENT_BUS.register(this);
+        FMLCommonHandler.instance().bus().register(this);
         mineCity = new MineCity(this, config);
         mineCity.worldProvider = Optional.of(this);
         mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
@@ -152,6 +157,15 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
             ((IWorldServer) event.world).setMineCityWorld(null);
     }
 
+    @SubscribeEvent
+    public void onPlayerTick(TickEvent.PlayerTickEvent event)
+    {
+        if(event.phase == TickEvent.Phase.END || event.side != Side.SERVER )
+            return;
+
+        player(event.player).tick();
+    }
+
     public ChunkPos chunk(Chunk chunk)
     {
         if(chunk instanceof IChunk)
@@ -164,6 +178,23 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         ChunkPos pos = new ChunkPos(world(chunk.worldObj), chunk.xPosition, chunk.zPosition);
         pos.instance = chunk;
         return pos;
+    }
+
+    public ForgePlayer player(EntityPlayer player)
+    {
+        if(player instanceof IEntityPlayerMP)
+        {
+            IEntityPlayerMP cast = ((IEntityPlayerMP) player);
+            ForgePlayer cache = cast.getMineCityPlayer();
+            if(cache != null)
+                return cache;
+
+            cache = new ForgePlayer(this, player);
+            cast.setMineCityPlayer(cache);
+            return cache;
+        }
+
+        return new ForgePlayer(this, player);
     }
 
     @Nullable
@@ -346,7 +377,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
     public CommandSender sender(ICommandSender sender)
     {
         if(sender instanceof EntityPlayer)
-            return new ForgePlayer(this, (EntityPlayer) sender);
+            return player((EntityPlayer) sender);
         return new ForgeCommandSender<>(this, sender);
     }
 

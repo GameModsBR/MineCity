@@ -2,6 +2,8 @@ package br.com.gamemods.minecity.structure;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
@@ -29,9 +31,20 @@ public class Inconsistency implements ChunkOwner
     public static City getInconsistentCity(MineCity mineCity)
     {
         if(city == null)
-            city = new City(mineCity, "#inconsistent", "#Inconsistency", null, new BlockPos(WORLD, 0,0,0),
-                    Collections.singleton(island = new InconsistentIsland()), -1000, new VoidStorage());
+        {
+            Message message = new Message("chunk.inconsistent", "This chunk is inconsistent.");
+            city = new City(mineCity, "#inconsistent", "#Inconsistency", null, new BlockPos(WORLD, 0, 0, 0),
+                    Collections.singleton(island = new InconsistentIsland()), -1000, new VoidStorage()
+            );
+            Arrays.asList(PermissionFlag.values()).forEach(f-> city.deny(f, message));
+            city.allow(PermissionFlag.LEAVE);
+        }
         return city;
+    }
+
+    public static ClaimedChunk claim(ChunkPos pos)
+    {
+        return new ClaimedChunk(INSTANCE, pos);
     }
 
     public static City getInconsistentCity()

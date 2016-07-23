@@ -5,8 +5,6 @@ import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class TestPlayer implements CommandSender
 {
@@ -53,12 +51,5 @@ public class TestPlayer implements CommandSender
     public Direction getCardinalDirection()
     {
         return Direction.NORTH;
-    }
-
-    @Nullable
-    @Override
-    public Message teleport(@NotNull BlockPos spawn)
-    {
-        return new Message("action.teleport.unsupported", "Unsupported operation");
     }
 }

@@ -91,6 +91,8 @@
         </city>
     </cmd>
     <action>
+        <msg id="denied">You don't have permission to perform this action.</msg>
+        <msg id="chunk.inconsistent">This chunk is inconsistent.</msg>
         <teleport>
             <msg id="unsupported">Unsupported operation</msg>
             <msg id="cancelled">The teleport were cancelled</msg>

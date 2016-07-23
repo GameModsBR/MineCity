@@ -1,11 +1,14 @@
 package br.com.gamemods.minecity.forge.command;
 
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.world.BlockPos;
-import br.com.gamemods.minecity.api.world.Direction;
-import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
+import br.com.gamemods.minecity.structure.City;
+import br.com.gamemods.minecity.structure.ClaimedChunk;
+import br.com.gamemods.minecity.structure.Inconsistency;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.MathHelper;
@@ -13,11 +16,74 @@ import net.minecraft.world.WorldServer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ForgePlayer extends ForgeCommandSender<EntityPlayer>
+import java.util.Optional;
+import java.util.UUID;
+
+import static br.com.gamemods.minecity.api.CollectionUtil.optionalStream;
+import static br.com.gamemods.minecity.api.permission.FlagHolder.can;
+
+public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements MinecraftEntity
 {
+    public ChunkPos lastChunk;
+    private int lastX, lastY, lastZ;
+    private byte movMessageWait = 0;
+    private City lastCity;
+
     public ForgePlayer(MineCityForgeMod mod, EntityPlayer player)
     {
         super(mod, player);
+        lastChunk = new ChunkPos(mod.world(player.worldObj), player.chunkCoordX, player.chunkCoordZ);
+        lastX = (int) player.posX;
+        lastY = (int) player.posY;
+        lastZ = (int) player.posZ;
+    }
+
+    public void tick()
+    {
+        checkPosition();
+    }
+
+    public void checkPosition()
+    {
+        if(lastChunk.x != sender.chunkCoordX || lastChunk.z != sender.chunkCoordZ || lastChunk.world.dim != sender.worldObj.provider.dimensionId)
+        {
+            ChunkPos chunk = new ChunkPos(mod.world(sender.worldObj), sender.chunkCoordX, sender.chunkCoordZ);
+            ClaimedChunk claim = mod.mineCity.getChunk(chunk).orElseGet(()->Inconsistency.claim(chunk));
+            City city = claim.getCity().orElse(null);
+            if(city != null && city != lastCity)
+            {
+                Optional<Message> message = optionalStream(
+                        can(this, PermissionFlag.ENTER, city),
+                        can(this, PermissionFlag.LEAVE, lastCity),
+                        can(this, PermissionFlag.LEAVE, mod.mineCity.nature(lastChunk.world))
+                        )
+                        .findFirst()
+                        ;
+
+                if(message.isPresent())
+                {
+                    if(movMessageWait == 0)
+                    {
+                        send(message.get());
+                        movMessageWait = (byte) 20*3;
+                    }
+                    teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
+                    return;
+                }
+            }
+
+            lastCity = city;
+            lastChunk = chunk;
+        }
+
+        if(movMessageWait > 0)
+            movMessageWait--;
+        else
+        {
+            lastX = (int) sender.posX;
+            lastY = (int) sender.posY;
+            lastZ = (int) sender.posZ;
+        }
     }
 
     @Override
@@ -69,5 +135,34 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer>
         sender.setPositionAndUpdate(x, y, z);
 
         return null;
+    }
+
+
+    @NotNull
+    @Override
+    public String getName()
+    {
+        return sender.getCommandSenderName();
+    }
+
+    @NotNull
+    @Override
+    public UUID getUniqueId()
+    {
+        return sender.getUniqueID();
+    }
+
+    @NotNull
+    @Override
+    public Type getType()
+    {
+        return Type.PLAYER;
+    }
+
+    @Nullable
+    @Override
+    public CommandSender getCommandSender()
+    {
+        return this;
     }
 }

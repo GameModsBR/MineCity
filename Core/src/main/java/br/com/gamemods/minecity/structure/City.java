@@ -3,9 +3,13 @@ package br.com.gamemods.minecity.structure;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.*;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
+import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.BasicFlagHolder;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.datasource.api.*;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBFunction;
 import br.com.gamemods.minecity.datasource.api.unchecked.DisDBConsumer;
@@ -19,7 +23,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class City
+public final class City extends BasicFlagHolder
 {
     @NotNull
     public final MineCity mineCity;
@@ -63,6 +67,8 @@ public final class City
         if(other != null && !(other.owner instanceof Nature))
             throw new IllegalArgumentException("The chunk "+spawn.getChunk()+" is reserved to "+other.owner);
 
+        mineCity.defaultCityFlags.forEach(this::deny);
+
         CityCreationResult result = mineCity.dataSource.createCity(this);
         storage = result.storage;
         islands.put(result.island.getId(), result.island);
@@ -93,6 +99,17 @@ public final class City
         this.storage = storage;
         this.islands = new HashMap<>(islands.size());
         islands.stream().forEach(island -> this.islands.put(island.getId(), island));
+    }
+
+    @NotNull
+    @Override
+    public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
+    {
+        if(owner != null && entity.getType() == MinecraftEntity.Type.PLAYER
+                && entity.getUniqueId().equals(owner.uniqueId) && action != PermissionFlag.PVP )
+            return Optional.empty();
+
+        return super.can(entity, action);
     }
 
     public void setName(@NotNull String name) throws IllegalArgumentException, DataSourceException

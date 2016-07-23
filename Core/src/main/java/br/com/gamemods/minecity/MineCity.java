@@ -3,7 +3,9 @@ package br.com.gamemods.minecity;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandTree;
+import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.command.MessageTransformer;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.commands.CityCommand;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
@@ -19,10 +21,7 @@ import br.com.gamemods.minecity.structure.Nature;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,6 +40,8 @@ public class MineCity
     public ExecutorService mapService = Executors.newSingleThreadExecutor(r-> new Thread(r, "MineCityMapService"));
     public Optional<WorldProvider> worldProvider = Optional.empty();
     public MessageTransformer messageTransformer;
+    public EnumMap<PermissionFlag, Message> defaultNatureFlags = new EnumMap<>(PermissionFlag.class);
+    public EnumMap<PermissionFlag, Message> defaultCityFlags = new EnumMap<>(PermissionFlag.class);
 
     public MineCity(@NotNull Server server, @NotNull MineCityConfig config, @Nullable IDataSource dataSource,
                     @NotNull MessageTransformer messageTransformer)
@@ -77,6 +78,12 @@ public class MineCity
         return Optional.ofNullable(getChunkProvider().map(p-> p.getClaim(pos)).orElseGet(()-> chunks.get(pos)));
     }
 
+    @NotNull
+    public ChunkPos provideChunk(@NotNull WorldDim world, int x, int z)
+    {
+        return getChunkProvider().map(p-> p.getChunk(world, x, z)).orElseGet(()-> new ChunkPos(world, x, z));
+    }
+
     /**
      * @deprecated It's impossible to know if the optional is empty because the chunk is unloaded or because
      * the chunk is not claimed
@@ -110,7 +117,7 @@ public class MineCity
         if(nature != null)
             nature.invalidate();
 
-        nature = new Nature(world);
+        nature = new Nature(this, world);
         world.nature = nature;
         natures.put(world, nature);
         return nature;

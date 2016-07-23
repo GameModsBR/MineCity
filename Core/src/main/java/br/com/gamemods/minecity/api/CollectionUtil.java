@@ -1,9 +1,8 @@
 package br.com.gamemods.minecity.api;
 
-import java.util.Comparator;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class CollectionUtil
 {
@@ -17,5 +16,15 @@ public class CollectionUtil
         );
         sortedEntries.addAll(map.entrySet());
         return sortedEntries;
+    }
+
+    @SafeVarargs
+    public static <R, T extends Supplier<Optional<R>>> Stream<R> optionalStream(T... values)
+    {
+        return Stream.of(values)
+            .map(Supplier::get)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            ;
     }
 }
