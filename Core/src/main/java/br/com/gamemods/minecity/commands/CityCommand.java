@@ -274,7 +274,7 @@ public class CityCommand
     }
 
     @Command(value = "city.transfer", console = false)
-    public CommandResult<City> command(CommandSender sender, List<String> path, String[] args)
+    public CommandResult<City> transfer(CommandSender sender, List<String> path, String[] args)
             throws DataSourceException
     {
         if(args.length == 0 || args[0].trim().isEmpty())
@@ -353,7 +353,8 @@ public class CityCommand
     @Command(value = "city.map", console = false)
     public CommandResult<?> map(CommandSender sender, List<String> path, String[] args)
     {
-        /* Default chat size: 53x10
+        boolean big = args.length > 0;
+        /* Default chat size: 53x10 , chars are not monospaced but lines are
 
         +--------------------------------------123456789012345+
         |1234567890123456789012345678901234567| Celestial     |
@@ -417,8 +418,10 @@ public class CityCommand
         // Width: 57
         // Cursor pos: 29
         // Names: 58
-        chunk = chunk.subtract(28, 4);
-        StringBuilder[] lines = new StringBuilder[9];
+        int height = big? 20 : 10;
+        StringBuilder[] lines = new StringBuilder[height-1];
+        int cursorHeight =  lines.length / 2;
+        chunk = chunk.subtract(28, cursorHeight);
         Map<City, Float> cityDistances = new HashMap<>();
         if(cityAtPosition != null)
             cityDistances.put(cityAtPosition, 0f);
@@ -431,14 +434,14 @@ public class CityCommand
         };
 
         long time = System.currentTimeMillis();
-        for(int z=0; z< 9; z++)
+        for(int z=0; z< lines.length; z++)
         {
             @SuppressWarnings("MismatchedQueryAndUpdateOfStringBuilder")
             StringBuilder sb = lines[z] = new StringBuilder();
             LegacyFormat current = LegacyFormat.RESET;
             for(int x = 0; x < 57; x++)
             {
-                if(x == 28 && z == 4)
+                if(x == 28 && z == cursorHeight)
                 {
                     if(current != cursorColor)
                         sb.append(current = cursorColor);
@@ -511,7 +514,7 @@ public class CityCommand
             sb.append(LegacyFormat.DARK_GRAY).append("| ");
         }
 
-        int line = 8;
+        int line = lines.length-1;
         for(Map.Entry<City, Float> entry : CollectionUtil.sortByValues(cityDistances))
         {
             City city = entry.getKey();
@@ -523,7 +526,7 @@ public class CityCommand
                 break;
         }
 
-        Message[] messages = new Message[10];
+        Message[] messages = new Message[height];
         messages[0] = new Message("cmd.city.map.header",
                 "<msg><darkgray>---------------<gray>-=[Map]=-</gray>--------------¬-<gray>-=[City Names]=-</gray></darkgray></msg>"
         );
