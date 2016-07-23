@@ -34,6 +34,7 @@
         </command>
         <command id="city.map" parent="city" cmd="map">
             <desc>Show the cities around you</desc>
+            <syntax>[big]</syntax>
         </command>
     </commands>
 </minecity-commands>
