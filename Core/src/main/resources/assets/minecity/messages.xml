@@ -89,6 +89,16 @@
                 <msg id="success">The ${name}'s spawn was changed successfully</msg>
             </setspawn>
             <msg id="map.header"><darkgray>---------------<gray>-=[Map]=-</gray>--------------¬-<gray>-=[City Names]=-</gray></darkgray></msg>
+            <deny>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="no-permission">You are not allowed to change the ${city}'s permissions</msg>
+                <msg id="success">The permission was revoked successfully</msg>
+            </deny>
+            <allow>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="no-permission">You are not allowed to change the ${city}'s permissions</msg>
+                <msg id="success">The permission was granted successfully</msg>
+            </allow>
         </city>
     </cmd>
     <action>

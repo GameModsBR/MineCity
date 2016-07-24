@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.*;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
@@ -348,6 +349,114 @@ public class CityCommand
                 "The ${name}'s spawn was changed successfully",
                 new Object[]{"name", city.getName()}
         ), city);
+    }
+
+    public CommandResult<Boolean> deny(CommandSender sender, List<String> path, String[] args, PermissionFlag flag)
+    {
+        City city = mineCity.getChunk(sender.getPosition().getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.city.deny.not-claimed", "You are not inside a city"));
+
+        if(!sender.getPlayerId().equals(city.getOwner()))
+            return new CommandResult<>(new Message("cmd.city.deny.no-permission",
+                    "You are not allowed to change the ${city}'s permissions",
+                    new Object[]{"city",city.getName()}
+            ));
+
+        city.deny(flag);
+
+        return new CommandResult<>(new Message("cmd.city.deny.success",
+                "The permission was revoked successfully"), true, true);
+    }
+
+    public CommandResult<?> allow(CommandSender sender, List<String> path, String[] args, PermissionFlag flag)
+    {
+        City city = mineCity.getChunk(sender.getPosition().getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.city.allow.not-claimed", "You are not inside a city"));
+
+        if(!sender.getPlayerId().equals(city.getOwner()))
+            return new CommandResult<>(new Message("cmd.city.allow.no-permission",
+                    "You are not allowed to change the ${city}'s permissions",
+                    new Object[]{"city",city.getName()}
+            ));
+
+        city.deny(flag);
+
+        return new CommandResult<>(new Message("cmd.city.allow.success",
+                "The permission was granted successfully"), true, true);
+    }
+
+    @Command(value = "city.deny.enter", console = false)
+    public CommandResult<?> denyEnter(CommandSender sender, List<String> path, String[] args)
+    {
+        return deny(sender, path, args, PermissionFlag.ENTER);
+    }
+
+    @Command(value = "city.deny.click", console = false)
+    public CommandResult<?> denyClick(CommandSender sender, List<String> path, String[] args)
+    {
+        return deny(sender, path, args, PermissionFlag.CLICK);
+    }
+
+    @Command(value = "city.deny.pickup", console = false)
+    public CommandResult<?> denyPickup(CommandSender sender, List<String> path, String[] args)
+    {
+        return deny(sender, path, args, PermissionFlag.PICKUP);
+    }
+
+    @Command(value = "city.deny.open", console = false)
+    public CommandResult<?> denyOpen(CommandSender sender, List<String> path, String[] args)
+    {
+        return deny(sender, path, args, PermissionFlag.OPEN);
+    }
+
+    @Command(value = "city.deny.pvp", console = false)
+    public CommandResult<?> denyPVP(CommandSender sender, List<String> path, String[] args)
+    {
+        return deny(sender, path, args, PermissionFlag.PVP);
+    }
+
+    @Command(value = "city.deny.pvc", console = false)
+    public CommandResult<?> denyPVC(CommandSender sender, List<String> path, String[] args)
+    {
+        return deny(sender, path, args, PermissionFlag.PVC);
+    }
+
+    @Command(value = "city.allow.enter", console = false)
+    public CommandResult<?> allowEnter(CommandSender sender, List<String> path, String[] args)
+    {
+        return allow(sender, path, args, PermissionFlag.ENTER);
+    }
+
+    @Command(value = "city.allow.click", console = false)
+    public CommandResult<?> allowClick(CommandSender sender, List<String> path, String[] args)
+    {
+        return allow(sender, path, args, PermissionFlag.CLICK);
+    }
+
+    @Command(value = "city.allow.pickup", console = false)
+    public CommandResult<?> allowPickup(CommandSender sender, List<String> path, String[] args)
+    {
+        return allow(sender, path, args, PermissionFlag.PICKUP);
+    }
+
+    @Command(value = "city.allow.open", console = false)
+    public CommandResult<?> allowOpen(CommandSender sender, List<String> path, String[] args)
+    {
+        return allow(sender, path, args, PermissionFlag.OPEN);
+    }
+
+    @Command(value = "city.allow.pvp", console = false)
+    public CommandResult<?> allowPVP(CommandSender sender, List<String> path, String[] args)
+    {
+        return allow(sender, path, args, PermissionFlag.PVP);
+    }
+
+    @Command(value = "city.allow.pvc", console = false)
+    public CommandResult<?> allowPVC(CommandSender sender, List<String> path, String[] args)
+    {
+        return allow(sender, path, args, PermissionFlag.PVC);
     }
 
     @Command(value = "city.map", console = false)

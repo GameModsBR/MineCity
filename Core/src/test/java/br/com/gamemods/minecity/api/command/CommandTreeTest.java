@@ -130,4 +130,14 @@ public class CommandTreeTest
         assertFalse(cmd.success);
         assertEquals("Path: [city, create] Args: [test]", cmd.message.toString());
     }
+
+    @Test
+    public void testValidXML() throws Exception
+    {
+        CommandTree tree = new CommandTree();
+        tree.parseXml(CommandTree.class.getResourceAsStream("/assets/minecity/commands.xml"));
+        tree.registerCommands(new CityCommand(testData.mineCity));
+        assertEquals("[mc, c, create]", tree.get("mc c create a").get().path.toString());
+        assertEquals("[c, create]", tree.get("c create a").get().path.toString());
+    }
 }

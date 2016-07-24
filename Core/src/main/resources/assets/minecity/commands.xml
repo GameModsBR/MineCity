@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <minecity-commands modified="false" add-missing="true">
     <groups>
-        <group id="city" cmd="city,town,c,t">
+        <group id="root" cmd="minecity,mc">
+            <desc>All MineCity commands</desc>
+        </group>
+        <group id="city" parent=",root" cmd="city,town,c,t">
             <desc>All city related commands</desc>
+        </group>
+        <group id="allow" parent="city" cmd="allow">
+            <desc>Gives permission</desc>
+        </group>
+        <group id="deny" parent="city" cmd="deny">
+            <desc>Revokes permission</desc>
         </group>
     </groups>
     <commands>
@@ -35,6 +44,54 @@
         <command id="city.map" parent="city" cmd="map">
             <desc>Show the cities around you</desc>
             <syntax>[big]</syntax>
+        </command>
+        <command id="city.allow.enter" parent="allow" cmd="enter">
+            <desc>Allows players to enter the city, will not affect players who are already inside.</desc>
+            <syntax>[target]</syntax>
+        </command>
+        <command id="city.allow.click" parent="allow" cmd="click">
+            <desc>Allows players to click on clickable blocks, like doors, buttons and levelers</desc>
+            <syntax>[target]</syntax>
+        </command>
+        <command id="city.allow.pickup" parent="allow" cmd="pickup">
+            <desc>Allows players to pickup dropped items</desc>
+            <syntax>[target]</syntax>
+        </command>
+        <command id="city.allow.open" parent="allow" cmd="open">
+            <desc>Allows players to open container like chests, furnaces, frames</desc>
+            <syntax>[target]</syntax>
+        </command>
+        <command id="city.allow.pvp" parent="allow" cmd="pvp">
+            <desc>Allows players to attack other players</desc>
+            <syntax>[target]</syntax>
+        </command>
+        <command id="city.allow.pvc" parent="allow" cmd="pvc">
+            <desc>Allows players to attack creatures</desc>
+            <syntax>[target]</syntax>
+        </command>
+        <command id="city.deny.enter" parent="deny" cmd="enter">
+            <desc>Deny players to enter the city, will not affect players who are already inside.</desc>
+            <syntax>[target]</syntax>
+        </command>
+        <command id="city.deny.click" parent="deny" cmd="click">
+            <desc>Deny players to click on clickable blocks, like doors, buttons and levelers</desc>
+            <syntax>[target]</syntax>
+        </command>
+        <command id="city.deny.pickup" parent="deny" cmd="pickup">
+            <desc>Deny players to pickup dropped items</desc>
+            <syntax>[target]</syntax>
+        </command>
+        <command id="city.deny.open" parent="deny" cmd="open">
+            <desc>Deny players to open container like chests, furnaces, frames</desc>
+            <syntax>[target]</syntax>
+        </command>
+        <command id="city.deny.pvp" parent="deny" cmd="pvp">
+            <desc>Deny players to attack other players</desc>
+            <syntax>[target]</syntax>
+        </command>
+        <command id="city.deny.pvc" parent="deny" cmd="pvc">
+            <desc>Deny players to attack creatures</desc>
+            <syntax>[target]</syntax>
         </command>
     </commands>
 </minecity-commands>

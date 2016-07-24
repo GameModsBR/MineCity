@@ -219,7 +219,7 @@ public class CommandTree
 
             List<String> subPath = new ArrayList<>(path);
             subPath.add(group.getName());
-            for(CommandInfo subCommand: commands.get(childGroup))
+            for(CommandInfo subCommand: commands.getOrDefault(childGroup, Collections.emptyList()))
                 register(subPath, subCommand, false);
 
             walk(groups, groupTree, commands, childGroup, subPath);
