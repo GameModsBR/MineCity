@@ -7,9 +7,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+/**
+ * A flag holder that can provide different denial messages per flag and allow users to bypass revoked permissions
+ */
 public class BasicFlagHolder implements FlagHolder
 {
-    protected Message defaultMessage = new Message("action.denied", "You don't have permission to perform this action.");
+    protected Message defaultMessage = DEFAULT_DENIAL_MESSAGE;
     protected EnumMap<PermissionFlag, DenialEntry> map = new EnumMap<>(PermissionFlag.class);
 
     public void allow(PermissionFlag flag)

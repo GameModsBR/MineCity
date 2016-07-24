@@ -10,6 +10,8 @@ import java.util.stream.Stream;
 
 public interface FlagHolder
 {
+    Message DEFAULT_DENIAL_MESSAGE = new Message("action.denied", "You don't have permission to perform this action.");
+
     @NotNull
     Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action);
 
