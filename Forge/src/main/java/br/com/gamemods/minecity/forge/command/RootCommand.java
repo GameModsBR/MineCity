@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.forge.ForgeUtil;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
@@ -87,10 +88,17 @@ public class RootCommand<T> implements ICommand
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public List addTabCompletionOptions(ICommandSender p_71516_1_, String[] p_71516_2_)
+    public List addTabCompletionOptions(ICommandSender sender, String[] args)
     {
-        return null;
+        String[] path = new String[args.length+1];
+        path[0] = name;
+        System.arraycopy(args, 0, path, 1, args.length);
+        return mod.mineCity.commands.complete(path, ()->
+                ((List<EntityPlayer>)mod.server.getConfigurationManager().playerEntityList).stream()
+                        .map(EntityPlayer::getCommandSenderName)
+        );
     }
 
     @Override

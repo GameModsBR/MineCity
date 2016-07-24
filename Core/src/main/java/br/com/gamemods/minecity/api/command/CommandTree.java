@@ -14,7 +14,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static br.com.gamemods.minecity.api.StringUtil.identity;
 
@@ -325,6 +328,37 @@ public class CommandTree
         Result result = new Result(command.getInfo(), Arrays.copyOfRange(args, i, args.length), path);
         result.entry = command;
         return Optional.of(result);
+    }
+
+    public List<String> complete(String[] args, Supplier<Stream<String>> onlinePlayers)
+    {
+        if(args[args.length-1].isEmpty())
+            args = Arrays.copyOf(args, args.length-1);
+
+        Optional<Result> resultOpt = get(args);
+        if(!resultOpt.isPresent())
+            return Collections.emptyList();
+
+        Result result = resultOpt.get();
+        if(result.args.length > 1)
+            return Collections.emptyList();
+
+        Map<String, CommandEntry> subTree = result.entry.getSubTree();
+        if(result.args.length == 0)
+            return subTree != null?
+                    subTree.values().stream()
+                            .map(CommandEntry::getInfo).map(CommandInfo::getName).distinct().sorted()
+                            .collect(Collectors.toList())
+                    : Collections.emptyList();
+
+        String search = result.args[0].toLowerCase();
+        Stream<String> stream;
+        if(subTree == null)
+            stream = onlinePlayers.get();
+        else
+            stream = subTree.keySet().stream();
+
+        return stream.filter(k-> k.toLowerCase().startsWith(search)).sorted().collect(Collectors.toList());
     }
 
     public Set<String> getRootCommands()
