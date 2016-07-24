@@ -12,15 +12,13 @@ import static java.util.Collections.emptyMap;
  * A flag holder that can provide different denial messages per flag and allow users to be directly allowed or denied
  * with custom denial messages only for them
  */
-public class ExceptFlagHolder implements FlagHolder
+public class ExceptFlagHolder extends SimpleFlagHolder
 {
     /**
      * An immutable instance of an approval status
      */
     protected final Status DIRECT_ALLOW = new Status();
-    protected Message defaultMessage = DEFAULT_DENIAL_MESSAGE;
     protected EnumMap<PermissionFlag, Map<UUID, Status>> strictPermission = new EnumMap<>(PermissionFlag.class);
-    protected EnumMap<PermissionFlag, Message> generalPermissions = new EnumMap<>(PermissionFlag.class);
 
     @NotNull
     @Override
@@ -69,24 +67,6 @@ public class ExceptFlagHolder implements FlagHolder
     public void deny(PermissionFlag flag, UUID uuid, Message message)
     {
         strictPermission.computeIfAbsent(flag, f-> new HashMap<>(1)).put(uuid, new Status(message));
-    }
-
-    /**
-     * Changes the default permission for a flag, will not affect direct permissions and restrictions
-     * @param flag The flag that will be allowed
-     */
-    public void allow(PermissionFlag flag)
-    {
-        generalPermissions.remove(flag);
-    }
-
-    /**
-     * Changes the default permission for a flag, will not affect direct permissions and restrictions
-     * @param flag The flag that will be denied
-     */
-    public void deny(PermissionFlag flag)
-    {
-        generalPermissions.put(flag, defaultMessage);
     }
 
     /**
