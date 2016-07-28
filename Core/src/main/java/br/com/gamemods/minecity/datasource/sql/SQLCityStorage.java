@@ -363,6 +363,7 @@ public class SQLCityStorage implements ICityStorage
     {
         try(Connection transaction = connection.transaction())
         {
+            String previous = city.getName();
             if(identity.equals(city.getIdentityName()))
                 try(PreparedStatement pst = transaction.prepareStatement(
                         "UPDATE minecity_city SET `display_name`=? WHERE city_id=?"
@@ -394,6 +395,8 @@ public class SQLCityStorage implements ICityStorage
                 }
 
             transaction.commit();
+            source.cityNames.remove(previous);
+            source.cityNames.add(name);
         }
         catch(SQLException e)
         {

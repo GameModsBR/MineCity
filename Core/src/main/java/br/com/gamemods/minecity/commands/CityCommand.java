@@ -30,7 +30,7 @@ public class CityCommand
         this.mineCity = mineCity;
     }
 
-    @Command(value = "city.create", console = false)
+    @Command(value = "city.create", console = false, args = @Arg(name = "name", sticky = true))
     public CommandResult<City> create(CommandSender sender, List<String> path, String[] args) throws DataSourceException
     {
         String name = String.join(" ", args);
@@ -79,7 +79,7 @@ public class CityCommand
         ), city);
     }
 
-    @Command(value = "city.claim", console = false)
+    @Command(value = "city.claim", console = false, args = @Arg(name = "city", type = Arg.Type.CITY, optional = true, sticky = true))
     public CommandResult<Island> claim(CommandSender sender, List<String> path, String[] args)
             throws DataSourceException
     {
@@ -165,7 +165,7 @@ public class CityCommand
         ), claim);
     }
 
-    @Command(value = "city.disclaim", console = false)
+    @Command(value = "city.disclaim", console = false, args = @Arg(name = "city", type = Arg.Type.CITY, optional = true, sticky = true))
     public CommandResult<Collection<Island>> disclaim(CommandSender sender, List<String> path, String[] args)
             throws DataSourceException
     {
@@ -209,7 +209,7 @@ public class CityCommand
                     , newIslands);
     }
 
-    @Command(value = "city.spawn", console = false)
+    @Command(value = "city.spawn", console = false, args = @Arg(name = "city", type = Arg.Type.CITY, sticky = true))
     public CommandResult<Void> spawn(CommandSender sender, List<String> path, String[] args)
             throws DataSourceException
     {
@@ -236,7 +236,7 @@ public class CityCommand
         return new CommandResult<>(error);
     }
 
-    @Command(value = "city.rename", console = false)
+    @Command(value = "city.rename", console = false, args = @Arg(name = "new-name", sticky = true))
     public CommandResult<City> rename(CommandSender sender, List<String> path, String[] args) throws DataSourceException
     {
         String cityName = String.join(" ", args).trim();
@@ -274,7 +274,7 @@ public class CityCommand
         ), city);
     }
 
-    @Command(value = "city.transfer", console = false)
+    @Command(value = "city.transfer", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER))
     public CommandResult<City> transfer(CommandSender sender, List<String> path, String[] args)
             throws DataSourceException
     {
@@ -387,79 +387,79 @@ public class CityCommand
                 "The permission was granted successfully"), true, true);
     }
 
-    @Command(value = "city.deny.enter", console = false)
+    @Command(value = "city.deny.enter", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER, optional = true))
     public CommandResult<?> denyEnter(CommandSender sender, List<String> path, String[] args)
     {
         return deny(sender, path, args, PermissionFlag.ENTER);
     }
 
-    @Command(value = "city.deny.click", console = false)
+    @Command(value = "city.deny.click", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER, optional = true))
     public CommandResult<?> denyClick(CommandSender sender, List<String> path, String[] args)
     {
         return deny(sender, path, args, PermissionFlag.CLICK);
     }
 
-    @Command(value = "city.deny.pickup", console = false)
+    @Command(value = "city.deny.pickup", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER, optional = true))
     public CommandResult<?> denyPickup(CommandSender sender, List<String> path, String[] args)
     {
         return deny(sender, path, args, PermissionFlag.PICKUP);
     }
 
-    @Command(value = "city.deny.open", console = false)
+    @Command(value = "city.deny.open", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER, optional = true))
     public CommandResult<?> denyOpen(CommandSender sender, List<String> path, String[] args)
     {
         return deny(sender, path, args, PermissionFlag.OPEN);
     }
 
-    @Command(value = "city.deny.pvp", console = false)
+    @Command(value = "city.deny.pvp", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER, optional = true))
     public CommandResult<?> denyPVP(CommandSender sender, List<String> path, String[] args)
     {
         return deny(sender, path, args, PermissionFlag.PVP);
     }
 
-    @Command(value = "city.deny.pvc", console = false)
+    @Command(value = "city.deny.pvc", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER, optional = true))
     public CommandResult<?> denyPVC(CommandSender sender, List<String> path, String[] args)
     {
         return deny(sender, path, args, PermissionFlag.PVC);
     }
 
-    @Command(value = "city.allow.enter", console = false)
+    @Command(value = "city.allow.enter", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER, optional = true))
     public CommandResult<?> allowEnter(CommandSender sender, List<String> path, String[] args)
     {
         return allow(sender, path, args, PermissionFlag.ENTER);
     }
 
-    @Command(value = "city.allow.click", console = false)
+    @Command(value = "city.allow.click", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER, optional = true))
     public CommandResult<?> allowClick(CommandSender sender, List<String> path, String[] args)
     {
         return allow(sender, path, args, PermissionFlag.CLICK);
     }
 
-    @Command(value = "city.allow.pickup", console = false)
+    @Command(value = "city.allow.pickup", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER, optional = true))
     public CommandResult<?> allowPickup(CommandSender sender, List<String> path, String[] args)
     {
         return allow(sender, path, args, PermissionFlag.PICKUP);
     }
 
-    @Command(value = "city.allow.open", console = false)
+    @Command(value = "city.allow.open", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER, optional = true))
     public CommandResult<?> allowOpen(CommandSender sender, List<String> path, String[] args)
     {
         return allow(sender, path, args, PermissionFlag.OPEN);
     }
 
-    @Command(value = "city.allow.pvp", console = false)
+    @Command(value = "city.allow.pvp", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER, optional = true))
     public CommandResult<?> allowPVP(CommandSender sender, List<String> path, String[] args)
     {
         return allow(sender, path, args, PermissionFlag.PVP);
     }
 
-    @Command(value = "city.allow.pvc", console = false)
+    @Command(value = "city.allow.pvc", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER, optional = true))
     public CommandResult<?> allowPVC(CommandSender sender, List<String> path, String[] args)
     {
         return allow(sender, path, args, PermissionFlag.PVC);
     }
 
-    @Command(value = "city.map", console = false)
+    @Command(value = "city.map", console = false, args = @Arg(name = "big", type = Arg.Type.PREDEFINED, options = "big", optional = true))
     public CommandResult<?> map(CommandSender sender, List<String> path, String[] args)
     {
         boolean big = args.length > 0;

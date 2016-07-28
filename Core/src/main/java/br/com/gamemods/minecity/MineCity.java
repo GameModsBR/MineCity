@@ -55,6 +55,7 @@ public class MineCity
         if(config.dbPass != null)
             Arrays.fill(config.dbPass, (byte) 0);
 
+        commands.cityNames = this.dataSource.cityNameSupplier();
         commands.registerCommands(new CityCommand(this));
         Inconsistency.setMineCity(this);
     }

@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.api.command;
 
 import br.com.gamemods.minecity.api.StringUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -14,8 +15,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,7 +25,13 @@ import static br.com.gamemods.minecity.api.StringUtil.identity;
 public class CommandTree
 {
     private Map<String, CommandEntry> tree = new HashMap<>();
-    private Map<String, CommandFunction> functions = new HashMap<>();
+    private Map<String, CommandDefinition> commands = new HashMap<>();
+    public Supplier<Stream<String>> onlinePlayers = Stream::empty;
+    public Supplier<Stream<String>> cityNames = Stream::empty;
+    private CommandGroup root = new CommandGroup(new CommandInfo<>("", this::groupExecutor));
+    {
+        root.subTree = tree;
+    }
 
     public CommandResult invoke(CommandSender sender, String args)
     {
@@ -40,29 +47,34 @@ public class CommandTree
         ));
     }
 
-    public void registerCommand(String id,CommandFunction function)
+    public void registerCommand(String id, Arg[] args, CommandFunction function)
     {
-        functions.put(id, function);
-        walk(tree, id, function);
+        CommandDefinition def = new CommandDefinition(args, function);
+        commands.put(id, def);
+        walk(tree, id, def);
     }
 
-    private void walk(Map<String, CommandEntry> tree, String id, CommandFunction function)
+    private void walk(Map<String, CommandEntry> tree, String id, CommandDefinition def)
     {
         if(tree == null)
             return;
 
         for(CommandEntry entry: tree.values())
         {
-            if(id.equals(entry.getInfo().commandId))
-                entry.getInfo().function = function;
+            CommandInfo info = entry.getInfo();
+            if(id.equals(info.commandId))
+            {
+                info.function = def.function;
+                info.args = def.args;
+            }
 
-            walk(entry.getSubTree(), id, function);
+            walk(entry.getSubTree(), id, def);
         }
     }
 
-    public void registerCommand(String id, boolean console, Object instance, Method method)
+    public void registerCommand(String id, boolean console, Arg[] argSet, @Nullable Object instance, @NotNull Method method)
     {
-        registerCommand(id, (sender, path, args) -> {
+        registerCommand(id, argSet, (sender, path, args) -> {
             if(!console && !sender.isPlayer())
                 return CommandResult.ONLY_PLAYERS;
 
@@ -88,13 +100,14 @@ public class CommandTree
         });
     }
 
-    public void registerCommands(Object commands)
+    public void registerCommands(@NotNull Object commands)
     {
+        Object instance = commands;
         Class c;
         if(commands instanceof Class)
         {
             c = (Class) commands;
-            commands = null;
+            instance = null;
         }
         else
             c = commands.getClass();
@@ -102,7 +115,7 @@ public class CommandTree
         for(Method method: c.getMethods())
         {
             int modifiers = method.getModifiers();
-            if(!Modifier.isPublic(modifiers) || commands == null && !Modifier.isStatic(modifiers)
+            if(!Modifier.isPublic(modifiers) || instance == null && !Modifier.isStatic(modifiers)
                     || !method.isAnnotationPresent(Command.class))
                 continue;
 
@@ -112,7 +125,7 @@ public class CommandTree
                     continue;
 
                 Command command = (Command) annotation;
-                registerCommand(command.value(), command.console(), commands, method);
+                registerCommand(command.value(), command.console(), command.args(), instance, method);
             }
         }
     }
@@ -181,8 +194,10 @@ public class CommandTree
                 }
                 else
                 {
+                    CommandDefinition commandDefinition = this.commands.computeIfAbsent(id, CommandDefinition::new);
                     info.commandId = id;
-                    info.function = functions.get(id);
+                    info.function = commandDefinition.function;
+                    info.args = commandDefinition.args;
                     for(String parent: parents)
                     {
                         List<CommandInfo> commandList = commands.get(parent);
@@ -304,6 +319,9 @@ public class CommandTree
 
     public Optional<Result> get(String[] args)
     {
+        if(args.length == 0)
+            args = new String[]{""};
+
         Map<String, CommandEntry> subTree = tree;
         CommandEntry command = null;
         List<String> path = new ArrayList<>();
@@ -311,8 +329,6 @@ public class CommandTree
         for(i = 0; subTree != null && i < args.length; i++)
         {
             String arg = args[i];
-            if(arg.charAt(0) == '/')
-                arg = arg.substring(1);
             CommandEntry entry = subTree.get(identity(arg));
             if(entry == null || entry.getInfo().function == null)
                 break;
@@ -330,40 +346,138 @@ public class CommandTree
         return Optional.of(result);
     }
 
-    public List<String> complete(String[] args, Supplier<Stream<String>> onlinePlayers)
+    protected List<String> completeFunction(Arg[] defs, @NotNull String[] args, @NotNull String search)
     {
-        if(args[args.length-1].isEmpty())
-            args = Arrays.copyOf(args, args.length-1);
+        if(defs == null || defs.length == 0)
+        {
+            if(search.isEmpty())
+                return Collections.emptyList();
+            else
+            {
+                String lower = search.toLowerCase();
+                return onlinePlayers.get().filter(p -> p.toLowerCase().startsWith(lower)).sorted()
+                        .collect(Collectors.toList());
+            }
+        }
 
-        Optional<Result> resultOpt = get(args);
-        if(!resultOpt.isPresent())
-            return Collections.emptyList();
+        Arg def;
+        String arg;
+        if(args.length + 1 > defs.length)
+        {
+            def = defs[defs.length - 1];
+            if(!def.sticky())
+                return Collections.emptyList();
 
-        Result result = resultOpt.get();
-        if(result.args.length > 1)
-            return Collections.emptyList();
+            arg = String.join(" ", args) + " " + search;
+        }
+        else if(args.length == 0)
+        {
+            def = defs[0];
+            arg = search;
+        }
+        else
+        {
+            def = defs[args.length];
+            arg = search;
+        }
+
+        Stream<String> options;
+        String key = arg.toLowerCase();
+        Predicate<String> filter = o -> o.toLowerCase().startsWith(key);
+        switch(def.type())
+        {
+            case PLAYER:
+                options = onlinePlayers.get();
+                break;
+            case PREDEFINED:
+                options = Stream.of(def.options());
+                break;
+            case UNDEFINED:
+                if(arg.isEmpty())
+                    return Collections.emptyList();
+                options = Stream.concat(onlinePlayers.get(), cityNames.get());
+                break;
+            case CITY:
+                options = cityNames.get();
+                String id = identity(key);
+                filter = o-> identity(o).startsWith(id);
+                break;
+            default:
+                return Collections.emptyList();
+        }
+
+        if(!arg.isEmpty())
+            options = options.filter(filter);
+
+        if(args.length > 0 && def.sticky())
+        {
+            List<String> identities = Arrays.asList(args).stream().map(StringUtil::identity).collect(Collectors.toList());
+            options = options.map(o-> {
+                Queue<String> parts = new ArrayDeque<>(Arrays.asList(o.split("\\s+")));
+                Iterator<String> iter = identities.iterator();
+                while(!(parts.isEmpty()) && iter.hasNext())
+                {
+                    String next = iter.next();
+                    String identity = identity(parts.element());
+                    if(identity.equals(next))
+                        parts.remove();
+                    else if(identity.startsWith(next))
+                        return null;
+                    else
+                        break;
+                }
+                return String.join(" ", parts);
+            }).filter(o-> o != null);
+        }
+
+        return options.sorted().flatMap(s-> Stream.of(s.replaceAll("\\s", ""), s.split("\\s",2)[0])).distinct().collect(Collectors.toList());
+    }
+
+    private Result rootResult(String[] args)
+    {
+        return new Result(root.getInfo(), args, Collections.emptyList(), root);
+    }
+
+    public List<String> complete(String[] args)
+    {
+        String[] path = Arrays.copyOf(args, args.length - 1);
+        Result result = get(path).orElseGet(()-> rootResult(path));
+        String search = args[args.length-1].toLowerCase();
 
         Map<String, CommandEntry> subTree = result.entry.getSubTree();
-        if(result.args.length == 0)
-            return subTree != null?
-                    subTree.values().stream()
-                            .map(CommandEntry::getInfo).map(CommandInfo::getName).distinct().sorted()
-                            .collect(Collectors.toList())
-                    : Collections.emptyList();
-
-        String search = result.args[0].toLowerCase();
-        Stream<String> stream;
         if(subTree == null)
-            stream = onlinePlayers.get();
-        else
-            stream = subTree.keySet().stream();
+            return completeFunction(result.entry.getInfo().args, result.args, search);
 
-        return stream.filter(k-> k.toLowerCase().startsWith(search)).sorted().collect(Collectors.toList());
+        if(result.args.length > 0)
+            return Collections.emptyList();
+
+        Stream<String> stream;
+        if(search.isEmpty())
+            stream = subTree.values().stream().map(CommandEntry::getInfo).map(CommandInfo::getName).distinct();
+        else
+            stream = subTree.keySet().stream().filter(k-> k.toLowerCase().startsWith(search));
+
+        return stream.sorted().collect(Collectors.toList());
     }
 
     public Set<String> getRootCommands()
     {
         return Collections.unmodifiableSet(tree.keySet());
+    }
+
+    static class CommandDefinition
+    {
+        CommandFunction<?> function;
+        Arg[] args;
+
+        public CommandDefinition(Arg[] args, CommandFunction function)
+        {
+            this.args = args;
+            this.function = function;
+        }
+
+        public CommandDefinition(String s)
+        {}
     }
 
     interface CommandEntry
@@ -429,6 +543,15 @@ public class CommandTree
             this.command = command;
             this.args = args;
             this.path = path;
+        }
+
+        private Result(CommandInfo<?> command, String[] args, List<String> path,
+                      CommandEntry entry)
+        {
+            this.command = command;
+            this.args = args;
+            this.path = path;
+            this.entry = entry;
         }
 
         public CommandResult run(CommandSender sender)

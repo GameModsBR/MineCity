@@ -7,7 +7,6 @@ import br.com.gamemods.minecity.forge.ForgeUtil;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
@@ -95,10 +94,7 @@ public class RootCommand<T> implements ICommand
         String[] path = new String[args.length+1];
         path[0] = name;
         System.arraycopy(args, 0, path, 1, args.length);
-        return mod.mineCity.commands.complete(path, ()->
-                ((List<EntityPlayer>)mod.server.getConfigurationManager().playerEntityList).stream()
-                        .map(EntityPlayer::getCommandSenderName)
-        );
+        return mod.mineCity.commands.complete(path);
     }
 
     @Override

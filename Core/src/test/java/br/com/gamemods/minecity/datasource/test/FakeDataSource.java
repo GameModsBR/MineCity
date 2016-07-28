@@ -20,7 +20,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FakeDataSource implements IDataSource, ICityStorage
 {
@@ -318,6 +320,12 @@ public class FakeDataSource implements IDataSource, ICityStorage
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public Supplier<Stream<String>> cityNameSupplier()
+    {
+        return ()-> cities.values().stream().map(City::getName);
     }
 
     private class FakeIsland implements Island

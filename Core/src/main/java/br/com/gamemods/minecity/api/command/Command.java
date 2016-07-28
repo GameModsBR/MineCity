@@ -9,4 +9,5 @@ public @interface Command
 {
     String value();
     boolean console() default true;
+    Arg[] args() default {};
 }

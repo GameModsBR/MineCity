@@ -6,6 +6,7 @@ public class CommandInfo<R>
 {
     public String commandId;
     public CommandFunction<R> function;
+    public Arg[] args;
     public String description;
     public String permission;
     public String syntax;

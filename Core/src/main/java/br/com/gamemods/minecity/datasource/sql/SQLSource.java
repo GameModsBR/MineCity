@@ -26,8 +26,8 @@ import java.nio.ByteBuffer;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class SQLSource implements IDataSource
 {
@@ -40,6 +40,7 @@ public class SQLSource implements IDataSource
     @NotNull
     private final Map<Integer, City> cityMap = new HashMap<>();
     final Map<Integer, WorldDim> worldDimMap = new ConcurrentHashMap<>(3);
+    final Set<String> cityNames = new HashSet<>();
 
     public SQLSource(@NotNull MineCity mineCity, @NotNull MineCityConfig config)
     {
@@ -451,6 +452,7 @@ public class SQLSource implements IDataSource
                     islandId = createIsland(connection, cityId, spawnChunk.world);
                     createClaim(connection, islandId, spawnChunk);
                     connection.commit();
+                    cityNames.add(city.getName());
                 }
                 catch(Exception e)
                 {
@@ -481,6 +483,7 @@ public class SQLSource implements IDataSource
                     result = stm.executeQuery("SELECT `value` FROM `minecity_setup` WHERE `property`='version';");
                     result.next();
                     version = result.getInt(1);
+                    result.close();
                 }
                 catch(SQLException e)
                 {
@@ -495,6 +498,10 @@ public class SQLSource implements IDataSource
 
                 if(version != 1)
                     throw new DataSourceException("Unsupported database version: "+version);
+
+                result = stm.executeQuery("SELECT `display_name` FROM `minecity_city ");
+                while(result.next())
+                    cityNames.add(result.getString(1));
             }
             catch(Exception e)
             {
@@ -551,6 +558,12 @@ public class SQLSource implements IDataSource
         {
             throw new DataSourceException(e);
         }
+    }
+
+    @Override
+    public Supplier<Stream<String>> cityNameSupplier()
+    {
+        return cityNames::stream;
     }
 
     @Override

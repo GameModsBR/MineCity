@@ -9,6 +9,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public interface IDataSource
 {
@@ -30,4 +32,6 @@ public interface IDataSource
 
     @NotNull
     Optional<PlayerID> getPlayer(@NotNull String name) throws DataSourceException;
+
+    Supplier<Stream<String>> cityNameSupplier();
 }

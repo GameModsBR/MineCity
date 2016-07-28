@@ -89,6 +89,11 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         FMLCommonHandler.instance().bus().register(this);
         mineCity = new MineCity(this, config);
         mineCity.worldProvider = Optional.of(this);
+        //noinspection unchecked
+        mineCity.commands.onlinePlayers = ()->
+                ((List<EntityPlayer>)server.getConfigurationManager().playerEntityList).stream()
+                        .map(EntityPlayer::getCommandSenderName)
+                ;
         mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
         mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
         mineCity.dataSource.initDB();

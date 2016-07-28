@@ -64,7 +64,7 @@ public class MineCityPluginTest
                         "</minecity-commands>";
 
         mineCity.commands.parseXml(new ByteArrayInputStream(xml.getBytes()));
-        mineCity.commands.registerCommand("city.create", (sender, path, args) -> {
+        mineCity.commands.registerCommand("city.create", null, (sender, path, args) -> {
             sender.send(new Message("test", "Testing "+joserobjr.getName()+": "+path));
             assertTrue(sender.isPlayer());
             assertEquals("[city, create]", path.toString());
