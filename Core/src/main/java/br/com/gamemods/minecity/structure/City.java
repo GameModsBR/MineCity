@@ -4,7 +4,8 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.*;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.permission.BasicFlagHolder;
+import br.com.gamemods.minecity.api.permission.ExceptFlagHolder;
+import br.com.gamemods.minecity.api.permission.Group;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
@@ -23,7 +24,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class City extends BasicFlagHolder
+public final class City extends ExceptFlagHolder
 {
     @NotNull
     public final MineCity mineCity;
@@ -41,6 +42,7 @@ public final class City extends BasicFlagHolder
     private PlayerID owner;
     private BlockPos spawn;
     private Map<Integer, Island> islands = new HashMap<>(1);
+    private Map<String, Group> groups = new HashMap<>(1);
 
     /**
      * Create and save a city immediately
@@ -101,6 +103,12 @@ public final class City extends BasicFlagHolder
         islands.stream().forEach(island -> this.islands.put(island.getId(), island));
     }
 
+    @Nullable
+    public Group getGroup(@NotNull String name)
+    {
+        return groups.get(StringUtil.identity(name));
+    }
+
     @NotNull
     @Override
     public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
@@ -128,6 +136,7 @@ public final class City extends BasicFlagHolder
         storage.setName(this, identity, name);
         this.identityName = identity;
         this.name = name;
+        groups.values().forEach(Group::updateCityName);
     }
 
     @NotNull

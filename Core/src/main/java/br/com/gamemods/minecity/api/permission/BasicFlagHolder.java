@@ -10,6 +10,7 @@ import java.util.*;
 /**
  * A flag holder that can provide different denial messages per flag and allow users to bypass revoked permissions
  */
+@Deprecated
 public class BasicFlagHolder implements FlagHolder
 {
     protected Message defaultMessage = DEFAULT_DENIAL_MESSAGE;

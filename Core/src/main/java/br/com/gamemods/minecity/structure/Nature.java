@@ -1,11 +1,11 @@
 package br.com.gamemods.minecity.structure;
 
 import br.com.gamemods.minecity.MineCity;
-import br.com.gamemods.minecity.api.permission.BasicFlagHolder;
+import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import org.jetbrains.annotations.NotNull;
 
-public final class Nature extends BasicFlagHolder implements ChunkOwner
+public final class Nature extends SimpleFlagHolder implements ChunkOwner
 {
     @NotNull
     public final MineCity mineCity;

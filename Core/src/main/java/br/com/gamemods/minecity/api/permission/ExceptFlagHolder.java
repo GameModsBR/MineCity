@@ -18,13 +18,13 @@ public class ExceptFlagHolder extends SimpleFlagHolder
      * An immutable instance of an approval status
      */
     protected final Status DIRECT_ALLOW = new Status();
-    protected EnumMap<PermissionFlag, Map<UUID, Status>> strictPermission = new EnumMap<>(PermissionFlag.class);
+    protected EnumMap<PermissionFlag, Map<Identity<?>, Status>> strictPermission = new EnumMap<>(PermissionFlag.class);
 
     @NotNull
     @Override
     public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
     {
-        Status status = strictPermission.getOrDefault(action, emptyMap()).get(entity.getUniqueId());
+        Status status = strictPermission.getOrDefault(action, emptyMap()).get(entity.getIdentity());
         if(status != null)
         {
             if(status.message != null)
@@ -40,33 +40,33 @@ public class ExceptFlagHolder extends SimpleFlagHolder
     /**
      * Directly allow a flag for an ID, this will take priority over the default permission  and will override the previous direct permission
      * @param flag The flag that will be denied
-     * @param uuid The entity or group ID
+     * @param identity The entity or group ID
      */
-    public void allow(PermissionFlag flag, UUID uuid)
+    public void allow(PermissionFlag flag, Identity<?> identity)
     {
-        strictPermission.computeIfAbsent(flag, f-> new HashMap<>(1)).put(uuid, DIRECT_ALLOW);
+        strictPermission.computeIfAbsent(flag, f-> new HashMap<>(1)).put(identity, DIRECT_ALLOW);
     }
 
     /**
      * Directly restrict a flag for an ID, this will take priority over the default permission and will override the previous direct permission.
      * The current default denial message will be used, if the default message changes later it will not update.
      * @param flag The flag that will be denied
-     * @param uuid The entity or group ID
+     * @param identity The entity or group ID
      */
-    public void deny(PermissionFlag flag, UUID uuid)
+    public void deny(PermissionFlag flag, Identity<?> identity)
     {
-        deny(flag, uuid, defaultMessage);
+        deny(flag, identity, defaultMessage);
     }
 
     /**
      * Directly restrict a flag for an ID, this will take priority over the default permission  and will override the previous direct permission
      * @param flag The flag that will be denied
-     * @param uuid The entity or group ID
+     * @param identity The entity or group ID
      * @param message The message that will be displayed only to this ID.
      */
-    public void deny(PermissionFlag flag, UUID uuid, Message message)
+    public void deny(PermissionFlag flag, Identity<?> identity, Message message)
     {
-        strictPermission.computeIfAbsent(flag, f-> new HashMap<>(1)).put(uuid, new Status(message));
+        strictPermission.computeIfAbsent(flag, f-> new HashMap<>(1)).put(identity, new Status(message));
     }
 
     /**

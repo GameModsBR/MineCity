@@ -1,6 +1,8 @@
 package br.com.gamemods.minecity.datasource.api;
 
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.permission.Group;
+import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.structure.City;
@@ -50,5 +52,13 @@ public interface ICityStorage
 
     void setName(@NotNull City city, @NotNull String identity, @NotNull String name) throws DataSourceException;
 
+    void setName(@NotNull Group group, @NotNull String identity, @NotNull String name) throws DataSourceException;
+
     Collection<ChunkPos> reserve(@NotNull IslandArea reserve) throws DataSourceException;
+
+    void addMember(@NotNull Group group, @NotNull Identity<?> member) throws DataSourceException, UnsupportedOperationException;
+
+    void removeMember(@NotNull Group group, @NotNull Identity<?> member) throws DataSourceException, UnsupportedOperationException;
+
+    void deleteGroup(@NotNull Group group) throws DataSourceException;
 }

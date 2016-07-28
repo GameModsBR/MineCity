@@ -1,28 +1,22 @@
 package br.com.gamemods.minecity.api;
 
+import br.com.gamemods.minecity.api.permission.Identity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public final class PlayerID implements Comparable<PlayerID>
+public final class PlayerID extends Identity<UUID>
 {
     private int dataSourceId;
 
-    @NotNull
-    public final UUID uniqueId;
-    @NotNull
-    public String name;
-
     public PlayerID(@NotNull UUID uniqueId, @NotNull String name)
     {
-        this.uniqueId = uniqueId;
-        this.name = name;
+        super(uniqueId, name);
     }
 
     public PlayerID(int dataSourceId, @NotNull UUID uniqueId, @NotNull String name)
     {
-        this.uniqueId = uniqueId;
-        this.name = name;
+        super(uniqueId, name);
         setDataSourceId(dataSourceId);
     }
 
@@ -36,28 +30,6 @@ public final class PlayerID implements Comparable<PlayerID>
         if(id < 0) throw new IllegalArgumentException();
         if(dataSourceId > 0) throw new IllegalStateException();
         dataSourceId = id;
-    }
-
-    @Override
-    public int compareTo(@NotNull PlayerID o)
-    {
-        return name.compareToIgnoreCase(o.name);
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if(this == o) return true;
-        if(o == null || getClass() != o.getClass()) return false;
-
-        PlayerID playerID = (PlayerID) o;
-        return uniqueId.equals(playerID.uniqueId);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return uniqueId.hashCode();
     }
 
     @Override

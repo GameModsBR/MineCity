@@ -3,6 +3,8 @@ package br.com.gamemods.minecity.structure;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.Group;
+import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
@@ -178,6 +180,33 @@ public class Inconsistency implements ChunkOwner
         @Override
         public void setName(@NotNull City city, @NotNull String identity, @NotNull String name)
                 throws DataSourceException
+        {
+            throw new DataSourceException("Inconsistent city!");
+        }
+
+        @Override
+        public void setName(@NotNull Group group, @NotNull String identity, @NotNull String name)
+                throws DataSourceException
+        {
+            throw new DataSourceException("Inconsistent city!");
+        }
+
+        @Override
+        public void addMember(@NotNull Group group, @NotNull Identity<?> member)
+                throws DataSourceException, UnsupportedOperationException
+        {
+            throw new DataSourceException("Inconsistent city!");
+        }
+
+        @Override
+        public void removeMember(@NotNull Group group, @NotNull Identity<?> member)
+                throws DataSourceException, UnsupportedOperationException
+        {
+            throw new DataSourceException("Inconsistent city!");
+        }
+
+        @Override
+        public void deleteGroup(@NotNull Group group) throws DataSourceException
         {
             throw new DataSourceException("Inconsistent city!");
         }

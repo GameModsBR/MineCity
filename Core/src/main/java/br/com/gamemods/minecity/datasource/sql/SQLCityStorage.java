@@ -1,6 +1,8 @@
 package br.com.gamemods.minecity.datasource.sql;
 
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.permission.Group;
+import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
@@ -402,6 +404,32 @@ public class SQLCityStorage implements ICityStorage
         {
             throw new DataSourceException(e);
         }
+    }
+
+    @Override
+    public void setName(@NotNull Group group, @NotNull String identity, @NotNull String name) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void addMember(@NotNull Group group, @NotNull Identity<?> member)
+            throws DataSourceException, UnsupportedOperationException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removeMember(@NotNull Group group, @NotNull Identity<?> member)
+            throws DataSourceException, UnsupportedOperationException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteGroup(@NotNull Group group) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
     }
 
     @NotNull
