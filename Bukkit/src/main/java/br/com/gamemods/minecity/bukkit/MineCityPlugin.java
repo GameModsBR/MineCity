@@ -40,6 +40,7 @@ public class MineCityPlugin extends JavaPlugin
             config.locale = Locale.forLanguageTag(Optional.ofNullable(yaml.getString("language")).filter(l->!l.isEmpty()).orElse("en"));
             instance = new MineCityBukkit(this, config);
             instance.mineCity.dataSource.initDB();
+            instance.mineCity.commands.onlinePlayers = ()-> getServer().getOnlinePlayers().stream().map(Player::getName);
             instance.mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
             instance.mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
 
@@ -78,7 +79,7 @@ public class MineCityPlugin extends JavaPlugin
         String[] path = new String[args.length+1];
         path[0] = label;
         System.arraycopy(args, 0, path, 1, args.length);
-        return instance.mineCity.commands.complete(path, ()-> getServer().getOnlinePlayers().stream().map(Player::getName));
+        return instance.mineCity.commands.complete(path);
     }
 
     public BukkitScheduler getScheduler()
