@@ -115,7 +115,9 @@ public class SQLSourceTest
         try(Connection conn = DriverManager.getConnection(config.dbUrl, config.dbUser, new String(config.dbPass)))
         {
             conn.setAutoCommit(false);
-            String[] tables = new String[]{"chunks","city","islands","players","setup","world"};
+            String[] tables = new String[]{"chunks","city","islands","players","setup","world","entities","groups",
+                    "group_players","group_entities"
+            };
             try(Statement stm =  conn.createStatement())
             {
                 stm.execute("SET FOREIGN_KEY_CHECKS = 0;");

@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.StringUtil;
+import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
@@ -288,6 +289,50 @@ public class SQLSource implements IDataSource
         }
     }
 
+    int entityId(Connection connection, @Nullable EntityID entity) throws DataSourceException
+    {
+        if(entity == null) return 0;
+        int id = entity.getDataSourceId();
+        if(id > 0) return id;
+
+        try
+        {
+            try(PreparedStatement pst = connection.prepareStatement(
+                    "SELECT `entity_id` FROM `minecity_entities` WHERE `entity_uuid`=?"
+            ))
+            {
+                pst.setBytes(1, uuid(entity.uniqueId));
+                ResultSet result = pst.executeQuery();
+                if(result.next())
+                {
+                    id = result.getInt(1);
+                    entity.setDataSourceId(id);
+                    return id;
+                }
+            }
+
+            try(PreparedStatement pst = connection.prepareStatement(
+                    "INSERT INTO `minecity_entities`(`entity_uuid`, `entity_name`, entity_type) VALUES(?,?,?)"
+                    , Statement.RETURN_GENERATED_KEYS
+            ))
+            {
+                pst.setBytes(1, uuid(entity.uniqueId));
+                pst.setString(2, entity.name);
+                pst.setString(3, entity.getType().name());
+                pst.executeUpdate();
+                ResultSet keys = pst.getGeneratedKeys();
+                keys.next();
+                id = keys.getInt(1);
+                entity.setDataSourceId(id);
+                return id;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
     private City city(Connection connection, int cityId) throws SQLException, DataSourceException
     {
         synchronized(cityMap)
@@ -461,7 +506,7 @@ public class SQLSource implements IDataSource
                 }
             }
 
-            return new CityCreationResult(cityStorage, new SQLIsland(islandId, spawnChunk, city));
+            return new CityCreationResult(cityStorage, new SQLIsland(islandId, spawnChunk, city), Collections.emptyList());
         }
         catch(SQLException e)
         {

@@ -24,6 +24,8 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static br.com.gamemods.minecity.api.StringUtil.identity;
+
 public final class City extends ExceptFlagHolder
 {
     @NotNull
@@ -41,8 +43,8 @@ public final class City extends ExceptFlagHolder
     private String identityName;
     private PlayerID owner;
     private BlockPos spawn;
-    private Map<Integer, Island> islands = new HashMap<>(1);
-    private Map<String, Group> groups = new HashMap<>(1);
+    private final Map<Integer, Island> islands;
+    private final Map<String, Group> groups;
 
     /**
      * Create and save a city immediately
@@ -56,7 +58,7 @@ public final class City extends ExceptFlagHolder
     {
         this.mineCity = mineCity;
         this.name = name;
-        identityName = StringUtil.identity(name);
+        identityName = identity(name);
         this.owner = owner;
         this.spawn = spawn;
         if(identityName.length() < 3)
@@ -73,7 +75,10 @@ public final class City extends ExceptFlagHolder
 
         CityCreationResult result = mineCity.dataSource.createCity(this);
         storage = result.storage;
+        islands = new HashMap<>(1);
         islands.put(result.island.getId(), result.island);
+        groups = new HashMap<>(result.groups.size());
+        result.groups.stream().forEach(g-> groups.put(g.getIdentityName(), g));
 
         try
         {
@@ -91,6 +96,7 @@ public final class City extends ExceptFlagHolder
      */
     public City(@NotNull MineCity mineCity, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
                 @NotNull BlockPos spawn, Collection<Island> islands, int id, @NotNull ICityStorage storage)
+            throws DataSourceException
     {
         this.mineCity = mineCity;
         this.name = name;
@@ -101,12 +107,58 @@ public final class City extends ExceptFlagHolder
         this.storage = storage;
         this.islands = new HashMap<>(islands.size());
         islands.stream().forEach(island -> this.islands.put(island.getId(), island));
+        Collection<Group> loadedGroups = storage.loadGroups(this);
+        groups = new HashMap<>(loadedGroups.size());
+        loadedGroups.stream().forEach(g-> groups.put(g.getIdentityName(), g));
+    }
+
+    public synchronized Group createGroup(@NotNull String name) throws IllegalArgumentException, DataSourceException
+    {
+        String id = identity(name);
+        Group conflict = groups.get(id);
+        if(conflict != null)
+            throw new IllegalArgumentException("The group name '"+name+"' conflicts with '"+conflict.getName()+"'");
+
+        Group group = storage.createGroup(this, id, name);
+        groups.put(group.getIdentityName(), group);
+        return group;
+    }
+
+    public synchronized Group removeGroup(@NotNull String name) throws NoSuchElementException, DataSourceException
+    {
+        String id = identity(name);
+        Group group = groups.get(id);
+        if(group == null)
+            throw new NoSuchElementException("Group not found: "+name);
+
+        group.remove();
+        groups.remove(id);
+        return group;
+    }
+
+    public synchronized void removeInvalidGroups()
+    {
+        groups.values().removeIf(Group::isInvalid);
+    }
+
+
+    public synchronized void updateGroupName(Group group, String oldName)
+            throws IllegalStateException, IllegalArgumentException
+    {
+        String id = group.getIdentityName();
+        if(id.equals(oldName))
+            throw new IllegalStateException();
+
+        if(!groups.remove(oldName, group))
+            throw new IllegalArgumentException();
+
+        groups.put(id, group);
     }
 
     @Nullable
     public Group getGroup(@NotNull String name)
     {
-        return groups.get(StringUtil.identity(name));
+        return groups.get(identity(name));
     }
 
     @NotNull
@@ -122,7 +174,7 @@ public final class City extends ExceptFlagHolder
 
     public void setName(@NotNull String name) throws IllegalArgumentException, DataSourceException
     {
-        String identity = StringUtil.identity(name);
+        String identity = identity(name);
         if(identity.length() < 3)
             throw new IllegalArgumentException("Bad name");
 

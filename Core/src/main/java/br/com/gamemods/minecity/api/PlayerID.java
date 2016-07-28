@@ -7,8 +7,6 @@ import java.util.UUID;
 
 public final class PlayerID extends Identity<UUID>
 {
-    private int dataSourceId;
-
     public PlayerID(@NotNull UUID uniqueId, @NotNull String name)
     {
         super(uniqueId, name);
@@ -20,16 +18,10 @@ public final class PlayerID extends Identity<UUID>
         setDataSourceId(dataSourceId);
     }
 
-    public int getDataSourceId()
+    @Override
+    public Type getType()
     {
-        return dataSourceId;
-    }
-
-    public void setDataSourceId(int id) throws IllegalStateException, IllegalArgumentException
-    {
-        if(id < 0) throw new IllegalArgumentException();
-        if(dataSourceId > 0) throw new IllegalStateException();
-        dataSourceId = id;
+        return Type.PLAYER;
     }
 
     @Override

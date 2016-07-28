@@ -1,10 +1,12 @@
 package br.com.gamemods.minecity.datasource.sql;
 
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.permission.Group;
 import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
+import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.ICityStorage;
@@ -63,6 +65,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @NotNull
     @Override
     public Collection<ChunkPos> reserve(@NotNull IslandArea reserve) throws DataSourceException
     {
@@ -406,30 +409,201 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @NotNull
+    @Override
+    public Group createGroup(@NotNull City city, @NotNull String id, @NotNull String name) throws DataSourceException
+    {
+        try(Connection transaction = connection.transaction())
+        {
+            try(PreparedStatement pst = transaction.prepareStatement(
+                    "INSERT INTO minecity_groups(city_id,name,display_name) VALUES(?,?,?)"
+                , PreparedStatement.RETURN_GENERATED_KEYS
+            ))
+            {
+                pst.setInt(1, city.getId());
+                pst.setString(2, id);
+                pst.setString(3, name);
+                pst.executeUpdate();
+                ResultSet generatedKeys = pst.getGeneratedKeys();
+                generatedKeys.next();
+                int groupId = generatedKeys.getInt(1);
+
+                transaction.commit();
+                return new Group(this, groupId, city, id, name, Collections.emptySet());
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
     @Override
     public void setName(@NotNull Group group, @NotNull String identity, @NotNull String name) throws DataSourceException
     {
-        throw new UnsupportedOperationException();
+        try(PreparedStatement pst = connection.connect().prepareStatement(
+                "UPDATE minecity_groups SET `name`=?, display_name=? WHERE group_id=?"
+        ))
+        {
+            pst.setString(1, identity);
+            pst.setString(2, name);
+            pst.setInt(3, group.id);
+            int count = pst.executeUpdate();
+            if(count != 1)
+                throw new DataSourceException("Expected 1 change but got "+count+" changes");
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
+    public void deleteGroup(@NotNull Group group) throws DataSourceException
+    {
+        try(Statement stm = connection.connect().createStatement())
+        {
+            stm.executeUpdate("DELETE FROM minecity_groups WHERE group_id="+group.id);
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
     }
 
     @Override
     public void addMember(@NotNull Group group, @NotNull Identity<?> member)
             throws DataSourceException, UnsupportedOperationException
     {
-        throw new UnsupportedOperationException();
+        try(Connection transaction = this.connection.transaction(); Statement stm = transaction.createStatement())
+        {
+            switch(member.getType())
+            {
+                case PLAYER:
+                {
+                    int playerId = source.playerId(transaction, (PlayerID) member);
+                    stm.executeUpdate("INSERT INTO minecity_group_players(group_id,player_id) VALUES("+group.id+","+playerId+");");
+                    break;
+                }
+                case ENTITY:
+                {
+                    int entityId = source.entityId(transaction, (EntityID) member);
+                    stm.executeUpdate("INSERT INTO minecity_group_entities(group_id,entity_id) VALUES("+group.id+","+entityId+");");
+                    break;
+                }
+                default:
+                    throw new UnsupportedOperationException("Unsupported identity type: "+member.getType());
+            }
+
+            transaction.commit();
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+        catch(ClassCastException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
     }
 
     @Override
     public void removeMember(@NotNull Group group, @NotNull Identity<?> member)
             throws DataSourceException, UnsupportedOperationException
     {
-        throw new UnsupportedOperationException();
+        try(Connection transaction = this.connection.transaction(); Statement stm = transaction.createStatement())
+        {
+            switch(member.getType())
+            {
+                case PLAYER:
+                {
+                    int playerId = source.playerId(transaction, (PlayerID) member);
+                    int changes = stm.executeUpdate("DELETE FROM minecity_group_players WHERE group_id="+group.id+" AND player_id="+playerId+";");
+                    if(changes != 1)
+                        throw new DataSourceException("Expected 1 change, got "+changes+" changes");
+                    break;
+                }
+                case ENTITY:
+                {
+                    int entityId = source.entityId(transaction, (EntityID) member);
+                    int changes = stm.executeUpdate("INSERT INTO minecity_group_entities WHERE group_id="+group.id+" AND entity_id="+entityId+";");
+                    if(changes != 1)
+                        throw new DataSourceException("Expected 1 change, got "+changes+" changes");
+                    break;
+                }
+                default:
+                    throw new UnsupportedOperationException("Unsupported identity type: "+member.getType());
+            }
+
+            transaction.commit();
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+        catch(ClassCastException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
     }
 
+    @NotNull
     @Override
-    public void deleteGroup(@NotNull Group group) throws DataSourceException
+    public Collection<Group> loadGroups(@NotNull City city) throws DataSourceException
     {
-        throw new UnsupportedOperationException();
+        try
+        {
+            Connection connection = this.connection.connect();
+            try(PreparedStatement groupPst = connection.prepareStatement(
+                    "SELECT group_id, name, display_name FROM minecity_groups WHERE city_id=?"
+                );
+                PreparedStatement memberPst = connection.prepareStatement(
+                    "SELECT p.player_id, player_uuid, player_name, e.entity_id, entity_uuid, entity_name, entity_type " +
+                            "FROM minecity_group_players gp " +
+                            "INNER JOIN minecity_players p ON p.player_id = gp.player_id, " +
+                            "minecity_group_entities ge " +
+                            "INNER JOIN minecity_entities e ON e.entity_id = ge.entity_id " +
+                            "WHERE gp.group_id = ? OR ge.group_id = ?"
+            ))
+            {
+                groupPst.setInt(1, city.getId());
+                ResultSet groupResult = groupPst.executeQuery();
+                List<Group> groups = new ArrayList<>();
+                while(groupResult.next())
+                {
+                    int groupId = groupResult.getInt(1);
+                    memberPst.setInt(1, groupId);
+                    memberPst.setInt(2, groupId);
+                    ResultSet memberResult = memberPst.executeQuery();
+                    List<Identity<?>> members = new ArrayList<>();
+                    while(memberResult.next())
+                    {
+                        int playerId = memberResult.getInt("player_id");
+                        int entityId = memberResult.getInt("entity_id");
+                        if(playerId > 0)
+                            members.add(new PlayerID(playerId, source.uuid(memberResult.getBytes("player_uuid")), memberResult.getString("player_name")));
+                        else if(entityId > 0)
+                            members.add(new EntityID(entityId, MinecraftEntity.Type.valueOf(memberResult.getString("entity_type")),
+                                    source.uuid(memberResult.getBytes("entity_uuid")), memberResult.getString("entity_name")
+                            ));
+                    }
+                    memberResult.close();
+
+                    groups.add(new Group(this, groupId, city, groupResult.getString(2), groupResult.getString(3), members));
+                }
+
+                return groups;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
     }
 
     @NotNull

@@ -54,6 +54,7 @@ public interface ICityStorage
 
     void setName(@NotNull Group group, @NotNull String identity, @NotNull String name) throws DataSourceException;
 
+    @NotNull
     Collection<ChunkPos> reserve(@NotNull IslandArea reserve) throws DataSourceException;
 
     void addMember(@NotNull Group group, @NotNull Identity<?> member) throws DataSourceException, UnsupportedOperationException;
@@ -61,4 +62,10 @@ public interface ICityStorage
     void removeMember(@NotNull Group group, @NotNull Identity<?> member) throws DataSourceException, UnsupportedOperationException;
 
     void deleteGroup(@NotNull Group group) throws DataSourceException;
+
+    @NotNull
+    Collection<Group> loadGroups(@NotNull City city) throws DataSourceException;
+
+    @NotNull
+    Group createGroup(@NotNull City city, @NotNull String id, @NotNull String name) throws DataSourceException;
 }

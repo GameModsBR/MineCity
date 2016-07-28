@@ -11,6 +11,13 @@ public class GroupID extends Identity<Integer>
         super(id, name);
         this.home = home;
         this.homeId = homeId;
+        setDataSourceId(id);
+    }
+
+    @Override
+    public Type getType()
+    {
+        return Type.GROUP;
     }
 
     @Override

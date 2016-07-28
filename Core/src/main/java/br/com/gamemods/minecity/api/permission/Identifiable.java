@@ -2,8 +2,6 @@ package br.com.gamemods.minecity.api.permission;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.UUID;
-
 public interface Identifiable<T>
 {
     @NotNull
@@ -13,8 +11,5 @@ public interface Identifiable<T>
     String getName();
 
     @NotNull
-    default Identity<T> getIdentity()
-    {
-        return new Identity<>(getUniqueId(), getName());
-    }
+    Identity<T> getIdentity();
 }

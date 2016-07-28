@@ -15,6 +15,24 @@ public class EntityID extends Identity<UUID>
         this.type = type;
     }
 
+    public EntityID(int dataSourceId, @NotNull MinecraftEntity.Type type, @NotNull UUID id, @NotNull String name)
+    {
+        super(id, name);
+        this.type = type;
+        setDataSourceId(dataSourceId);
+    }
+
+    @Override
+    public Type getType()
+    {
+        return Type.ENTITY;
+    }
+
+    MinecraftEntity.Type getEntityType()
+    {
+        return type;
+    }
+
     @Override
     public String toString()
     {

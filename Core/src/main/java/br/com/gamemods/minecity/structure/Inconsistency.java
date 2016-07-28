@@ -35,9 +35,16 @@ public class Inconsistency implements ChunkOwner
         if(city == null)
         {
             Message message = new Message("chunk.inconsistent", "This chunk is inconsistent.");
-            city = new City(mineCity, "#inconsistent", "#Inconsistency", null, new BlockPos(WORLD, 0, 0, 0),
-                    Collections.singleton(island = new InconsistentIsland()), -1000, new VoidStorage()
-            );
+            try
+            {
+                city = new City(mineCity, "#inconsistent", "#Inconsistency", null, new BlockPos(WORLD, 0, 0, 0),
+                        Collections.singleton(island = new InconsistentIsland()), -1000, new VoidStorage()
+                );
+            }
+            catch(DataSourceException unexpected)
+            {
+                throw new RuntimeException(unexpected);
+            }
             Arrays.asList(PermissionFlag.values()).forEach(f-> city.deny(f, message));
             city.allow(PermissionFlag.LEAVE);
         }
@@ -211,10 +218,28 @@ public class Inconsistency implements ChunkOwner
             throw new DataSourceException("Inconsistent city!");
         }
 
+        @NotNull
         @Override
         public Collection<ChunkPos> reserve(@NotNull IslandArea reserve) throws DataSourceException
         {
             throw new DataSourceException("Inconsistent city!");
+        }
+
+        @NotNull
+        @Override
+        public Group createGroup(@NotNull City city, @NotNull String id, @NotNull String name)
+                throws DataSourceException
+        {
+            throw new DataSourceException("Inconsistent city!");
+        }
+
+        @NotNull
+        @Override
+        public Collection<Group> loadGroups(@NotNull City city) throws DataSourceException
+        {
+            if(city.getId() != -1000)
+                throw new DataSourceException("Inconsistent city!");
+            return Collections.emptyList();
         }
     }
 }

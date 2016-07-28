@@ -74,7 +74,7 @@ public class FakeDataSource implements IDataSource, ICityStorage
             e.printStackTrace(System.err);
         }
 
-        return new CityCreationResult(this, island);
+        return new CityCreationResult(this, island, Collections.emptyList());
     }
 
     @Nullable
@@ -274,6 +274,7 @@ public class FakeDataSource implements IDataSource, ICityStorage
         );
     }
 
+    @NotNull
     @Override
     public Collection<ChunkPos> reserve(@NotNull IslandArea reserve)
     {
@@ -309,6 +310,20 @@ public class FakeDataSource implements IDataSource, ICityStorage
 
     @Override
     public void deleteGroup(@NotNull Group group) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @NotNull
+    @Override
+    public Collection<Group> loadGroups(@NotNull City city) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @NotNull
+    @Override
+    public Group createGroup(@NotNull City city, @NotNull String id, @NotNull String name) throws DataSourceException
     {
         throw new UnsupportedOperationException();
     }
