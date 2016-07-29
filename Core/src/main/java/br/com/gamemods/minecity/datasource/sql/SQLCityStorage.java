@@ -717,7 +717,7 @@ public class SQLCityStorage implements ICityStorage
                     island.minX = island.maxX = island.minZ = island.maxZ = island.chunkCount = 0;
                 });
 
-                chunksToUpdate.stream().forEach((DBConsumer<ChunkPos>) pos-> source.mineCity.reloadChunk(pos));
+                chunksToUpdate.forEach((DBConsumer<ChunkPos>) pos -> source.mineCity.reloadChunk(pos));
                 return mainIsland;
             }
             catch(Exception e)

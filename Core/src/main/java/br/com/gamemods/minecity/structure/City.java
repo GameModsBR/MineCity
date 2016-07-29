@@ -81,7 +81,7 @@ public final class City extends ExceptFlagHolder
         islands = new HashMap<>(1);
         islands.put(result.island.getId(), result.island);
         groups = new HashMap<>(result.groups.size());
-        result.groups.stream().forEach(g-> groups.put(g.getIdentityName(), g));
+        result.groups.forEach(g -> groups.put(g.getIdentityName(), g));
 
         try
         {
@@ -109,10 +109,10 @@ public final class City extends ExceptFlagHolder
         setId(id);
         this.storage = storage;
         this.islands = new HashMap<>(islands.size());
-        islands.stream().forEach(island -> this.islands.put(island.getId(), island));
+        islands.forEach(island -> this.islands.put(island.getId(), island));
         Collection<Group> loadedGroups = storage.loadGroups(this);
         groups = new HashMap<>(loadedGroups.size());
-        loadedGroups.stream().forEach(g-> groups.put(g.getIdentityName(), g));
+        loadedGroups.forEach(g -> groups.put(g.getIdentityName(), g));
     }
 
     public synchronized Group createGroup(@NotNull String name) throws IllegalArgumentException, DataSourceException

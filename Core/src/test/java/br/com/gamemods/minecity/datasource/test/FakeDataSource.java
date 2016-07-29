@@ -134,7 +134,7 @@ public class FakeDataSource implements IDataSource, ICityStorage
         List<ChunkPos> chunksToUpdate = claims.entrySet().stream()
             .filter(e-> merge.contains(e.getValue())).map(Map.Entry::getKey).collect(Collectors.toList());
 
-        chunksToUpdate.stream().forEach(pos-> claims.put(pos, mainIsland));
+        chunksToUpdate.forEach(pos -> claims.put(pos, mainIsland));
         claims.put(chunk, mainIsland);
         mainIsland.add(chunk);
 
@@ -148,7 +148,7 @@ public class FakeDataSource implements IDataSource, ICityStorage
             island.minX = island.maxX = island.minZ = island.maxZ = island.chunkCount = 0;
         });
 
-        chunksToUpdate.stream().forEach((DBConsumer<ChunkPos>) pos-> mineCity.reloadChunk(pos));
+        chunksToUpdate.forEach((DBConsumer<ChunkPos>) pos -> mineCity.reloadChunk(pos));
         return mainIsland;
     }
 

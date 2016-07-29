@@ -254,7 +254,7 @@ public class CommandTree
         if(node == null || node.getTextContent() == null)
             return Collections.singletonList("");
         else
-            return Arrays.asList(node.getTextContent().split(",")).stream().map(StringUtil::identity)
+            return Arrays.stream(node.getTextContent().split(",")).map(StringUtil::identity)
                     .collect(Collectors.toList());
     }
 
@@ -456,7 +456,7 @@ public class CommandTree
 
         if(args.length > 0 && def.sticky())
         {
-            List<String> identities = Arrays.asList(args).stream().map(StringUtil::identity).collect(Collectors.toList());
+            List<String> identities = Arrays.stream(args).map(StringUtil::identity).collect(Collectors.toList());
             options = options.map(o-> {
                 Queue<String> parts = new ArrayDeque<>(Arrays.asList(o.split("\\s+")));
                 Iterator<String> iter = identities.iterator();
