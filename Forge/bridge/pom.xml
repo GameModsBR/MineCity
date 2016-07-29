@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
 
-    <artifactId>MineCityForgeBridge</artifactId>
+    <artifactId>ForgeBridge</artifactId>
 	
 	<build>
 		<plugins>
@@ -28,16 +28,16 @@
                                 </condition>
 
                                 <condition property="gradle.task" value="build" else="setupDecompWorkspace build">
-                                    <available file="${project.basedir}/build/libs/MineCityForge-${project.version}.jar" />
+                                    <available file="${project.basedir}/../build/libs/MineCityForge-${project.version}.jar" />
                                 </condition>
 
                                 <echo message="Executing: ${gradle.executable} ${gradle.task}" />
-                                <exec dir="${project.basedir}" failonerror="true"
-                                      executable="${project.basedir}/${gradle.executable}">
+                                <exec dir="${project.basedir}/../" failonerror="true"
+                                      executable="${project.basedir}/../${gradle.executable}">
                                     <arg line="${gradle.task}" />
                                 </exec>
 
-                                <unzip src="${project.basedir}/build/libs/MineCityForge-${project.version}.jar" dest="${project.basedir}/build/unzip" />
+                                <unzip src="${project.basedir}/../build/libs/MineCityForge-${project.version}.jar" dest="${project.basedir}/../build/unzip" />
 
                             </tasks>
                         </configuration>
@@ -56,8 +56,8 @@
                                 </condition>
 
                                 <echo message="Executing: ${gradle.executable} clean"/>
-                                <exec dir="${project.basedir}"
-                                      executable="${project.basedir}/${gradle.executable}">
+                                <exec dir="${project.basedir}/../"
+                                      executable="${project.basedir}/../${gradle.executable}">
                                     <arg line="clean" />
                                 </exec>
 
