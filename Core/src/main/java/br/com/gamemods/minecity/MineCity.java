@@ -60,6 +60,7 @@ public class MineCity
         if(config.dbPass != null)
             Arrays.fill(config.dbPass, (byte) 0);
 
+        commands.dataSource = this.dataSource;
         commands.cityNames = this.dataSource.cityNameSupplier();
         commands.registerCommands(new CityCommand(this));
         commands.registerCommands(new PermissionCommands(this));

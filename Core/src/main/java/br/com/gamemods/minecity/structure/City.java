@@ -1,7 +1,7 @@
 package br.com.gamemods.minecity.structure;
 
 import br.com.gamemods.minecity.MineCity;
-import br.com.gamemods.minecity.api.*;
+import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.ExceptFlagHolder;
@@ -11,15 +11,18 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
-import br.com.gamemods.minecity.datasource.api.*;
+import br.com.gamemods.minecity.datasource.api.CityCreationResult;
+import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import br.com.gamemods.minecity.datasource.api.ICityStorage;
+import br.com.gamemods.minecity.datasource.api.IDataSource;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBFunction;
 import br.com.gamemods.minecity.datasource.api.unchecked.DisDBConsumer;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -159,6 +162,16 @@ public final class City extends ExceptFlagHolder
     public Group getGroup(@NotNull String name)
     {
         return groups.get(identity(name));
+    }
+
+    public Collection<Group> getGroups()
+    {
+        return Collections.unmodifiableCollection(groups.values());
+    }
+
+    public Set<String> getGroupNames()
+    {
+        return Collections.unmodifiableSet(groups.keySet());
     }
 
     @NotNull

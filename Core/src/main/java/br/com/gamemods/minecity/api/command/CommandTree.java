@@ -1,6 +1,10 @@
 package br.com.gamemods.minecity.api.command;
 
 import br.com.gamemods.minecity.api.StringUtil;
+import br.com.gamemods.minecity.datasource.api.IDataSource;
+import br.com.gamemods.minecity.datasource.api.unchecked.DBFunction;
+import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
+import br.com.gamemods.minecity.structure.City;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.*;
@@ -26,6 +30,7 @@ public class CommandTree
 {
     private Map<String, CommandEntry> tree = new HashMap<>();
     private Map<String, CommandDefinition> commands = new HashMap<>();
+    public IDataSource dataSource;
     public Supplier<Stream<String>> onlinePlayers = Stream::empty;
     public Supplier<Stream<String>> cityNames = Stream::empty;
     private CommandGroup root = new CommandGroup(new CommandInfo<>("", this::groupExecutor));
@@ -398,10 +403,50 @@ public class CommandTree
                 options = Stream.concat(onlinePlayers.get(), cityNames.get());
                 break;
             case CITY:
+            {
                 options = cityNames.get();
                 String id = identity(key);
                 filter = o-> identity(o).startsWith(id);
                 break;
+            }
+            case GROUP:
+            {
+                String relativeName = def.relative();
+                int index = -1;
+                for(int i = 0; i < defs.length; i++)
+                {
+                    if(defs[i].name().equals(relativeName))
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+
+                if(index < 0 || args.length <= index)
+                    return Collections.emptyList();
+
+                String cityName = identity(args[index]);
+                try
+                {
+                    Optional<Set<String>> groups = cityNames.get().map(StringUtil::identity)
+                            .filter(cityName::equals).findFirst()
+                            .flatMap((DBFunction<String, Optional<City>>) dataSource::getCityByName)
+                            .map(City::getGroupNames);
+
+                    if(!groups.isPresent())
+                        return Collections.emptyList();
+
+                    options = groups.get().stream();
+                    String id = identity(key);
+                    filter = o-> identity(o).startsWith(id);
+                }
+                catch(UncheckedDataSourceException e)
+                {
+                    e.printStackTrace();
+                    return Collections.emptyList();
+                }
+                break;
+            }
             default:
                 return Collections.emptyList();
         }
