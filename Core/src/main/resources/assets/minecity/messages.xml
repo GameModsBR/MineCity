@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE minecity-messages SYSTEM "http://gamemods.com.br/minecity-messages-1.0.dtd">
 <minecity-messages modified="false" add-missing="true">
     <msg id="todo.group.list">Group List: ${child}</msg>
     <cmd>

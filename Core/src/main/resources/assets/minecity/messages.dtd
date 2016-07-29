@@ -1,0 +1,53 @@
+<!ELEMENT minecity-messages (%IdNodes;)>
+<!ATTLIST minecity-messages
+        modified (true|false) "true"
+        add-missing (true|false) "false">
+
+<!ELEMENT msg (#PCDATA|%FormatNodes;)*>
+<!ATTLIST msg id CDATA #REQUIRED>
+
+<!ENTITY % Colors "black,darkblue,darkgreen,darkaqua,darkred,darkpurple,gold,gray,darkgray,blue,green,aqua,red,lightpurple,yellow,white">
+<!ENTITY % FontStyle "m|b|s|u|i|r|c">
+<!ENTITY % FormatNodes "%Colors;|%FontStyle;">
+<!ELEMENT black %FormatNodes;>
+<!ELEMENT darkblue %FormatNodes;>
+<!ELEMENT darkgreen %FormatNodes;>
+<!ELEMENT darkaqua %FormatNodes;>
+<!ELEMENT darkred %FormatNodes;>
+<!ELEMENT darkpurple %FormatNodes;>
+<!ELEMENT gold %FormatNodes;>
+<!ELEMENT gray %FormatNodes;>
+<!ELEMENT darkgray %FormatNodes;>
+<!ELEMENT blue %FormatNodes;>
+<!ELEMENT green %FormatNodes;>
+<!ELEMENT aqua %FormatNodes;>
+<!ELEMENT red %FormatNodes;>
+<!ELEMENT lightpurple %FormatNodes;>
+<!ELEMENT yellow %FormatNodes;>
+<!ELEMENT white %FormatNodes;>
+<!ELEMENT m %FormatNodes;>
+<!ELEMENT b %FormatNodes;>
+<!ELEMENT s %FormatNodes;>
+<!ELEMENT u %FormatNodes;>
+<!ELEMENT i %FormatNodes;>
+<!ELEMENT r %FormatNodes;>
+<!ELEMENT c %FormatNodes;>
+
+<!ENTITY % IdNodes "msg|cmd|city|create|name|chunk|claim|disclaim|success|spawn|rename|transfer|player|setspawn|deny|allow|action|teleport">
+<!ELEMENT cmd (%IdNodes;)*>
+<!ELEMENT city (%IdNodes;)*>
+<!ELEMENT create (%IdNodes;)*>
+<!ELEMENT name (%IdNodes;)*>
+<!ELEMENT chunk (%IdNodes;)*>
+<!ELEMENT claim (%IdNodes;)*>
+<!ELEMENT disclaim (%IdNodes;)*>
+<!ELEMENT success (%IdNodes;)*>
+<!ELEMENT spawn (%IdNodes;)*>
+<!ELEMENT rename (%IdNodes;)*>
+<!ELEMENT transfer (%IdNodes;)*>
+<!ELEMENT player (%IdNodes;)*>
+<!ELEMENT setspawn (%IdNodes;)*>
+<!ELEMENT deny (%IdNodes;)*>
+<!ELEMENT allow (%IdNodes;)*>
+<!ELEMENT action (%IdNodes;)*>
+<!ELEMENT teleport (%IdNodes;)*>

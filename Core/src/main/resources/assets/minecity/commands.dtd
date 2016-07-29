@@ -1,0 +1,28 @@
+<!ELEMENT minecity-commands (groups, commands)>
+<!ELEMENT groups (group+)>
+<!ELEMENT group (desc)>
+<!ELEMENT commands (command+)>
+<!ELEMENT command ((syntax,desc)|(desc,syntax)|desc|syntax)>
+<!ELEMENT desc (#PCDATA)>
+<!ELEMENT syntax (#PCDATA)>
+
+<!ATTLIST minecity-commands
+        modified (true|false) "true"
+        add-missing (true|false) "false">
+
+<!ATTLIST group
+        id CDATA #REQUIRED
+        cmd CDATA #REQUIRED
+        parent CDATA #IMPLIED>
+
+<!ATTLIST command
+        id (%Commands;) #REQUIRED
+        cmd CDATA #REQUIRED
+        parent CDATA #IMPLIED>
+
+<!ENTITY % Commands "%CityCommands;">
+<!ENTITY % CityCommands "%CityManageCommands;|%CityPermCommands;">
+<!ENTITY % CityManageCommands "city.create|city.claim|city.disclaim|city.spawn|city.rename|city.transfer|city.setspawn|city.map">
+<!ENTITY % CityPermCommands "%CityAllowCommands;|%CityDenyCommands;">
+<!ENTITY % CityDenyCommands "city.deny.enter|city.deny.click|city.deny.pickup|city.deny.open|city.deny.pvp|city.deny.pvc">
+<!ENTITY % CityAllowCommands "city.allow.enter|city.allow.click|city.allow.pickup|city.allow.open|city.allow.pvp|city.allow.pvc">
