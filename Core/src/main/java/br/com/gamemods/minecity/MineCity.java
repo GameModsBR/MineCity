@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.commands.CityCommand;
+import br.com.gamemods.minecity.commands.PermissionCommands;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.IDataSource;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
@@ -22,7 +23,10 @@ import br.com.gamemods.minecity.structure.Nature;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.Optional;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,6 +43,7 @@ public class MineCity
     private final ConcurrentHashMap<ChunkPos, ClaimedChunk> chunks = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<ChunkPos, CityCommand.MapCache> mapCache = new ConcurrentHashMap<>();
     public ExecutorService mapService = Executors.newSingleThreadExecutor(r-> new Thread(r, "MineCityMapService"));
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public Optional<WorldProvider> worldProvider = Optional.empty();
     public MessageTransformer messageTransformer;
     public EnumMap<PermissionFlag, Message> defaultNatureFlags = new EnumMap<>(PermissionFlag.class);
@@ -57,6 +62,7 @@ public class MineCity
 
         commands.cityNames = this.dataSource.cityNameSupplier();
         commands.registerCommands(new CityCommand(this));
+        commands.registerCommands(new PermissionCommands(this));
         Inconsistency.setMineCity(this);
     }
 
@@ -256,5 +262,21 @@ public class MineCity
             return result;
 
         return server.getPlayerId(name);
+    }
+
+    public Optional<PlayerID> findPlayer(String playerName) throws UncheckedDataSourceException
+    {
+        Optional<PlayerID> playerId = server.getPlayerId(playerName);
+        if(playerId.isPresent())
+            return playerId;
+
+        try
+        {
+            return dataSource.getPlayer(playerName);
+        }
+        catch(DataSourceException e)
+        {
+            throw new UncheckedDataSourceException(e);
+        }
     }
 }

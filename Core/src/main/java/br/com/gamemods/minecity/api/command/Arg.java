@@ -1,6 +1,9 @@
 package br.com.gamemods.minecity.api.command;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({})
@@ -12,12 +15,14 @@ public @interface Arg
     boolean sticky() default false;
     boolean optional() default false;
     String[] options() default {};
+    String relative() default "";
 
     enum Type
     {
         UNDEFINED,
         PREDEFINED,
         PLAYER,
-        CITY
+        CITY,
+        GROUP
     }
 }
