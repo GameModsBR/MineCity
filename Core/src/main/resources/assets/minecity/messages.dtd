@@ -32,6 +32,7 @@
 <!ELEMENT i %FormatNodes;>
 <!ELEMENT r %FormatNodes;>
 <!ELEMENT c %FormatNodes;>
+<!ATTLIST c code CDATA #REQUIRED>
 
 <!ENTITY % IdNodes "msg|cmd|city|create|name|chunk|claim|disclaim|success|spawn|rename|transfer|player|setspawn|deny|allow|action|teleport">
 <!ELEMENT cmd (%IdNodes;)*>
