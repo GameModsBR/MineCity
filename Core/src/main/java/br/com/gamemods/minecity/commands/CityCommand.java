@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.commands;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
@@ -29,6 +30,7 @@ public class CityCommand
         this.mineCity = mineCity;
     }
 
+    @Slow
     @Command(value = "city.create", console = false, args = @Arg(name = "name", sticky = true))
     public CommandResult<City> create(CommandSender sender, List<String> path, String[] args) throws DataSourceException
     {
@@ -52,6 +54,7 @@ public class CityCommand
             );
 
         BlockPos spawn = sender.getPosition();
+        //TODO Remove this slow call
         Optional<ClaimedChunk> optionalClaim = mineCity.getOrFetchChunk(spawn.getChunk());
         if(!optionalClaim.isPresent())
             return new CommandResult<>(new Message("cmd.city.create.chunk.not-loaded",
@@ -78,6 +81,7 @@ public class CityCommand
         ), city);
     }
 
+    @Slow
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Command(value = "city.claim", console = false, args = @Arg(name = "city", type = Arg.Type.CITY, optional = true, sticky = true))
     public CommandResult<Island> claim(CommandSender sender, List<String> path, String[] args)
@@ -136,6 +140,7 @@ public class CityCommand
         else
         {
             String name = String.join(" ", args);
+            //TODO Remove this slow call
             city = mineCity.dataSource.getCityByName(name).orElse(null);
 
             if(city == null)
@@ -165,6 +170,7 @@ public class CityCommand
         ), claim);
     }
 
+    @Slow
     @Command(value = "city.disclaim", console = false, args = @Arg(name = "city", type = Arg.Type.CITY, optional = true, sticky = true))
     public CommandResult<Collection<Island>> disclaim(CommandSender sender, List<String> path, String[] args)
             throws DataSourceException
@@ -190,6 +196,7 @@ public class CityCommand
             return new CommandResult<>(new Message("cmd.city.disclaim.spawn",
                     "Cannot disclaim the spawn chunk"));
 
+        //TODO Remove this slow command
         Collection<Island> newIslands = city.disclaim(chunk, true);
 
         if(newIslands.size() == 1)
@@ -209,6 +216,7 @@ public class CityCommand
                     , newIslands);
     }
 
+    @Slow
     @Command(value = "city.spawn", console = false, args = @Arg(name = "city", type = Arg.Type.CITY, sticky = true))
     public CommandResult<Void> spawn(CommandSender sender, List<String> path, String[] args)
             throws DataSourceException
@@ -222,6 +230,7 @@ public class CityCommand
                     new Object[]{"name", cityName})
             );
 
+        //TODO Remove this slow call
         City city = mineCity.dataSource.getCityByName(id).orElse(null);
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.spawn.not-found",
@@ -236,6 +245,7 @@ public class CityCommand
         return new CommandResult<>(error);
     }
 
+    @Slow
     @Command(value = "city.rename", console = false, args = @Arg(name = "new-name", sticky = true))
     public CommandResult<City> rename(CommandSender sender, List<String> path, String[] args) throws DataSourceException
     {
@@ -267,6 +277,7 @@ public class CityCommand
                     new Object[]{"name",cityName}
             ));
 
+        //TODO Remove this slow call
         city.setName(cityName);
 
         return new CommandResult<>(new Message("cmd.city.rename.success", "The city ${old} is now named ${new}",
@@ -274,6 +285,7 @@ public class CityCommand
         ), city);
     }
 
+    @Slow
     @Command(value = "city.transfer", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER))
     public CommandResult<City> transfer(CommandSender sender, List<String> path, String[] args)
             throws DataSourceException
@@ -288,6 +300,7 @@ public class CityCommand
                             "player names does not have spaces..."));
 
         String name = args[0].trim();
+        //TODO Remove this slow call from server thread
         PlayerID target = mineCity.getPlayer(name).orElse(null);
         if(target == null)
             return new CommandResult<>(new Message("cmd.city.transfer.player.not-found",
@@ -325,6 +338,7 @@ public class CityCommand
         ), city);
     }
 
+    @Slow
     @Command(value = "city.setspawn", console = false)
     public CommandResult<City> setSpawn(CommandSender sender, List<String> path, String[] args)
             throws DataSourceException
@@ -343,6 +357,7 @@ public class CityCommand
         if(position.equals(city.getSpawn()))
             return new CommandResult<>(new Message("cmd.city.setspawn.already", "The spawn is already set to that position"));
 
+        //TODO Remove this slow call
         city.setSpawn(position);
 
         return new CommandResult<>(new Message("cmd.city.setspawn.success",

@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.structure;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.ExceptFlagHolder;
@@ -56,6 +57,7 @@ public final class City extends ExceptFlagHolder
      * @throws IllegalArgumentException If the spawn's chunk is already reserved or the city's name is invalid
      * @throws DataSourceException If a database error occurs
      */
+    @Slow
     public City(@NotNull MineCity mineCity, @NotNull String name, @Nullable PlayerID owner, @NotNull BlockPos spawn)
             throws IllegalArgumentException, DataSourceException
     {
@@ -97,6 +99,7 @@ public final class City extends ExceptFlagHolder
     /**
      * Constructs an instance of a city that was loaded from the database, do not use this constructor for new cities.
      */
+    @Slow
     public City(@NotNull MineCity mineCity, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
                 @NotNull BlockPos spawn, Collection<Island> islands, int id, @NotNull ICityStorage storage)
             throws DataSourceException
@@ -115,6 +118,7 @@ public final class City extends ExceptFlagHolder
         loadedGroups.forEach(g -> groups.put(g.getIdentityName(), g));
     }
 
+    @Slow
     public synchronized Group createGroup(@NotNull String name) throws IllegalArgumentException, DataSourceException
     {
         String id = identity(name);
@@ -127,6 +131,7 @@ public final class City extends ExceptFlagHolder
         return group;
     }
 
+    @Slow
     public synchronized Group removeGroup(@NotNull String name) throws NoSuchElementException, DataSourceException
     {
         String id = identity(name);
@@ -185,6 +190,7 @@ public final class City extends ExceptFlagHolder
         return super.can(entity, action);
     }
 
+    @Slow
     public void setName(@NotNull String name) throws IllegalArgumentException, DataSourceException
     {
         String identity = identity(name);
@@ -254,6 +260,7 @@ public final class City extends ExceptFlagHolder
         return spawn;
     }
 
+    @Slow
     public Stream<Island> connectedIslands(@NotNull ChunkPos chunk)
     {
         return Direction.cardinal.stream()
@@ -265,6 +272,7 @@ public final class City extends ExceptFlagHolder
                 ;
     }
 
+    @Slow
     public Stream<Entry<Direction, Island>> connectedIslandsEntries(@NotNull ChunkPos chunk)
     {
         //noinspection OptionalGetWithoutIsPresent
@@ -279,6 +287,7 @@ public final class City extends ExceptFlagHolder
                 ;
     }
 
+    @Slow
     public Island claim(@NotNull ChunkPos chunk, boolean createIsland)
             throws IllegalArgumentException, DataSourceException, UncheckedDataSourceException, IllegalStateException
     {
@@ -320,6 +329,7 @@ public final class City extends ExceptFlagHolder
         }
     }
 
+    @Slow
     public Collection<Island> disclaim(@NotNull ChunkPos chunk, boolean createIslands)
             throws IllegalStateException, IllegalArgumentException, DataSourceException
     {
@@ -373,6 +383,7 @@ public final class City extends ExceptFlagHolder
         }
     }
 
+    @Slow
     protected void reserveChunks(Island island) throws DataSourceException
     {
         IslandArea area = storage.getArea(island);
@@ -403,6 +414,7 @@ public final class City extends ExceptFlagHolder
         update.forEach(mineCity::reloadChunkSlowly);
     }
 
+    @Slow
     public void setSpawn(@NotNull BlockPos pos) throws DataSourceException,IllegalArgumentException
     {
         if(!mineCity.getOrFetchChunk(pos.getChunk()).map(c->c.owner).filter(o->o instanceof Island).map(o->(Island)o)
@@ -418,6 +430,7 @@ public final class City extends ExceptFlagHolder
      * @param owner The new owner or {@code null} for server admins
      * @throws DataSourceException If the city is registered and the change failed. The owner will not be set in this case.
      */
+    @Slow
     public void setOwner(@Nullable PlayerID owner) throws DataSourceException
     {
         storage.setOwner(this, owner);

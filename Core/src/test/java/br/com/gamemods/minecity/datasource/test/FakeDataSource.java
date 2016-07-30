@@ -79,7 +79,7 @@ public class FakeDataSource implements IDataSource, ICityStorage
 
     @Nullable
     @Override
-    public String checkNameConflict(@NotNull String identityName) throws DataSourceException
+    public String checkNameConflict(@NotNull String identityName)
     {
         identityName = StringUtil.identity(identityName);
         for(City city : cities.values())

@@ -3,6 +3,7 @@ package br.com.gamemods.minecity;
 import br.com.gamemods.minecity.api.DistinctQueue;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
+import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.CommandTree;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.command.MessageTransformer;
@@ -99,6 +100,7 @@ public class MineCity
      * @deprecated It's impossible to know if the optional is empty because the chunk is unloaded or because
      * the chunk is not claimed
      */
+    @Slow
     @Deprecated
     public Optional<ClaimedChunk> getOrFetchChunk(@NotNull ChunkPos pos) throws DataSourceException
     {
@@ -147,6 +149,7 @@ public class MineCity
         return worldProvider.flatMap(WorldProvider::getChunkProvider);
     }
 
+    @Slow
     @NotNull
     public ClaimedChunk loadChunk(@NotNull ChunkPos pos) throws DataSourceException
     {
@@ -170,6 +173,7 @@ public class MineCity
         return stream;
     }
 
+    @Slow
     public void reloadChunkSlowly(ChunkPos pos)
     {
         if(!lazyReloads)
@@ -193,6 +197,7 @@ public class MineCity
         reloadQueue.offer(pos);
     }
 
+    @Slow
     public boolean reloadQueuedChunk()
     {
         ChunkPos pos = reloadQueue.poll();
@@ -215,6 +220,7 @@ public class MineCity
         loadedChunks().filter(condition).map(ClaimedChunk::getChunk).forEach((DisDBConsumer<ChunkPos>) this::loadChunk);
     }
 
+    @Slow
     public void reloadChunks(Predicate<ClaimedChunk> condition) throws DataSourceException
     {
         try
@@ -227,6 +233,7 @@ public class MineCity
         }
     }
 
+    @Slow
     @Nullable
     public ClaimedChunk reloadChunk(@NotNull ChunkPos pos) throws DataSourceException
     {
@@ -256,6 +263,7 @@ public class MineCity
         return nature;
     }
 
+    @Slow
     public Optional<PlayerID> getPlayer(String name) throws DataSourceException
     {
         Optional<PlayerID> result = dataSource.getPlayer(name);
@@ -265,6 +273,7 @@ public class MineCity
         return server.getPlayerId(name);
     }
 
+    @Slow
     public Optional<PlayerID> findPlayer(String playerName) throws UncheckedDataSourceException
     {
         Optional<PlayerID> playerId = server.getPlayerId(playerName);

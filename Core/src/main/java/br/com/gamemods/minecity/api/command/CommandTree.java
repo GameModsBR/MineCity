@@ -428,6 +428,7 @@ public final class CommandTree
                 String cityName = identity(args[index]);
                 try
                 {
+                    //TODO Remove this slow call
                     Optional<Set<String>> groups = cityNames.get().map(StringUtil::identity)
                             .filter(cityName::equals).findFirst()
                             .flatMap((DBFunction<String, Optional<City>>) dataSource::getCityByName)

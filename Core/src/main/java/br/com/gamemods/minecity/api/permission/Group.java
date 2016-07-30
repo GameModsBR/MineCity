@@ -1,12 +1,15 @@
 package br.com.gamemods.minecity.api.permission;
 
+import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.StringUtil;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.ICityStorage;
 import br.com.gamemods.minecity.structure.City;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class Group implements Identifiable<Integer>
@@ -39,6 +42,7 @@ public final class Group implements Identifiable<Integer>
         identity = new GroupID(id, name, home.getName(), home.getId());
     }
 
+    @Slow
     public synchronized void addMember(@NotNull Identity<?> member) throws DataSourceException, IllegalStateException
     {
         if(invalid)
@@ -51,6 +55,7 @@ public final class Group implements Identifiable<Integer>
         members.add(member);
     }
 
+    @Slow
     public synchronized void removeMember(@NotNull Identity<?> member) throws DataSourceException
     {
         if(invalid)
@@ -77,6 +82,7 @@ public final class Group implements Identifiable<Integer>
         return Collections.unmodifiableSet(members);
     }
 
+    @Slow
     public synchronized void setName(@NotNull String name) throws DataSourceException
     {
         if(invalid)
@@ -97,6 +103,7 @@ public final class Group implements Identifiable<Integer>
         home.updateGroupName(this, oldName);
     }
 
+    @Slow
     public void remove() throws DataSourceException
     {
         if(invalid)

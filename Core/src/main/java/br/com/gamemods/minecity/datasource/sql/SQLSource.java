@@ -433,21 +433,14 @@ public class SQLSource implements IDataSource
 
     @Nullable
     @Override
-    public String checkNameConflict(@NotNull String name) throws DataSourceException
+    public String checkNameConflict(@NotNull String name)
     {
         name = StringUtil.identity(name);
-        try(PreparedStatement pst = connection.connect().prepareStatement(
-                "SELECT display_name FROM minecity_city WHERE `name`=?"
-        ))
-        {
-            pst.setString(1, name);
-            ResultSet result = pst.executeQuery();
-            return result.next()? result.getString(1) : null;
-        }
-        catch(SQLException e)
-        {
-            throw new DataSourceException(e);
-        }
+        for(String cityName : cityNames)
+            if(StringUtil.identity(cityName).equals(name))
+                return cityName;
+
+        return null;
     }
 
     @NotNull

@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.bukkit;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
+import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -23,6 +24,7 @@ public class MineCityPlugin extends JavaPlugin
     private MineCityBukkit instance;
     private BukkitTask reloadTask;
 
+    @Slow
     @Override
     public void onEnable()
     {
@@ -53,6 +55,7 @@ public class MineCityPlugin extends JavaPlugin
         }
     }
 
+    @Slow
     @Override
     public void onDisable()
     {

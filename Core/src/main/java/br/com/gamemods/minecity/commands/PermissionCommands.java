@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.commands;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.Group;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
@@ -22,6 +23,7 @@ public class PermissionCommands
         this.mineCity = mineCity;
     }
 
+    @Slow
     private CommandResult<Boolean> deny(CommandSender sender, String[] args, PermissionFlag flag)
             throws DataSourceException
     {
@@ -46,9 +48,11 @@ public class PermissionCommands
         else if(args.length == 1)
         {
             String playerName = args[0];
+            //TODO Remove this slow call
             Optional<PlayerID> opt = mineCity.findPlayer(playerName);
             if(!opt.isPresent())
             {
+                //TODO Remove this slow call
                 Optional<City> optCity = mineCity.dataSource.getCityByName(playerName);
                 if(optCity.isPresent())
                     return new CommandResult<>(new Message("cmd.city.deny.got-city-expected-player",
@@ -71,8 +75,10 @@ public class PermissionCommands
         }
         else
         {
+            //TODO Remove this slow call
             Optional<City> cityOpt = mineCity.dataSource.getCityByName(args[0]);
             Optional<Group> groupOpt = cityOpt.map(c-> city.getGroup(args[1]));
+            //TODO Remove this slow call
             Optional<PlayerID> playerOpt = groupOpt.isPresent()? Optional.empty() : mineCity.findPlayer(args[0]);
 
             if(groupOpt.isPresent())
@@ -118,6 +124,7 @@ public class PermissionCommands
         }
     }
 
+    @Slow
     private CommandResult<?> allow(CommandSender sender, String[] args, PermissionFlag flag) throws DataSourceException
     {
         City city = mineCity.getChunk(sender.getPosition().getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
@@ -141,9 +148,11 @@ public class PermissionCommands
         else if(args.length == 1)
         {
             String playerName = args[0];
+            //TODO Remove this slow call
             Optional<PlayerID> opt = mineCity.findPlayer(playerName);
             if(!opt.isPresent())
             {
+                //TODO Remove this slow call
                 Optional<City> optCity = mineCity.dataSource.getCityByName(playerName);
                 if(optCity.isPresent())
                     return new CommandResult<>(new Message("cmd.city.allow.got-city-expected-player",
@@ -166,6 +175,7 @@ public class PermissionCommands
         }
         else
         {
+            //TODO Remove this slow call
             Optional<City> cityOpt = mineCity.dataSource.getCityByName(args[0]);
             Optional<Group> groupOpt = cityOpt.map(c-> city.getGroup(args[1]));
 
