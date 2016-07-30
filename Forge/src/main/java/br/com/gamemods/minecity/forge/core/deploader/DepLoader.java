@@ -61,7 +61,7 @@ public class DepLoader
             if(!rootDir.mkdirs())
                 System.err.println("[MineCity] Failed to create dir: "+rootDir);
 
-        for(File f : rootDir.listFiles(jarFilter))
+        for(File f : Optional.ofNullable(rootDir.listFiles(jarFilter)).orElse(new File[0]))
         {
             if(f == null) continue;
 

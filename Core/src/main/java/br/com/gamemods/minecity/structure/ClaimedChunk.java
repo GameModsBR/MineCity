@@ -2,7 +2,6 @@ package br.com.gamemods.minecity.structure;
 
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 

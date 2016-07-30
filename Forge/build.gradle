@@ -19,9 +19,12 @@ apply plugin: 'forge'
 
 version = "1.0-SNAPSHOT"
 group= "br.com.gamemods.minecity"
+//noinspection GroovyUnusedAssignment
 archivesBaseName = "MineCityForge"
 
+//noinspection GroovyUnusedAssignment
 sourceCompatibility = 1.8
+//noinspection GroovyUnusedAssignment
 targetCompatibility = 1.8
 
 minecraft {

@@ -28,7 +28,7 @@ public class MineCityBukkit implements Server
     public final MineCity mineCity;
     public final BukkitScheduler scheduler;
     public final MineCityPlugin plugin;
-    public Logger logger;
+    public final Logger logger;
 
     public MineCityBukkit(MineCityPlugin plugin, MineCityConfig config)
     {

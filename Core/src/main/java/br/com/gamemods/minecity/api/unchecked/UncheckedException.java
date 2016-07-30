@@ -10,11 +10,4 @@ public class UncheckedException extends RuntimeException
     {
         super(cause);
     }
-
-    @NotNull
-    @Override
-    public synchronized Throwable getCause()
-    {
-        return super.getCause();
-    }
 }

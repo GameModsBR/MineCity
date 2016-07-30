@@ -267,6 +267,7 @@ public final class City extends ExceptFlagHolder
 
     public Stream<Entry<Direction, Island>> connectedIslandsEntries(@NotNull ChunkPos chunk)
     {
+        //noinspection OptionalGetWithoutIsPresent
         return Direction.cardinal.stream()
                 .map((DBFunction<Direction, Entry<Direction, Optional<ClaimedChunk>>>)
                             d-> new SimpleImmutableEntry<>(d, mineCity.getOrFetchChunk(chunk.add(d)))
@@ -283,6 +284,7 @@ public final class City extends ExceptFlagHolder
     {
         Optional<ClaimedChunk> claimOpt = mineCity.getOrFetchChunk(chunk);
         Optional<City> cityOpt = claimOpt.flatMap(ClaimedChunk::getCity);
+        //noinspection OptionalGetWithoutIsPresent
         if(cityOpt.isPresent() && (cityOpt.get() != this || !claimOpt.get().reserve))
             throw new IllegalArgumentException("The chunk "+chunk+" is reserved");
 

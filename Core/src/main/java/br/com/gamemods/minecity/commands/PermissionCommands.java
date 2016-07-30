@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public class PermissionCommands
 {
-    private MineCity mineCity;
+    private final MineCity mineCity;
 
     public PermissionCommands(MineCity mineCity)
     {

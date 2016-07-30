@@ -14,7 +14,7 @@ import java.util.*;
 public class BasicFlagHolder implements FlagHolder
 {
     protected Message defaultMessage = DEFAULT_DENIAL_MESSAGE;
-    protected EnumMap<PermissionFlag, DenialEntry> map = new EnumMap<>(PermissionFlag.class);
+    protected final EnumMap<PermissionFlag, DenialEntry> map = new EnumMap<>(PermissionFlag.class);
 
     public void allow(PermissionFlag flag)
     {

@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 
 import static br.com.gamemods.minecity.api.StringUtil.identity;
 
-public class CommandTree
+public final class CommandTree
 {
     private Map<String, CommandEntry> tree = new HashMap<>();
     private Map<String, CommandDefinition> commands = new HashMap<>();

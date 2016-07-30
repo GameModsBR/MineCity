@@ -24,10 +24,10 @@ import java.util.stream.Collectors;
 public class SQLCityStorage implements ICityStorage
 {
     @NotNull
-    private SQLSource source;
+    private final SQLSource source;
 
     @NotNull
-    private SQLConnection connection;
+    private final SQLConnection connection;
 
     SQLCityStorage(@NotNull SQLSource source, @NotNull SQLConnection connection)
     {
@@ -717,7 +717,7 @@ public class SQLCityStorage implements ICityStorage
                     island.minX = island.maxX = island.minZ = island.maxZ = island.chunkCount = 0;
                 });
 
-                chunksToUpdate.forEach((DBConsumer<ChunkPos>) pos -> source.mineCity.reloadChunk(pos));
+                chunksToUpdate.forEach((DBConsumer<ChunkPos>) source.mineCity::reloadChunk);
                 return mainIsland;
             }
             catch(Exception e)

@@ -8,9 +8,14 @@ import org.jetbrains.annotations.NotNull;
 
 final class SQLIsland implements Island
 {
-    int id, minX, maxX, minZ, maxZ, chunkCount;
+    final int id;
+    int minX;
+    int maxX;
+    int minZ;
+    int maxZ;
+    int chunkCount;
     @NotNull
-    WorldDim world;
+    final WorldDim world;
 
     @SuppressWarnings("NullableProblems")
     @NotNull

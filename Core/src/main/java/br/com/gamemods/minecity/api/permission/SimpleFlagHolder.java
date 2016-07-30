@@ -13,7 +13,7 @@ import java.util.Optional;
 public class SimpleFlagHolder implements FlagHolder
 {
     protected Message defaultMessage = DEFAULT_DENIAL_MESSAGE;
-    protected EnumMap<PermissionFlag, Message> generalPermissions = new EnumMap<>(PermissionFlag.class);
+    protected final EnumMap<PermissionFlag, Message> generalPermissions = new EnumMap<>(PermissionFlag.class);
 
     @NotNull
     @Override

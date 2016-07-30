@@ -18,8 +18,8 @@ import java.util.List;
 public class RootCommand<T> implements ICommand
 {
     public final MineCityForgeMod mod;
-    public String name;
-    public CommandInfo<T> info;
+    public final String name;
+    public final CommandInfo<T> info;
 
     public RootCommand(MineCityForgeMod mod, CommandInfo<T> info)
     {

@@ -78,6 +78,7 @@ public class CityCommand
         ), city);
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Command(value = "city.claim", console = false, args = @Arg(name = "city", type = Arg.Type.CITY, optional = true, sticky = true))
     public CommandResult<Island> claim(CommandSender sender, List<String> path, String[] args)
             throws DataSourceException
@@ -375,6 +376,7 @@ public class CityCommand
         City cityAtPosition = claimAtPosition.flatMap(ClaimedChunk::getCity).orElse(null);
         char cursor;
         LegacyFormat cursorColor;
+        //noinspection OptionalGetWithoutIsPresent
         if(cityAtPosition != null && !claimAtPosition.get().reserve)
         {
             cursorColor = cityAtPosition.getColor();
@@ -544,9 +546,9 @@ public class CityCommand
 
     public class MapCache
     {
-        LegacyFormat color;
-        char c;
-        City owner;
+        final LegacyFormat color;
+        final char c;
+        final City owner;
         long used = System.currentTimeMillis();
 
         public MapCache(LegacyFormat color, char c, City owner)

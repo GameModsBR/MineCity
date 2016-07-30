@@ -64,9 +64,7 @@ public class Message
 
         Message message = (Message) o;
 
-        if(!id.equals(message.id)) return false;
-        return Arrays.deepEquals(args, message.args);
-
+        return id.equals(message.id) && Arrays.deepEquals(args, message.args);
     }
 
     @Override

@@ -35,9 +35,9 @@ public class SQLSource implements IDataSource
     @NotNull
     public final MineCity mineCity;
     @NotNull
-    private SQLConnection connection;
+    private final SQLConnection connection;
     @NotNull
-    private SQLCityStorage cityStorage;
+    private final SQLCityStorage cityStorage;
     @NotNull
     private final Map<Integer, City> cityMap = new HashMap<>();
     final Map<Integer, WorldDim> worldDimMap = new ConcurrentHashMap<>(3);
