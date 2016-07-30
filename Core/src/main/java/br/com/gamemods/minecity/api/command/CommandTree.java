@@ -2,9 +2,6 @@ package br.com.gamemods.minecity.api.command;
 
 import br.com.gamemods.minecity.api.StringUtil;
 import br.com.gamemods.minecity.datasource.api.IDataSource;
-import br.com.gamemods.minecity.datasource.api.unchecked.DBFunction;
-import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
-import br.com.gamemods.minecity.structure.City;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.*;
@@ -425,27 +422,14 @@ public final class CommandTree
                 if(index < 0 || args.length <= index)
                     return Collections.emptyList();
 
-                String cityName = identity(args[index]);
-                try
-                {
-                    //TODO Remove this slow call
-                    Optional<Set<String>> groups = cityNames.get().map(StringUtil::identity)
-                            .filter(cityName::equals).findFirst()
-                            .flatMap((DBFunction<String, Optional<City>>) dataSource::getCityByName)
-                            .map(City::getGroupNames);
+                Optional<Set<String>> groups = dataSource.getGroupNames(args[index]);
 
-                    if(!groups.isPresent())
-                        return Collections.emptyList();
-
-                    options = groups.get().stream();
-                    String id = identity(key);
-                    filter = o-> identity(o).startsWith(id);
-                }
-                catch(UncheckedDataSourceException e)
-                {
-                    e.printStackTrace();
+                if(!groups.isPresent())
                     return Collections.emptyList();
-                }
+
+                options = groups.get().stream();
+                String id = identity(key);
+                filter = o-> identity(o).startsWith(id);
                 break;
             }
             default:
@@ -504,11 +488,6 @@ public final class CommandTree
             stream = subTree.keySet().stream().filter(k-> k.toLowerCase().startsWith(search));
 
         return stream.sorted().collect(Collectors.toList());
-    }
-
-    public Set<String> getRootCommands()
-    {
-        return Collections.unmodifiableSet(tree.keySet());
     }
 
     static class CommandDefinition

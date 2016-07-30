@@ -25,6 +25,8 @@
     </dependencies>
 
     <build>
+        <!--suppress MavenModelInspection -->
+        <finalName>${project.artifactId}-${project.version}-bukkit-forge${minecraft.version}</finalName>
         <resources>
             <resource>
                 <directory>${project.basedir}/../Forge/build/unzip</directory>
@@ -59,7 +61,6 @@
                             <goal>jar</goal>
                         </goals>
                         <configuration>
-                            <finalName>${project.artifactId}-${project.version}-bukkit-forge${minecraft.version}</finalName>
                             <archive>
                                 <manifestEntries>
                                     <FMLCorePlugin>br.com.gamemods.minecity.forge.core.MineCityCoreMod</FMLCorePlugin>

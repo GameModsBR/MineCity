@@ -3,7 +3,6 @@ package br.com.gamemods.minecity.datasource.sql;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.PlayerID;
-import br.com.gamemods.minecity.api.StringUtil;
 import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
@@ -30,6 +29,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static br.com.gamemods.minecity.api.StringUtil.identity;
+
 public class SQLSource implements IDataSource
 {
     @NotNull
@@ -42,6 +43,7 @@ public class SQLSource implements IDataSource
     private final Map<Integer, City> cityMap = new HashMap<>();
     final Map<Integer, WorldDim> worldDimMap = new ConcurrentHashMap<>(3);
     final Set<String> cityNames = new HashSet<>();
+    final Map<String, Set<String>> groupNames = new HashMap<>();
 
     public SQLSource(@NotNull MineCity mineCity, @NotNull MineCityConfig config)
     {
@@ -435,9 +437,9 @@ public class SQLSource implements IDataSource
     @Override
     public String checkNameConflict(@NotNull String name)
     {
-        name = StringUtil.identity(name);
+        name = identity(name);
         for(String cityName : cityNames)
-            if(StringUtil.identity(cityName).equals(name))
+            if(identity(cityName).equals(name))
                 return cityName;
 
         return null;
@@ -540,6 +542,11 @@ public class SQLSource implements IDataSource
                 result = stm.executeQuery("SELECT `display_name` FROM `minecity_city ");
                 while(result.next())
                     cityNames.add(result.getString(1));
+                result.close();
+
+                result = stm.executeQuery("SELECT c.name, g.name FROM minecity_groups g INNER JOIN minecity_city c ON c.city_id = g.city_id");
+                while(result.next())
+                    groupNames.computeIfAbsent(result.getString(1), n-> new HashSet<>(1)).add(result.getString(2));
             }
             catch(Exception e)
             {
@@ -557,7 +564,7 @@ public class SQLSource implements IDataSource
     @Override
     public Optional<City> getCityByName(@NotNull String name) throws DataSourceException
     {
-        name = StringUtil.identity(name);
+        name = identity(name);
         if(name.length() < 3)
             return Optional.empty();
 
@@ -598,10 +605,28 @@ public class SQLSource implements IDataSource
         }
     }
 
+    @NotNull
     @Override
     public Supplier<Stream<String>> cityNameSupplier()
     {
         return cityNames::stream;
+    }
+
+    @NotNull
+    @Override
+    public Optional<Set<String>> getGroupNames(@NotNull String cityName)
+    {
+        Set<String> set = groupNames.get(identity(cityName));
+        if(set == null)
+            return Optional.empty();
+        return Optional.of(Collections.unmodifiableSet(set));
+    }
+
+    @NotNull
+    @Override
+    public Map<String, Set<String>> getGroups()
+    {
+        return Collections.unmodifiableMap(groupNames);
     }
 
     @Override

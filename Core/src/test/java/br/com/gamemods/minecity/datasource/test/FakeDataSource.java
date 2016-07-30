@@ -115,6 +115,7 @@ public class FakeDataSource implements IDataSource, ICityStorage
         mineCity.reloadChunk(chunk);
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @NotNull
     @Override
     public Island claim(@NotNull Set<Island> islands, @NotNull ChunkPos chunk)
@@ -225,6 +226,7 @@ public class FakeDataSource implements IDataSource, ICityStorage
         }
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @NotNull
     @Override
     public Collection<Island> disclaim(@NotNull ChunkPos chunk, @NotNull Island island,
@@ -328,6 +330,20 @@ public class FakeDataSource implements IDataSource, ICityStorage
         throw new UnsupportedOperationException();
     }
 
+    @NotNull
+    @Override
+    public Optional<Set<String>> getGroupNames(@NotNull String cityName)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @NotNull
+    @Override
+    public Map<String, Set<String>> getGroups()
+    {
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public void initDB() throws DataSourceException
     {
@@ -365,6 +381,7 @@ public class FakeDataSource implements IDataSource, ICityStorage
         return Optional.empty();
     }
 
+    @NotNull
     @Override
     public Supplier<Stream<String>> cityNameSupplier()
     {

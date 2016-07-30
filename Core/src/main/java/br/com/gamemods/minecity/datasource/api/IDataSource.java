@@ -9,7 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -40,5 +42,12 @@ public interface IDataSource
     @NotNull
     Optional<PlayerID> getPlayer(@NotNull String name) throws DataSourceException;
 
+    @NotNull
     Supplier<Stream<String>> cityNameSupplier();
+
+    @NotNull
+    Optional<Set<String>> getGroupNames(@NotNull String cityName);
+
+    @NotNull
+    Map<String, Set<String>> getGroups();
 }

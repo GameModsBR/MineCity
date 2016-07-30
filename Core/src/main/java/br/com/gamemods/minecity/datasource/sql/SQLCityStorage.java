@@ -260,6 +260,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @NotNull
     @Override
     public Collection<Island> disclaim(@NotNull ChunkPos chunk, @NotNull Island island, @NotNull Set<Set<ChunkPos>> groups)
@@ -402,6 +403,9 @@ public class SQLCityStorage implements ICityStorage
             transaction.commit();
             source.cityNames.remove(previous);
             source.cityNames.add(name);
+            Set<String> groups = source.groupNames.remove(identity);
+            if(groups != null)
+                source.groupNames.put(city.getIdentityName(), groups);
         }
         catch(SQLException e)
         {
@@ -446,16 +450,28 @@ public class SQLCityStorage implements ICityStorage
     @Override
     public void setName(@NotNull Group group, @NotNull String identity, @NotNull String name) throws DataSourceException
     {
-        try(PreparedStatement pst = connection.connect().prepareStatement(
-                "UPDATE minecity_groups SET `name`=?, display_name=? WHERE group_id=?"
-        ))
+        try(Connection transaction = connection.connect())
         {
-            pst.setString(1, identity);
-            pst.setString(2, name);
-            pst.setInt(3, group.id);
-            int count = pst.executeUpdate();
-            if(count != 1)
-                throw new DataSourceException("Expected 1 change but got "+count+" changes");
+            try(PreparedStatement pst = transaction.prepareStatement(
+                    "UPDATE minecity_groups SET `name`=?, display_name=? WHERE group_id=?"
+            ))
+            {
+                pst.setString(1, identity);
+                pst.setString(2, name);
+                pst.setInt(3, group.id);
+                int count = pst.executeUpdate();
+                if(count != 1)
+                    throw new DataSourceException("Expected 1 change but got "+count+" changes");
+
+                Set<String> groups = source.groupNames.get(group.home.getIdentityName());
+                groups.remove(group.getName());
+                groups.add(name);
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
         }
         catch(SQLException e)
         {
@@ -663,6 +679,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @NotNull
     @Override
     public Island claim(@NotNull Set<Island> islands, @NotNull ChunkPos chunk)
