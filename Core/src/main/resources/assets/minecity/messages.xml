@@ -4,10 +4,10 @@
     <msg id="todo.group.list">Group List: ${child}</msg>
     <cmd>
         <msg id="not-found">Unknown command: /${base}</msg>
-        <results>
+        <result>
             <msg id="success"><blue>MineCity> </blue><gray>${msg}</gray></msg>
             <msg id="failed"><darkred>MineCity> </darkred><red>${msg}</red></msg>
-        </results>
+        </result>
         <msg id="exception">
             <!-- Possible arguments:
                     ${error} = ${className}: ${cause} (omits ": ${cause}" when the cause is empty)
