@@ -100,6 +100,7 @@ public class MessageTransformer
 
         EnumSet<LegacyFormat> formats = LegacyFormat.formatAt(baseFormat, baseFormat.length());
         Iterator<LegacyFormat> iterator = formats.iterator();
+        iterator.next();
         iterator.remove();
         iterator.forEachRemaining(sb::append);
         String inherited = sb.toString();
@@ -107,6 +108,7 @@ public class MessageTransformer
 
         formatQueue.add(baseFormat);
         String currentFormat = baseFormat;
+        loop:
         while(!queue.isEmpty())
         {
             Node current = queue.pop();
@@ -190,6 +192,8 @@ public class MessageTransformer
                     case "yellow": format = YELLOW+inherited; break;
                     case "white": format = WHITE+inherited; break;
                     case "reset": format = RESET+baseFormat; break;
+                    case "br": sb.append("\n"); continue loop;
+                    case "tooltip": continue loop;
                 }
             }
 

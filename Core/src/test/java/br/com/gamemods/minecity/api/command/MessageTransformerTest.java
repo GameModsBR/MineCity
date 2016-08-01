@@ -80,4 +80,11 @@ public class MessageTransformerTest
         assertEquals(GREEN+"This contains an "+RESET+GREEN+BOLD+GREEN+BOLD+RED+BOLD+BOLD+"inline"+GREEN+BOLD+" message",result);
         assertEquals("This contains an inline message", transformer.toSimpleText(container));
     }
+
+    @Test
+    public void testSkip() throws Exception
+    {
+        Message msg = new Message("", "<msg><hover><tooltip><b>Title</b><br/><i>Text</i></tooltip><b>Mouse hover here</b></hover></msg>");
+        assertEquals(BOLD+"Mouse hover here", transformer.toLegacy(msg));
+    }
 }

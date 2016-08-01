@@ -1,58 +1,78 @@
-<!ELEMENT minecity-messages (%IdNodes;)>
+<!ENTITY % ids "msg|cmd|city|create|name|chunk|claim|disclaim|success|spawn|rename|transfer|player|setspawn|deny|allow|action|teleport|all|args|map|result">
+<!ENTITY % formatting "click|hover|br|o|b|s|u|i|c|reset|black|darkblue|darkgreen|darkaqua|darkred|darkpurple|gold|gray|darkgray|blue|green|aqua|red|lightpurple|yellow|white">
+
+<!ELEMENT minecity-messages (%ids;)*>
 <!ATTLIST minecity-messages
         modified (true|false) "true"
         add-missing (true|false) "false">
 
-<!ELEMENT msg (#PCDATA|%FormatNodes;)*>
+<!ELEMENT msg (#PCDATA|%formatting;)*>
 <!ATTLIST msg id CDATA #REQUIRED>
 
-<!ENTITY % Colors "black,darkblue,darkgreen,darkaqua,darkred,darkpurple,gold,gray,darkgray,blue,green,aqua,red,lightpurple,yellow,white">
-<!ENTITY % FontStyle "m|b|s|u|i|r|c">
-<!ENTITY % FormatNodes "%Colors;|%FontStyle;">
-<!ELEMENT black %FormatNodes;>
-<!ELEMENT darkblue %FormatNodes;>
-<!ELEMENT darkgreen %FormatNodes;>
-<!ELEMENT darkaqua %FormatNodes;>
-<!ELEMENT darkred %FormatNodes;>
-<!ELEMENT darkpurple %FormatNodes;>
-<!ELEMENT gold %FormatNodes;>
-<!ELEMENT gray %FormatNodes;>
-<!ELEMENT darkgray %FormatNodes;>
-<!ELEMENT blue %FormatNodes;>
-<!ELEMENT green %FormatNodes;>
-<!ELEMENT aqua %FormatNodes;>
-<!ELEMENT red %FormatNodes;>
-<!ELEMENT lightpurple %FormatNodes;>
-<!ELEMENT yellow %FormatNodes;>
-<!ELEMENT white %FormatNodes;>
-<!ELEMENT m %FormatNodes;>
-<!ELEMENT b %FormatNodes;>
-<!ELEMENT s %FormatNodes;>
-<!ELEMENT u %FormatNodes;>
-<!ELEMENT i %FormatNodes;>
-<!ELEMENT r %FormatNodes;>
-<!ELEMENT c %FormatNodes;>
+<!ELEMENT click ((run|suggest|open),(%formatting;)+)>
+<!ELEMENT run EMPTY>
+<!ATTLIST run cmd CDATA #REQUIRED>
+<!ELEMENT suggest EMPTY>
+<!ATTLIST suggest cmd CDATA #REQUIRED>
+<!ELEMENT open EMPTY>
+<!ATTLIST open url CDATA #REQUIRED>
+
+<!ELEMENT hover ((tooltip|item|entity|achievement),(%formatting;)*)>
+<!ELEMENT tooltip (#PCDATA|%formatting;)*>
+<!ELEMENT item EMPTY>
+<!ATTLIST item nbt CDATA #REQUIRED>
+<!ELEMENT entity EMPTY>
+<!ATTLIST entity
+        name CDATA #REQUIRED
+        id CDATA #REQUIRED
+        type CDATA #REQUIRED>
+<!ELEMENT achievement EMPTY>
+<!ATTLIST achievement id CDATA #REQUIRED>
+
+<!ELEMENT black (#PCDATA|%formatting;)*>
+<!ELEMENT darkblue (#PCDATA|%formatting;)*>
+<!ELEMENT darkgreen (#PCDATA|%formatting;)*>
+<!ELEMENT darkaqua (#PCDATA|%formatting;)*>
+<!ELEMENT darkred (#PCDATA|%formatting;)*>
+<!ELEMENT darkpurple (#PCDATA|%formatting;)*>
+<!ELEMENT gold (#PCDATA|%formatting;)*>
+<!ELEMENT gray (#PCDATA|%formatting;)*>
+<!ELEMENT darkgray (#PCDATA|%formatting;)*>
+<!ELEMENT blue (#PCDATA|%formatting;)*>
+<!ELEMENT green (#PCDATA|%formatting;)*>
+<!ELEMENT aqua (#PCDATA|%formatting;)*>
+<!ELEMENT red (#PCDATA|%formatting;)*>
+<!ELEMENT lightpurple (#PCDATA|%formatting;)*>
+<!ELEMENT yellow (#PCDATA|%formatting;)*>
+<!ELEMENT white (#PCDATA|%formatting;)*>
+<!ELEMENT reset (#PCDATA|%formatting;)*>
+<!ELEMENT o (#PCDATA|%formatting;)*><!-- Obfuscated -->
+<!ELEMENT b (#PCDATA|%formatting;)*><!-- Bold -->
+<!ELEMENT s (#PCDATA|%formatting;)*><!-- Strike -->
+<!ELEMENT u (#PCDATA|%formatting;)*><!-- Underline -->
+<!ELEMENT i (#PCDATA|%formatting;)*><!-- Italic -->
+<!ELEMENT br EMPTY><!-- Break Line -->
+<!ELEMENT c (#PCDATA|%formatting;)*><!-- Specify code -->
 <!ATTLIST c code CDATA #REQUIRED>
 
-<!ENTITY % IdNodes "msg|cmd|city|create|name|chunk|claim|disclaim|success|spawn|rename|transfer|player|setspawn|deny|allow|action|teleport|all|args|map|result">
-<!ELEMENT cmd (%IdNodes;)*>
-<!ELEMENT city (%IdNodes;)*>
-<!ELEMENT create (%IdNodes;)*>
-<!ELEMENT name (%IdNodes;)*>
-<!ELEMENT chunk (%IdNodes;)*>
-<!ELEMENT claim (%IdNodes;)*>
-<!ELEMENT disclaim (%IdNodes;)*>
-<!ELEMENT success (%IdNodes;)*>
-<!ELEMENT spawn (%IdNodes;)*>
-<!ELEMENT rename (%IdNodes;)*>
-<!ELEMENT transfer (%IdNodes;)*>
-<!ELEMENT player (%IdNodes;)*>
-<!ELEMENT setspawn (%IdNodes;)*>
-<!ELEMENT deny (%IdNodes;)*>
-<!ELEMENT allow (%IdNodes;)*>
-<!ELEMENT action (%IdNodes;)*>
-<!ELEMENT teleport (%IdNodes;)*>
-<!ELEMENT args (%IdNodes;)*>
-<!ELEMENT all (%IdNodes;)*>
-<!ELEMENT map (%IdNodes;)*>
-<!ELEMENT result (%IdNodes;)*>
+<!ELEMENT cmd (%ids;)*>
+<!ELEMENT city (%ids;)*>
+<!ELEMENT create (%ids;)*>
+<!ELEMENT name (%ids;)*>
+<!ELEMENT chunk (%ids;)*>
+<!ELEMENT claim (%ids;)*>
+<!ELEMENT disclaim (%ids;)*>
+<!ELEMENT success (%ids;)*>
+<!ELEMENT spawn (%ids;)*>
+<!ELEMENT rename (%ids;)*>
+<!ELEMENT transfer (%ids;)*>
+<!ELEMENT player (%ids;)*>
+<!ELEMENT setspawn (%ids;)*>
+<!ELEMENT deny (%ids;)*>
+<!ELEMENT allow (%ids;)*>
+<!ELEMENT action (%ids;)*>
+<!ELEMENT teleport (%ids;)*>
+<!ELEMENT args (%ids;)*>
+<!ELEMENT all (%ids;)*>
+<!ELEMENT map (%ids;)*>
+<!ELEMENT result (%ids;)*>
