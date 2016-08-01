@@ -87,9 +87,9 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements Min
     }
 
     @Override
-    public BlockPos getPosition()
+    public EntityPos getPosition()
     {
-        return new BlockPos(mod.world(sender.worldObj), (int)sender.posX, (int)sender.posY, (int)sender.posZ);
+        return new EntityPos(mod.world(sender.worldObj), sender.posX, sender.posY, sender.posZ, sender.rotationPitch, sender.rotationYaw);
     }
 
     @Override

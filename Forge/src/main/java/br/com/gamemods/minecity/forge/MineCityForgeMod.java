@@ -48,9 +48,11 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.*;
 import java.util.stream.Stream;
 
 @Mod(modid = "minecity", name = "MineCity", version = "1.0-SNAPSHOT", acceptableRemoteVersions = "*")
@@ -60,6 +62,8 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
     public MineCity mineCity;
     private MineCityConfig config;
     private Path worldContainer;
+    private ExecutorService executors;
+    private final ConcurrentLinkedQueue<FutureTask> syncTasks = new ConcurrentLinkedQueue<>();
 
     @EventHandler
     public void onPreInit(FMLPreInitializationEvent event)
@@ -79,9 +83,40 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         config.save();
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Stream<String> getOnlinePlayerNames()
+    {
+        return ((List<EntityPlayer>)server.getConfigurationManager().playerEntityList).stream()
+                .map(EntityPlayer::getCommandSenderName);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Stream<PlayerID> getOnlinePlayers()
+    {
+        return ((List<EntityPlayer>)server.getConfigurationManager().playerEntityList).stream()
+                .map(e-> this.player(e).getPlayerId());
+    }
+
+    @Override
+    public void runAsynchronously(Runnable runnable)
+    {
+        executors.submit(runnable);
+    }
+
+    @Override
+    public <R> Future<R> callSyncMethod(Callable<R> callable)
+    {
+        FutureTask<R> future = new FutureTask<>(callable);
+        syncTasks.add(future);
+        return future;
+    }
+
     @EventHandler
     public void onServerStart(FMLServerAboutToStartEvent event) throws IOException, DataSourceException, SAXException
     {
+        executors = Executors.newCachedThreadPool();
         server = event.getServer();
         worldContainer = Paths.get(server.getFolderName());
 
@@ -89,11 +124,6 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         FMLCommonHandler.instance().bus().register(this);
         mineCity = new MineCity(this, config);
         mineCity.worldProvider = Optional.of(this);
-        //noinspection unchecked
-        mineCity.commands.onlinePlayers = ()->
-                ((List<EntityPlayer>)server.getConfigurationManager().playerEntityList).stream()
-                        .map(EntityPlayer::getCommandSenderName)
-                ;
         mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
         mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
         mineCity.dataSource.initDB();
@@ -112,6 +142,18 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
     public void onServerStop(FMLServerStoppedEvent event) throws DataSourceException
     {
         MinecraftForge.EVENT_BUS.unregister(this);
+        executors.shutdown();
+        boolean terminated = false;
+        try
+        {
+            terminated = executors.awaitTermination(5, TimeUnit.SECONDS);
+        }
+        catch(InterruptedException ignored)
+        {}
+
+        if(!terminated)
+            executors.shutdownNow();
+
         mineCity.dataSource.close();
         mineCity = null;
         worldContainer = null;
@@ -178,6 +220,13 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
             return;
 
         mineCity.reloadQueuedChunk();
+        Iterator<FutureTask> iterator = syncTasks.iterator();
+        while(iterator.hasNext())
+        {
+            FutureTask task = iterator.next();
+            iterator.remove();
+            task.run();
+        }
     }
 
     public ChunkPos chunk(Chunk chunk)

@@ -106,6 +106,18 @@ public final class BlockPos implements Serializable
         return new BlockPos(world, this.x/x, this.y/y, this.z/z);
     }
 
+    public EntityPos toEntity(float pitch, float yaw)
+    {
+        EntityPos pos = new EntityPos(world, x+0.5, y+0.5, z+0.5, pitch, yaw);
+        pos.block = this;
+        return pos;
+    }
+
+    public EntityPos toEntity()
+    {
+        return toEntity(0,0);
+    }
+
     /**
      * The chunk position that stores this block
      */

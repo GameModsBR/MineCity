@@ -1,8 +1,8 @@
 package br.com.gamemods.minecity.bukkit.command;
 
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import org.bukkit.Location;
 import org.bukkit.command.BlockCommandSender;
@@ -20,18 +20,18 @@ public class BukkitLocatableSender<S extends CommandSender> extends BukkitComman
     }
 
     @Override
-    public BlockPos getPosition()
+    public EntityPos getPosition()
     {
         if(sender instanceof BlockCommandSender)
-            return plugin.blockPos(((BlockCommandSender) sender).getBlock().getLocation());
+            return plugin.entityPos(((BlockCommandSender) sender).getBlock().getLocation());
         if(sender instanceof Entity)
-            return plugin.blockPos(((Entity) sender).getLocation());
-        throw new UnsupportedOperationException("Sender: "+sender);
+            return plugin.entityPos(((Entity) sender).getLocation());
+        return null;
     }
 
     @Nullable
     @Override
-    public Message teleport(@NotNull BlockPos pos)
+    public Message teleport(@NotNull EntityPos pos)
     {
         if(sender instanceof Entity)
         {
@@ -60,8 +60,7 @@ public class BukkitLocatableSender<S extends CommandSender> extends BukkitComman
     @Override
     public Direction getCardinalDirection()
     {
-        //TODO Do the actual implementation
-        return Direction.NORTH;
+        return getPosition().getCardinalDirection();
     }
 
     @Override

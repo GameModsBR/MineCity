@@ -7,11 +7,11 @@ import java.util.Optional;
 @FunctionalInterface
 public interface CommandFunction<R>
 {
-    default CommandResult<R> apply(CommandSender sender, List<String> path, String[] args)
+    default CommandResult<R> apply(CommandEvent event)
     {
         try
         {
-            return run(sender, path, args);
+            return execute(event);
         }
         catch(Exception e)
         {
@@ -33,5 +33,28 @@ public interface CommandFunction<R>
         }
     }
 
-    CommandResult<R> run(CommandSender sender, List<String> path, String[] args) throws Exception;
+    default CommandResult<R> run(CommandEvent event)
+    {
+        CommandResult<R> result = apply(event);
+        if(result.message != null)
+        {
+            Message message;
+            if(result.success)
+                 message = new Message("cmd.result.success",
+                        "<msg><blue><![CDATA[MineCity> ]]></blue><gray>${msg}</gray></msg>",
+                        new Object[]{"msg", result.message}
+                );
+            else
+                message = new Message("cmd.result.failed",
+                        "<msg><darkred><![CDATA[MineCity> ]]></darkred><red>${msg}</red></msg>",
+                        new Object[]{"msg", result.message}
+                );
+
+            event.sender.send(message);
+        }
+
+        return result;
+    }
+
+    CommandResult<R> execute(CommandEvent cmd) throws Exception;
 }

@@ -24,9 +24,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 @Ignore
@@ -99,13 +101,13 @@ public class MineCityForgeModTest
                         "</minecity-commands>";
 
         mineCity.commands.parseXml(new ByteArrayInputStream(xml.getBytes()));
-        mineCity.commands.registerCommand("city.create", null, (sender, path, args) -> {
-            sender.send(new Message("test", "Testing "+joserobjr.getCommandSenderName()+": "+path));
-            assertTrue(sender.isPlayer());
-            assertEquals("[city, create]", path.toString());
-            assertArrayEquals(new String[]{"Test","City"}, args);
-            assertEquals(sender.getPlayerId().uniqueId, joserobjr.getUniqueID());
-            assertEquals(sender.getPlayerId().name, joserobjr.getCommandSenderName());
+        mineCity.commands.registerCommand("city.create", null, false, (cmd) -> {
+            cmd.sender.send(new Message("test", "Testing "+joserobjr.getCommandSenderName()+": "+cmd.path));
+            assertTrue(cmd.sender.isPlayer());
+            assertEquals("[city, create]", cmd.path.toString());
+            assertEquals(Arrays.asList("Test","City"), cmd.args);
+            assertEquals(cmd.sender.getPlayerId().uniqueId, joserobjr.getUniqueID());
+            assertEquals(cmd.sender.getPlayerId().name, joserobjr.getCommandSenderName());
             return CommandResult.success();
         });
         assertEquals("[tcity, create]", mineCity.commands.get("tcity create a b").map(r-> r.path).map(Object::toString).orElse("null"));

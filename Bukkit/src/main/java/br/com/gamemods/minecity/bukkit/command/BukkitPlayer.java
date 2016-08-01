@@ -1,7 +1,7 @@
 package br.com.gamemods.minecity.bukkit.command;
 
 import br.com.gamemods.minecity.api.PlayerID;
-import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import org.bukkit.entity.Player;
 
@@ -16,9 +16,9 @@ public class BukkitPlayer extends BukkitLocatableSender<Player>
     }
 
     @Override
-    public BlockPos getPosition()
+    public EntityPos getPosition()
     {
-        return plugin.blockPos(sender.getLocation());
+        return plugin.entityPos(sender.getLocation());
     }
 
     @Override

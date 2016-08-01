@@ -1,9 +1,10 @@
 package br.com.gamemods.minecity.bukkit.command;
 
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import org.bukkit.command.CommandSender;
 
@@ -19,7 +20,7 @@ public class BukkitCommandSender<S extends CommandSender> implements br.com.game
     }
 
     @Override
-    public BlockPos getPosition()
+    public EntityPos getPosition()
     {
         return null;
     }
@@ -40,6 +41,12 @@ public class BukkitCommandSender<S extends CommandSender> implements br.com.game
     public Direction getCardinalDirection()
     {
         return null;
+    }
+
+    @Override
+    public Server getServer()
+    {
+        return plugin;
     }
 
     @Override

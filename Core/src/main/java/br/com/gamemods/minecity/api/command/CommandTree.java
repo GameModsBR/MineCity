@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.api.command;
 
+import br.com.gamemods.minecity.api.Async;
 import br.com.gamemods.minecity.api.StringUtil;
 import br.com.gamemods.minecity.datasource.api.IDataSource;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +17,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -28,6 +30,7 @@ public final class CommandTree
     private Map<String, CommandEntry> tree = new HashMap<>();
     private Map<String, CommandDefinition> commands = new HashMap<>();
     public IDataSource dataSource;
+    public Consumer<Runnable> scheduler = Runnable::run;
     public Supplier<Stream<String>> onlinePlayers = Stream::empty;
     public Supplier<Stream<String>> cityNames = Stream::empty;
     private CommandGroup root = new CommandGroup(new CommandInfo<>("", this::groupExecutor));
@@ -37,21 +40,40 @@ public final class CommandTree
 
     public CommandResult invoke(CommandSender sender, String args)
     {
-        return invoke(sender, toArray(args));
+        return invoke(sender, toList(args));
     }
 
-    public CommandResult invoke(CommandSender sender, String[] args)
+    public CommandResult invoke(CommandSender sender, List<String> args)
     {
-        return get(args).map(r-> r.run(sender)).orElseGet(()->
-            new CommandResult(new Message("cmd.not-found", "Unknown command: /${base}",
-                    new Object[]{"base",args[0]}
-            )
-        ));
+        Optional<Result> resultOpt = get(args);
+        if(!resultOpt.isPresent())
+            return new CommandResult(new Message("cmd.not-found",
+                    "Unknown command: /${base}",
+                    new Object[]{"base",args.get(0)}
+            ));
+
+        Result result = resultOpt.get();
+        if(result.command.async)
+        {
+            scheduler.accept( ()-> result.run(sender) );
+            return CommandResult.success();
+        }
+
+        return result.run(sender);
     }
 
-    public void registerCommand(String id, Arg[] args, CommandFunction function)
+    public Set<String> getRootCommands()
     {
-        CommandDefinition def = new CommandDefinition(args, function);
+        return Collections.unmodifiableSet(tree.keySet());
+    }
+
+    public void registerCommand(String id, Arg[] args, boolean async, CommandFunction<?> function)
+    {
+        registerCommand(id, new CommandDefinition(args, async, function));
+    }
+
+    private void registerCommand(String id, CommandDefinition def)
+    {
         commands.put(id, def);
         walk(tree, id, def);
     }
@@ -68,19 +90,20 @@ public final class CommandTree
             {
                 info.function = def.function;
                 info.args = def.args;
+                info.async = def.async;
             }
 
             walk(entry.getSubTree(), id, def);
         }
     }
 
-    public void registerCommand(String id, boolean console, Arg[] argSet, @Nullable Object instance, @NotNull Method method)
+    public void registerCommand(String id, boolean console, boolean async, Arg[] argSet, @Nullable Object instance, @NotNull Method method)
     {
-        registerCommand(id, argSet, (sender, path, args) -> {
-            if(!console && !sender.isPlayer())
+        registerCommand(id, new CommandDefinition(argSet, async, (cmd) -> {
+            if(!console && !cmd.sender.isPlayer())
                 return CommandResult.ONLY_PLAYERS;
 
-            Object result = method.invoke(instance, sender, path, args);
+            Object result = method.invoke(instance, cmd);
             Class<?> returnType = method.getReturnType();
             if(result == null)
             {
@@ -99,7 +122,7 @@ public final class CommandTree
                 return new CommandResult(null, false);
 
             return CommandResult.SUCCESS;
-        });
+        }));
     }
 
     public void registerCommands(@NotNull Object commands)
@@ -114,6 +137,7 @@ public final class CommandTree
         else
             c = commands.getClass();
 
+        Class<?>[] expected = {CommandEvent.class};
         for(Method method: c.getMethods())
         {
             int modifiers = method.getModifiers();
@@ -126,8 +150,15 @@ public final class CommandTree
                 if(!(annotation instanceof Command))
                     continue;
 
+                if(!Arrays.equals(expected, method.getParameterTypes()))
+                {
+                    System.err.println("The method "+method+" has @Command annotation but has an invalid signature!");
+                    continue;
+                }
+
                 Command command = (Command) annotation;
-                registerCommand(command.value(), command.console(), command.args(), instance, method);
+                boolean async = method.isAnnotationPresent(Async.class);
+                registerCommand(command.value(), command.console(), async, command.args(), instance, method);
             }
         }
     }
@@ -200,6 +231,7 @@ public final class CommandTree
                     info.commandId = id;
                     info.function = commandDefinition.function;
                     info.args = commandDefinition.args;
+                    info.async = commandDefinition.async;
                     for(String parent: parents)
                     {
                         List<CommandInfo> commandList = commands.get(parent);
@@ -255,82 +287,78 @@ public final class CommandTree
                     .collect(Collectors.toList());
     }
 
-    public CommandResult<Void> groupExecutor(CommandSender sender, List<String> path, String[] args)
+    public CommandResult<Void> groupExecutor(CommandEvent cmd)
     {
-        Map<String, CommandEntry> subTree= get(path).map(r->r.entry).map(CommandEntry::getSubTree).orElseGet(HashMap::new);
+        Map<String, CommandEntry> subTree= get(cmd.path).map(r->r.entry).map(CommandEntry::getSubTree).orElseGet(HashMap::new);
 
         return new CommandResult<>(new Message("todo.group.list", "Group List: ${child}",
                 new Object[]{"child", subTree.keySet()}
-        ), args.length == 0);
+        ), cmd.args.isEmpty());
     }
 
     public void register(@NotNull String path, @NotNull CommandInfo info, boolean group)
             throws IllegalArgumentException
     {
-        register(toArray(path), info, group);
+        register(toList(path), info, group);
     }
 
-    private String[] toArray(String path)
+    private List<String> toList(String path)
     {
-        return path.isEmpty()? new String[0] : path.trim().split("\\s+");
+        return path.isEmpty()? Collections.emptyList() : Arrays.asList(path.trim().split("\\s+"));
     }
 
-    public void register(@NotNull List<String> path, @NotNull CommandInfo info, boolean group)
-    {
-        register(path.toArray(new String[path.size()]), info, group);
-    }
-
-    public void register(@NotNull String[] path, @NotNull CommandInfo<?> info, boolean group)
+    public void register(@NotNull List<String> path, @NotNull CommandInfo<?> info, boolean group)
             throws IllegalArgumentException
     {
         Map<String, CommandEntry> subTree = tree;
 
-        for(int i = 0; i < path.length; i++)
+        for(int i = 0; i < path.size(); i++)
         {
-            String cmd = path[i];
+            String cmd = path.get(i);
             if(cmd.isEmpty()) continue;
 
             CommandEntry entry = subTree.get(identity(cmd));
             if(entry == null)
-                throw new IllegalArgumentException("Path not found: "+Arrays.toString(Arrays.copyOf(path, i+1)));
+                throw new IllegalArgumentException("Path not found: "+path.subList(0, i+1));
 
             subTree = entry.getSubTree();
             if(subTree == null)
-                throw new IllegalArgumentException("This is not a group: "+Arrays.toString(Arrays.copyOf(path, i+1)));
+                throw new IllegalArgumentException("This is not a group: "+path.subList(0, i+1));
         }
 
         CommandEntry entry = group? new CommandGroup(info) : new CommandInfoEntry(info);
         for(String name: info.aliases)
         {
             if(subTree.containsKey(name))
-                throw new IllegalStateException("Key already defined, key: "+name+", group: "+Arrays.toString(path));
+                throw new IllegalStateException("Key already defined, key: "+name+", group: "+path);
 
             subTree.put(name, entry);
         }
     }
 
-    public Optional<Result> get(List<String> args)
+    public Optional<Result> get(String[] args)
     {
-        return get(args.toArray(new String[args.size()]));
+        return get(Arrays.asList(args));
     }
 
     public Optional<Result> get(String line)
     {
-        return get(toArray(line));
+        return get(toList(line));
     }
 
-    public Optional<Result> get(String[] args)
+    public Optional<Result> get(List<String> args)
     {
-        if(args.length == 0)
-            args = new String[]{""};
+        if(args.isEmpty())
+            args = Collections.singletonList("");
 
         Map<String, CommandEntry> subTree = tree;
         CommandEntry command = null;
         List<String> path = new ArrayList<>();
         int i;
-        for(i = 0; subTree != null && i < args.length; i++)
+        Iterator<String> iter = args.iterator();
+        for(i = 0; subTree != null && iter.hasNext(); i++)
         {
-            String arg = args[i];
+            String arg = iter.next();
             CommandEntry entry = subTree.get(identity(arg));
             if(entry == null || entry.getInfo().function == null)
                 break;
@@ -343,12 +371,12 @@ public final class CommandTree
         if(command == null)
             return Optional.empty();
 
-        Result result = new Result(command.getInfo(), Arrays.copyOfRange(args, i, args.length), path);
+        Result result = new Result(command.getInfo(), args.subList(i, args.size()), path);
         result.entry = command;
         return Optional.of(result);
     }
 
-    protected List<String> completeFunction(Arg[] defs, @NotNull String[] args, @NotNull String search)
+    protected List<String> completeFunction(Arg[] defs, @NotNull List<String> args, @NotNull String search)
     {
         if(defs == null || defs.length == 0)
         {
@@ -364,7 +392,7 @@ public final class CommandTree
 
         Arg def;
         String arg;
-        if(args.length + 1 > defs.length)
+        if(args.size() + 1 > defs.length)
         {
             def = defs[defs.length - 1];
             if(!def.sticky())
@@ -372,14 +400,14 @@ public final class CommandTree
 
             arg = String.join(" ", args) + " " + search;
         }
-        else if(args.length == 0)
+        else if(args.isEmpty())
         {
             def = defs[0];
             arg = search;
         }
         else
         {
-            def = defs[args.length];
+            def = defs[args.size()];
             arg = search;
         }
 
@@ -419,10 +447,10 @@ public final class CommandTree
                     }
                 }
 
-                if(index < 0 || args.length <= index)
+                if(index < 0 || args.size() <= index)
                     return Collections.emptyList();
 
-                Optional<Set<String>> groups = dataSource.getGroupNames(args[index]);
+                Optional<Set<String>> groups = dataSource.getGroupNames(args.get(index));
 
                 if(!groups.isPresent())
                     return Collections.emptyList();
@@ -439,9 +467,9 @@ public final class CommandTree
         if(!arg.isEmpty())
             options = options.filter(filter);
 
-        if(args.length > 0 && def.sticky())
+        if(!args.isEmpty() && def.sticky())
         {
-            List<String> identities = Arrays.stream(args).map(StringUtil::identity).collect(Collectors.toList());
+            List<String> identities = args.stream().map(StringUtil::identity).collect(Collectors.toList());
             options = options.map(o-> {
                 Queue<String> parts = new ArrayDeque<>(Arrays.asList(o.split("\\s+")));
                 Iterator<String> iter = identities.iterator();
@@ -463,22 +491,27 @@ public final class CommandTree
         return options.sorted().flatMap(s-> Stream.of(s.replaceAll("\\s", ""), s.split("\\s",2)[0])).distinct().collect(Collectors.toList());
     }
 
-    private Result rootResult(String[] args)
+    private Result rootResult(List<String> args)
     {
         return new Result(root.getInfo(), args, Collections.emptyList(), root);
     }
 
     public List<String> complete(String[] args)
     {
-        String[] path = Arrays.copyOf(args, args.length - 1);
+        return complete(Arrays.asList(args));
+    }
+
+    public List<String> complete(List<String> args)
+    {
+        List<String> path = args.subList(0, args.size() -1);
         Result result = get(path).orElseGet(()-> rootResult(path));
-        String search = args[args.length-1].toLowerCase();
+        String search = args.get(args.size()-1).toLowerCase();
 
         Map<String, CommandEntry> subTree = result.entry.getSubTree();
         if(subTree == null)
             return completeFunction(result.entry.getInfo().args, result.args, search);
 
-        if(result.args.length > 0)
+        if(!result.args.isEmpty())
             return Collections.emptyList();
 
         Stream<String> stream;
@@ -494,10 +527,12 @@ public final class CommandTree
     {
         CommandFunction<?> function;
         Arg[] args;
+        boolean async;
 
-        public CommandDefinition(Arg[] args, CommandFunction function)
+        public CommandDefinition(Arg[] args, boolean async, CommandFunction function)
         {
             this.args = args;
+            this.async = async;
             this.function = function;
         }
 
@@ -559,18 +594,18 @@ public final class CommandTree
     public static class Result
     {
         public final CommandInfo<?> command;
-        public final String[] args;
+        public final List<String> args;
         public final List<String> path;
         private CommandEntry entry;
 
-        public Result(CommandInfo command, String[] args, List<String> path)
+        public Result(CommandInfo command, List<String> args, List<String> path)
         {
             this.command = command;
             this.args = args;
             this.path = path;
         }
 
-        private Result(CommandInfo<?> command, String[] args, List<String> path,
+        private Result(CommandInfo<?> command, List<String> args, List<String> path,
                       CommandEntry entry)
         {
             this.command = command;
@@ -581,7 +616,7 @@ public final class CommandTree
 
         public CommandResult run(CommandSender sender)
         {
-            return command.function.apply(sender, path, args);
+            return command.function.run(new CommandEvent(sender, path, args));
         }
 
         @Override
@@ -589,7 +624,7 @@ public final class CommandTree
         {
             return "Result{" +
                     "command=" + command +
-                    ", args=" + Arrays.toString(args) +
+                    ", args=" + args +
                     ", path=" + path +
                     '}';
         }

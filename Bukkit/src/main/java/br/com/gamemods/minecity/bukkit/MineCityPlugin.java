@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -42,7 +41,6 @@ public class MineCityPlugin extends JavaPlugin
             config.locale = Locale.forLanguageTag(Optional.ofNullable(yaml.getString("language")).filter(l->!l.isEmpty()).orElse("en"));
             instance = new MineCityBukkit(this, config);
             instance.mineCity.dataSource.initDB();
-            instance.mineCity.commands.onlinePlayers = ()-> getServer().getOnlinePlayers().stream().map(Player::getName);
             instance.mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
             instance.mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
 

@@ -1,7 +1,7 @@
 package br.com.gamemods.minecity.api.command;
 
-import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.commands.CityCommand;
 import br.com.gamemods.minecity.commands.TestPlayer;
 import br.com.gamemods.minecity.datasource.test.TestData;
@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
@@ -19,23 +19,23 @@ public class CommandTreeTest
 {
     private TestData testData = new TestData();
 
-    public static CommandResult<String> echoCommand(CommandSender sender, List<String> path, String[] args)
+    public static CommandResult<String> echoCommand(CommandEvent cmd)
     {
-        return new CommandResult<>(new Message("test","Path: ${path}", new Object[]{"path",path}),
-                sender.getPlayerId().name+": "+Arrays.toString(args)
+        return new CommandResult<>(new Message("test","Path: ${path}", new Object[]{"path",cmd.path}),
+                cmd.sender.getPlayerId().name+": "+cmd.args
         );
     }
 
     @Test
     public void testBasic() throws Exception
     {
-        TestPlayer player = new TestPlayer(testData.joserobjr, new BlockPos(testData.overWorld, 2,2,3));
+        TestPlayer player = new TestPlayer(testData.joserobjr, new EntityPos(testData.overWorld, 2,2,3));
         CommandTree tree = new CommandTree();
         tree.register("", new CommandInfo<>("city", CommandTreeTest::echoCommand, "c"), true);
         CommandTree.Result getResult = tree.get("city 1 2 3").orElse(null);
         assertNotNull(getResult);
         assertEquals("[city]",getResult.path.toString());
-        assertArrayEquals(new String[]{"1","2","3"}, getResult.args);
+        assertEquals(Arrays.asList("1","2","3"), getResult.args);
         assertEquals("joserobjr: [1, 2, 3]", getResult.run(player).result);
 
         getResult = tree.get("c 1 2 3").orElse(null);
@@ -47,12 +47,12 @@ public class CommandTreeTest
         getResult = tree.get("city crEAte 1 2 3").orElse(null);
         assertNotNull(getResult);
         assertEquals("[city, crEAte]", getResult.path.toString());
-        assertArrayEquals(new String[]{"1","2","3"}, getResult.args);
+        assertEquals(Arrays.asList("1","2","3"), getResult.args);
 
         getResult = tree.get("c C").orElse(null);
         assertNotNull(getResult);
         assertEquals("[c, C]", getResult.path.toString());
-        assertArrayEquals(new String[0], getResult.args);
+        assertEquals(Collections.emptyList(), getResult.args);
 
         testData.mineCity.loadNature(player.position.world);
         testData.mineCity.loadChunk(player.position.getChunk());
@@ -81,10 +81,10 @@ public class CommandTreeTest
     }
 
     @Command("city.create")
-    public Message testCreateA(CommandSender sender, List<String> path, String[] args)
+    public Message testCreateA(CommandEvent cmd)
     {
         return new Message("test", "Path: ${path} Args: ${args}", new Object[][]{
-                {"path",path},{"args",Arrays.toString(args)}
+                {"path",cmd.path},{"args",cmd.args}
         });
     }
 
@@ -113,9 +113,9 @@ public class CommandTreeTest
         CommandTree.Result result = tree.get("C creATE A b 2").orElse(null);
         assertNotNull(result);
         assertEquals("[C]", result.path.toString());
-        assertArrayEquals(new String[]{"creATE", "A","b","2"}, result.args);
+        assertEquals(Arrays.asList("creATE", "A","b","2"), result.args);
 
-        TestPlayer player = new TestPlayer(testData.joserobjr, new BlockPos(testData.overWorld, 2,2,3));
+        TestPlayer player = new TestPlayer(testData.joserobjr, new EntityPos(testData.overWorld, 2,2,3));
         CommandResult cmd = tree.invoke(player, "city create test");
         assertFalse(cmd.success);
         assertEquals("Group List: [new, create]", cmd.message.toString());
@@ -125,7 +125,7 @@ public class CommandTreeTest
         result = tree.get("C creATE A b 2").orElse(null);
         assertNotNull(result);
         assertEquals("[C, creATE]", result.path.toString());
-        assertArrayEquals(new String[]{"A","b","2"}, result.args);
+        assertEquals(Arrays.asList("A","b","2"), result.args);
 
         cmd = tree.invoke(player, "city create test");
         assertFalse(cmd.success);
@@ -133,6 +133,7 @@ public class CommandTreeTest
     }
 
     @Test
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void testAutoComplete() throws Exception
     {
         CommandTree tree = new CommandTree();

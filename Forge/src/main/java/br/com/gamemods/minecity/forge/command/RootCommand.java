@@ -1,18 +1,13 @@
 package br.com.gamemods.minecity.forge.command;
 
 import br.com.gamemods.minecity.api.command.CommandInfo;
-import br.com.gamemods.minecity.api.command.CommandResult;
-import br.com.gamemods.minecity.api.command.LegacyFormat;
-import br.com.gamemods.minecity.forge.ForgeUtil;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class RootCommand<T> implements ICommand
@@ -49,36 +44,10 @@ public class RootCommand<T> implements ICommand
     @Override
     public void processCommand(ICommandSender sender, String[] args)
     {
-        String[] path = new String[args.length+1];
-        path[0] = name;
-        System.arraycopy(args, 0, path, 1, args.length);
-        CommandResult result = mod.mineCity.commands.invoke(mod.sender(sender), path);
-        if(result.message == null)
-            return;
-
-        EnumChatFormatting header;
-        EnumChatFormatting message;
-        String messageL;
-        if(result.success)
-        {
-            header = EnumChatFormatting.BLUE;
-            message = EnumChatFormatting.GRAY;
-            messageL = LegacyFormat.GRAY.toString();
-        }
-        else
-        {
-            header = EnumChatFormatting.DARK_RED;
-            message = EnumChatFormatting.RED;
-            messageL = LegacyFormat.RED.toString();
-        }
-
-        sender.addChatMessage(new ChatComponentText("MineCity> ")
-                .setChatStyle(new ChatStyle().setColor(header))
-                .appendSibling(
-                        ForgeUtil.chatComponentFromLegacyText(mod.mineCity.messageTransformer.toLegacy(result.message, messageL))
-                            .setChatStyle(new ChatStyle().setColor(message))
-                )
-        );
+        List<String> path = new ArrayList<>(args.length + 1);
+        path.add(name);
+        path.addAll(Arrays.asList(args));
+        mod.mineCity.commands.invoke(mod.sender(sender), path);
     }
 
     @Override

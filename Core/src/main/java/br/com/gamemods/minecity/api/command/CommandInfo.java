@@ -11,6 +11,7 @@ public class CommandInfo<R>
     public String permission;
     public String syntax;
     public Set<String> aliases;
+    public boolean async;
 
     public CommandInfo(String name, CommandFunction<R> function, String... aliases)
     {

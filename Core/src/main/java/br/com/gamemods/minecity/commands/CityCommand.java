@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.commands;
 
 import br.com.gamemods.minecity.MineCity;
+import br.com.gamemods.minecity.api.Async;
 import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
@@ -16,6 +17,10 @@ import br.com.gamemods.minecity.structure.Island;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 
 import static br.com.gamemods.minecity.api.StringUtil.identity;
@@ -31,10 +36,11 @@ public class CityCommand
     }
 
     @Slow
+    @Async
     @Command(value = "city.create", console = false, args = @Arg(name = "name", sticky = true))
-    public CommandResult<City> create(CommandSender sender, List<String> path, String[] args) throws DataSourceException
+    public CommandResult<City> create(CommandEvent cmd) throws DataSourceException
     {
-        String name = String.join(" ", args);
+        String name = String.join(" ", cmd.args);
         String identity = identity(name);
 
         if(identity.isEmpty())
@@ -53,8 +59,7 @@ public class CityCommand
                     new Object[][]{{"name",name},{"conflict",conflict}})
             );
 
-        BlockPos spawn = sender.getPosition();
-        //TODO Remove this slow call
+        BlockPos spawn = cmd.position.getBlock();
         Optional<ClaimedChunk> optionalClaim = mineCity.getOrFetchChunk(spawn.getChunk());
         if(!optionalClaim.isPresent())
             return new CommandResult<>(new Message("cmd.city.create.chunk.not-loaded",
@@ -74,7 +79,7 @@ public class CityCommand
                     "The chunk that you are is reserved to ${city}", new Object[]{"city",reserved.getName()}
             ));
 
-        City city = new City(mineCity, name, sender.getPlayerId(), spawn);
+        City city = new City(mineCity, name, cmd.sender.getPlayerId(), spawn);
         return new CommandResult<>(new Message("cmd.city.create.success",
                 "The city ${name} was created successfully, if you get lost you can teleport back with /city spawn ${identity}",
                 new Object[][]{{"name", city.getName()},{"identity",city.getIdentityName()}}
@@ -82,13 +87,13 @@ public class CityCommand
     }
 
     @Slow
+    @Async
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Command(value = "city.claim", console = false, args = @Arg(name = "city", type = Arg.Type.CITY, optional = true, sticky = true))
-    public CommandResult<Island> claim(CommandSender sender, List<String> path, String[] args)
-            throws DataSourceException
+    public CommandResult<Island> claim(CommandEvent cmd) throws DataSourceException
     {
-        PlayerID playerId = sender.getPlayerId();
-        ChunkPos chunk = sender.getPosition().getChunk();
+        PlayerID playerId = cmd.sender.getPlayerId();
+        ChunkPos chunk = cmd.position.getChunk();
 
         Optional<ClaimedChunk> claimOpt = mineCity.getChunk(chunk);
         City city = claimOpt.flatMap(ClaimedChunk::getCity).orElse(null);
@@ -98,7 +103,7 @@ public class CityCommand
                     new Object[]{"city",city.getName()}
             ));
 
-        if(args.length == 0)
+        if(cmd.args.isEmpty())
         {
             for(Direction direction: Direction.cardinal)
             {
@@ -139,8 +144,7 @@ public class CityCommand
         }
         else
         {
-            String name = String.join(" ", args);
-            //TODO Remove this slow call
+            String name = String.join(" ", cmd.args);
             city = mineCity.dataSource.getCityByName(name).orElse(null);
 
             if(city == null)
@@ -162,7 +166,7 @@ public class CityCommand
                     new Object[]{"city", city.getName()}
             ));
 
-        Island claim = city.claim(chunk, args.length > 0);
+        Island claim = city.claim(chunk, !cmd.args.isEmpty());
 
         return new CommandResult<>(new Message("cmd.city.claim.success",
                 "This chunk was claimed to ${city} successfully.",
@@ -171,18 +175,19 @@ public class CityCommand
     }
 
     @Slow
+    @Async
     @Command(value = "city.disclaim", console = false, args = @Arg(name = "city", type = Arg.Type.CITY, optional = true, sticky = true))
-    public CommandResult<Collection<Island>> disclaim(CommandSender sender, List<String> path, String[] args)
+    public CommandResult<Collection<Island>> disclaim(CommandEvent cmd)
             throws DataSourceException
     {
-        ChunkPos chunk = sender.getPosition().getChunk();
+        ChunkPos chunk = cmd.position.getChunk();
         City city = mineCity.getChunk(chunk).flatMap(ClaimedChunk::getCity).orElse(null);
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.disclaim.not-claimed",
                     "This chunk is not claimed by any city"
             ));
 
-        if(!sender.getPlayerId().equals(city.getOwner()))
+        if(!cmd.sender.getPlayerId().equals(city.getOwner()))
             return new CommandResult<>(new Message("cmd.city.disclaim.no-permission",
                     "You are not allowed to disclaim a chunk owned by ${city}",
                     new Object[]{"city",city.getName()}
@@ -196,7 +201,6 @@ public class CityCommand
             return new CommandResult<>(new Message("cmd.city.disclaim.spawn",
                     "Cannot disclaim the spawn chunk"));
 
-        //TODO Remove this slow command
         Collection<Island> newIslands = city.disclaim(chunk, true);
 
         if(newIslands.size() == 1)
@@ -217,11 +221,12 @@ public class CityCommand
     }
 
     @Slow
+    @Async
     @Command(value = "city.spawn", console = false, args = @Arg(name = "city", type = Arg.Type.CITY, sticky = true))
-    public CommandResult<Void> spawn(CommandSender sender, List<String> path, String[] args)
-            throws DataSourceException
+    public CommandResult<Void> spawn(CommandEvent cmd)
+            throws DataSourceException, InterruptedException, ExecutionException, TimeoutException
     {
-        String cityName = String.join(" ", args);
+        String cityName = String.join(" ", cmd.args);
         String id = identity(cityName);
 
         if(id.length() < 3)
@@ -230,7 +235,6 @@ public class CityCommand
                     new Object[]{"name", cityName})
             );
 
-        //TODO Remove this slow call
         City city = mineCity.dataSource.getCityByName(id).orElse(null);
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.spawn.not-found",
@@ -238,7 +242,8 @@ public class CityCommand
                     new Object[]{"name",cityName})
             );
 
-        Message error = sender.teleport(city.getSpawn());
+        Future<Message> future = mineCity.server.callSyncMethod(()-> cmd.sender.teleport(city.getSpawn()));
+        Message error = future.get(10, TimeUnit.SECONDS);
         if(error == null)
             return CommandResult.success();
 
@@ -246,10 +251,11 @@ public class CityCommand
     }
 
     @Slow
+    @Async
     @Command(value = "city.rename", console = false, args = @Arg(name = "new-name", sticky = true))
-    public CommandResult<City> rename(CommandSender sender, List<String> path, String[] args) throws DataSourceException
+    public CommandResult<City> rename(CommandEvent cmd) throws DataSourceException
     {
-        String cityName = String.join(" ", args).trim();
+        String cityName = String.join(" ", cmd.args).trim();
         String identity = identity(cityName);
         if(identity.isEmpty())
             return new CommandResult<>(new Message("cmd.city.rename.empty", "You need to type the new name"));
@@ -260,12 +266,12 @@ public class CityCommand
                     new Object[]{"name", cityName}
             ));
 
-        City city = mineCity.getChunk(sender.getPosition().getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
+        City city = mineCity.getChunk(cmd.position.getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.rename.not-claimed", "You are not inside a city"));
 
         String old = city.getName();
-        if(!sender.getPlayerId().equals(city.getOwner()))
+        if(!cmd.sender.getPlayerId().equals(city.getOwner()))
             return new CommandResult<>(new Message("cmd.city.rename.no-permission",
                     "You don't have permission to rename the city ${name}",
                     new Object[]{"name", old}
@@ -277,7 +283,6 @@ public class CityCommand
                     new Object[]{"name",cityName}
             ));
 
-        //TODO Remove this slow call
         city.setName(cityName);
 
         return new CommandResult<>(new Message("cmd.city.rename.success", "The city ${old} is now named ${new}",
@@ -286,28 +291,28 @@ public class CityCommand
     }
 
     @Slow
+    @Async
     @Command(value = "city.transfer", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER))
-    public CommandResult<City> transfer(CommandSender sender, List<String> path, String[] args)
+    public CommandResult<City> transfer(CommandEvent cmd)
             throws DataSourceException
     {
-        if(args.length == 0 || args[0].trim().isEmpty())
+        if(cmd.args.isEmpty() || cmd.args.get(0).trim().isEmpty())
             return new CommandResult<>(new Message("cmd.city.transfer.player.empty",
                     "This will transfer this city to an other player, type the player name that will be the new owner"));
 
-        if(args.length > 1)
+        if(cmd.args.size() > 1)
             return new CommandResult<>(new Message("cmd.city.transfer.player.space-in-name",
                     "This will transfer this city to an other player, type the player name that will be the new owner, " +
                             "player names does not have spaces..."));
 
-        String name = args[0].trim();
-        //TODO Remove this slow call from server thread
+        String name = cmd.args.get(0).trim();
         PlayerID target = mineCity.getPlayer(name).orElse(null);
         if(target == null)
             return new CommandResult<>(new Message("cmd.city.transfer.player.not-found",
                     "The player ${name} was not found", new Object[]{"name", name}
             ));
 
-        City city = mineCity.getChunk(sender.getPosition().getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
+        City city = mineCity.getChunk(cmd.position.getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.transfer.not-claimed", "You are not inside a city"));
 
@@ -324,7 +329,7 @@ public class CityCommand
                     new Object[]{"name",city.getName()}
             ));
 
-        if(!sender.getPlayerId().equals(cityOwner))
+        if(!cmd.sender.getPlayerId().equals(cityOwner))
             return new CommandResult<>(new Message("cmd.city.transfer.no-permission",
                     "Only ${owner} can transfer the city ${name}",
                     new Object[][]{{"owner", cityOwner.name}, {"name",city.getName()}}
@@ -339,16 +344,17 @@ public class CityCommand
     }
 
     @Slow
+    @Async
     @Command(value = "city.setspawn", console = false)
-    public CommandResult<City> setSpawn(CommandSender sender, List<String> path, String[] args)
+    public CommandResult<City> setSpawn(CommandEvent cmd)
             throws DataSourceException
     {
-        BlockPos position = sender.getPosition();
+        BlockPos position = cmd.position.getBlock();
         City city = mineCity.getChunk(position.getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.setspawn.not-claimed", "You are not inside a city"));
 
-        if(!sender.getPlayerId().equals(city.getOwner()))
+        if(!cmd.sender.getPlayerId().equals(city.getOwner()))
             return new CommandResult<>(new Message("cmd.city.setspawn.no-permission",
                     "You are not allowed to change the ${name}'s spawn",
                     new Object[]{"name",city.getName()}
@@ -357,7 +363,6 @@ public class CityCommand
         if(position.equals(city.getSpawn()))
             return new CommandResult<>(new Message("cmd.city.setspawn.already", "The spawn is already set to that position"));
 
-        //TODO Remove this slow call
         city.setSpawn(position);
 
         return new CommandResult<>(new Message("cmd.city.setspawn.success",
@@ -367,9 +372,9 @@ public class CityCommand
     }
 
     @Command(value = "city.map", console = false, args = @Arg(name = "big", type = Arg.Type.PREDEFINED, options = "big", optional = true))
-    public CommandResult<?> map(CommandSender sender, List<String> path, String[] args)
+    public CommandResult<?> map(CommandEvent cmd)
     {
-        boolean big = args.length > 0;
+        boolean big = !cmd.args.isEmpty();
         /* Default chat size: 53x10 , chars are not monospaced but lines are
 
         +--------------------------------------123456789012345+
@@ -385,7 +390,7 @@ public class CityCommand
         |0                                    |               |
         +-----------------------------------------------------+
          */
-        ChunkPos chunk = sender.getPosition().getChunk();
+        ChunkPos chunk = cmd.position.getChunk();
         ChunkPos cursorPos = chunk;
         Optional<ClaimedChunk> claimAtPosition = mineCity.getChunk(chunk);
         City cityAtPosition = claimAtPosition.flatMap(ClaimedChunk::getCity).orElse(null);
@@ -395,7 +400,7 @@ public class CityCommand
         if(cityAtPosition != null && !claimAtPosition.get().reserve)
         {
             cursorColor = cityAtPosition.getColor();
-            switch(sender.getCardinalDirection())
+            switch(cmd.position.getCardinalDirection())
             {
                 case NORTH: cursor = '\u25B2'; break;
                 case EAST: cursor = '\u25B6'; break;
@@ -411,7 +416,7 @@ public class CityCommand
         else
         {
             cursorColor = cityAtPosition == null? LegacyFormat.RED : cityAtPosition.getColor();
-            switch(sender.getCardinalDirection())
+            switch(cmd.position.getCardinalDirection())
             {
                 case NORTH: cursor = '\u25B3'; break;
                 case EAST: cursor = '\u25B7'; break;
@@ -550,7 +555,7 @@ public class CityCommand
         for(int i = 0; i < lines.length; i++)
             messages[i+1] = new Message("", lines[i].toString());
 
-        sender.send(messages);
+        cmd.sender.send(messages);
 
         long cut = time - 5*60*1000L;
         mineCity.mapCache.entrySet().parallelStream().filter(e-> e.getValue().used <= cut)

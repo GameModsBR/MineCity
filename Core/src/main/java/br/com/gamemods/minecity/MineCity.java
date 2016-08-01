@@ -62,7 +62,9 @@ public class MineCity
             Arrays.fill(config.dbPass, (byte) 0);
 
         commands.dataSource = this.dataSource;
+        commands.onlinePlayers = server::getOnlinePlayerNames;
         commands.cityNames = this.dataSource.cityNameSupplier();
+        commands.scheduler = server::runAsynchronously;
         commands.registerCommands(new CityCommand(this));
         commands.registerCommands(new PermissionCommands(this));
         Inconsistency.setMineCity(this);

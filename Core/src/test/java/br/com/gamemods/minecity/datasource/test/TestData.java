@@ -9,6 +9,9 @@ import br.com.gamemods.minecity.api.world.WorldDim;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 public class TestData implements Server
 {
@@ -31,5 +34,29 @@ public class TestData implements Server
     public Optional<PlayerID> getPlayerId(String name)
     {
         return Optional.empty();
+    }
+
+    @Override
+    public Stream<PlayerID> getOnlinePlayers()
+    {
+        return Stream.empty();
+    }
+
+    @Override
+    public Stream<String> getOnlinePlayerNames()
+    {
+        return Stream.empty();
+    }
+
+    @Override
+    public <R> Future<R> callSyncMethod(Callable<R> callable)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void runAsynchronously(Runnable runnable)
+    {
+        throw new UnsupportedOperationException();
     }
 }
