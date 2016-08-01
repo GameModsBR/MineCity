@@ -39,7 +39,7 @@ public class StringUtil
         HashMap<String,String> replacements = new HashMap<>();
         if(tokens != null) for(Object[] token: tokens)
         {
-            if(token.length < 2)
+            if(token == null || token.length < 2)
                 continue;
 
             Object rep = token[1];

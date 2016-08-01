@@ -95,6 +95,16 @@ public class MessageTransformer
         Deque<Node> queue = new ArrayDeque<>();
         Deque<String> formatQueue = new ArrayDeque<>();
         queue.add(message);
+        if(baseFormat.startsWith(RESET.toString()))
+            baseFormat = baseFormat.substring(2);
+
+        EnumSet<LegacyFormat> formats = LegacyFormat.formatAt(baseFormat, baseFormat.length());
+        Iterator<LegacyFormat> iterator = formats.iterator();
+        iterator.remove();
+        iterator.forEachRemaining(sb::append);
+        String inherited = sb.toString();
+        sb.setLength(0);
+
         formatQueue.add(baseFormat);
         String currentFormat = baseFormat;
         while(!queue.isEmpty())
@@ -142,6 +152,7 @@ public class MessageTransformer
                     case "i": format = currentFormat+ITALIC; break;
                     case "u": format = currentFormat+UNDERLINE; break;
                     case "s": format = currentFormat+STRIKE; break;
+                    case "o": format = currentFormat+MAGIC; break;
                     case "c":
                     {
                         String[] codes = ((Element) current).getAttribute("code").split(",");
@@ -162,28 +173,23 @@ public class MessageTransformer
                         format = currentFormat+formatBuilder;
                         break;
                     }
-                    case "black": format = currentFormat+BLACK; break;
-                    case "darkblue": format = currentFormat+DARK_BLUE; break;
-                    case "darkgreen": format = currentFormat+DARK_GREEN; break;
-                    case "darkaqua": format = currentFormat+DARK_AQUA; break;
-                    case "darkred": format = currentFormat+DARK_RED; break;
-                    case "darkpurple": format = currentFormat+DARK_PURPLE; break;
-                    case "gold": format = currentFormat+GOLD; break;
-                    case "gray": format = currentFormat+GRAY; break;
-                    case "darkgray": format = currentFormat+DARK_GRAY; break;
-                    case "blue": format = currentFormat+BLUE; break;
-                    case "green": format = currentFormat+GREEN; break;
-                    case "aqua": format = currentFormat+AQUA; break;
-                    case "red": format = currentFormat+RED; break;
-                    case "lightpurple": format = currentFormat+LIGHT_PURPLE; break;
-                    case "yellow": format = currentFormat+YELLOW; break;
-                    case "white": format = currentFormat+WHITE; break;
-                    case "magic": format = currentFormat+MAGIC; break;
-                    case "bold": format = currentFormat+BOLD; break;
-                    case "strike": format = currentFormat+STRIKE; break;
-                    case "underline": format = currentFormat+UNDERLINE; break;
-                    case "italic": format = currentFormat+ITALIC; break;
-                    case "reset": format = currentFormat+RESET; break;
+                    case "black": format = BLACK+inherited; break;
+                    case "darkblue": format = DARK_BLUE+inherited; break;
+                    case "darkgreen": format = DARK_GREEN+inherited; break;
+                    case "darkaqua": format = DARK_AQUA+inherited; break;
+                    case "darkred": format = DARK_RED+inherited; break;
+                    case "darkpurple": format = DARK_PURPLE+inherited; break;
+                    case "gold": format = GOLD+inherited; break;
+                    case "gray": format = GRAY+inherited; break;
+                    case "darkgray": format = DARK_GRAY+inherited; break;
+                    case "blue": format = BLUE+inherited; break;
+                    case "green": format = GREEN+inherited; break;
+                    case "aqua": format = AQUA+inherited; break;
+                    case "red": format = RED+inherited; break;
+                    case "lightpurple": format = LIGHT_PURPLE+inherited; break;
+                    case "yellow": format = YELLOW+inherited; break;
+                    case "white": format = WHITE+inherited; break;
+                    case "reset": format = RESET+baseFormat; break;
                 }
             }
 
@@ -217,25 +223,125 @@ public class MessageTransformer
 
     public String toLegacy(String message, String baseFormat, Object[][] args)
     {
+        Map<String, Object[]> delayed = new HashMap<>(1);
+        if(args != null)
+            for(int i = 0; i < args.length; i++)
+            {
+                Object[] arg = args[i];
+                if(arg != null && arg.length >= 2 && arg[1] instanceof Message)
+                {
+                    delayed.put(arg[0].toString(), arg);
+                    args[i] = null;
+                }
+            }
+
+        String result;
         if(message.startsWith("<msg>"))
-            return toLegacy(compile(message), baseFormat, args);
+            result = toLegacy(compile(message), baseFormat, args);
+        else
+            result = replaceTokens(message, args);
 
-        return replaceTokens(message, args);
-    }
+        EnumSet<LegacyFormat> inherited = LegacyFormat.formatAt(baseFormat, baseFormat.length());
+        Iterator<LegacyFormat> iterator = inherited.iterator();
+        LegacyFormat color = iterator.next();
+        LegacyFormat inheritedColor = color;
+        iterator.remove();
+        StringBuilder inheritedFormat = new StringBuilder();
+        iterator.forEachRemaining(inheritedFormat::append);
 
-    protected String toSimpleText(Element tag)
-    {
-        return tag.getTextContent().trim();
+        if(inheritedColor == RESET && delayed.isEmpty() && inheritedFormat.length() == 0)
+            return result;
+
+        StringBuilder sb = new StringBuilder(), token = new StringBuilder();
+        char[] chars = result.toCharArray();
+        EnumSet<LegacyFormat> format = EnumSet.copyOf(inherited);
+        boolean buildingToken = false;
+        for(int i = 0; i < chars.length; i++)
+        {
+            char c = chars[i];
+            if(buildingToken)
+            {
+                if(c >= 'a' && c <= 'z' || c >= 'A' && c <='Z' || c == '.' || c == '_' || c == '-' || c >= '0' && c <= '9')
+                {
+                    token.append(c);
+                    continue;
+                }
+
+                buildingToken = false;
+                if(c == '}')
+                {
+                    String key = token.toString();
+                    token.setLength(0);
+
+                    Object[] arg = delayed.get(key);
+                    Message msg = (Message) arg[1];
+                    StringBuilder f = new StringBuilder(color.toString());
+                    format.forEach(f::append);
+                    String inline = toLegacy(msg, f.toString());
+                    sb.append(inline);
+                    if(inline.contains(Character.toString(MARK)))
+                        sb.append(f);
+                    continue;
+                }
+                else
+                {
+                    sb.append("${").append(token);
+                    token.setLength(0);
+                }
+            }
+
+            if(c == MARK && i + 1 < chars.length)
+            {
+                LegacyFormat code = LegacyFormat.forCode(chars[i+1]);
+                if(code != null)
+                {
+                    i++;
+
+                    if(code.format)
+                    {
+                        sb.append(code);
+                        format.add(code);
+                    }
+                    else
+                    {
+                        format.clear();
+                        format.addAll(inherited);
+
+                        if(code == RESET)
+                        {
+                            color = inheritedColor;
+                            sb.append(inheritedColor).append(inheritedFormat);
+                        }
+                        else
+                        {
+                            color = code;
+                            sb.append(code);
+                            sb.append(inheritedFormat);
+                        }
+                    }
+
+                    continue;
+                }
+            }
+            else if(c == '$' && i + 2 < chars.length && chars[i+1]=='{')
+            {
+                buildingToken = true;
+                i++;
+                continue;
+            }
+
+            sb.append(c);
+        }
+
+        if(buildingToken)
+            sb.append("${").append(token);
+
+        return sb.toString();
     }
 
     public String toSimpleText(Message message)
     {
-        return replaceTokens(getSimpleText(message.getId()).orElseGet(message::getFallback), message.getArgs());
-    }
-
-    public Optional<String> getSimpleText(String id)
-    {
-        return getElement(id).map(this::toSimpleText);
+        return LegacyFormat.clear(toLegacy(message));
     }
 
     public Optional<Element> getElement(String id)

@@ -19,7 +19,7 @@ public class Message
     {
         this.id = id;
         this.fallback = fallback == null? id : fallback;
-        this.args = args == null? null : args.length == 0? null : args;
+        this.args = args == null? null : args.length == 0? null : args.clone();
     }
 
     public Message(@NotNull String id, @Nullable String simple)
@@ -47,7 +47,7 @@ public class Message
     @Nullable
     public Object[][] getArgs()
     {
-        return args;
+        return args == null? null :args.clone();
     }
 
     @Override
