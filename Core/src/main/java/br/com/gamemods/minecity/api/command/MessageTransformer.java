@@ -362,4 +362,314 @@ public class MessageTransformer
     {
         return messages.remove(id);
     }
+
+    public Component parse(String message) throws SAXException
+    {
+        if(message.startsWith("<msg>"))
+            try
+            {
+                Document doc = documentBuilder.parse(new ByteArrayInputStream(message.getBytes()));
+                return parse(doc.getDocumentElement());
+            }
+            catch(IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        else
+            return parseText(message);
+    }
+
+    public TextComponent parseText(String text)
+    {
+        TextComponent subStructure = new TextComponent("");
+        TextComponent last = subStructure;
+        StringBuilder sb = new StringBuilder();
+        char[] chars = text.toCharArray();
+        for(int i = 0; i < chars.length; i++)
+        {
+            char c = chars[i];
+            LegacyFormat format;
+            if(c == MARK && i+1 < chars.length && (format = forCode(chars[i+1])) != null)
+            {
+                i++;
+                if(sb.length() > 0)
+                {
+                    last.text = sb.toString();
+                    sb.setLength(0);
+
+                    TextComponent next = new TextComponent("");
+                    if(format.format)
+                    {
+                        next.color = last.color;
+                        next.style.add(format);
+                        next.style.addAll(last.style);
+                    }
+                    else if(format != RESET)
+                    {
+                        next.color = format;
+                        next.style.addAll(last.style);
+                    }
+
+                    subStructure.extra.add(next);
+                    last = next;
+                }
+                else
+                {
+                    if(format.format)
+                        last.style.add(format);
+                    else if(format == RESET)
+                        last.color = null;
+                    else
+                        last.color = format;
+                }
+            }
+            else
+                sb.append(c);
+        }
+
+        last.text = sb.toString();
+
+        return subStructure;
+    }
+
+    public Component parse(Element root)
+    {
+        Deque<Struct> queue = new ArrayDeque<>();
+        TextComponent rootComponent = new TextComponent("");
+        rootComponent.color = RESET;
+        NodeList rootNodes = root.getChildNodes();
+        int l = rootNodes.getLength();
+        for(int n = 0; n < l; n++)
+            queue.add(new Struct(rootNodes.item(n), rootComponent));
+
+        Struct item;
+        queue:
+        while((item = queue.poll()) != null)
+        {
+            Node node = item.element;
+            short nodeType = node.getNodeType();
+            Component component = item.component;
+            if(nodeType == Node.TEXT_NODE || nodeType == Node.CDATA_SECTION_NODE)
+            {
+                String text = node.getTextContent();
+                if(nodeType == Node.TEXT_NODE)
+                    text = text.replaceAll("\\s+", " ");
+
+                TextComponent subStructure = parseText(text);
+                if(component instanceof TextComponent)
+                {
+                    TextComponent current = (TextComponent)component;
+                    if(current.color == null && current.text.isEmpty() && current.style.isEmpty() && current.extra.isEmpty())
+                    {
+                        current.text = subStructure.text;
+                        current.color = subStructure.color;
+                        current.style = subStructure.style;
+                        current.extra = subStructure.extra;
+                    }
+                    else if(current.text.isEmpty() && current.extra.isEmpty())
+                    {
+                        current.text = subStructure.text;
+                        if(subStructure.color != null)
+                            current.color = subStructure.color;
+                        current.style.addAll(subStructure.style);
+                        current.extra = subStructure.extra;
+                    }
+                    else
+                        component.extra.add(subStructure);
+                }
+            }
+            else if(nodeType == Node.ELEMENT_NODE)
+            {
+                Element element = (Element) node;
+                LegacyFormat format;
+                switch(element.getTagName())
+                {
+                    case "black": format = BLACK; break;
+                    case "darkblue": format = DARK_BLUE; break;
+                    case "darkgreen": format = DARK_GREEN; break;
+                    case "darkaqua": format = DARK_AQUA; break;
+                    case "darkred": format = DARK_RED; break;
+                    case "darkpurple": format = DARK_PURPLE; break;
+                    case "gold": format = GOLD; break;
+                    case "gray": format = GRAY; break;
+                    case "darkgray": format = DARK_GRAY; break;
+                    case "blue": format = BLUE; break;
+                    case "green": format = GREEN; break;
+                    case "aqua": format = AQUA; break;
+                    case "red": format = RED; break;
+                    case "lightpurple": format = LIGHT_PURPLE; break;
+                    case "yellow": format = YELLOW; break;
+                    case "white": format = WHITE; break;
+                    case "reset": format = RESET; break;
+                    case "o": format = MAGIC; break;
+                    case "b": format = BOLD; break;
+                    case "s": format = STRIKE; break;
+                    case "u": format = UNDERLINE; break;
+                    case "i": format = ITALIC; break;
+                    default: continue queue;
+                }
+
+                Component extra = new TextComponent("");
+                component.extra.add(extra);
+                extra.style.addAll(component.style);
+                if(format.format)
+                    extra.style.add(format);
+                else
+                {
+                    extra.color = format;
+                    if(format == RESET)
+                        extra.color = null;
+                }
+                component = extra;
+            }
+
+            NodeList childNodes = node.getChildNodes();
+            int len = childNodes.getLength();
+            for(int i = len-1; i >= 0; i--)
+                queue.push(new Struct(childNodes.item(i), component));
+        }
+
+        return rootComponent;
+    }
+
+    private class Struct
+    {
+        private Node element;
+        private Component component;
+
+        private Struct(Node element, Component component)
+        {
+            this.element = element;
+            this.component = component;
+        }
+
+        @Override
+        public String toString()
+        {
+            return element.toString();
+        }
+    }
+
+    public abstract class Component
+    {
+        public LegacyFormat color = null;
+        public EnumSet<LegacyFormat> style = EnumSet.noneOf(LegacyFormat.class);
+        public Click click;
+        public Hover hover;
+        public List<Component> extra = new ArrayList<>(2);
+
+        protected abstract String legacyValue();
+
+        @Override
+        public String toString()
+        {
+            String value = legacyValue();
+            if(value.isEmpty())
+                return value;
+
+            StringBuilder sb = new StringBuilder();
+            if(color != null)
+                sb.append(color);
+            style.forEach(sb::append);
+            sb.append(value);
+            for(Component component : extra)
+            {
+                if(component.color == null && component.style.isEmpty() && color == RESET)
+                    sb.append(RESET);
+                sb.append(component);
+            }
+            return sb.toString();
+        }
+    }
+
+    public class TextComponent extends Component
+    {
+        public String text;
+
+        public TextComponent(String text)
+        {
+            this.text = text;
+        }
+
+        @Override
+        protected String legacyValue()
+        {
+            return text;
+        }
+    }
+
+    public abstract class Click
+    {
+    }
+
+    public class ClickCommand
+    {
+        public String value;
+        public ClickAction action;
+
+        public ClickCommand(ClickAction action, String value)
+        {
+            this.action = action;
+            this.value = value;
+        }
+    }
+
+    enum ClickAction
+    {
+        RUN, SUGGEST, OPEN_URL
+    }
+
+    public abstract class Hover
+    {
+    }
+
+    public class HoverMessage extends Hover
+    {
+        public TextComponent message;
+
+        public HoverMessage(TextComponent message)
+        {
+            this.message = message;
+        }
+    }
+
+    public class HoverEntity extends Hover
+    {
+        public TextComponent name;
+        public String type;
+        public UUID id;
+
+        public HoverEntity(UUID id, String type, TextComponent name)
+        {
+            this.id = id;
+            this.type = type;
+            this.name = name;
+        }
+    }
+
+    public class HoverAchievement extends Hover
+    {
+        public String id;
+
+        public HoverAchievement(String id)
+        {
+            this.id = id;
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

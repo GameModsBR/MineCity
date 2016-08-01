@@ -15,6 +15,7 @@ import br.com.gamemods.minecity.forge.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.accessors.IWorldServer;
 import br.com.gamemods.minecity.forge.command.ForgeCommandSender;
 import br.com.gamemods.minecity.forge.command.ForgePlayer;
+import br.com.gamemods.minecity.forge.command.ForgeTransformer;
 import br.com.gamemods.minecity.forge.command.RootCommand;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Inconsistency;
@@ -123,6 +124,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         MinecraftForge.EVENT_BUS.register(this);
         FMLCommonHandler.instance().bus().register(this);
         mineCity = new MineCity(this, config);
+        mineCity.messageTransformer = new ForgeTransformer();
         mineCity.worldProvider = Optional.of(this);
         mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
         mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
