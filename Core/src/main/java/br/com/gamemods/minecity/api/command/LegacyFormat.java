@@ -63,6 +63,11 @@ public enum  LegacyFormat
 
     public static EnumSet<LegacyFormat> formatAt(String str, int pos)
     {
+        if(pos < 0)
+            throw new IndexOutOfBoundsException("pos = "+pos);
+        if(pos > str.length())
+            throw new IndexOutOfBoundsException(pos+" > "+str.length());
+
         LegacyFormat color = RESET;
         EnumSet<LegacyFormat> format = EnumSet.noneOf(LegacyFormat.class);
 
@@ -79,7 +84,10 @@ public enum  LegacyFormat
                     if(code.format)
                         format.add(code);
                     else
+                    {
                         color = code;
+                        format.clear();
+                    }
                 }
             }
         }

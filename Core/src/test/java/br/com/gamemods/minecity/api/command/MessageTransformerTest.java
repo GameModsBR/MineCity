@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.w3c.dom.Element;
 
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Locale;
 
 import static br.com.gamemods.minecity.api.command.LegacyFormat.*;
 import static org.junit.Assert.assertEquals;
@@ -36,15 +38,37 @@ public class MessageTransformerTest
                 component.extra.toString()
         );
 
-        component = transformer.parse("<msg>normal<red>red </red>normal <b>bold <green>bold and green </green></b>normal <green>green <b>green and bold</b></green></msg>");
-        assert component instanceof MessageTransformer.TextComponent;
-        assertEquals("normal", ((MessageTransformer.TextComponent) component).text);
-        assertEquals("["+MARK+"cred , normal , "+MARK+"lbold "+MARK+"a"+MARK
-                        +"lbold and green , normal , "+MARK+"agreen "+MARK+"lgreen and bold]",
-                component.extra.toString()
-        );
-        assertEquals(RESET+"normal"+RED+"red "+RESET+"normal "+BOLD+"bold "+GREEN+BOLD+"bold and green "+RESET+"normal "+GREEN+"green "+BOLD+"green and bold",
-                component.toString());
+        component = transformer.parse("<msg>normal1<red>red </red>normal2 <b>bold <green>bold and green </green></b>normal3 <green>green2 <b>green and bold</b></green></msg>");
+        String legacy = component.toString();
+        assertEquals(legacy, EnumSet.of(RESET), LegacyFormat.formatAt(legacy, legacy.indexOf("normal1")));
+        assertEquals(legacy, EnumSet.of(RESET), LegacyFormat.formatAt(legacy, legacy.indexOf("normal2")));
+        assertEquals(legacy, EnumSet.of(RESET), LegacyFormat.formatAt(legacy, legacy.indexOf("normal3")));
+        assertEquals(legacy, EnumSet.of(RED), LegacyFormat.formatAt(legacy, legacy.indexOf("red ")));
+        assertEquals(legacy, EnumSet.of(RESET, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf("bold ")));
+        assertEquals(legacy, EnumSet.of(GREEN, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf("bold and green ")));
+        assertEquals(legacy, EnumSet.of(GREEN), LegacyFormat.formatAt(legacy, legacy.indexOf("green2 ")));
+        assertEquals(legacy, EnumSet.of(GREEN, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf("green and bold")));
+
+        component = transformer.parse("A message with ${token}");
+        assertEquals("A message with ", ((MessageTransformer.TextComponent) component).text);
+
+        MessageTransformer.Component clone = component.clone();
+        clone.apply(Locale.US, new Object[][]{{"token","a token"}});
+        assertEquals("A message with a token", clone.toString());
+
+        component = transformer.parse("<msg><red>red <b>${token}</b> red</red></msg>");
+        legacy = component.toString();
+        assertEquals(legacy, EnumSet.of(RED), LegacyFormat.formatAt(legacy, legacy.indexOf("red ")));
+        assertEquals(legacy, EnumSet.of(RED, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf("${token}")));
+        assertEquals(legacy, EnumSet.of(RED), LegacyFormat.formatAt(legacy, legacy.indexOf(" ")));
+
+        clone = component.clone();
+        clone.apply(Locale.US, new Object[][]{{"token",new Message("","<msg>red and bold <green>bold and green</green></msg>")}});
+        legacy = clone.toString();
+        assertEquals(legacy, EnumSet.of(RED, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf("red and bold ")));
+        assertEquals(legacy, EnumSet.of(GREEN, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf("bold and green")));
+        assertEquals(legacy, EnumSet.of(RED), LegacyFormat.formatAt(legacy, legacy.indexOf("red ")));
+        assertEquals(legacy, EnumSet.of(RED), LegacyFormat.formatAt(legacy, legacy.indexOf(" red")));
     }
 
     @Test @Ignore

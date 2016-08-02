@@ -7,6 +7,7 @@ import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,8 +35,6 @@ public class StringUtil
 
     public static String replaceTokens(Locale locale, String text, Object[]... tokens)
     {
-        Pattern pattern = Pattern.compile("\\$\\{([^}]+)\\}");
-        Matcher matcher = pattern.matcher(text);
         HashMap<String,String> replacements = new HashMap<>();
         if(tokens != null) for(Object[] token: tokens)
         {
@@ -64,6 +63,13 @@ public class StringUtil
             replacements.put(token[0].toString(), format != null? format.format(rep) : String.valueOf(rep));
         }
 
+        return replaceTokens(text, replacements);
+    }
+
+    public static String replaceTokens(String text, Map<String, String> replacements)
+    {
+        Pattern pattern = Pattern.compile("\\$\\{([^}]+)\\}");
+        Matcher matcher = pattern.matcher(text);
         StringBuffer builder = new StringBuffer();
         while (matcher.find())
         {
