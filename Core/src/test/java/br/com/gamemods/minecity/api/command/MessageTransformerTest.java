@@ -3,7 +3,6 @@ package br.com.gamemods.minecity.api.command;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.w3c.dom.Element;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -71,28 +70,35 @@ public class MessageTransformerTest
         assertEquals(legacy, EnumSet.of(RED), LegacyFormat.formatAt(legacy, legacy.indexOf(" red")));
     }
 
-    @Test @Ignore
+    @Test
     public void testLegacy() throws Exception
     {
-        Element element = transformer.getElement("test.bold").get();
-        assertEquals("bold", element.getAttribute("id"));
-
         Message message = new Message("test.bold");
         assertEquals("This message has a bold word", transformer.toSimpleText(message));
 
-        assertEquals("A "+BOLD+"bold"+RESET+" word", transformer.toLegacy("<msg>A <b>bold</b> word</msg>"));
-        assertEquals("Has "+BOLD+"bold and "+RESET+BOLD+ITALIC+"italic"+RESET+" words",
-                transformer.toLegacy("<msg>Has <b>bold and <i>italic</i></b> words</msg>"));
+        String legacy = transformer.toLegacy(new Message("","<msg>A <b>bold</b> word</msg>"));
+        assertEquals(legacy, EnumSet.of(RESET), LegacyFormat.formatAt(legacy, legacy.indexOf("A ")));
+        assertEquals(legacy, EnumSet.of(RESET, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf("bold")));
+        assertEquals(legacy, EnumSet.of(RESET), LegacyFormat.formatAt(legacy, legacy.indexOf(" word")));
 
-        assertEquals("Has "+BOLD+"bold and "+RESET+BOLD+ITALIC+"italic"+RESET+BOLD+" words",
-                transformer.toLegacy("<msg>Has <b>bold and <i>italic</i> words</b></msg>"));
+        legacy = transformer.toLegacy(new Message("","<msg>Has <b>bold and <i>italic</i></b> words</msg>"));
+        assertEquals(legacy, EnumSet.of(RESET), LegacyFormat.formatAt(legacy, legacy.indexOf("Has ")));
+        assertEquals(legacy, EnumSet.of(RESET, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf("bold and ")));
+        assertEquals(legacy, EnumSet.of(RESET, BOLD, ITALIC), LegacyFormat.formatAt(legacy, legacy.indexOf("italic")));
+        assertEquals(legacy, EnumSet.of(RESET), LegacyFormat.formatAt(legacy, legacy.indexOf("words")));
 
-        assertEquals(BOLD+"Bold"+RESET+" spaces", transformer.toLegacy("<msg><b>Bold</b>     spaces</msg>"));
-        assertEquals(BOLD+"Bold"+RESET+"     spaces", transformer.toLegacy("<msg><b>Bold</b><![CDATA[     spaces]]></msg>"));
-        assertEquals("A "+BOLD+"Bold"+RESET+" word", transformer.toLegacy("<msg>\n\tA\n\t<b>Bold</b>\n\tword\n</msg>"));
+        legacy = transformer.toLegacy(new Message("","<msg>Has <b>bold and <i>italic</i> words</b></msg>"));
+        assertEquals(legacy, EnumSet.of(RESET), LegacyFormat.formatAt(legacy, legacy.indexOf("Has ")));
+        assertEquals(legacy, EnumSet.of(RESET, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf("bold and ")));
+        assertEquals(legacy, EnumSet.of(RESET, BOLD, ITALIC), LegacyFormat.formatAt(legacy, legacy.indexOf("italic")));
+        assertEquals(legacy, EnumSet.of(RESET, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf(" words")));
+
+        assertEquals(BOLD+"Bold"+RESET+" spaces", transformer.toLegacy(new Message("","<msg><b>Bold</b>     spaces</msg>")));
+        assertEquals(BOLD+"Bold"+RESET+"     spaces", transformer.toLegacy(new Message("","<msg><b>Bold</b><![CDATA[     spaces]]></msg>")));
+        assertEquals("A "+BOLD+"Bold"+RESET+" word", transformer.toLegacy(new Message("","<msg>\n\tA\n\t<b>Bold</b>\n\tword\n</msg>")));
     }
 
-    @Test @Ignore
+    @Test
     public void testInline() throws Exception
     {
         Message inline = new Message("", "inline");
@@ -107,11 +113,17 @@ public class MessageTransformerTest
 
         inline = new Message("", RED+"inline");
         container = new Message("", GREEN+"This contains an ${msg} message", new Object[]{"msg", inline});
-        assertEquals(GREEN+"This contains an "+RED+"inline"+GREEN+" message", transformer.toLegacy(container));
+        String legacy = transformer.toLegacy(container);
+        assertEquals(legacy, EnumSet.of(GREEN), LegacyFormat.formatAt(legacy, legacy.indexOf("This contains an ")));
+        assertEquals(legacy, EnumSet.of(RED), LegacyFormat.formatAt(legacy, legacy.indexOf("inline")));
+        assertEquals(legacy, EnumSet.of(GREEN), LegacyFormat.formatAt(legacy, legacy.indexOf(" message")));
         assertEquals("This contains an inline message", transformer.toSimpleText(container));
 
         container = new Message("", GREEN+"This contains an "+BOLD+"${msg} message", new Object[]{"msg", inline});
-        assertEquals(GREEN+"This contains an "+BOLD+RED+BOLD+"inline"+GREEN+BOLD+" message", transformer.toLegacy(container));
+        legacy = transformer.toLegacy(container);
+        assertEquals(legacy, EnumSet.of(GREEN), LegacyFormat.formatAt(legacy, legacy.indexOf("This contains an ")));
+        assertEquals(legacy, EnumSet.of(RED, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf("inline")));
+        assertEquals(legacy, EnumSet.of(GREEN, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf(" message")));
         assertEquals("This contains an inline message", transformer.toSimpleText(container));
 
         inline = new Message("", "<msg>inline</msg>");
@@ -126,12 +138,17 @@ public class MessageTransformerTest
 
         inline = new Message("", "<msg><red>inline</red></msg>");
         container = new Message("", "<msg><green>This contains an ${msg} message</green></msg>", new Object[]{"msg", inline});
-        assertEquals(GREEN+"This contains an "+GREEN+RED+"inline"+GREEN+" message", transformer.toLegacy(container));
+        legacy = transformer.toLegacy(container);
+        assertEquals(legacy, EnumSet.of(GREEN), LegacyFormat.formatAt(legacy, legacy.indexOf("This contains an ")));
+        assertEquals(legacy, EnumSet.of(RED), LegacyFormat.formatAt(legacy, legacy.indexOf("inline")));
+        assertEquals(legacy, EnumSet.of(GREEN), LegacyFormat.formatAt(legacy, legacy.indexOf(" message")));
         assertEquals("This contains an inline message", transformer.toSimpleText(container));
 
         container = new Message("", "<msg><green>This contains an <b>${msg} message</b></green></msg>", new Object[]{"msg", inline});
-        String result = transformer.toLegacy(container);
-        assertEquals(GREEN+"This contains an "+RESET+GREEN+BOLD+GREEN+BOLD+RED+BOLD+BOLD+"inline"+GREEN+BOLD+" message",result);
+        legacy = transformer.toLegacy(container);
+        assertEquals(legacy, EnumSet.of(GREEN), LegacyFormat.formatAt(legacy, legacy.indexOf("This contains an ")));
+        assertEquals(legacy, EnumSet.of(RED, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf("inline")));
+        assertEquals(legacy, EnumSet.of(GREEN, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf(" message")));
         assertEquals("This contains an inline message", transformer.toSimpleText(container));
     }
 

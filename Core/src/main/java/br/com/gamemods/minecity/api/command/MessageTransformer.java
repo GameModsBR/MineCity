@@ -25,7 +25,7 @@ import static br.com.gamemods.minecity.api.command.LegacyFormat.*;
 
 public class MessageTransformer
 {
-    private Map<String, Element> messages = new HashMap<>();
+    private Map<String, Component> messages = new HashMap<>();
     private Document doc;
     private DocumentBuilder documentBuilder;
     {
@@ -67,285 +67,31 @@ public class MessageTransformer
             sb.append(msgTag.getAttribute("id"));
             id = sb.toString();
 
-            setElement(id, msgTag);
+            Component component = parse(msgTag);
+            messages.put(id, component);
         }
-    }
-
-    protected Element compile(String fallback)
-    {
-        if(fallback.startsWith("<msg>"))
-            try
-            {
-                return documentBuilder.parse(new ByteArrayInputStream(fallback.getBytes())).getDocumentElement();
-            }
-            catch(IOException e)
-            {
-                throw new RuntimeException(e);
-            }
-            catch(SAXException e)
-            {
-                throw new IllegalArgumentException(e);
-            }
-
-        Element msg = doc.createElement("msg");
-        msg.setTextContent(fallback);
-        return msg;
-    }
-
-    @SuppressWarnings("SpellCheckingInspection")
-    private String toLegacy(Element message, String baseFormat, Object[][] args)
-    {
-        StringBuilder sb = new StringBuilder();
-
-        Deque<Node> queue = new ArrayDeque<>();
-        Deque<String> formatQueue = new ArrayDeque<>();
-        queue.add(message);
-        if(baseFormat.startsWith(RESET.toString()))
-            baseFormat = baseFormat.substring(2);
-
-        EnumSet<LegacyFormat> formats = LegacyFormat.formatAt(baseFormat, baseFormat.length());
-        Iterator<LegacyFormat> iterator = formats.iterator();
-        iterator.next();
-        iterator.remove();
-        iterator.forEachRemaining(sb::append);
-        String inherited = sb.toString();
-        sb.setLength(0);
-
-        formatQueue.add(baseFormat);
-        String currentFormat = baseFormat;
-        loop:
-        while(!queue.isEmpty())
-        {
-            Node current = queue.pop();
-            String format = formatQueue.pop();
-
-            short nodeType = current.getNodeType();
-            if(nodeType == Node.TEXT_NODE || nodeType == Node.CDATA_SECTION_NODE)
-            {
-                String text = current.getNodeValue();
-                boolean lSpace = false, rSpace = false;
-                if(nodeType == Node.TEXT_NODE)
-                {
-                    char l = text.charAt(0), r = text.charAt(text.length()-1);
-                    text = text.trim();
-                    lSpace = sb.length() > 0 && (text.length() == 0 || text.charAt(0) != l);
-                    rSpace= !queue.isEmpty() && (text.length() <= 1 || text.charAt(text.length()-1) != r);
-                }
-
-                if(!currentFormat.equals(format))
-                {
-                    if(!currentFormat.isEmpty())
-                        sb.append(RESET);
-                    sb.append(format);
-                    currentFormat = format;
-
-                }
-
-                if(lSpace)
-                    sb.append(' ');
-
-                sb.append(replaceTokens(text, args));
-
-                if(rSpace)
-                    sb.append(' ');
-                continue;
-            }
-            else if(nodeType == Node.ELEMENT_NODE)
-            {
-                String name = current.getNodeName();
-                switch(name)
-                {
-                    case "b": format = currentFormat+BOLD; break;
-                    case "i": format = currentFormat+ITALIC; break;
-                    case "u": format = currentFormat+UNDERLINE; break;
-                    case "s": format = currentFormat+STRIKE; break;
-                    case "o": format = currentFormat+MAGIC; break;
-                    case "c":
-                    {
-                        String[] codes = ((Element) current).getAttribute("code").split(",");
-                        StringBuilder formatBuilder = new StringBuilder();
-                        for(String code: codes)
-                        {
-                            if(code.length() == 1)
-                                formatBuilder.append(MARK).append(code);
-                            else
-                                try
-                                {
-                                    formatBuilder.append(LegacyFormat.valueOf(code.toUpperCase()));
-                                }
-                                catch(IllegalArgumentException ignored)
-                                {}
-                        }
-
-                        format = currentFormat+formatBuilder;
-                        break;
-                    }
-                    case "black": format = BLACK+inherited; break;
-                    case "darkblue": format = DARK_BLUE+inherited; break;
-                    case "darkgreen": format = DARK_GREEN+inherited; break;
-                    case "darkaqua": format = DARK_AQUA+inherited; break;
-                    case "darkred": format = DARK_RED+inherited; break;
-                    case "darkpurple": format = DARK_PURPLE+inherited; break;
-                    case "gold": format = GOLD+inherited; break;
-                    case "gray": format = GRAY+inherited; break;
-                    case "darkgray": format = DARK_GRAY+inherited; break;
-                    case "blue": format = BLUE+inherited; break;
-                    case "green": format = GREEN+inherited; break;
-                    case "aqua": format = AQUA+inherited; break;
-                    case "red": format = RED+inherited; break;
-                    case "lightpurple": format = LIGHT_PURPLE+inherited; break;
-                    case "yellow": format = YELLOW+inherited; break;
-                    case "white": format = WHITE+inherited; break;
-                    case "reset": format = RESET+baseFormat; break;
-                    case "br": sb.append("\n"); continue loop;
-                    case "tooltip": continue loop;
-                }
-            }
-
-            NodeList childNodes = current.getChildNodes();
-            int len = childNodes.getLength();
-            for(int i = len-1; i >= 0; i--)
-            {
-                queue.push(childNodes.item(i));
-                formatQueue.push(format);
-            }
-        }
-
-        return sb.toString();
     }
 
     public String toLegacy(Message message)
     {
-        return toLegacy(message, "");
-    }
-
-    public String toLegacy(Message message, String base)
-    {
-        return getElement(message.getId()).map(e-> toLegacy(e, base, message.getArgs()))
-                .orElseGet(()-> toLegacy(message.getFallback(), base, message.getArgs()));
-    }
-
-    public String toLegacy(String message)
-    {
-        return toLegacy(message, "", new Object[0][]);
-    }
-
-    public String toLegacy(String message, String baseFormat, Object[][] args)
-    {
-        Map<String, Object[]> delayed = new HashMap<>(1);
-        if(args != null)
-            for(int i = 0; i < args.length; i++)
-            {
-                Object[] arg = args[i];
-                if(arg != null && arg.length >= 2 && arg[1] instanceof Message)
-                {
-                    delayed.put(arg[0].toString(), arg);
-                    args[i] = null;
-                }
-            }
-
-        String result;
-        if(message.startsWith("<msg>"))
-            result = toLegacy(compile(message), baseFormat, args);
-        else
-            result = replaceTokens(message, args);
-
-        EnumSet<LegacyFormat> inherited = LegacyFormat.formatAt(baseFormat, baseFormat.length());
-        Iterator<LegacyFormat> iterator = inherited.iterator();
-        LegacyFormat color = iterator.next();
-        LegacyFormat inheritedColor = color;
-        iterator.remove();
-        StringBuilder inheritedFormat = new StringBuilder();
-        iterator.forEachRemaining(inheritedFormat::append);
-
-        if(inheritedColor == RESET && delayed.isEmpty() && inheritedFormat.length() == 0)
-            return result;
-
-        StringBuilder sb = new StringBuilder(), token = new StringBuilder();
-        char[] chars = result.toCharArray();
-        EnumSet<LegacyFormat> format = EnumSet.copyOf(inherited);
-        boolean buildingToken = false;
-        for(int i = 0; i < chars.length; i++)
+        Component component = messages.get(message.getId());
+        try
         {
-            char c = chars[i];
-            if(buildingToken)
-            {
-                if(c >= 'a' && c <= 'z' || c >= 'A' && c <='Z' || c == '.' || c == '_' || c == '-' || c >= '0' && c <= '9')
-                {
-                    token.append(c);
-                    continue;
-                }
-
-                buildingToken = false;
-                if(c == '}')
-                {
-                    String key = token.toString();
-                    token.setLength(0);
-
-                    Object[] arg = delayed.get(key);
-                    Message msg = (Message) arg[1];
-                    StringBuilder f = new StringBuilder(color.toString());
-                    format.forEach(f::append);
-                    String inline = toLegacy(msg, f.toString());
-                    sb.append(inline);
-                    if(inline.contains(Character.toString(MARK)))
-                        sb.append(f);
-                    continue;
-                }
-                else
-                {
-                    sb.append("${").append(token);
-                    token.setLength(0);
-                }
-            }
-
-            if(c == MARK && i + 1 < chars.length)
-            {
-                LegacyFormat code = LegacyFormat.forCode(chars[i+1]);
-                if(code != null)
-                {
-                    i++;
-
-                    if(code.format)
-                    {
-                        sb.append(code);
-                        format.add(code);
-                    }
-                    else
-                    {
-                        format.clear();
-                        format.addAll(inherited);
-
-                        if(code == RESET)
-                        {
-                            color = inheritedColor;
-                            sb.append(inheritedColor).append(inheritedFormat);
-                        }
-                        else
-                        {
-                            color = code;
-                            sb.append(code);
-                            sb.append(inheritedFormat);
-                        }
-                    }
-
-                    continue;
-                }
-            }
-            else if(c == '$' && i + 2 < chars.length && chars[i+1]=='{')
-            {
-                buildingToken = true;
-                i++;
-                continue;
-            }
-
-            sb.append(c);
+            if(component != null)
+                component = component.clone();
+            else
+                component = parse(message.getFallback());
+        }
+        catch(SAXException | CloneNotSupportedException e)
+        {
+            throw new RuntimeException(e);
         }
 
-        if(buildingToken)
-            sb.append("${").append(token);
+        Object[][] args = message.getArgs();
+        if(args != null)
+            component.apply(Locale.getDefault(), args);
 
-        return sb.toString();
+        return component.toString();
     }
 
     public String toSimpleText(Message message)
@@ -353,22 +99,7 @@ public class MessageTransformer
         return LegacyFormat.clear(toLegacy(message));
     }
 
-    public Optional<Element> getElement(String id)
-    {
-        return Optional.ofNullable(messages.get(id));
-    }
-
-    public void setElement(String id, Element tag)
-    {
-        messages.put(id, tag);
-    }
-
-    public Element removeElement(String id)
-    {
-        return messages.remove(id);
-    }
-
-    public Component parse(String message) throws SAXException
+    protected Component parse(String message) throws SAXException
     {
         if(message.startsWith("<msg>"))
             try
@@ -381,10 +112,15 @@ public class MessageTransformer
                 throw new RuntimeException(e);
             }
         else
-            return parseText(message);
+        {
+            TextComponent textComponent = parseText(message);
+            if(textComponent.color == null)
+                textComponent.color = RESET;
+            return textComponent;
+        }
     }
 
-    public TextComponent parseText(String text)
+    protected TextComponent parseText(String text)
     {
         TextComponent subStructure = new TextComponent("");
         TextComponent last = subStructure;
@@ -406,7 +142,7 @@ public class MessageTransformer
                 if(c == '}')
                 {
                     String key = token.toString();
-                    subStructure.tokens.put(sb.length(), key);
+                    last.tokens.put(sb.length(), key);
                     continue;
                 }
                 else
@@ -465,7 +201,7 @@ public class MessageTransformer
         return subStructure;
     }
 
-    public Component parse(Element root)
+    protected Component parse(Element root)
     {
         Deque<Struct> queue = new ArrayDeque<>();
         TextComponent rootComponent = new TextComponent("");
@@ -475,6 +211,7 @@ public class MessageTransformer
         for(int n = 0; n < l; n++)
             queue.add(new Struct(rootNodes.item(n), rootComponent));
 
+        boolean firstText = true;
         Struct item;
         queue:
         while((item = queue.poll()) != null)
@@ -486,7 +223,23 @@ public class MessageTransformer
             {
                 String text = node.getTextContent();
                 if(nodeType == Node.TEXT_NODE)
+                {
                     text = text.replaceAll("\\s+", " ");
+
+                    if(text.length() > 2)
+                    {
+                        char lc = text.charAt(0), rc = text.charAt(text.length()-1);
+                        text = text.trim();
+
+                        if(!firstText && (text.length() == 0 || text.charAt(0) != lc))
+                            text = " "+text;
+
+                        if(!queue.isEmpty() && (text.length() <= 1 || text.charAt(text.length()-1) != rc))
+                            text += " ";
+                    }
+
+                    firstText = false;
+                }
 
                 TextComponent subStructure = parseText(text);
                 if(component instanceof TextComponent)
@@ -591,7 +344,7 @@ public class MessageTransformer
         }
     }
 
-    public abstract class Component implements Cloneable
+    protected abstract class Component implements Cloneable
     {
         public LegacyFormat color = null;
         public EnumSet<LegacyFormat> style = EnumSet.noneOf(LegacyFormat.class);
@@ -692,6 +445,10 @@ public class MessageTransformer
                 expectedColor = parent.color;
                 parent = parent.parent;
             }
+
+            if(expectedColor == null)
+                expectedColor = RESET;
+
             return expectedColor;
         }
 
@@ -789,7 +546,7 @@ public class MessageTransformer
         }
     }
 
-    public final class TextComponent extends Component
+    protected final class TextComponent extends Component
     {
         public String text;
         public SortedMap<Integer, String> tokens = new TreeMap<>(Comparator.reverseOrder());
@@ -833,22 +590,29 @@ public class MessageTransformer
                 if(val instanceof Message)
                 {
                     Message msg = (Message) val;
-                    Optional<Element> element = getElement(msg.getId());
-                    Component component;
-                    if(element.isPresent())
-                        val = component = parse(element.get());
-                    else
-                        try
-                        {
+                    Component component = messages.get(msg.getId());
+                    try
+                    {
+                        if(component != null)
+                            component = component.clone();
+                        else
                             val = component = parse(msg.getFallback());
-                        }
-                        catch(SAXException e)
-                        {
-                            throw new RuntimeException(e);
-                        }
+                    }
+                    catch(SAXException | CloneNotSupportedException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
 
                     component.replaceBaseColor(baseColor);
                     component.addFormat(format);
+
+                    if(component.displayColor() != baseColor || !format.containsAll(component.style))
+                    {
+                        StringBuilder sb2 = new StringBuilder(component.toString());
+                        sb2.append(baseColor);
+                        format.forEach(sb2::append);
+                        val = sb2;
+                    }
                 }
                 sb.insert(entry.getKey(), val);
             }
@@ -874,7 +638,7 @@ public class MessageTransformer
         }
     }
 
-    public abstract class Click implements Cloneable
+    protected abstract class Click implements Cloneable
     {
         @Override
         protected Click clone() throws CloneNotSupportedException
@@ -892,7 +656,7 @@ public class MessageTransformer
         public abstract void replaceStrings(Map<String, String> replacements);
     }
 
-    public final class ClickCommand extends Click
+    protected final class ClickCommand extends Click
     {
         public String value;
         public ClickAction action;
@@ -923,12 +687,12 @@ public class MessageTransformer
         }
     }
 
-    enum ClickAction
+    protected enum ClickAction
     {
         RUN, SUGGEST, OPEN_URL
     }
 
-    public abstract class Hover implements Cloneable
+    protected abstract class Hover implements Cloneable
     {
         @Override
         protected Hover clone() throws CloneNotSupportedException
@@ -947,7 +711,7 @@ public class MessageTransformer
         {}
     }
 
-    public final class HoverMessage extends Hover
+    protected final class HoverMessage extends Hover
     {
         public TextComponent message;
 
@@ -978,7 +742,7 @@ public class MessageTransformer
         }
     }
 
-    public final class HoverEntity extends Hover
+    protected final class HoverEntity extends Hover
     {
         public TextComponent name;
         public String type;
@@ -1021,7 +785,7 @@ public class MessageTransformer
         }
     }
 
-    public final class HoverAchievement extends Hover
+    protected final class HoverAchievement extends Hover
     {
         public String id;
 
