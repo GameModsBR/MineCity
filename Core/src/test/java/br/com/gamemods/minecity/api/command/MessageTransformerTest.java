@@ -4,12 +4,10 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Locale;
+import java.util.*;
 
 import static br.com.gamemods.minecity.api.command.LegacyFormat.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class MessageTransformerTest
 {
@@ -164,6 +162,43 @@ public class MessageTransformerTest
         assertEquals(legacy, EnumSet.of(GREEN), LegacyFormat.formatAt(legacy, legacy.indexOf(" it")));
         assertEquals(legacy, EnumSet.of(RESET), LegacyFormat.formatAt(legacy, legacy.indexOf(".")));
         assertEquals("This contains an inline message with a param in it.", transformer.toSimpleText(container));
+
+        MessageTransformer.Component component = transformer.toComponent(container);
+        List<MessageTransformer.Component> split = new ArrayList<>();
+        split.add(component);
+        boolean changed = component.splitNewLines(split);
+        assertFalse(split.toString(), changed);
+        assertEquals(split.toString(), 1, split.size());
+    }
+
+    @Test
+    public void testSplit() throws Exception
+    {
+        Message message = new Message("","This has a \nline break");
+        MessageTransformer.Component component = transformer.toComponent(message);
+        List<MessageTransformer.Component> split = new ArrayList<>();
+        split.add(component);
+        boolean changed = component.splitNewLines(split);
+        assertTrue(changed);
+        assertEquals(2, split.size());
+
+        message = new Message("","<msg>This <red>is <b><![CDATA[a\ncomplex\n]]><green><![CDATA[message\nwith]]></green>" +
+                "<![CDATA[\nline breaks]]></b><![CDATA[\neverywhere]]></red></msg>");
+        component = transformer.toComponent(message);
+        split.clear();
+        split.add(component);
+        changed = component.splitNewLines(split);
+        assertTrue(changed);
+        assertEquals(6, split.size());
+        String[] legacy = split.stream().map(MessageTransformer.Component::toString).toArray(String[]::new);
+        assertEquals(legacy[0], EnumSet.of(RESET), LegacyFormat.formatAt(legacy[0], legacy[0].indexOf("This ")));
+        assertEquals(legacy[0], EnumSet.of(RED), LegacyFormat.formatAt(legacy[0], legacy[0].lastIndexOf("is ")));
+        assertEquals(legacy[0], EnumSet.of(RED, BOLD), LegacyFormat.formatAt(legacy[0], legacy[0].indexOf("a")));
+        assertEquals(legacy[1], EnumSet.of(RED, BOLD), LegacyFormat.formatAt(legacy[1], legacy[1].indexOf("complex")));
+        assertEquals(legacy[2], EnumSet.of(GREEN, BOLD), LegacyFormat.formatAt(legacy[2], legacy[2].indexOf("message")));
+        assertEquals(legacy[3], EnumSet.of(GREEN, BOLD), LegacyFormat.formatAt(legacy[3], legacy[3].indexOf("with")));
+        assertEquals(legacy[4], EnumSet.of(RED, BOLD), LegacyFormat.formatAt(legacy[4], legacy[4].indexOf("line breaks")));
+        assertEquals(legacy[5], EnumSet.of(RED), LegacyFormat.formatAt(legacy[5], legacy[5].indexOf("everywhere")));
     }
 
     @Test @Ignore

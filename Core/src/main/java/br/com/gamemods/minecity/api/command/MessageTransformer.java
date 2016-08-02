@@ -366,6 +366,8 @@ public class MessageTransformer
         public Component parent;
         public List<Component> extra = new ArrayList<>(2);
 
+        public abstract boolean splitNewLines(List<Component> list);
+
         public void replaceBaseColor(LegacyFormat baseColor)
         {
             if(color == RESET)
@@ -504,6 +506,32 @@ public class MessageTransformer
             return format;
         }
 
+        public Hover effectiveHover()
+        {
+            Hover hover = this.hover;
+            Component parent = this.parent;
+            while(hover == null && parent != null)
+            {
+                hover = parent.hover;
+                parent = parent.parent;
+            }
+
+            return hover;
+        }
+
+        public Click effectiveClick()
+        {
+            Click click = this.click;
+            Component parent = this.parent;
+            while(click == null && parent != null)
+            {
+                click = parent.click;
+                parent = parent.parent;
+            }
+
+            return click;
+        }
+
         @Override
         public String toString()
         {
@@ -570,6 +598,50 @@ public class MessageTransformer
         public TextComponent(String text)
         {
             this.text = text;
+        }
+
+        @Override
+        public boolean splitNewLines(List<Component> list)
+        {
+            int lineBreak = text.indexOf('\n');
+            if(lineBreak >= 0)
+            {
+                TextComponent other = new TextComponent(text.substring(lineBreak+1));
+                text = text.substring(0, lineBreak);
+                other.color = displayColor();
+                other.addFormat(displayFormat());
+                other.hover = effectiveHover();
+                other.click = effectiveClick();
+                other.extra.addAll(extra);
+                extra.forEach(c-> c.parent = other);
+                extra.clear();
+
+                list.add(other);
+                other.splitNewLines(list);
+                return true;
+            }
+
+            Iterator<Component> iterator = extra.iterator();
+            while(iterator.hasNext())
+            {
+                Component component = iterator.next();
+                if(component.splitNewLines(list))
+                {
+                    Component newParent = list.get(list.size()-1);
+                    while(iterator.hasNext())
+                    {
+                        Component move = iterator.next();
+                        iterator.remove();
+                        move.parent = newParent;
+                        newParent.extra.add(move);
+                    }
+
+                    newParent.splitNewLines(list);
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         @Override
