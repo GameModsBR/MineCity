@@ -1,7 +1,5 @@
 package br.com.gamemods.minecity.api.command;
 
-import br.com.gamemods.minecity.api.StringUtil;
-import br.com.gamemods.minecity.api.permission.ExceptFlagHolder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -69,6 +67,21 @@ public class MessageTransformer
 
             Component component = parse(msgTag);
             messages.put(id, component);
+        }
+    }
+
+    protected Component toComponent(Message message)
+    {
+        Component component = messages.get(message.getId());
+        try
+        {
+            if(component != null)
+                return component.clone();
+            return parse(message.getFallback());
+        }
+        catch(SAXException | CloneNotSupportedException e)
+        {
+            throw new RuntimeException(e);
         }
     }
 
@@ -368,6 +381,9 @@ public class MessageTransformer
 
         public void apply(Locale locale, Object[][] args)
         {
+            if(args == null)
+                args = new Object[0][0];
+
             Map<String, Object> replacements = new HashMap<>(args.length);
             for(Object[] arg: args)
             {
@@ -434,7 +450,7 @@ public class MessageTransformer
             return clone;
         }
 
-        protected abstract String legacyValue();
+        public abstract String literalValue();
 
         public LegacyFormat displayColor()
         {
@@ -491,7 +507,7 @@ public class MessageTransformer
         @Override
         public String toString()
         {
-            String value = legacyValue();
+            String value = literalValue();
             if(value.isEmpty() && extra.isEmpty())
                 return value;
 
@@ -630,8 +646,11 @@ public class MessageTransformer
         }
 
         @Override
-        protected String legacyValue()
+        public String literalValue()
         {
+            if(tokens.isEmpty())
+                return text;
+
             StringBuilder sb = new StringBuilder(text);
             tokens.forEach((i,t)-> sb.insert(i, "${"+t+"}"));
             return sb.toString();

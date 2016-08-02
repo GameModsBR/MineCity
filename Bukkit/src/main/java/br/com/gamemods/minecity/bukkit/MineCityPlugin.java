@@ -3,8 +3,10 @@ package br.com.gamemods.minecity.bukkit;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.Slow;
+import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -27,6 +29,29 @@ public class MineCityPlugin extends JavaPlugin
     @Override
     public void onEnable()
     {
+        LegacyFormat.BLACK.server = ChatColor.BLACK;
+        LegacyFormat.DARK_BLUE.server = ChatColor.DARK_BLUE;
+        LegacyFormat.DARK_GREEN.server = ChatColor.DARK_GREEN;
+        LegacyFormat.DARK_AQUA.server = ChatColor.DARK_AQUA;
+        LegacyFormat.DARK_RED.server = ChatColor.DARK_RED;
+        LegacyFormat.DARK_PURPLE.server = ChatColor.DARK_PURPLE;
+        LegacyFormat.GOLD.server = ChatColor.GOLD;
+        LegacyFormat.GRAY.server = ChatColor.GRAY;
+        LegacyFormat.DARK_GRAY.server = ChatColor.DARK_GRAY;
+        LegacyFormat.BLUE.server = ChatColor.BLUE;
+        LegacyFormat.GREEN.server = ChatColor.GREEN;
+        LegacyFormat.AQUA.server = ChatColor.AQUA;
+        LegacyFormat.RED.server = ChatColor.RED;
+        LegacyFormat.LIGHT_PURPLE.server = ChatColor.LIGHT_PURPLE;
+        LegacyFormat.YELLOW.server = ChatColor.YELLOW;
+        LegacyFormat.WHITE.server = ChatColor.WHITE;
+        LegacyFormat.RESET.server = ChatColor.RESET;
+        LegacyFormat.MAGIC.server = ChatColor.MAGIC;
+        LegacyFormat.BOLD.server = ChatColor.BOLD;
+        LegacyFormat.STRIKE.server = ChatColor.STRIKETHROUGH;
+        LegacyFormat.UNDERLINE.server = ChatColor.UNDERLINE;
+        LegacyFormat.ITALIC.server = ChatColor.ITALIC;
+
         try
         {
             saveDefaultConfig();

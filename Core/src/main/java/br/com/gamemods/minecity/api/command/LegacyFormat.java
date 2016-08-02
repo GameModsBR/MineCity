@@ -36,6 +36,7 @@ public enum  LegacyFormat
     };
     public final char code;
     public final boolean format;
+    public Object server;
 
     LegacyFormat(char c)
     {
@@ -47,6 +48,12 @@ public enum  LegacyFormat
     {
         this.code = code;
         this.format = format;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T server() throws ClassCastException
+    {
+        return (T) server;
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")

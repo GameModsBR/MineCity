@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandSender;
+import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.ChunkProvider;
 import br.com.gamemods.minecity.api.world.WorldDim;
@@ -33,6 +34,7 @@ import cpw.mods.fml.relauncher.Side;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -61,6 +63,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
 {
     public MinecraftServer server;
     public MineCity mineCity;
+    public ForgeTransformer transformer;
     private MineCityConfig config;
     private Path worldContainer;
     private ExecutorService executors;
@@ -69,6 +72,30 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
     @EventHandler
     public void onPreInit(FMLPreInitializationEvent event)
     {
+        transformer = new ForgeTransformer();
+        LegacyFormat.BLACK.server = EnumChatFormatting.BLACK;
+        LegacyFormat.DARK_BLUE.server = EnumChatFormatting.DARK_BLUE;
+        LegacyFormat.DARK_GREEN.server = EnumChatFormatting.DARK_GREEN;
+        LegacyFormat.DARK_AQUA.server = EnumChatFormatting.DARK_AQUA;
+        LegacyFormat.DARK_RED.server = EnumChatFormatting.DARK_RED;
+        LegacyFormat.DARK_PURPLE.server = EnumChatFormatting.DARK_PURPLE;
+        LegacyFormat.GOLD.server = EnumChatFormatting.GOLD;
+        LegacyFormat.GRAY.server = EnumChatFormatting.GRAY;
+        LegacyFormat.DARK_GRAY.server = EnumChatFormatting.DARK_GRAY;
+        LegacyFormat.BLUE.server = EnumChatFormatting.BLUE;
+        LegacyFormat.GREEN.server = EnumChatFormatting.GREEN;
+        LegacyFormat.AQUA.server = EnumChatFormatting.AQUA;
+        LegacyFormat.RED.server = EnumChatFormatting.RED;
+        LegacyFormat.LIGHT_PURPLE.server = EnumChatFormatting.LIGHT_PURPLE;
+        LegacyFormat.YELLOW.server = EnumChatFormatting.YELLOW;
+        LegacyFormat.WHITE.server = EnumChatFormatting.WHITE;
+        LegacyFormat.RESET.server = EnumChatFormatting.RESET;
+        LegacyFormat.MAGIC.server = EnumChatFormatting.OBFUSCATED;
+        LegacyFormat.BOLD.server = EnumChatFormatting.BOLD;
+        LegacyFormat.STRIKE.server = EnumChatFormatting.STRIKETHROUGH;
+        LegacyFormat.UNDERLINE.server = EnumChatFormatting.UNDERLINE;
+        LegacyFormat.ITALIC.server = EnumChatFormatting.ITALIC;
+
         Configuration config = new Configuration(event.getSuggestedConfigurationFile());
         config.load();
 
@@ -123,8 +150,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
 
         MinecraftForge.EVENT_BUS.register(this);
         FMLCommonHandler.instance().bus().register(this);
-        mineCity = new MineCity(this, config);
-        mineCity.messageTransformer = new ForgeTransformer();
+        mineCity = new MineCity(this, config, transformer);
         mineCity.worldProvider = Optional.of(this);
         mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
         mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
@@ -134,6 +160,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
     @EventHandler
     public void onServerStart(FMLServerStartingEvent event)
     {
+        //noinspection OptionalGetWithoutIsPresent
         mineCity.commands.getRootCommands().stream()
                 .map(name->mineCity.commands.get(name).get())
                 .map(r->r.command).distinct()
