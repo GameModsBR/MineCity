@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -13,7 +14,17 @@ import java.util.Optional;
 public class SimpleFlagHolder implements FlagHolder
 {
     protected Message defaultMessage = DEFAULT_DENIAL_MESSAGE;
-    protected final EnumMap<PermissionFlag, Message> generalPermissions = new EnumMap<>(PermissionFlag.class);
+    protected final Map<PermissionFlag, Message> generalPermissions;
+
+    public SimpleFlagHolder()
+    {
+        generalPermissions = new EnumMap<>(PermissionFlag.class);
+    }
+
+    protected SimpleFlagHolder(Map<PermissionFlag, Message> map)
+    {
+        this.generalPermissions = map;
+    }
 
     @NotNull
     @Override

@@ -3,15 +3,12 @@ package br.com.gamemods.minecity.datasource.test;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.StringUtil;
-import br.com.gamemods.minecity.api.permission.Group;
-import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.*;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
-import br.com.gamemods.minecity.datasource.api.CityCreationResult;
-import br.com.gamemods.minecity.datasource.api.DataSourceException;
-import br.com.gamemods.minecity.datasource.api.ICityStorage;
-import br.com.gamemods.minecity.datasource.api.IDataSource;
+import br.com.gamemods.minecity.datasource.api.*;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
@@ -26,7 +23,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FakeDataSource implements IDataSource, ICityStorage
+public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermissionStorage
 {
     public MineCity mineCity;
     private Map<ChunkPos, FakeIsland> claims = new HashMap<>();
@@ -74,7 +71,7 @@ public class FakeDataSource implements IDataSource, ICityStorage
             e.printStackTrace(System.err);
         }
 
-        return new CityCreationResult(this, island, Collections.emptyList());
+        return new CityCreationResult(this, this, island, Collections.emptyList());
     }
 
     @Nullable
@@ -386,6 +383,53 @@ public class FakeDataSource implements IDataSource, ICityStorage
     public Supplier<Stream<String>> cityNameSupplier()
     {
         return ()-> cities.values().stream().map(City::getName);
+    }
+
+    @Override
+    public void setDefaultMessage(@NotNull Message message)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deny(@NotNull SimpleFlagHolder holder, @NotNull PermissionFlag flag, @Nullable Message message)
+            throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void allow(@NotNull SimpleFlagHolder holder, @NotNull PermissionFlag flag) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void allowAll(@NotNull SimpleFlagHolder holder) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void set(@NotNull ExceptFlagHolder holder, @NotNull PermissionFlag flag, boolean allow,
+                    @NotNull Identity<?> identity, @Nullable Message message) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void remove(@NotNull ExceptFlagHolder holder, @NotNull PermissionFlag flag, @NotNull Identity<?> identity)
+            throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @NotNull
+    @Override
+    public EnumMap<PermissionFlag, Message> loadSimplePermissions(@NotNull SimpleFlagHolder holder)
+            throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
     }
 
     private class FakeIsland implements Island

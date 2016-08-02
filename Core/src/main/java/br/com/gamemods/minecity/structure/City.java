@@ -12,10 +12,7 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
-import br.com.gamemods.minecity.datasource.api.CityCreationResult;
-import br.com.gamemods.minecity.datasource.api.DataSourceException;
-import br.com.gamemods.minecity.datasource.api.ICityStorage;
-import br.com.gamemods.minecity.datasource.api.IDataSource;
+import br.com.gamemods.minecity.datasource.api.*;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBFunction;
 import br.com.gamemods.minecity.datasource.api.unchecked.DisDBConsumer;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
@@ -30,7 +27,7 @@ import java.util.stream.Stream;
 
 import static br.com.gamemods.minecity.api.StringUtil.identity;
 
-public final class City extends ExceptFlagHolder
+public final class City extends ExceptStoredHolder
 {
     @NotNull
     public final MineCity mineCity;
@@ -80,6 +77,7 @@ public final class City extends ExceptFlagHolder
 
         CityCreationResult result = mineCity.dataSource.createCity(this);
         storage = result.storage;
+        permissionStorage = result.permissionStorage;
         islands = new HashMap<>(1);
         islands.put(result.island.getId(), result.island);
         groups = new HashMap<>(result.groups.size());
@@ -101,7 +99,8 @@ public final class City extends ExceptFlagHolder
      */
     @Slow
     public City(@NotNull MineCity mineCity, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
-                @NotNull BlockPos spawn, Collection<Island> islands, int id, @NotNull ICityStorage storage)
+                @NotNull BlockPos spawn, Collection<Island> islands, int id, @NotNull ICityStorage storage,
+                @NotNull IExceptPermissionStorage permissionStorage)
             throws DataSourceException
     {
         this.mineCity = mineCity;
@@ -111,6 +110,7 @@ public final class City extends ExceptFlagHolder
         this.spawn = spawn;
         setId(id);
         this.storage = storage;
+        this.permissionStorage = permissionStorage;
         this.islands = new HashMap<>(islands.size());
         islands.forEach(island -> this.islands.put(island.getId(), island));
         Collection<Group> loadedGroups = storage.loadGroups(this);

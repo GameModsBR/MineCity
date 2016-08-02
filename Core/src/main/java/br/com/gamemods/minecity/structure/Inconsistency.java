@@ -3,14 +3,14 @@ package br.com.gamemods.minecity.structure;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.permission.Group;
-import br.com.gamemods.minecity.api.permission.Identity;
-import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.permission.*;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.ICityStorage;
+import br.com.gamemods.minecity.datasource.api.IExceptPermissionStorage;
+import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,6 +18,7 @@ import java.util.*;
 
 public class Inconsistency implements ChunkOwner
 {
+    public static final Message INCONSISTENT_CHUNK_MESSAGE = new Message("chunk.inconsistent", "This chunk is inconsistent.");
     public static final Inconsistency INSTANCE = new Inconsistency();
     public static final WorldDim WORLD = new WorldDim(-10000, "inconsistency", "Inconsistent");
     private static MineCity mineCity;
@@ -34,18 +35,18 @@ public class Inconsistency implements ChunkOwner
     {
         if(city == null)
         {
-            Message message = new Message("chunk.inconsistent", "This chunk is inconsistent.");
             try
             {
+                VoidStorage voidStorage = new VoidStorage();
                 city = new City(mineCity, "#inconsistent", "#Inconsistency", null, new BlockPos(WORLD, 0, 0, 0),
-                        Collections.singleton(island = new InconsistentIsland()), -1000, new VoidStorage()
+                        Collections.<Island>singleton(island = new InconsistentIsland()), -1000, voidStorage, voidStorage
                 );
             }
             catch(DataSourceException unexpected)
             {
                 throw new RuntimeException(unexpected);
             }
-            Arrays.asList(PermissionFlag.values()).forEach(f-> city.deny(f, message));
+            Arrays.asList(PermissionFlag.values()).forEach(f-> city.deny(f, INCONSISTENT_CHUNK_MESSAGE));
             city.allow(PermissionFlag.LEAVE);
         }
         return city;
@@ -114,7 +115,7 @@ public class Inconsistency implements ChunkOwner
         }
     }
 
-    private static class VoidStorage implements ICityStorage
+    private static class VoidStorage implements ICityStorage, IExceptPermissionStorage
     {
         @Override
         public void setOwner(@NotNull City city, @Nullable PlayerID owner)
@@ -240,6 +241,62 @@ public class Inconsistency implements ChunkOwner
             if(city.getId() != -1000)
                 throw new DataSourceException("Inconsistent city!");
             return Collections.emptyList();
+        }
+
+        @Override
+        public void setDefaultMessage(@NotNull Message message)
+        {
+            if(city.getId() != -1000)
+                throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+        }
+
+        @Override
+        public void deny(@NotNull SimpleFlagHolder holder, @NotNull PermissionFlag flag, @Nullable Message message)
+                throws DataSourceException
+        {
+            if(city.getId() != -1000)
+                throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+        }
+
+        @Override
+        public void allow(@NotNull SimpleFlagHolder holder, @NotNull PermissionFlag flag) throws DataSourceException
+        {
+            if(city.getId() != -1000)
+                throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+        }
+
+        @Override
+        public void allowAll(@NotNull SimpleFlagHolder holder) throws DataSourceException
+        {
+            if(city.getId() != -1000)
+                throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+        }
+
+        @NotNull
+        @Override
+        public EnumMap<PermissionFlag, Message> loadSimplePermissions(@NotNull SimpleFlagHolder holder)
+                throws DataSourceException
+        {
+            EnumMap<PermissionFlag, Message> result = new EnumMap<>(PermissionFlag.class);
+            Arrays.stream(PermissionFlag.values()).forEach(f-> result.put(f, INCONSISTENT_CHUNK_MESSAGE));
+            return result;
+        }
+
+        @Override
+        public void set(@NotNull ExceptFlagHolder holder, @NotNull PermissionFlag flag, boolean allow,
+                        @NotNull Identity<?> identity, @Nullable Message message) throws DataSourceException
+        {
+            if(city.getId() != -1000)
+                throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+        }
+
+        @Override
+        public void remove(@NotNull ExceptFlagHolder holder, @NotNull PermissionFlag flag,
+                           @NotNull Identity<?> identity)
+                throws DataSourceException
+        {
+            if(city.getId() != -1000)
+                throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
         }
     }
 }

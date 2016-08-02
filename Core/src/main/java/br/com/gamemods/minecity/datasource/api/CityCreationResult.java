@@ -8,12 +8,14 @@ import java.util.Collection;
 public final class CityCreationResult
 {
     public final ICityStorage storage;
+    public final IExceptPermissionStorage permissionStorage;
     public final Island island;
     public final Collection<Group> groups;
 
-    public CityCreationResult(ICityStorage storage, Island island, Collection<Group> groups)
+    public CityCreationResult(ICityStorage storage, IExceptPermissionStorage permissionStorage, Island island, Collection<Group> groups)
     {
         this.storage = storage;
+        this.permissionStorage = permissionStorage;
         this.island = island;
         this.groups = groups;
     }

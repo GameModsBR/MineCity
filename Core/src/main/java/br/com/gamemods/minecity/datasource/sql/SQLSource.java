@@ -40,6 +40,8 @@ public class SQLSource implements IDataSource
     @NotNull
     private final SQLCityStorage cityStorage;
     @NotNull
+    private final SQLPermStorage permStorage;
+    @NotNull
     private final Map<Integer, City> cityMap = new HashMap<>();
     final Map<Integer, WorldDim> worldDimMap = new ConcurrentHashMap<>(3);
     final Set<String> cityNames = new HashSet<>();
@@ -52,6 +54,7 @@ public class SQLSource implements IDataSource
         if(config.dbPass != null)
             Arrays.fill(config.dbPass, (byte) 0);
         cityStorage = new SQLCityStorage(this, connection);
+        permStorage = new SQLPermStorage(this, connection);
     }
 
     private Collection<Island> loadIslands(Connection connection, int cityId) throws SQLException
@@ -133,7 +136,7 @@ public class SQLSource implements IDataSource
                 pst.close();
 
                 Collection<Island> islands = loadIslands(connection, id);
-                City city = new City(mineCity, name, displayName, owner, spawn, islands, id, cityStorage);
+                City city = new City(mineCity, name, displayName, owner, spawn, islands, id, cityStorage, permStorage);
                 islands.forEach(i-> ((SQLIsland)i).city = city);
                 cityMap.put(id, city);
                 return Optional.of(city);
@@ -501,7 +504,7 @@ public class SQLSource implements IDataSource
                 }
             }
 
-            return new CityCreationResult(cityStorage, new SQLIsland(islandId, spawnChunk, city), Collections.emptyList());
+            return new CityCreationResult(cityStorage, permStorage, new SQLIsland(islandId, spawnChunk, city), Collections.emptyList());
         }
         catch(SQLException e)
         {

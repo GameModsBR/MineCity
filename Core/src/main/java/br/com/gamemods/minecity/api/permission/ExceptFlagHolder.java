@@ -18,7 +18,29 @@ public class ExceptFlagHolder extends SimpleFlagHolder
      * An immutable instance of an approval status
      */
     protected final Status DIRECT_ALLOW = new Status();
-    protected EnumMap<PermissionFlag, Map<Identity<?>, Status>> strictPermission = new EnumMap<>(PermissionFlag.class);
+    protected final Map<PermissionFlag, Map<Identity<?>, Status>> strictPermission;
+
+    public ExceptFlagHolder()
+    {
+        strictPermission = new EnumMap<>(PermissionFlag.class);
+    }
+
+    protected ExceptFlagHolder(Map<PermissionFlag, Message> general)
+    {
+        super(general);
+        strictPermission = new EnumMap<>(PermissionFlag.class);
+    }
+
+    protected ExceptFlagHolder(Map<PermissionFlag, Message> general, Map<PermissionFlag, Map<Identity<?>, Status>> strict)
+    {
+        super(general);
+        strictPermission = strict;
+    }
+
+    protected Map<Identity<?>, Status> createMap(PermissionFlag flag)
+    {
+        return new HashMap<>(1);
+    }
 
     @NotNull
     @Override
@@ -44,7 +66,7 @@ public class ExceptFlagHolder extends SimpleFlagHolder
      */
     public void allow(PermissionFlag flag, Identity<?> identity)
     {
-        strictPermission.computeIfAbsent(flag, f-> new HashMap<>(1)).put(identity, DIRECT_ALLOW);
+        strictPermission.computeIfAbsent(flag, this::createMap).put(identity, DIRECT_ALLOW);
     }
 
     /**
@@ -66,7 +88,7 @@ public class ExceptFlagHolder extends SimpleFlagHolder
      */
     public void deny(PermissionFlag flag, Identity<?> identity, Message message)
     {
-        strictPermission.computeIfAbsent(flag, f-> new HashMap<>(1)).put(identity, new Status(message));
+        strictPermission.computeIfAbsent(flag, this::createMap).put(identity, new Status(message));
     }
 
     /**
@@ -143,6 +165,24 @@ public class ExceptFlagHolder extends SimpleFlagHolder
         public boolean isDeny()
         {
             return message != null;
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if(this == o) return true;
+            if(o == null || getClass() != o.getClass()) return false;
+
+            Status status = (Status) o;
+
+            return message != null? message.equals(status.message) : status.message == null;
+
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return message != null? message.hashCode() : 0;
         }
     }
 }
