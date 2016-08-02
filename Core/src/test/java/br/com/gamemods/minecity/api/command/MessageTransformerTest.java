@@ -150,6 +150,20 @@ public class MessageTransformerTest
         assertEquals(legacy, EnumSet.of(RED, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf("inline")));
         assertEquals(legacy, EnumSet.of(GREEN, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf(" message")));
         assertEquals("This contains an inline message", transformer.toSimpleText(container));
+
+        inline = new Message("", "<msg><red>inline <i>${param} a</i></red> param</msg>", new Object[]{"param","message with"});
+        container = new Message("", "<msg>This <green>contains an <b>${inline} in</b> it</green>.</msg>", new Object[]{"inline", inline});
+        legacy = transformer.toLegacy(container);
+        assertEquals(legacy, EnumSet.of(RESET), LegacyFormat.formatAt(legacy, legacy.indexOf("This ")));
+        assertEquals(legacy, EnumSet.of(GREEN), LegacyFormat.formatAt(legacy, legacy.indexOf("contains an ")));
+        assertEquals(legacy, EnumSet.of(RED,BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf("inline ")));
+        assertEquals(legacy, EnumSet.of(RED,BOLD,ITALIC), LegacyFormat.formatAt(legacy, legacy.indexOf("message with")));
+        assertEquals(legacy, EnumSet.of(RED,BOLD,ITALIC), LegacyFormat.formatAt(legacy, legacy.lastIndexOf(" a")));
+        assertEquals(legacy, EnumSet.of(GREEN,BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf(" param")));
+        assertEquals(legacy, EnumSet.of(GREEN,BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf(" in")));
+        assertEquals(legacy, EnumSet.of(GREEN), LegacyFormat.formatAt(legacy, legacy.indexOf(" it")));
+        assertEquals(legacy, EnumSet.of(RESET), LegacyFormat.formatAt(legacy, legacy.indexOf(".")));
+        assertEquals("This contains an inline message with a param in it.", transformer.toSimpleText(container));
     }
 
     @Test @Ignore

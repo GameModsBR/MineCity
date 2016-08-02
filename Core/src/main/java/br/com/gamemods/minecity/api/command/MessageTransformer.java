@@ -418,18 +418,18 @@ public class MessageTransformer
                 replacements.put(key, val);
             }
 
-            replace(replacements);
+            replace(locale, replacements);
         }
 
-        public void replace(Map<String, Object> args)
+        public void replace(Locale locale, Map<String, Object> args)
         {
             if(click != null)
-                click.replace(args);
+                click.replace(locale, args);
 
             if(hover != null)
-                hover.replace(args);
+                hover.replace(locale, args);
 
-            extra.forEach(c-> c.replace(args));
+            extra.forEach(c-> c.replace(locale, args));
         }
 
         @Override
@@ -588,9 +588,9 @@ public class MessageTransformer
         }
 
         @Override
-        public void replace(Map<String, Object> args)
+        public void replace(Locale locale, Map<String, Object> args)
         {
-            super.replace(args);
+            super.replace(locale, args);
 
             if(tokens.isEmpty())
                 return;
@@ -601,6 +601,7 @@ public class MessageTransformer
             StringBuilder sb = new StringBuilder(text);
             for(Map.Entry<Integer, String> entry : tokens.entrySet())
             {
+                int index = entry.getKey();
                 String t = entry.getValue();
                 Object val = args.getOrDefault(t, "${" + t + "}");
                 if(val instanceof Message)
@@ -612,7 +613,7 @@ public class MessageTransformer
                         if(component != null)
                             component = component.clone();
                         else
-                            val = component = parse(msg.getFallback());
+                            component = parse(msg.getFallback());
                     }
                     catch(SAXException | CloneNotSupportedException e)
                     {
@@ -621,16 +622,19 @@ public class MessageTransformer
 
                     component.replaceBaseColor(baseColor);
                     component.addFormat(format);
+                    component.parent = this;
 
-                    if(component.displayColor() != baseColor || !format.containsAll(component.style))
-                    {
-                        StringBuilder sb2 = new StringBuilder(component.toString());
-                        sb2.append(baseColor);
-                        format.forEach(sb2::append);
-                        val = sb2;
-                    }
+                    TextComponent split = new TextComponent(sb.substring(index));
+                    split.parent = this;
+                    extra.add(0, split);
+                    extra.add(0, component);
+
+                    sb.setLength(index);
+
+                    component.apply(locale, msg.getArgs());
+                    continue;
                 }
-                sb.insert(entry.getKey(), val);
+                sb.insert(index, val);
             }
             tokens.clear();
             String text = sb.toString();
@@ -665,7 +669,7 @@ public class MessageTransformer
             return (Click) super.clone();
         }
 
-        public final void replace(Map<String, Object> replacements)
+        public final void replace(Locale locale, Map<String, Object> replacements)
         {
             Map<String, String> stringMap = new HashMap<>(replacements.size());
             replacements.forEach((k,v)-> stringMap.put(k, v instanceof Message? toSimpleText((Message)v) : String.valueOf(v)));
@@ -719,7 +723,7 @@ public class MessageTransformer
             return (Hover) super.clone();
         }
 
-        public void replace(Map<String, Object> replacements)
+        public void replace(Locale locale, Map<String, Object> replacements)
         {
             Map<String, String> stringMap = new HashMap<>(replacements.size());
             replacements.forEach((k,v)-> stringMap.put(k, v instanceof Message? toSimpleText((Message)v) : String.valueOf(v)));
@@ -740,9 +744,9 @@ public class MessageTransformer
         }
 
         @Override
-        public void replace(Map<String, Object> replacements)
+        public void replace(Locale locale, Map<String, Object> replacements)
         {
-            message.replace(replacements);
+            message.replace(locale, replacements);
         }
 
         @Override
@@ -775,10 +779,10 @@ public class MessageTransformer
         }
 
         @Override
-        public void replace(Map<String, Object> replacements)
+        public void replace(Locale locale, Map<String, Object> replacements)
         {
-            super.replace(replacements);
-            name.replace(replacements);
+            super.replace(locale, replacements);
+            name.replace(locale, replacements);
         }
 
         @Override
