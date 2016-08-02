@@ -85,24 +85,20 @@ public class MessageTransformer
         }
     }
 
+    public String[] toMultilineLegacy(Message message)
+    {
+        Component component = toComponent(message);
+        component.apply(Locale.getDefault(), message.getArgs());
+        List<Component> split = new ArrayList<>(1);
+        split.add(component);
+        component.splitNewLines(split);
+        return split.stream().map(Component::toString).toArray(String[]::new);
+    }
+
     public String toLegacy(Message message)
     {
-        Component component = messages.get(message.getId());
-        try
-        {
-            if(component != null)
-                component = component.clone();
-            else
-                component = parse(message.getFallback());
-        }
-        catch(SAXException | CloneNotSupportedException e)
-        {
-            throw new RuntimeException(e);
-        }
-
-        Object[][] args = message.getArgs();
-        if(args != null)
-            component.apply(Locale.getDefault(), args);
+        Component component = toComponent(message);
+        component.apply(Locale.getDefault(), message.getArgs());
 
         return component.toString();
     }
@@ -110,6 +106,11 @@ public class MessageTransformer
     public String toSimpleText(Message message)
     {
         return LegacyFormat.clear(toLegacy(message));
+    }
+
+    public String[] toMultilineSimpleText(Message message)
+    {
+        return toSimpleText(message).split("\n");
     }
 
     protected Component parse(String message) throws SAXException
@@ -312,6 +313,11 @@ public class MessageTransformer
                     case "s": format = STRIKE; break;
                     case "u": format = UNDERLINE; break;
                     case "i": format = ITALIC; break;
+                    case "br":
+                        TextComponent text = new TextComponent("\n");
+                        text.parent = component;
+                        component.extra.add(text);
+                        firstText = true;
                     default: continue queue;
                 }
 
@@ -608,10 +614,10 @@ public class MessageTransformer
             {
                 TextComponent other = new TextComponent(text.substring(lineBreak+1));
                 text = text.substring(0, lineBreak);
-                other.color = displayColor();
-                other.addFormat(displayFormat());
-                other.hover = effectiveHover();
-                other.click = effectiveClick();
+                other.color = color;
+                other.addFormat(style);
+                other.hover = hover;
+                other.click = click;
                 other.extra.addAll(extra);
                 extra.forEach(c-> c.parent = other);
                 extra.clear();
@@ -621,12 +627,25 @@ public class MessageTransformer
                 return true;
             }
 
+            List<Component> collect = new ArrayList<>(1);
             Iterator<Component> iterator = extra.iterator();
             while(iterator.hasNext())
             {
                 Component component = iterator.next();
-                if(component.splitNewLines(list))
+                if(component.splitNewLines(collect))
                 {
+                    for(Component line: collect)
+                    {
+                        Component newParent = new TextComponent("");
+                        newParent.color = color;
+                        newParent.addFormat(style);
+                        newParent.hover = hover;
+                        newParent.click = click;
+                        newParent.extra.add(line);
+                        line.parent = newParent;
+                        list.add(newParent);
+                    }
+
                     Component newParent = list.get(list.size()-1);
                     while(iterator.hasNext())
                     {

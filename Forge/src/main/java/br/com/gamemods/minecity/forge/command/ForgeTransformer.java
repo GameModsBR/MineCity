@@ -10,6 +10,8 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.IChatComponent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class ForgeTransformer extends MessageTransformer
@@ -19,6 +21,16 @@ public class ForgeTransformer extends MessageTransformer
         Component component = toComponent(message);
         component.apply(Locale.getDefault(), message.getArgs());
         return toForge(component);
+    }
+
+    public IChatComponent[] toMultilineForge(Message message)
+    {
+        Component component = toComponent(message);
+        component.apply(Locale.getDefault(), message.getArgs());
+        List<Component> split = new ArrayList<>(1);
+        split.add(component);
+        component.splitNewLines(split);
+        return split.stream().map(this::toForge).toArray(IChatComponent[]::new);
     }
 
     protected IChatComponent toForge(Component component)

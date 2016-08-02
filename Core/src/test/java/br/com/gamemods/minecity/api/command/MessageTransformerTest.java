@@ -20,6 +20,12 @@ public class MessageTransformerTest
     }
 
     @Test
+    public void testLineBreak() throws Exception
+    {
+        assertEquals("Contains\nline \nbreaks", transformer.toLegacy(new Message("","<msg>Contains<br/> line <br/>\n\tbreaks\n</msg>")));
+    }
+
+    @Test
     public void testComponent() throws Exception
     {
         MessageTransformer.Component component = transformer.parse("abc");
@@ -184,13 +190,8 @@ public class MessageTransformerTest
 
         message = new Message("","<msg>This <red>is <b><![CDATA[a\ncomplex\n]]><green><![CDATA[message\nwith]]></green>" +
                 "<![CDATA[\nline breaks]]></b><![CDATA[\neverywhere]]></red></msg>");
-        component = transformer.toComponent(message);
-        split.clear();
-        split.add(component);
-        changed = component.splitNewLines(split);
-        assertTrue(changed);
-        assertEquals(6, split.size());
-        String[] legacy = split.stream().map(MessageTransformer.Component::toString).toArray(String[]::new);
+        String[] legacy = transformer.toMultilineLegacy(message);
+        assertEquals(6, legacy.length);
         assertEquals(legacy[0], EnumSet.of(RESET), LegacyFormat.formatAt(legacy[0], legacy[0].indexOf("This ")));
         assertEquals(legacy[0], EnumSet.of(RED), LegacyFormat.formatAt(legacy[0], legacy[0].lastIndexOf("is ")));
         assertEquals(legacy[0], EnumSet.of(RED, BOLD), LegacyFormat.formatAt(legacy[0], legacy[0].indexOf("a")));
@@ -199,6 +200,14 @@ public class MessageTransformerTest
         assertEquals(legacy[3], EnumSet.of(GREEN, BOLD), LegacyFormat.formatAt(legacy[3], legacy[3].indexOf("with")));
         assertEquals(legacy[4], EnumSet.of(RED, BOLD), LegacyFormat.formatAt(legacy[4], legacy[4].indexOf("line breaks")));
         assertEquals(legacy[5], EnumSet.of(RED), LegacyFormat.formatAt(legacy[5], legacy[5].indexOf("everywhere")));
+
+        String[] simple = transformer.toMultilineSimpleText(message);
+        assertEquals("This is a", simple[0]);
+        assertEquals("complex", simple[1]);
+        assertEquals("message", simple[2]);
+        assertEquals("with", simple[3]);
+        assertEquals("line breaks", simple[4]);
+        assertEquals("everywhere", simple[5]);
     }
 
     @Test @Ignore

@@ -8,6 +8,7 @@ import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.util.IChatComponent;
 
 public class ForgeCommandSender<S extends ICommandSender> implements CommandSender
 {
@@ -68,7 +69,8 @@ public class ForgeCommandSender<S extends ICommandSender> implements CommandSend
     @Override
     public void send(Message message)
     {
-        sender.addChatMessage(mod.transformer.toForge(message));
+        for(IChatComponent msg: mod.transformer.toMultilineForge(message))
+            sender.addChatMessage(msg);
     }
 
     @Override
