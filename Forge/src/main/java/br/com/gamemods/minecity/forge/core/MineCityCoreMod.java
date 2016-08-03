@@ -53,7 +53,7 @@ public class MineCityCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     @Override
     public void injectData(Map<String, Object> data)
     {
-
+        // Nothing needs to be injected here
     }
 
     @Override

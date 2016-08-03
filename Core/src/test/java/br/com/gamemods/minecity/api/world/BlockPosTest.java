@@ -1,9 +1,8 @@
 package br.com.gamemods.minecity.api.world;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class BlockPosTest
 {
@@ -14,7 +13,7 @@ public class BlockPosTest
     @Test
     public void testApply() throws Exception
     {
-
+        //TODO Make a test here
     }
 
     @Test

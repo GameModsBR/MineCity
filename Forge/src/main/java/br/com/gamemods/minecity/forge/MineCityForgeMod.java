@@ -434,11 +434,8 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
     @Nullable
     public WorldServer world(WorldDim world)
     {
-        if(world.instance instanceof WorldServer)
-        {
-            if(((IWorldServer) world.instance).getMineCityWorld() != null)
-                return (WorldServer) world.instance;
-        }
+        if(world.instance instanceof WorldServer && ((IWorldServer) world.instance).getMineCityWorld() != null)
+            return (WorldServer) world.instance;
 
         WorldServer worldServer = DimensionManager.getWorld(world.dim);
         if(worldServer == null || !world.equals(world(worldServer)))

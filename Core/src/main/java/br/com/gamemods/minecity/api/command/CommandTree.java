@@ -34,6 +34,8 @@ public final class CommandTree
     public Supplier<Stream<String>> onlinePlayers = Stream::empty;
     public Supplier<Stream<String>> cityNames = Stream::empty;
     private CommandGroup root = new CommandGroup(new CommandInfo<>("", this::groupExecutor));
+
+    public CommandTree()
     {
         root.subTree = tree;
     }
@@ -62,6 +64,7 @@ public final class CommandTree
         return result.run(sender);
     }
 
+    @SuppressWarnings("unused")
     public Set<String> getRootCommands()
     {
         return Collections.unmodifiableSet(tree.keySet());
@@ -227,7 +230,7 @@ public final class CommandTree
                 }
                 else
                 {
-                    CommandDefinition commandDefinition = this.commands.computeIfAbsent(id, CommandDefinition::new);
+                    CommandDefinition commandDefinition = this.commands.computeIfAbsent(id, (s)-> new CommandDefinition());
                     info.commandId = id;
                     info.function = commandDefinition.function;
                     info.args = commandDefinition.args;
@@ -536,7 +539,7 @@ public final class CommandTree
             this.function = function;
         }
 
-        public CommandDefinition(String s)
+        public CommandDefinition()
         {}
     }
 

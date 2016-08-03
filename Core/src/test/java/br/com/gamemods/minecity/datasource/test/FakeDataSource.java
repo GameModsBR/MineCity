@@ -155,13 +155,13 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
     @Override
     public void setOwner(@NotNull City city, @Nullable PlayerID owner) throws DataSourceException, IllegalStateException
     {
-
+        // Nothing needs to be done here
     }
 
     @Override
     public void setSpawn(@NotNull City city, @NotNull BlockPos spawn) throws DataSourceException, IllegalStateException
     {
-
+        // Nothing needs to be done here
     }
 
     @Override
@@ -284,13 +284,13 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
     @Override
     public void setName(@NotNull City city, @NotNull String identity, @NotNull String name) throws DataSourceException
     {
-
+        // Nothing needs to be done here
     }
 
     @Override
     public void setName(@NotNull Group group, @NotNull String identity, @NotNull String name) throws DataSourceException
     {
-
+        // Nothing needs to be done here
     }
 
     @Override
@@ -344,13 +344,13 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
     @Override
     public void initDB() throws DataSourceException
     {
-
+        // Nothing needs to be done here
     }
 
     @Override
     public void close() throws DataSourceException
     {
-
+        // Nothing needs to be done here
     }
 
     @NotNull
@@ -388,40 +388,47 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
     @Override
     public void setDefaultMessage(@NotNull SimpleFlagHolder holder, @Nullable Message message)
     {
+        // Nothing needs to be done here
     }
 
     @Override
     public void deny(@NotNull SimpleFlagHolder holder, @NotNull PermissionFlag flag, @Nullable Message message)
             throws DataSourceException
     {
+        // Nothing needs to be done here
     }
 
     @Override
     public void denyAll(SimpleFlagHolder holder, Map<? extends PermissionFlag, ? extends Message> flags)
             throws DataSourceException
     {
+        // Nothing needs to be done here
     }
 
     @Override
     public void allow(@NotNull SimpleFlagHolder holder, @NotNull PermissionFlag flag) throws DataSourceException
     {
+        // Nothing needs to be done here
     }
 
     @Override
     public void allowAll(@NotNull SimpleFlagHolder holder) throws DataSourceException
     {
+        // Nothing needs to be done here
     }
 
     @Override
     public void set(@NotNull ExceptFlagHolder holder, @NotNull PermissionFlag flag, boolean allow,
                     @NotNull Identity<?> identity, @Nullable Message message) throws DataSourceException
     {
+        // Nothing needs to be done here
     }
 
     @Override
     public void remove(@NotNull ExceptFlagHolder holder, @NotNull PermissionFlag flag, @NotNull Identity<?> identity)
             throws DataSourceException
     {
+        // Nothing needs to be done here
     }
 
     @NotNull

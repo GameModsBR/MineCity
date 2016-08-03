@@ -7,6 +7,8 @@ import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
 
+import java.util.Arrays;
+
 public class TestPlayer implements CommandSender
 {
     public Server server;
@@ -46,13 +48,13 @@ public class TestPlayer implements CommandSender
     @Override
     public void send(Message message)
     {
-        
+        System.out.print(playerId.getName()+": "+message);
     }
 
     @Override
     public void send(Message[] messages)
     {
-
+        Arrays.stream(messages).forEachOrdered(this::send);
     }
 
     @Override

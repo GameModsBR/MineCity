@@ -57,9 +57,8 @@ public class DepLoader
 
     private void injectDeps()
     {
-        if(!rootDir.exists())
-            if(!rootDir.mkdirs())
-                System.err.println("[MineCity] Failed to create dir: "+rootDir);
+        if(!rootDir.exists() && !rootDir.mkdirs())
+            System.err.println("[MineCity] Failed to create dir: "+rootDir);
 
         for(File f : Optional.ofNullable(rootDir.listFiles(jarFilter)).orElse(new File[0]))
         {
