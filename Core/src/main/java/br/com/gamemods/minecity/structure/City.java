@@ -5,13 +5,12 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.permission.ExceptFlagHolder;
 import br.com.gamemods.minecity.api.permission.Group;
+import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
-import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.datasource.api.*;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBFunction;
 import br.com.gamemods.minecity.datasource.api.unchecked.DisDBConsumer;
@@ -73,8 +72,6 @@ public final class City extends ExceptStoredHolder
         if(other != null && !(other.owner instanceof Nature))
             throw new IllegalArgumentException("The chunk "+spawn.getChunk()+" is reserved to "+other.owner);
 
-        mineCity.defaultCityFlags.forEach(this::deny);
-
         CityCreationResult result = mineCity.dataSource.createCity(this);
         storage = result.storage;
         permissionStorage = result.permissionStorage;
@@ -82,6 +79,16 @@ public final class City extends ExceptStoredHolder
         islands.put(result.island.getId(), result.island);
         groups = new HashMap<>(result.groups.size());
         result.groups.forEach(g -> groups.put(g.getIdentityName(), g));
+
+        try
+        {
+            denyAll(mineCity.defaultCityFlags);
+        }
+        catch(UncheckedDataSourceException e)
+        {
+            System.err.println("[MineCity][SQL] Exception applying the default city flags!");
+            e.getCause().printStackTrace(System.err);
+        }
 
         try
         {
@@ -100,9 +107,10 @@ public final class City extends ExceptStoredHolder
     @Slow
     public City(@NotNull MineCity mineCity, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
                 @NotNull BlockPos spawn, Collection<Island> islands, int id, @NotNull ICityStorage storage,
-                @NotNull IExceptPermissionStorage permissionStorage)
+                @NotNull IExceptPermissionStorage permissionStorage, Message defaultDenialMessage)
             throws DataSourceException
     {
+        super(defaultDenialMessage);
         this.mineCity = mineCity;
         this.name = name;
         this.identityName = identityName;
@@ -116,6 +124,16 @@ public final class City extends ExceptStoredHolder
         Collection<Group> loadedGroups = storage.loadGroups(this);
         groups = new HashMap<>(loadedGroups.size());
         loadedGroups.forEach(g -> groups.put(g.getIdentityName(), g));
+
+        loadSimplePermissions();
+        loadExceptPermissions();
+    }
+
+    @Slow
+    @Override
+    public void setDefaultMessage(Message message) throws UncheckedDataSourceException
+    {
+        super.setDefaultMessage(message);
     }
 
     @Slow
@@ -181,13 +199,13 @@ public final class City extends ExceptStoredHolder
 
     @NotNull
     @Override
-    public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
+    public Optional<Message> can(@NotNull Identity<?> identity, @NotNull PermissionFlag action)
     {
-        if(owner != null && entity.getType() == MinecraftEntity.Type.PLAYER
-                && entity.getUniqueId().equals(owner.uniqueId) && action != PermissionFlag.PVP )
+        if(owner != null && identity.getType() == Identity.Type.PLAYER
+                && identity.getUniqueId().equals(owner.uniqueId))
             return Optional.empty();
 
-        return super.can(entity, action);
+        return super.can(identity, action);
     }
 
     @Slow

@@ -64,13 +64,16 @@ public class Message
 
         Message message = (Message) o;
 
-        return id.equals(message.id) && Arrays.deepEquals(args, message.args);
+        return id.isEmpty() == message.id.isEmpty()
+                && !(id.isEmpty() && !message.fallback.equals(fallback))
+                && id.equals(message.id)
+                && Arrays.deepEquals(args, message.args);
     }
 
     @Override
     public int hashCode()
     {
-        int result = id.hashCode();
+        int result = id.isEmpty()? fallback.hashCode() : id.hashCode();
         result = 31*result + Arrays.deepHashCode(args);
         return result;
     }

@@ -3,10 +3,12 @@ package br.com.gamemods.minecity.datasource.sql;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.PlayerID;
-import br.com.gamemods.minecity.api.world.BlockPos;
-import br.com.gamemods.minecity.api.world.ChunkPos;
-import br.com.gamemods.minecity.api.world.Direction;
-import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.EntityID;
+import br.com.gamemods.minecity.api.permission.FlagHolder;
+import br.com.gamemods.minecity.api.permission.Group;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.test.TestData;
 import br.com.gamemods.minecity.structure.City;
@@ -29,7 +31,10 @@ import java.util.UUID;
 
 import static com.github.kolorobot.exceptions.java8.AssertJThrowableAssert.assertThrown;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@SuppressWarnings({"OptionalGetWithoutIsPresent", "unused"})
 public class SQLSourceTest
 {
     MineCityConfig config;
@@ -204,7 +209,7 @@ public class SQLSourceTest
         city.claim(chunk.add(Direction.NORTH, 2).add(Direction.EAST), true);
         city.claim(chunk.add(Direction.NORTH_WEST), true);
         city.claim(chunk.add(Direction.WEST, 2).add(Direction.NORTH), true);
-        /**
+        /*
          *   XX
          * XXDX
          *   S
@@ -442,5 +447,211 @@ public class SQLSourceTest
         claim = mineCity.loadChunk(spawnB.add(Direction.EAST,7 ));
         assertFalse(claim.reserve);
         assertEquals(Optional.empty(), claim.getIsland());
+    }
+
+    @Test
+    public void testPermissions() throws Exception
+    {
+        // Prepare
+        mineCity.defaultCityFlags.deny(PermissionFlag.ENTER);
+
+        MinecraftEntity playerJose = mockPlayer(joserobjr);
+
+        PlayerID random = new PlayerID(UUID.randomUUID(), "Random");
+        MinecraftEntity playerRandom = mockPlayer(random);
+
+        BlockPos spawn = new BlockPos(overworld, 4546487, 44, 47879784);
+        City city = new City(mineCity, "Perm", joserobjr, spawn);
+
+        // Check defaults
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE,
+                city.getDefaultMessage());
+
+        assertFalse(city.can(playerJose, PermissionFlag.ENTER).isPresent());
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE,
+                city.can(playerRandom, PermissionFlag.ENTER).get());
+
+        city.setDefaultMessage(new Message("","Test"));
+        assertEquals(new Message("","Test"),
+                city.getDefaultMessage());
+
+        // Check persistence
+        reload();
+        city = mineCity.dataSource.getCityByName("Perm").get();
+        assertEquals(new Message("","Test"), city.getDefaultMessage());
+
+        city.setDefaultMessage(FlagHolder.DEFAULT_DENIAL_MESSAGE);
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.getDefaultMessage());
+        reload();
+        city = mineCity.dataSource.getCityByName("Perm").get();
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.getDefaultMessage());
+
+        // Check group creation
+        PlayerID playerA = new PlayerID(UUID.randomUUID(), "Grouped");
+        PlayerID playerB = new PlayerID(UUID.randomUUID(), "Grouped2");
+
+        Group groupA = city.createGroup("a");
+        groupA.addMember(playerA);
+        assertTrue(groupA.hasMember(playerA));
+
+        Group groupB = city.createGroup("b");
+        groupB.addMember(playerB);
+        assertTrue(groupB.hasMember(playerB));
+
+        assertFalse(groupB.hasMember(playerA));
+        assertFalse(groupA.hasMember(playerB));
+
+        // Check group persistence
+        reload();
+        city = mineCity.dataSource.getCityByName("Perm").get();
+        playerA = mineCity.dataSource.getPlayer(playerA.name).get();
+        playerB = mineCity.dataSource.getPlayer(playerB.name).get();
+        groupA = city.getGroup("a");
+        groupB = city.getGroup("b");
+
+        assertNotNull(groupA);
+        assertNotNull(groupB);
+        assertTrue(groupA.hasMember(playerA));
+        assertTrue(groupB.hasMember(playerB));
+
+        assertFalse(groupB.hasMember(playerA));
+        assertFalse(groupA.hasMember(playerB));
+
+        assertFalse(groupB.hasMember(random));
+        assertFalse(groupA.hasMember(random));
+
+        // Check group permissions
+        city.allow(PermissionFlag.ENTER, groupA.getIdentity());
+        assertFalse(city.can(playerJose, PermissionFlag.ENTER).isPresent());
+        assertTrue(city.can(playerRandom, PermissionFlag.ENTER).isPresent());
+        assertTrue(city.can(groupB.getIdentity(), PermissionFlag.ENTER).isPresent());
+        assertFalse(city.can(groupA.getIdentity(), PermissionFlag.ENTER).isPresent());
+
+        reload();
+        city = mineCity.dataSource.getCityByName("Perm").get();
+        groupA = city.getGroup("a");
+        groupB = city.getGroup("b");
+        assertNotNull(groupA);
+        assertNotNull(groupB);
+
+        assertFalse(city.can(playerJose, PermissionFlag.ENTER).isPresent());
+        assertTrue(city.can(playerRandom, PermissionFlag.ENTER).isPresent());
+        assertTrue(city.can(groupB.getIdentity(), PermissionFlag.ENTER).isPresent());
+        assertFalse(city.can(groupA.getIdentity(), PermissionFlag.ENTER).isPresent());
+
+        city.deny(PermissionFlag.ENTER, groupA.getIdentity(), new Message("", "Group A is out!"));
+        assertFalse(city.can(playerJose, PermissionFlag.ENTER).isPresent());
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(playerRandom, PermissionFlag.ENTER).get());
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(groupB.getIdentity(), PermissionFlag.ENTER).get());
+        assertEquals(new Message("", "Group A is out!"), city.can(groupA.getIdentity(), PermissionFlag.ENTER).get());
+
+        reload();
+        city = mineCity.dataSource.getCityByName("Perm").get();
+        groupA = city.getGroup("a");
+        groupB = city.getGroup("b");
+        assertNotNull(groupA);
+        assertNotNull(groupB);
+
+        assertFalse(city.can(playerJose, PermissionFlag.ENTER).isPresent());
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(playerRandom, PermissionFlag.ENTER).get());
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(groupB.getIdentity(), PermissionFlag.ENTER).get());
+        assertEquals(new Message("", "Group A is out!"), city.can(groupA.getIdentity(), PermissionFlag.ENTER).get());
+
+        city.reset(PermissionFlag.ENTER, groupA.getIdentity());
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(groupA.getIdentity(), PermissionFlag.ENTER).get());
+        reload();
+        city = mineCity.dataSource.getCityByName("Perm").get();
+        groupA = city.getGroup("a");
+        groupB = city.getGroup("b");
+        assertNotNull(groupA);
+        assertNotNull(groupB);
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(groupA.getIdentity(), PermissionFlag.ENTER).get());
+
+        city.setDefaultMessage(new Message("", "New Message"));
+        assertEquals(new Message("", "New Message"), city.can(groupA.getIdentity(), PermissionFlag.ENTER).get());
+        assertEquals(new Message("", "New Message"), city.can(groupB.getIdentity(), PermissionFlag.ENTER).get());
+
+        city.allow(PermissionFlag.ENTER, random);
+        assertFalse(city.can(random, PermissionFlag.ENTER).isPresent());
+        reload();
+        city = mineCity.dataSource.getCityByName("Perm").get();
+        groupA = city.getGroup("a");
+        groupB = city.getGroup("b");
+        assertNotNull(groupA);
+        assertNotNull(groupB);
+        assertFalse(city.can(random, PermissionFlag.ENTER).isPresent());
+        assertEquals(new Message("", "New Message"), city.can(groupA.getIdentity(), PermissionFlag.ENTER).get());
+
+        city.resetAll(random);
+        assertEquals(new Message("", "New Message"), city.can(random, PermissionFlag.ENTER).get());
+        reload();
+        city = mineCity.dataSource.getCityByName("Perm").get();
+        groupA = city.getGroup("a");
+        groupB = city.getGroup("b");
+        assertNotNull(groupA);
+        assertNotNull(groupB);
+
+        assertEquals(new Message("", "New Message"), city.can(random, PermissionFlag.ENTER).get());
+
+        city.allow(PermissionFlag.ENTER);
+        assertFalse(city.can(groupA.getIdentity(), PermissionFlag.ENTER).isPresent());
+        assertFalse(city.can(groupB.getIdentity(), PermissionFlag.ENTER).isPresent());
+        reload();
+        city = mineCity.dataSource.getCityByName("Perm").get();
+        groupA = city.getGroup("a");
+        groupB = city.getGroup("b");
+        assertNotNull(groupA);
+        assertNotNull(groupB);
+        assertFalse(city.can(groupA.getIdentity(), PermissionFlag.ENTER).isPresent());
+        assertFalse(city.can(groupB.getIdentity(), PermissionFlag.ENTER).isPresent());
+        assertFalse(city.can(random, PermissionFlag.ENTER).isPresent());
+        assertFalse(city.can(random, PermissionFlag.ENTER).isPresent());
+
+        EntityID entity = new EntityID(MinecraftEntity.Type.STORAGE, UUID.randomUUID(), "ArmorStand");
+        city.deny(PermissionFlag.ENTER, entity, new Message("", "No Armor stands!"));
+        assertEquals(new Message("", "No Armor stands!"), city.can(entity, PermissionFlag.ENTER).get());
+        city.setDefaultMessage(FlagHolder.DEFAULT_DENIAL_MESSAGE);
+        reload();
+        entity = new EntityID(MinecraftEntity.Type.STORAGE, entity.uniqueId, "ArmorStand");
+        city = mineCity.dataSource.getCityByName("Perm").get();
+        groupA = city.getGroup("a");
+        groupB = city.getGroup("b");
+        assertNotNull(groupA);
+        assertNotNull(groupB);
+        assertEquals(new Message("", "No Armor stands!"), city.can(entity, PermissionFlag.ENTER).get());
+        city.reset(PermissionFlag.ENTER, entity);
+
+        assertFalse(city.can(entity, PermissionFlag.ENTER).isPresent());
+        city.allowAll(PermissionFlag.ENTER);
+        assertFalse(city.can(entity, PermissionFlag.ENTER).isPresent());
+        city.denyAll(PermissionFlag.MODIFY);
+
+        assertFalse(city.can(joserobjr, PermissionFlag.MODIFY).isPresent());
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(random, PermissionFlag.MODIFY).get());
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(entity, PermissionFlag.MODIFY).get());
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(groupA.getIdentity(), PermissionFlag.MODIFY).get());
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(groupB.getIdentity(), PermissionFlag.MODIFY).get());
+        reload();
+        city = mineCity.dataSource.getCityByName("Perm").get();
+        groupA = city.getGroup("a");
+        groupB = city.getGroup("b");
+        assertNotNull(groupA);
+        assertNotNull(groupB);
+
+        assertFalse(city.can(joserobjr, PermissionFlag.MODIFY).isPresent());
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(random, PermissionFlag.MODIFY).get());
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(entity, PermissionFlag.MODIFY).get());
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(groupA.getIdentity(), PermissionFlag.MODIFY).get());
+        assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(groupB.getIdentity(), PermissionFlag.MODIFY).get());
+    }
+
+    private MinecraftEntity mockPlayer(PlayerID player)
+    {
+        MinecraftEntity entity = mock(MinecraftEntity.class);
+        when(entity.getIdentity()).thenReturn(player);
+        when(entity.getName()).thenReturn(player.getName());
+        when(entity.getUniqueId()).thenReturn(player.getUniqueId());
+        when(entity.getType()).thenReturn(MinecraftEntity.Type.PLAYER);
+        return entity;
     }
 }

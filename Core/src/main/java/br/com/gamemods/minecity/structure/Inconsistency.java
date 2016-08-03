@@ -39,7 +39,7 @@ public class Inconsistency implements ChunkOwner
             {
                 VoidStorage voidStorage = new VoidStorage();
                 city = new City(mineCity, "#inconsistent", "#Inconsistency", null, new BlockPos(WORLD, 0, 0, 0),
-                        Collections.<Island>singleton(island = new InconsistentIsland()), -1000, voidStorage, voidStorage
+                        Collections.singleton(island = new InconsistentIsland()), -1000, voidStorage, voidStorage, null
                 );
             }
             catch(DataSourceException unexpected)
@@ -244,9 +244,9 @@ public class Inconsistency implements ChunkOwner
         }
 
         @Override
-        public void setDefaultMessage(@NotNull Message message)
+        public void setDefaultMessage(@NotNull SimpleFlagHolder holder, @Nullable Message message)
         {
-            if(city.getId() != -1000)
+            if(holder != city)
                 throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
         }
 
@@ -254,21 +254,29 @@ public class Inconsistency implements ChunkOwner
         public void deny(@NotNull SimpleFlagHolder holder, @NotNull PermissionFlag flag, @Nullable Message message)
                 throws DataSourceException
         {
-            if(city.getId() != -1000)
+            if(holder != city)
+                throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+        }
+
+        @Override
+        public void denyAll(SimpleFlagHolder holder, Map<? extends PermissionFlag, ? extends Message> flags)
+                throws DataSourceException
+        {
+            if(holder != city)
                 throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
         }
 
         @Override
         public void allow(@NotNull SimpleFlagHolder holder, @NotNull PermissionFlag flag) throws DataSourceException
         {
-            if(city.getId() != -1000)
+            if(holder != city)
                 throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
         }
 
         @Override
         public void allowAll(@NotNull SimpleFlagHolder holder) throws DataSourceException
         {
-            if(city.getId() != -1000)
+            if(holder != city)
                 throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
         }
 
@@ -286,7 +294,7 @@ public class Inconsistency implements ChunkOwner
         public void set(@NotNull ExceptFlagHolder holder, @NotNull PermissionFlag flag, boolean allow,
                         @NotNull Identity<?> identity, @Nullable Message message) throws DataSourceException
         {
-            if(city.getId() != -1000)
+            if(holder != city)
                 throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
         }
 
@@ -295,8 +303,16 @@ public class Inconsistency implements ChunkOwner
                            @NotNull Identity<?> identity)
                 throws DataSourceException
         {
-            if(city.getId() != -1000)
+            if(holder != city)
                 throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+        }
+
+        @NotNull
+        @Override
+        public Map<PermissionFlag, Map<Identity<?>, Optional<Message>>> loadExceptPermissions(@NotNull ExceptFlagHolder holder)
+                throws DataSourceException
+        {
+            return Collections.emptyMap();
         }
     }
 }

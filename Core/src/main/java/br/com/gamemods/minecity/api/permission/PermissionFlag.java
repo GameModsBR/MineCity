@@ -23,6 +23,11 @@ public enum PermissionFlag
     OPEN,
 
     /**
+     * Allows to do structural modifications
+     */
+    MODIFY,
+
+    /**
      * Allows to leave the zone
      */
     LEAVE,

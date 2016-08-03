@@ -4,7 +4,10 @@ import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Collections.emptyMap;
 
@@ -44,9 +47,9 @@ public class ExceptFlagHolder extends SimpleFlagHolder
 
     @NotNull
     @Override
-    public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
+    public Optional<Message> can(@NotNull Identity<?> identity, @NotNull PermissionFlag action)
     {
-        Status status = strictPermission.getOrDefault(action, emptyMap()).get(entity.getIdentity());
+        Status status = strictPermission.getOrDefault(action, emptyMap()).get(identity);
         if(status != null)
         {
             if(status.message != null)
@@ -57,6 +60,13 @@ public class ExceptFlagHolder extends SimpleFlagHolder
         }
 
         return Optional.ofNullable(generalPermissions.get(action));
+    }
+
+    @NotNull
+    @Override
+    public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
+    {
+        return can(entity.getIdentity(), action);
     }
 
     /**
@@ -89,6 +99,25 @@ public class ExceptFlagHolder extends SimpleFlagHolder
     public void deny(PermissionFlag flag, Identity<?> identity, Message message)
     {
         strictPermission.computeIfAbsent(flag, this::createMap).put(identity, new Status(message));
+    }
+
+    /**
+     * Removes a direct permission/restriction from an identity.
+     * @param flag The flag that will be reset to the default permission
+     * @param identity The entity or group ID
+     */
+    public void reset(PermissionFlag flag, Identity<?> identity)
+    {
+        strictPermission.getOrDefault(flag, emptyMap()).remove(identity);
+    }
+
+    /**
+     * Resets all direct permission/restrictions from an identity
+     * @param identity The entity or group ID
+     */
+    public void resetAll(Identity<?> identity)
+    {
+        strictPermission.values().forEach(v-> v.remove(identity));
     }
 
     /**

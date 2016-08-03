@@ -28,7 +28,7 @@ public class EntityID extends Identity<UUID>
         return Type.ENTITY;
     }
 
-    MinecraftEntity.Type getEntityType()
+    public MinecraftEntity.Type getEntityType()
     {
         return type;
     }

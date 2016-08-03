@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.datasource.sql;
 
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.permission.Group;
 import br.com.gamemods.minecity.api.permission.Identity;
@@ -35,6 +36,7 @@ public class SQLCityStorage implements ICityStorage
         this.connection = connection;
     }
 
+    @Slow
     @Override
     public void setOwner(@NotNull City city, @Nullable PlayerID owner) throws DataSourceException, IllegalStateException
     {
@@ -65,6 +67,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     @NotNull
     @Override
     public Collection<ChunkPos> reserve(@NotNull IslandArea reserve) throws DataSourceException
@@ -156,6 +159,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     private void disclaim(Connection transaction, ChunkPos chunk, int islandId, boolean enforce) throws DataSourceException, SQLException
     {
         try(PreparedStatement pst = transaction.prepareStatement(
@@ -166,12 +170,14 @@ public class SQLCityStorage implements ICityStorage
             pst.setInt(2, chunk.x);
             pst.setInt(3, chunk.z);
             pst.setInt(4, islandId);
-            int changes = pst.executeUpdate();
-            if(enforce && changes != 1)
-                throw new DataSourceException("Expecting 1 change, "+changes+" changed");
+            if(enforce)
+                source.executeUpdate(pst, 1);
+            else
+                pst.executeUpdate();
         }
     }
 
+    @Slow
     @Override
     public void deleteIsland(@NotNull Island island) throws DataSourceException, IllegalArgumentException
     {
@@ -206,6 +212,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     private void updateCount(Connection transaction, SQLIsland sqlIsland) throws SQLException
     {
         try(PreparedStatement pst = transaction.prepareStatement(
@@ -223,6 +230,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     @Override
     public void disclaim(@NotNull ChunkPos chunk, @NotNull Island island)
             throws DataSourceException, IllegalArgumentException
@@ -260,9 +268,10 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @Slow
     @NotNull
     @Override
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public Collection<Island> disclaim(@NotNull ChunkPos chunk, @NotNull Island island, @NotNull Set<Set<ChunkPos>> groups)
             throws DataSourceException, IllegalStateException, NoSuchElementException, ClassCastException, IllegalArgumentException
     {
@@ -334,6 +343,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     @NotNull
     @Override
     public IslandArea getArea(@NotNull Island island)
@@ -364,6 +374,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     @Override
     public void setName(@NotNull City city, @NotNull String identity, @NotNull String name) throws DataSourceException
     {
@@ -413,6 +424,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     @NotNull
     @Override
     public Group createGroup(@NotNull City city, @NotNull String id, @NotNull String name) throws DataSourceException
@@ -447,6 +459,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     @Override
     public void setName(@NotNull Group group, @NotNull String identity, @NotNull String name) throws DataSourceException
     {
@@ -479,6 +492,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     @Override
     public void deleteGroup(@NotNull Group group) throws DataSourceException
     {
@@ -492,6 +506,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     @Override
     public void addMember(@NotNull Group group, @NotNull Identity<?> member)
             throws DataSourceException, UnsupportedOperationException
@@ -528,6 +543,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     @Override
     public void removeMember(@NotNull Group group, @NotNull Identity<?> member)
             throws DataSourceException, UnsupportedOperationException
@@ -568,6 +584,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     @NotNull
     @Override
     public Collection<Group> loadGroups(@NotNull City city) throws DataSourceException
@@ -578,14 +595,19 @@ public class SQLCityStorage implements ICityStorage
             try(PreparedStatement groupPst = connection.prepareStatement(
                     "SELECT group_id, name, display_name FROM minecity_groups WHERE city_id=?"
                 );
-                PreparedStatement memberPst = connection.prepareStatement(
-                    "SELECT p.player_id, player_uuid, player_name, e.entity_id, entity_uuid, entity_name, entity_type " +
+                PreparedStatement playerPst = connection.prepareStatement(
+                    "SELECT p.player_id, player_uuid, player_name " +
                             "FROM minecity_group_players gp " +
-                            "INNER JOIN minecity_players p ON p.player_id = gp.player_id, " +
-                            "minecity_group_entities ge " +
+                            "INNER JOIN minecity_players p ON p.player_id = gp.player_id " +
+                            "WHERE gp.group_id = ?"
+                );
+                PreparedStatement entityPst = connection.prepareStatement(
+                        "SELECT e.entity_id, entity_uuid, entity_name, entity_type " +
+                            "FROM minecity_group_entities ge " +
                             "INNER JOIN minecity_entities e ON e.entity_id = ge.entity_id " +
-                            "WHERE gp.group_id = ? OR ge.group_id = ?"
-            ))
+                            "WHERE ge.group_id = ?"
+                )
+            )
             {
                 groupPst.setInt(1, city.getId());
                 ResultSet groupResult = groupPst.executeQuery();
@@ -593,22 +615,29 @@ public class SQLCityStorage implements ICityStorage
                 while(groupResult.next())
                 {
                     int groupId = groupResult.getInt(1);
-                    memberPst.setInt(1, groupId);
-                    memberPst.setInt(2, groupId);
-                    ResultSet memberResult = memberPst.executeQuery();
+                    playerPst.setInt(1, groupId);
+                    entityPst.setInt(1, groupId);
+
                     List<Identity<?>> members = new ArrayList<>();
-                    while(memberResult.next())
+
+                    try(ResultSet memberResult = playerPst.executeQuery())
                     {
-                        int playerId = memberResult.getInt("player_id");
-                        int entityId = memberResult.getInt("entity_id");
-                        if(playerId > 0)
-                            members.add(new PlayerID(playerId, source.uuid(memberResult.getBytes("player_uuid")), memberResult.getString("player_name")));
-                        else if(entityId > 0)
-                            members.add(new EntityID(entityId, MinecraftEntity.Type.valueOf(memberResult.getString("entity_type")),
-                                    source.uuid(memberResult.getBytes("entity_uuid")), memberResult.getString("entity_name")
+                        while(memberResult.next())
+                            members.add(new PlayerID(memberResult.getInt("player_id"),
+                                    source.uuid(memberResult.getBytes("player_uuid")),
+                                    memberResult.getString("player_name")
                             ));
                     }
-                    memberResult.close();
+
+                    try(ResultSet memberResult = entityPst.executeQuery())
+                    {
+                        while(memberResult.next())
+                            members.add(new EntityID(memberResult.getInt("entity_id"),
+                                    MinecraftEntity.Type.valueOf(memberResult.getString("entity_type")),
+                                    source.uuid(memberResult.getBytes("entity_uuid")),
+                                    memberResult.getString("entity_name")
+                            ));
+                    }
 
                     groups.add(new Group(this, groupId, city, groupResult.getString(2), groupResult.getString(3), members));
                 }
@@ -622,6 +651,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     @NotNull
     @Override
     public Island createIsland(@NotNull City city, @NotNull ChunkPos chunk)
@@ -654,6 +684,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     @Override
     public void claim(@NotNull Island island, @NotNull ChunkPos chunk) throws DataSourceException
     {
@@ -679,9 +710,10 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @Slow
     @NotNull
     @Override
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public Island claim(@NotNull Set<Island> islands, @NotNull ChunkPos chunk)
             throws DataSourceException, IllegalStateException, NoSuchElementException
     {
@@ -749,6 +781,7 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     @Override
     public void setSpawn(@NotNull City city, @NotNull BlockPos spawn) throws DataSourceException, IllegalStateException
     {

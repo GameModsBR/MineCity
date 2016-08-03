@@ -9,21 +9,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>MineCityCore</artifactId>
+    <artifactId>UnitTest</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>br.com.gamemods.minecity</groupId>
-            <artifactId>UnitTest</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.32</version>
-            <scope>test</scope>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.1.0</version>
         </dependency>
     </dependencies>
-
 </project>

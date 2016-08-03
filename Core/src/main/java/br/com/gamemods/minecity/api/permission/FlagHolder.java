@@ -15,6 +15,9 @@ public interface FlagHolder
     @NotNull
     Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action);
 
+    @NotNull
+    Optional<Message> can(@NotNull Identity<?> identity, @NotNull PermissionFlag action);
+
     static Supplier<Optional<Message>> can(MinecraftEntity entity, PermissionFlag flag, FlagHolder holder)
     {
         if(holder == null)

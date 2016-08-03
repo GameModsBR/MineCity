@@ -5,9 +5,8 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.CommandTree;
-import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.command.MessageTransformer;
-import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.commands.CityCommand;
 import br.com.gamemods.minecity.commands.PermissionCommands;
@@ -25,7 +24,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.EnumMap;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,8 +45,8 @@ public class MineCity
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public Optional<WorldProvider> worldProvider = Optional.empty();
     public MessageTransformer messageTransformer;
-    public EnumMap<PermissionFlag, Message> defaultNatureFlags = new EnumMap<>(PermissionFlag.class);
-    public EnumMap<PermissionFlag, Message> defaultCityFlags = new EnumMap<>(PermissionFlag.class);
+    public SimpleFlagHolder defaultNatureFlags = new SimpleFlagHolder();
+    public SimpleFlagHolder defaultCityFlags = new SimpleFlagHolder();
     private Queue<ChunkPos> reloadQueue = new DistinctQueue<>();
     public boolean lazyReloads = true;
 

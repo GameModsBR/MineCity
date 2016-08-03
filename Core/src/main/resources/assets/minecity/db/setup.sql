@@ -24,6 +24,7 @@ CREATE TABLE `minecity_city` (
 `spawn_x`  int(11) NOT NULL ,
 `spawn_y`  int(11) NOT NULL ,
 `spawn_z`  int(11) NOT NULL ,
+`perm_denial_message`  varchar(255) NULL ,
 PRIMARY KEY (`city_id`),
 CONSTRAINT `city_owner` FOREIGN KEY (`owner`) REFERENCES `minecity_players` (`player_id`) ON DELETE SET NULL ON UPDATE CASCADE,
 CONSTRAINT `city_world_spawn` FOREIGN KEY (`spawn_world`) REFERENCES `minecity_world` (`world_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -97,8 +98,7 @@ CONSTRAINT `group_entities_entity` FOREIGN KEY (`entity_id`) REFERENCES `minecit
 
 CREATE TABLE `minecity_city_perm_defaults` (
 `city_id`  int NOT NULL ,
-`perm`  enum('ENTER','CLICK','PICKUP','OPEN','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
-`allow`  bit(1) NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`city_id`, `perm`),
 CONSTRAINT `city_perm_defaults` FOREIGN KEY (`city_id`) REFERENCES `minecity_city` (`city_id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -108,7 +108,7 @@ CONSTRAINT `city_perm_defaults` FOREIGN KEY (`city_id`) REFERENCES `minecity_cit
 CREATE TABLE `minecity_city_perm_player` (
 `city_id`  int NOT NULL ,
 `player_id`  int NOT NULL ,
-`perm`  enum('ENTER','CLICK','PICKUP','OPEN','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
 `allow`  bit(1) NOT NULL DEFAULT b'0' ,
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`city_id`, `player_id`, `perm`),
@@ -120,7 +120,7 @@ CONSTRAINT `city_perm_player_player` FOREIGN KEY (`player_id`) REFERENCES `minec
 CREATE TABLE `minecity_city_perm_entity` (
 `city_id`  int NOT NULL ,
 `entity_id`  int NOT NULL ,
-`perm`  enum('ENTER','CLICK','PICKUP','OPEN','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
 `allow`  bit(1) NOT NULL DEFAULT b'0' ,
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`city_id`, `entity_id`, `perm`),
@@ -132,7 +132,7 @@ CONSTRAINT `city_perm_entity_entity` FOREIGN KEY (`entity_id`) REFERENCES `minec
 CREATE TABLE `minecity_city_perm_group` (
 `city_id`  int NOT NULL ,
 `group_id`  int NOT NULL ,
-`perm`  enum('ENTER','CLICK','PICKUP','OPEN','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
 `allow`  bit(1) NOT NULL ,
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`city_id`, `group_id`, `perm`),

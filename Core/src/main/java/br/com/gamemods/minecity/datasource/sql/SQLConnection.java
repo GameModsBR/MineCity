@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.datasource.sql;
 
+import br.com.gamemods.minecity.api.Slow;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,6 +29,7 @@ public class SQLConnection
         this.pass = passwd;
     }
 
+    @Slow
     public synchronized Connection connect() throws SQLException
     {
         if(closed)
@@ -55,6 +57,7 @@ public class SQLConnection
         return connection = DriverManager.getConnection(url, user, pass == null? null : new String(pass));
     }
 
+    @Slow
     public synchronized void disconnect() throws SQLException
     {
         try
@@ -69,6 +72,7 @@ public class SQLConnection
         }
     }
 
+    @Slow
     public Connection transaction() throws SQLException
     {
         if(closed)
@@ -79,6 +83,7 @@ public class SQLConnection
         return connection;
     }
 
+    @Slow
     public void close() throws SQLException
     {
         closed = true;

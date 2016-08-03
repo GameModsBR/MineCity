@@ -8,11 +8,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
+import java.util.Map;
 
 public interface ISimplePermissionStorage
 {
     @Slow
-    void setDefaultMessage(@NotNull Message message);
+    void setDefaultMessage(@NotNull SimpleFlagHolder holder, @Nullable Message message)
+            throws DataSourceException;
 
     @Slow
     void deny(@NotNull SimpleFlagHolder holder, @NotNull PermissionFlag flag, @Nullable Message message)
@@ -27,4 +29,6 @@ public interface ISimplePermissionStorage
 
     @NotNull
     EnumMap<PermissionFlag,Message> loadSimplePermissions(@NotNull SimpleFlagHolder holder) throws DataSourceException;
+
+    void denyAll(SimpleFlagHolder holder, Map<? extends PermissionFlag, ? extends Message> flags) throws DataSourceException;
 }

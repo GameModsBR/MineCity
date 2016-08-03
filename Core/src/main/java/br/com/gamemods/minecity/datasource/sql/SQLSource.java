@@ -3,6 +3,8 @@ package br.com.gamemods.minecity.datasource.sql;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.Slow;
+import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
@@ -42,7 +44,7 @@ public class SQLSource implements IDataSource
     @NotNull
     private final SQLPermStorage permStorage;
     @NotNull
-    private final Map<Integer, City> cityMap = new HashMap<>();
+    final Map<Integer, City> cityMap = new HashMap<>();
     final Map<Integer, WorldDim> worldDimMap = new ConcurrentHashMap<>(3);
     final Set<String> cityNames = new HashSet<>();
     final Map<String, Set<String>> groupNames = new HashMap<>();
@@ -57,6 +59,7 @@ public class SQLSource implements IDataSource
         permStorage = new SQLPermStorage(this, connection);
     }
 
+    @Slow
     private Collection<Island> loadIslands(Connection connection, int cityId) throws SQLException
     {
         try(PreparedStatement pst = connection.prepareStatement(
@@ -100,13 +103,14 @@ public class SQLSource implements IDataSource
         return world;
     }
 
+    @Slow
     private Optional<City> loadCity(Connection connection, int id, @Nullable String identity) throws SQLException, DataSourceException
     {
         synchronized(cityMap)
         {
             try(PreparedStatement pst = connection.prepareStatement(
                     "SELECT `c`.`name`, `owner`, `o`.`player_uuid`, `o`.`player_name`, `spawn_world`, `spawn_x`, `spawn_y`, `spawn_z`, " +
-                        "`w`.`dim`, `w`.`world`, `w`.`name`, `display_name` " +
+                        "`w`.`dim`, `w`.`world`, `w`.`name`, `display_name`, `perm_denial_message`, `city_id` " +
                     "FROM `minecity_city` AS `c` " +
                         "LEFT JOIN `minecity_players` AS `o` ON `owner` = `o`.`player_id` "+
                         "LEFT JOIN `minecity_world` AS `w` ON `spawn_world` = `w`.`world_id` "+
@@ -133,10 +137,14 @@ public class SQLSource implements IDataSource
 
                 String name = result.getString(1);
                 String displayName = result.getString(12);
+
+                String str = result.getString("perm_denial_message");
+                Message message = str == null? null : new Message("", str);
+                id = result.getInt("city_id");
                 pst.close();
 
                 Collection<Island> islands = loadIslands(connection, id);
-                City city = new City(mineCity, name, displayName, owner, spawn, islands, id, cityStorage, permStorage);
+                City city = new City(mineCity, name, displayName, owner, spawn, islands, id, cityStorage, permStorage, message);
                 islands.forEach(i-> ((SQLIsland)i).city = city);
                 cityMap.put(id, city);
                 return Optional.of(city);
@@ -144,6 +152,14 @@ public class SQLSource implements IDataSource
         }
     }
 
+    void executeUpdate(PreparedStatement pst, int expected) throws DataSourceException, SQLException
+    {
+        int changes = pst.executeUpdate();
+        if(changes != expected)
+            throw new DataSourceException("Expected "+expected+" but got "+changes);
+    }
+
+    @Slow
     int worldId(Connection connection, WorldDim world) throws DataSourceException
     {
         int dataSourceId = world.getDataSourceId();
@@ -251,6 +267,7 @@ public class SQLSource implements IDataSource
             pst.setString(field, val);
     }
 
+    @Slow
     int playerId(Connection connection, @Nullable PlayerID player) throws DataSourceException
     {
         if(player == null) return 0;
@@ -294,6 +311,7 @@ public class SQLSource implements IDataSource
         }
     }
 
+    @Slow
     int entityId(Connection connection, @Nullable EntityID entity) throws DataSourceException
     {
         if(entity == null) return 0;
@@ -323,7 +341,7 @@ public class SQLSource implements IDataSource
             {
                 pst.setBytes(1, uuid(entity.uniqueId));
                 pst.setString(2, entity.name);
-                pst.setString(3, entity.getType().name());
+                pst.setString(3, entity.getEntityType().name());
                 pst.executeUpdate();
                 ResultSet keys = pst.getGeneratedKeys();
                 keys.next();
@@ -338,6 +356,7 @@ public class SQLSource implements IDataSource
         }
     }
 
+    @Slow
     private City city(Connection connection, int cityId) throws SQLException, DataSourceException
     {
         synchronized(cityMap)
@@ -350,6 +369,7 @@ public class SQLSource implements IDataSource
         }
     }
 
+    @Slow
     @Nullable
     @Override
     public ClaimedChunk getCityChunk(@NotNull ChunkPos pos) throws DataSourceException
@@ -391,6 +411,7 @@ public class SQLSource implements IDataSource
         }
     }
 
+    @Slow
     int createIsland(Connection transaction, int cityId, WorldDim world) throws DataSourceException, SQLException
     {
         int worldId = worldId(transaction, world);
@@ -411,6 +432,7 @@ public class SQLSource implements IDataSource
         return islandId;
     }
 
+    @Slow
     void createClaim(Connection connection, int islandId, ChunkPos chunk) throws SQLException, DataSourceException
     {
         int worldId = worldId(connection, chunk.world);
@@ -448,6 +470,7 @@ public class SQLSource implements IDataSource
         return null;
     }
 
+    @Slow
     @NotNull
     @Override
     public CityCreationResult createCity(@NotNull City city) throws DataSourceException, IllegalStateException
@@ -512,6 +535,7 @@ public class SQLSource implements IDataSource
         }
     }
 
+    @Slow
     @Override
     public void initDB() throws DataSourceException, IOException
     {
@@ -563,6 +587,7 @@ public class SQLSource implements IDataSource
         }
     }
 
+    @Slow
     @NotNull
     @Override
     public Optional<City> getCityByName(@NotNull String name) throws DataSourceException
@@ -588,6 +613,7 @@ public class SQLSource implements IDataSource
         }
     }
 
+    @Slow
     @NotNull
     @Override
     public Optional<PlayerID> getPlayer(@NotNull String name) throws DataSourceException
@@ -632,6 +658,7 @@ public class SQLSource implements IDataSource
         return Collections.unmodifiableMap(groupNames);
     }
 
+    @Slow
     @Override
     public void close() throws DataSourceException
     {

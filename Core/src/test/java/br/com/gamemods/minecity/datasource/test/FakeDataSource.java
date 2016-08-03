@@ -386,13 +386,20 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
     }
 
     @Override
-    public void setDefaultMessage(@NotNull Message message)
+    public void setDefaultMessage(@NotNull SimpleFlagHolder holder, @Nullable Message message)
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void deny(@NotNull SimpleFlagHolder holder, @NotNull PermissionFlag flag, @Nullable Message message)
+            throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void denyAll(SimpleFlagHolder holder, Map<? extends PermissionFlag, ? extends Message> flags)
             throws DataSourceException
     {
         throw new UnsupportedOperationException();
@@ -419,6 +426,14 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
 
     @Override
     public void remove(@NotNull ExceptFlagHolder holder, @NotNull PermissionFlag flag, @NotNull Identity<?> identity)
+            throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @NotNull
+    @Override
+    public Map<PermissionFlag, Map<Identity<?>, Optional<Message>>> loadExceptPermissions(@NotNull ExceptFlagHolder holder)
             throws DataSourceException
     {
         throw new UnsupportedOperationException();

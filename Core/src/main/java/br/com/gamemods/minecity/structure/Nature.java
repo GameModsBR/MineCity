@@ -17,7 +17,7 @@ public final class Nature extends SimpleFlagHolder implements ChunkOwner
     {
         this.mineCity = mineCity;
         this.world = world;
-        mineCity.defaultNatureFlags.forEach(this::deny);
+        denyAll(mineCity.defaultNatureFlags);
     }
 
     public void invalidate()
