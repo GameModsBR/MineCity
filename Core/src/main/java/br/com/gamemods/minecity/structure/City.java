@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.datasource.api.*;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBFunction;
 import br.com.gamemods.minecity.datasource.api.unchecked.DisDBConsumer;
@@ -182,6 +183,16 @@ public final class City extends ExceptStoredHolder
     }
 
     @Nullable
+    public Group getGroup(int id)
+    {
+        for(Group group : groups.values())
+            if(group.id == id)
+                return group;
+
+        return null;
+    }
+
+    @Nullable
     public Group getGroup(@NotNull String name)
     {
         return groups.get(identity(name));
@@ -201,11 +212,20 @@ public final class City extends ExceptStoredHolder
     @Override
     public Optional<Message> can(@NotNull Identity<?> identity, @NotNull PermissionFlag action)
     {
-        if(owner != null && identity.getType() == Identity.Type.PLAYER
-                && identity.getUniqueId().equals(owner.uniqueId))
+        if(identity.equals(owner))
             return Optional.empty();
 
         return super.can(identity, action);
+    }
+
+    @NotNull
+    @Override
+    public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
+    {
+        if(entity.getIdentity().equals(owner))
+            return Optional.empty();
+
+        return super.can(entity, action);
     }
 
     @Slow

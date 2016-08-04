@@ -48,6 +48,12 @@ public class MineCityBukkit implements Server
         pluginManager.registerEvents(new WorldListener(this), plugin);
     }
 
+    @Override
+    public MineCity getMineCity()
+    {
+        return mineCity;
+    }
+
     public boolean onCommand(CommandSender sender, String label, String[] args)
     {
         List<String> path = new ArrayList<>(args.length + 1);

@@ -48,7 +48,7 @@ public class TestPlayer implements CommandSender
     @Override
     public void send(Message message)
     {
-        System.out.print(playerId.getName()+": "+message);
+        System.out.println(playerId.getName()+": "+message);
     }
 
     @Override

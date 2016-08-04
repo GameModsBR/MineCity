@@ -6,6 +6,9 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.EntityID;
+import br.com.gamemods.minecity.api.permission.Group;
+import br.com.gamemods.minecity.api.permission.GroupID;
+import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
@@ -610,6 +613,89 @@ public class SQLSource implements IDataSource
             {
                 throw new DataSourceException(e);
             }
+        }
+    }
+
+    @NotNull
+    @Override
+    public Set<GroupID> getEntityGroups(Identity<?> identity) throws DataSourceException
+    {
+        try
+        {
+            switch(identity.getType())
+            {
+                case PLAYER:
+                    Connection connection = this.connection.connect();
+                    try(PreparedStatement pst = connection.prepareStatement(
+                            "SELECT g.group_id, g.city_id, g.display_name, c.display_name AS home " +
+                            "FROM minecity_group_players gp " +
+                                "INNER JOIN minecity_groups g ON g.group_id = gp.group_id " +
+                                "INNER JOIN minecity_cities c ON c.city_id = g.city_id " +
+                            "WHERE gp.player_id=?"
+                    ))
+                    {
+                        pst.setInt(1, playerId(connection, (PlayerID) identity));
+                        ResultSet result = pst.executeQuery();
+                        Set<GroupID> set = new HashSet<>(2);
+                        while(result.next())
+                        {
+                            int groupId = result.getInt(1);
+                            int cityId = result.getInt(2);
+                            String name = result.getString(3);
+                            String home = result.getString(4);
+                            GroupID group = Optional.ofNullable(cityMap.get(cityId))
+                                    .map(c-> c.getGroup(groupId)).map(Group::getIdentity)
+                                    .orElseGet(()-> new GroupID(groupId, name, home, cityId))
+                                    ;
+                            set.add(group);
+                        }
+
+                        return set;
+                    }
+
+                case ENTITY:
+                    connection = this.connection.connect();
+                    int id = identity.getDataSourceId();
+                    try(PreparedStatement pst = connection.prepareStatement(
+                            "SELECT g.group_id, g.city_id, g.display_name, c.display_name AS home " +
+                                    "FROM minecity_group_entities ge " +
+                                    "INNER JOIN minecity_groups g ON g.group_id = ge.group_id " +
+                                    "INNER JOIN minecity_cities c ON c.city_id = g.city_id " +
+                                    (id > 0 ? "WHERE ge.entity_id = ?" :
+                                    "INNER JOIN minecity_entities e ON ge.entity_id = e.entity_id " +
+                                            "WHERE e.entity_uuid = ?")
+                    ))
+                    {
+                        if(id > 0)
+                            pst.setInt(1, id);
+                        else
+                            pst.setBytes(1, uuid(((EntityID)identity).getUniqueId()));
+
+                        ResultSet result = pst.executeQuery();
+                        Set<GroupID> set = new HashSet<>(2);
+                        while(result.next())
+                        {
+                            int groupId = result.getInt(1);
+                            int cityId = result.getInt(2);
+                            String name = result.getString(3);
+                            String home = result.getString(4);
+                            GroupID group = Optional.ofNullable(cityMap.get(cityId))
+                                    .map(c-> c.getGroup(groupId)).map(Group::getIdentity)
+                                    .orElseGet(()-> new GroupID(groupId, name, home, cityId))
+                                    ;
+                            set.add(group);
+                        }
+
+                        return set;
+                    }
+
+                default:
+                    return Collections.emptySet();
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
         }
     }
 

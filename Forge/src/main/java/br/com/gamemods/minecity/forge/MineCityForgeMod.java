@@ -6,10 +6,7 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
-import br.com.gamemods.minecity.api.world.ChunkPos;
-import br.com.gamemods.minecity.api.world.ChunkProvider;
-import br.com.gamemods.minecity.api.world.WorldDim;
-import br.com.gamemods.minecity.api.world.WorldProvider;
+import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.forge.accessors.IChunk;
 import br.com.gamemods.minecity.forge.accessors.IEntityPlayerMP;
@@ -44,6 +41,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.xml.sax.SAXException;
@@ -61,6 +59,7 @@ import java.util.stream.Stream;
 @Mod(modid = "minecity", name = "MineCity", version = "1.0-SNAPSHOT", acceptableRemoteVersions = "*")
 public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
 {
+    public Logger logger;
     public MinecraftServer server;
     public MineCity mineCity;
     public ForgeTransformer transformer;
@@ -72,6 +71,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
     @EventHandler
     public void onPreInit(FMLPreInitializationEvent event)
     {
+        logger = event.getModLog();
         transformer = new ForgeTransformer();
         LegacyFormat.BLACK.server = EnumChatFormatting.BLACK;
         LegacyFormat.DARK_BLUE.server = EnumChatFormatting.DARK_BLUE;
@@ -247,6 +247,10 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
     {
         if(event.phase == TickEvent.Phase.END || event.side != Side.SERVER)
             return;
+
+        EntityUpdate update = mineCity.entityUpdates.peek();
+        if(update != null && update.ticks-- <= 0)
+            mineCity.entityUpdates.poll();
 
         mineCity.reloadQueuedChunk();
         Iterator<FutureTask> iterator = syncTasks.iterator();
@@ -489,5 +493,11 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
     public Optional<ChunkProvider> getChunkProvider()
     {
         return Optional.of(this);
+    }
+
+    @Override
+    public MineCity getMineCity()
+    {
+        return mineCity;
     }
 }

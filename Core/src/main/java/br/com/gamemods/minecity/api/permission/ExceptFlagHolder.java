@@ -66,7 +66,39 @@ public class ExceptFlagHolder extends SimpleFlagHolder
     @Override
     public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
     {
-        return can(entity.getIdentity(), action);
+        Map<Identity<?>, Status> perms = strictPermission.get(action);
+        Status direct;
+        if(perms == null || perms.isEmpty())
+            direct = null;
+        else
+        {
+            direct = perms.get(entity.getIdentity());
+            if(direct == null)
+            {
+                if(!entity.isGroupLoaded())
+                    return Optional.of(new Message("action.group-loading",
+                            "You can't perform this action yet, your permission groups are still loading."
+                    ));
+
+                for(GroupID group : entity.getGroupIds())
+                {
+                    direct = perms.get(group);
+                    if(direct != null)
+                        break;
+                }
+            }
+        }
+
+        if(direct != null)
+        {
+            if(direct.message != null)
+                return Optional.of(direct.message);
+
+            if(action.canBypass)
+                return Optional.empty();
+        }
+
+        return Optional.ofNullable(generalPermissions.get(action));
     }
 
     /**

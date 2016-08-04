@@ -122,6 +122,7 @@
     </cmd>
     <action>
         <msg id="denied">You don't have permission to perform this action.</msg>
+        <msg id="group-loading">You can't perform this action yet, your permission groups are still loading.</msg>
         <msg id="chunk.inconsistent">This chunk is inconsistent.</msg>
         <teleport>
             <msg id="unsupported">Unsupported operation</msg>
@@ -129,4 +130,7 @@
             <msg id="world-not-found">The destiny world ${name} was not found or is not loaded</msg>
         </teleport>
     </action>
+    <msg id="task.player.load.groups.failed">
+        Oops, an error occurred while loading your groups: ${error}
+    </msg>
 </minecity-messages>

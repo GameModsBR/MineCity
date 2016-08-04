@@ -2,6 +2,8 @@ package br.com.gamemods.minecity.datasource.api;
 
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
+import br.com.gamemods.minecity.api.permission.GroupID;
+import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
@@ -50,4 +52,8 @@ public interface IDataSource
 
     @NotNull
     Map<String, Set<String>> getGroups();
+
+    @Slow
+    @NotNull
+    Set<GroupID> getEntityGroups(Identity<?> identity) throws DataSourceException;
 }

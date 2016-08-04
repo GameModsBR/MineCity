@@ -24,10 +24,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.github.kolorobot.exceptions.java8.AssertJThrowableAssert.assertThrown;
 import static org.junit.Assert.*;
@@ -652,6 +649,8 @@ public class SQLSourceTest
         when(entity.getName()).thenReturn(player.getName());
         when(entity.getUniqueId()).thenReturn(player.getUniqueId());
         when(entity.getType()).thenReturn(MinecraftEntity.Type.PLAYER);
+        when(entity.isGroupLoaded()).thenReturn(true);
+        when(entity.getGroupIds()).thenReturn(Collections.emptySet());
         return entity;
     }
 }

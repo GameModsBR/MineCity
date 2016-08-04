@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public class Message
 {
@@ -14,6 +15,18 @@ public class Message
     private final String fallback;
     @Nullable
     private final Object[][] args;
+
+    public static Object[][] errorArgs(Throwable ex)
+    {
+        String message = ex.getMessage();
+        String simplified = ex.getClass().getSimpleName();
+        if(message != null)
+            simplified += ": "+message;
+
+        return new Object[][]{{"error",simplified},
+                {"className",ex.getClass().getSimpleName()},
+                {"cause", Optional.ofNullable(ex.getMessage()).orElse("")}};
+    }
 
     public Message(@NotNull String id, @Nullable String fallback, @Nullable Object[]... args)
     {

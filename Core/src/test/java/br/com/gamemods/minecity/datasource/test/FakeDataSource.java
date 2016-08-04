@@ -341,6 +341,14 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
         throw new UnsupportedOperationException();
     }
 
+    @NotNull
+    @Override
+    public Set<GroupID> getEntityGroups(Identity<?> identity) throws DataSourceException
+    {
+        return cities.values().stream().map(City::getGroups).flatMap(Collection::stream)
+                .filter(g-> g.hasMember(identity)).map(Group::getIdentity).collect(Collectors.toSet());
+    }
+
     @Override
     public void initDB() throws DataSourceException
     {

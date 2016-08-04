@@ -1,7 +1,8 @@
 package br.com.gamemods.minecity.api.command;
 
+import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
+
 import java.lang.reflect.InvocationTargetException;
-import java.util.Optional;
 
 @FunctionalInterface
 public interface CommandFunction<R>
@@ -24,16 +25,13 @@ public interface CommandFunction<R>
             ex = e;
         }
 
+        if(ex instanceof UncheckedDataSourceException)
+            ex = ex.getCause();
+
         ex.printStackTrace();
-        String message = ex.getMessage();
-        String simplified = ex.getClass().getSimpleName();
-        if(message != null)
-            simplified += ": "+message;
         return new CommandResult<>(new Message("cmd.exception",
                 "Oops.. An error occurred while executing this command: ${error}",
-                new Object[][]{{"error",simplified},
-                        {"className",ex.getClass().getSimpleName()},
-                        {"cause", Optional.ofNullable(ex.getMessage()).orElse("")}}
+                Message.errorArgs(ex)
         ));
     }
 

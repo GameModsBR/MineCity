@@ -31,6 +31,12 @@ public class TestData implements Server
     }
 
     @Override
+    public MineCity getMineCity()
+    {
+        return mineCity;
+    }
+
+    @Override
     public Optional<PlayerID> getPlayerId(String name)
     {
         return Optional.empty();

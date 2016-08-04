@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.api.permission;
 
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.StringUtil;
+import br.com.gamemods.minecity.api.world.EntityUpdate;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.ICityStorage;
 import br.com.gamemods.minecity.structure.City;
@@ -51,8 +52,12 @@ public final class Group implements Identifiable<Integer>
         if(members.contains(member))
             return;
 
+        if(member.getType() == Identity.Type.GROUP)
+            throw new UnsupportedOperationException("Add a group to an other group");
+
         storage.addMember(this, member);
         members.add(member);
+        home.mineCity.entityUpdates.add(new EntityUpdate(member, EntityUpdate.Type.GROUP_ADDED, identity));
     }
 
     @Slow
@@ -66,6 +71,7 @@ public final class Group implements Identifiable<Integer>
 
         storage.removeMember(this, member);
         members.remove(member);
+        home.mineCity.entityUpdates.add(new EntityUpdate(member, EntityUpdate.Type.GROUP_REMOVED, identity));
     }
 
     public boolean hasMember(@NotNull Identity<?> member)
@@ -111,6 +117,7 @@ public final class Group implements Identifiable<Integer>
 
         storage.deleteGroup(this);
         invalid = true;
+        members.forEach(m-> home.mineCity.entityUpdates.add(new EntityUpdate(m, EntityUpdate.Type.GROUP_REMOVED, identity)));
         members.clear();
         home.removeInvalidGroups();
     }

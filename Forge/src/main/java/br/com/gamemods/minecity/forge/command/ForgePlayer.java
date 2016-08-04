@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.command;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.GroupID;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
@@ -16,31 +17,80 @@ import net.minecraft.world.WorldServer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static br.com.gamemods.minecity.api.CollectionUtil.optionalStream;
 import static br.com.gamemods.minecity.api.permission.FlagHolder.can;
 
 public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements MinecraftEntity
 {
+    private final PlayerID identity;
     public ChunkPos lastChunk;
     private int lastX, lastY, lastZ;
     private byte movMessageWait = 0;
     private City lastCity;
+    @Nullable
+    private Set<GroupID> groups;
 
     public ForgePlayer(MineCityForgeMod mod, EntityPlayer player)
     {
         super(mod, player);
+        identity = new PlayerID(player.getUniqueID(), player.getCommandSenderName());
         lastChunk = new ChunkPos(mod.world(player.worldObj), player.chunkCoordX, player.chunkCoordZ);
         lastX = (int) player.posX;
         lastY = (int) player.posY;
         lastZ = (int) player.posZ;
+        mod.runAsynchronously(() ->
+        {
+            try
+            {
+                groups = new HashSet<>(mod.mineCity.dataSource.getEntityGroups(identity));
+            }
+            catch(Exception e)
+            {
+                mod.logger.error("An error occurred while loading the "+getName()+"'s groups!", e);
+                mod.callSyncMethod(()-> kick(new Message("task.player.load.groups.failed",
+                        "Oops, an error occurred while loading your groups: ${error}",
+                        Message.errorArgs(e)
+                )));
+            }
+        });
     }
 
     public void tick()
     {
+        updateGroups();
         checkPosition();
+    }
+
+    public void updateGroups()
+    {
+        Queue<EntityUpdate> entityUpdates = mod.mineCity.entityUpdates;
+        EntityUpdate update = entityUpdates.peek();
+        if(update == null || !update.identity.equals(identity))
+            return;
+
+        if(groups == null)
+        {
+            if(entityUpdates.size() > 1)
+                entityUpdates.add(entityUpdates.poll());
+            return;
+        }
+
+        entityUpdates.poll();
+        switch(update.type)
+        {
+            case GROUP_ADDED:
+                groups.add(update.groupId);
+                break;
+
+            case GROUP_REMOVED:
+                groups.remove(update.groupId);
+                break;
+
+            default:
+                mod.logger.error("Unsupported update entity type: "+update.type);
+        }
     }
 
     public void checkPosition()
@@ -87,6 +137,13 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements Min
     }
 
     @Override
+    public boolean kick(Message message)
+    {
+        ((EntityPlayerMP)sender).playerNetServerHandler.kickPlayerFromServer(mod.transformer.toLegacy(message));
+        return true;
+    }
+
+    @Override
     public EntityPos getPosition()
     {
         return new EntityPos(mod.world(sender.worldObj), sender.posX, sender.posY, sender.posZ, sender.rotationPitch, sender.rotationYaw);
@@ -101,7 +158,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements Min
     @Override
     public PlayerID getPlayerId()
     {
-        return new PlayerID(sender.getUniqueID(), sender.getCommandSenderName());
+        return identity;
     }
 
     @Override
@@ -137,7 +194,6 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements Min
         return null;
     }
 
-
     @NotNull
     @Override
     public String getName()
@@ -164,5 +220,24 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements Min
     public CommandSender getCommandSender()
     {
         return this;
+    }
+
+    @NotNull
+    @Override
+    public PlayerID getIdentity()
+    {
+        return identity;
+    }
+
+    @Override
+    public boolean isGroupLoaded()
+    {
+        return groups != null;
+    }
+
+    @Override
+    public Set<GroupID> getGroupIds()
+    {
+        return groups == null? Collections.emptySet() : groups;
     }
 }

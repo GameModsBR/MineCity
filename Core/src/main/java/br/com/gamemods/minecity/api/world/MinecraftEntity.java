@@ -1,17 +1,23 @@
 package br.com.gamemods.minecity.api.world;
 
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandSender;
+import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.EntityID;
+import br.com.gamemods.minecity.api.permission.GroupID;
 import br.com.gamemods.minecity.api.permission.Identifiable;
 import br.com.gamemods.minecity.api.permission.Identity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Set;
 import java.util.UUID;
 
 public interface MinecraftEntity extends Identifiable
 {
+    Server getServer();
+
     @NotNull
     @Override
     UUID getUniqueId();
@@ -32,6 +38,18 @@ public interface MinecraftEntity extends Identifiable
 
         return new EntityID(type, getUniqueId(), getName());
     }
+
+    @NotNull
+    Set<GroupID> getGroupIds();
+
+    boolean isGroupLoaded();
+
+    /**
+     * Attempts to kick a player
+     * @param message The kick message
+     * @return {@code false} if the player was not kicked (event cancelled) or this entity is not a player
+     */
+    boolean kick(Message message);
 
     enum Type
     {
