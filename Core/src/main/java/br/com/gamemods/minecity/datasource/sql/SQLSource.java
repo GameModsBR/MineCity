@@ -630,7 +630,7 @@ public class SQLSource implements IDataSource
                             "SELECT g.group_id, g.city_id, g.display_name, c.display_name AS home " +
                             "FROM minecity_group_players gp " +
                                 "INNER JOIN minecity_groups g ON g.group_id = gp.group_id " +
-                                "INNER JOIN minecity_cities c ON c.city_id = g.city_id " +
+                                "INNER JOIN minecity_city c ON c.city_id = g.city_id " +
                             "WHERE gp.player_id=?"
                     ))
                     {
@@ -660,7 +660,7 @@ public class SQLSource implements IDataSource
                             "SELECT g.group_id, g.city_id, g.display_name, c.display_name AS home " +
                                     "FROM minecity_group_entities ge " +
                                     "INNER JOIN minecity_groups g ON g.group_id = ge.group_id " +
-                                    "INNER JOIN minecity_cities c ON c.city_id = g.city_id " +
+                                    "INNER JOIN minecity_city c ON c.city_id = g.city_id " +
                                     (id > 0 ? "WHERE ge.entity_id = ?" :
                                     "INNER JOIN minecity_entities e ON ge.entity_id = e.entity_id " +
                                             "WHERE e.entity_uuid = ?")
