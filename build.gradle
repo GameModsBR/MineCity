@@ -1,0 +1,43 @@
+allprojects {
+    apply plugin: "java"
+    group= "br.com.gamemods.minecity"
+    version = "1.0-SNAPSHOT"
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "spigot-nexus"
+            url = "https://hub.spigotmc.org/nexus/content/groups/public/"
+        }
+    }
+
+    dependencies {
+        compile "org.jetbrains:annotations:13.0"
+
+        testCompile "junit:junit:4.12"
+        testCompile "org.powermock:powermock-module-junit4:1.6.5"
+        testCompile "org.powermock:powermock-api-mockito:1.6.5"
+        testCompile project(":UnitTest")
+    }
+}
+
+project(':Bukkit') {
+    dependencies {
+        compile project(':Core')
+        compile "org.bukkit:bukkit:1.8-R0.1-SNAPSHOT"
+    }
+}
+
+project(':UnitTest') {
+    dependencies {
+        compile "org.assertj:assertj-core:3.1.0"
+    }
+}

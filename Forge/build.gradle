@@ -17,48 +17,26 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "1.0-SNAPSHOT"
-group= "br.com.gamemods.minecity"
-//noinspection GroovyUnusedAssignment
-archivesBaseName = "MineCityForge"
+project(':Forge') {
+    archivesBaseName = "MineCity"
 
-//noinspection GroovyUnusedAssignment
-sourceCompatibility = 1.8
-//noinspection GroovyUnusedAssignment
-targetCompatibility = 1.8
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
 
 minecraft {
     version = "1.7.10-10.13.4.1566-1.7.10"
     runDir = "eclipse"
 }
 
-repositories {
-    mavenLocal()
+configurations {
+    shade
+    compile.extendsFrom shade
 }
 
 dependencies {
-    compile files('../Core/target/classes')
-    compile "org.jetbrains:annotations:13.0"
-
-    testCompile "junit:junit:4.12"
-    testCompile "org.powermock:powermock-module-junit4:1.6.5"
-    testCompile "org.powermock:powermock-api-mockito:1.6.5"
-
-    //compile "mysql:mysql-connector-java:5.1.32"
-
-    // you may put jars on which you depend on in ./libs
-    // or you may define them like so..
-    //compile "some.group:artifact:version:classifier"
-    //compile "some.group:artifact:version"
-
-    // real examples
-    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+    shade project(':Core')
+    shade project(':Bukkit')
 }
 
 jar {
@@ -67,6 +45,12 @@ jar {
                 'FMLCorePlugin': 'br.com.gamemods.minecity.forge.core.MineCityCoreMod',
                 'FMLCorePluginContainsFMLMod': 'true'
         )
+    }
+
+    configurations.shade.each { dep ->
+        from(project.zipTree(dep)){
+            include 'br/**', '*.yml', '*.info'
+        }
     }
 }
 
