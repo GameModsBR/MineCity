@@ -156,6 +156,7 @@ public class MessageTransformer
                 {
                     String key = token.toString();
                     last.tokens.put(sb.length(), key);
+                    token.setLength(0);
                     continue;
                 }
                 else
