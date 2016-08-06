@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.commands.CityCommand;
+import br.com.gamemods.minecity.commands.GroupCommand;
 import br.com.gamemods.minecity.commands.PermissionCommands;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.IDataSource;
@@ -67,6 +68,7 @@ public class MineCity
         commands.scheduler = server::runAsynchronously;
         commands.registerCommands(new CityCommand(this));
         commands.registerCommands(new PermissionCommands(this));
+        commands.registerCommands(new GroupCommand(this));
         Inconsistency.setMineCity(this);
     }
 

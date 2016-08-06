@@ -119,6 +119,36 @@
                 <msg id="all.args.count">This command does not expect extra arguments, are you sure that you want to allow everybody?</msg>
             </allow>
         </city>
+        <group>
+            <create>
+                <msg id="empty">You need to type a name</msg>
+                <msg id="invalid">The name ${name} is invalid, try a bigger name</msg>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="no-permission">You don't have permission to create groups in name of ${city}</msg>
+                <msg id="conflict">The name ${name} conflicts with ${conflict}</msg>
+                <msg id="success">The group ${group} were created successfully</msg>
+            </create>
+            <add>
+                <msg id="empty.player">Type a player name</msg>
+                <msg id="empty.group">Type a group name</msg>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="no-permission">You don't have permission to add players to groups from ${city}</msg>
+                <msg id="group-not-found">The group ${group} was not found in ${city}</msg>
+                <msg id="player-not-found">No player was found with name ${name}</msg>
+                <msg id="already-member">The player ${name} is already part of the group ${group}</msg>
+                <msg id="success">The player ${player} is now part of the group ${group}</msg>
+            </add>
+            <remove>
+                <msg id="empty.player">Type a player name</msg>
+                <msg id="empty.group">Type a group name</msg>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="no-permission">You don't have permission to remove players from groups from ${city}</msg>
+                <msg id="group-not-found">The group ${group} was not found in ${city}</msg>
+                <msg id="player-not-found">No player was found with name ${name}</msg>
+                <msg id="not-member">The player ${name} is not a member of the group ${group}</msg>
+                <msg id="success">The player ${player} is no longer part of the group ${group}</msg>
+            </remove>
+        </group>
     </cmd>
     <action>
         <msg id="denied">You don't have permission to perform this action.</msg>
