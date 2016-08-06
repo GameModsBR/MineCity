@@ -2,7 +2,7 @@ language: java
 jdk:
   - oraclejdk8
 services:
-  - mysel
+  - mysql
 before_script:
   - mysql -e 'create database minecity_test;'
   - mysql -e "create user 'unit_test'@'localhost' identified by 'unit_test';"
