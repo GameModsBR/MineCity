@@ -4,7 +4,7 @@ jdk:
 services:
   - mysql
 before_script:
-  - mysql -e 'create database minecity_test;'
-  - mysql -e "create user 'unit_test'@'localhost' identified by 'unit_test';"
-  - mysql -e "grant all privileges on minecity_test.* to 'unit_test'@'localhost'"
-  - mysql -e "flush privileges;"
+  - mysql -uroot -e 'create database minecity_test;'
+  - mysql -uroot -e "create user 'unit_test'@'localhost' identified by 'unit_test';"
+  - mysql -uroot -e "grant all privileges on minecity_test.* to 'unit_test'@'localhost'"
+  - mysql -uroot -e "flush privileges;"
