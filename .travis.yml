@@ -1,3 +1,10 @@
 language: java
 jdk:
   - oraclejdk8
+services:
+  - mysel
+before_script:
+  - mysql -e 'create database minecity_test;'
+  - mysql -e "create user 'unit_test'@'localhost' identified by 'unit_test';"
+  - mysql -e "grant all privileges on minecity_test.* to 'unit_test'@'localhost'"
+  - mysql -e "flush privileges;"
