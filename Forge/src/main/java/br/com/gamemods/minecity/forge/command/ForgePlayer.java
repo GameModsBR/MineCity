@@ -1,10 +1,13 @@
 package br.com.gamemods.minecity.forge.command;
 
+import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.command.CommandResult;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.GroupID;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.unchecked.UFunction;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
 import br.com.gamemods.minecity.structure.City;
@@ -17,6 +20,7 @@ import net.minecraft.world.WorldServer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.math.BigInteger;
 import java.util.*;
 
 import static br.com.gamemods.minecity.api.CollectionUtil.optionalStream;
@@ -31,6 +35,9 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements Min
     private City lastCity;
     @Nullable
     private Set<GroupID> groups;
+    private UFunction<CommandSender, CommandResult<?>> confirmAction;
+    private String confirmCode;
+    private short confirmExpires;
 
     public ForgePlayer(MineCityForgeMod mod, EntityPlayer player)
     {
@@ -59,8 +66,23 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements Min
 
     public void tick()
     {
+        tickConfirm();
         updateGroups();
         checkPosition();
+    }
+
+    public void tickConfirm()
+    {
+        if(confirmExpires > 0)
+        {
+            confirmExpires--;
+            if(confirmExpires == 0)
+            {
+                confirmCode = null;
+                confirmAction = null;
+                send(CONFIRM_EXPIRED);
+            }
+        }
     }
 
     public void updateGroups()
@@ -194,6 +216,34 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements Min
         return null;
     }
 
+    @Override
+    public boolean isConfirmPending()
+    {
+        return confirmExpires > 0;
+    }
+
+    @Override
+    public String confirm(UFunction<CommandSender, CommandResult<?>> onConfirm)
+    {
+        confirmExpires = 20*30;
+        confirmCode = new BigInteger(28, MineCity.RANDOM).toString(32).toUpperCase();
+        confirmAction = onConfirm;
+        return confirmCode;
+    }
+
+    @Override
+    public CommandResult<CommandResult<?>> confirm(String code)
+    {
+        if(confirmExpires == 0 || !confirmCode.equals(code.toUpperCase()))
+            return CommandResult.failed();
+
+        UFunction<CommandSender, CommandResult<?>> action = this.confirmAction;
+        confirmExpires = 0;
+        confirmCode = null;
+        confirmAction = null;
+        return new CommandResult<>(null, action.apply(this), true);
+    }
+
     @NotNull
     @Override
     public String getName()
@@ -235,6 +285,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements Min
         return groups != null;
     }
 
+    @NotNull
     @Override
     public Set<GroupID> getGroupIds()
     {

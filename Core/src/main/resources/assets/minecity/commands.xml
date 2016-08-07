@@ -25,6 +25,11 @@
         </group>
     </groups>
     <commands>
+        <!-- General -->
+        <command id="confirm" parent=",city,group,root" cmd="confirm">
+            <desc>Confirms a dangerous action</desc>
+        </command>
+
         <!-- Management -->
         <command id="city.create" parent="city" cmd="create,new">
             <desc>Creates a city</desc>
@@ -72,6 +77,9 @@
         </command>
         <command id="group.info" parent="group" cmd="info">
             <desc>Displays details about a group</desc>
+        </command>
+        <command id="group.delete" parent="group" cmd="delete">
+            <desc>Completely deletes a group from a city</desc>
         </command>
 
         <!-- Default permissions -->

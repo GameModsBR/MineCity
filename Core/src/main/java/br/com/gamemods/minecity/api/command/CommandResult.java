@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.api.command;
 public class CommandResult<R>
 {
     public static final CommandResult SUCCESS = new CommandResult(null, true);
+    public static final CommandResult FAILED = new CommandResult(null, false);
     public static final CommandResult ONLY_PLAYERS = new CommandResult(new Message("cmd.err.players-only",
             "Only players can execute this command."
     ));
@@ -41,6 +42,12 @@ public class CommandResult<R>
     public static <T> CommandResult<T> success()
     {
         return SUCCESS;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> CommandResult<T> failed()
+    {
+        return FAILED;
     }
 
     @SuppressWarnings("SimplifiableIfStatement")

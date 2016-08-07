@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.api.command;
 
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
+import br.com.gamemods.minecity.api.unchecked.UFunction;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
@@ -11,6 +12,9 @@ import org.jetbrains.annotations.Nullable;
 
 public interface CommandSender
 {
+    Message CONFIRM_EXPIRED = new Message("cmd.confirm.expired",
+            "The action were not confirmed and the confirmation code has expired.");
+
     EntityPos getPosition();
     boolean isPlayer();
     PlayerID getPlayerId();
@@ -18,6 +22,21 @@ public interface CommandSender
     void send(Message[] messages);
     Direction getCardinalDirection();
     Server getServer();
+
+    default boolean isConfirmPending()
+    {
+        return false;
+    }
+
+    default String confirm(UFunction<CommandSender, CommandResult<?>> onConfirm)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    default CommandResult<CommandResult<?>> confirm(String code) throws Exception
+    {
+        throw new UnsupportedOperationException();
+    }
 
     @Nullable
     default Message teleport(@NotNull BlockPos pos)

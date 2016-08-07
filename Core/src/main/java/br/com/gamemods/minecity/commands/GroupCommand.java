@@ -25,6 +25,73 @@ public class GroupCommand
 
     @Slow
     @Async
+    @Command(value = "group.delete", console = false, args = {
+            @Arg(name = "city", optional = true, type = Arg.Type.GROUP_OR_CITY),
+            @Arg(name = "group name", type = Arg.Type.GROUP, sticky = true, relative = "city")
+    })
+    public CommandResult<String> delete(CommandEvent cmd) throws DataSourceException
+    {
+        int groupArgIndex = 0;
+        City city;
+        if(cmd.args.isEmpty())
+            city = cmd.position != null? mineCity.getCity(cmd.position.getChunk()).orElse(null) : null;
+        else
+        {
+            String cityName = cmd.args.get(0);
+            groupArgIndex = 1;
+            city = mineCity.dataSource.getCityByName(cityName).orElse(null);
+            if(city == null)
+            {
+                city = cmd.position != null? mineCity.getCity(cmd.position.getChunk()).orElse(null) : null;
+                if(city == null)
+                    return new CommandResult<>(new Message("cmd.group.delete.city-not-found",
+                            "The city ${city} was not found",
+                            new Object[]{"city", cityName}
+                    ));
+            }
+        }
+
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.group.delete.not-claimed", "You are not inside a city"));
+
+        if(groupArgIndex >= cmd.args.size())
+            return new CommandResult<>(new Message("cmd.group.delete.no-group", "Type a group name"));
+
+        String groupName = String.join(" ", cmd.args.subList(groupArgIndex, cmd.args.size()));
+        Group group = city.getGroup(groupName);
+        if(group == null)
+            return new CommandResult<>(new Message("cmd.group.delete.group-not-found",
+                    "The city ${city} does not contains a group called ${group}",
+                    new Object[][]{
+                            {"city", city.getName()}, {"group", groupName}
+                    }));
+
+        if(!cmd.sender.getPlayerId().equals(group.home.getOwner()))
+            return new CommandResult<>(new Message("cmd.group.delete.no-permission",
+                    "You don't have permission to delete groups from ${city}",
+                    new Object[]{"city",city.getName()}
+            ));
+
+        String code = cmd.sender.confirm((sender)-> {
+            group.remove();
+            return new CommandResult<>(new Message("cmd.group.delete.success",
+                    "The group ${group} from ${city} was deleted successfully",
+                    new Object[][]{
+                            {"group", group.getName()}, {"city", group.home.getName()}
+            }), true);
+        });
+
+        return new CommandResult<>(new Message("cmd.group.delete.confirm",
+                "Are you sure that you want to delete the group ${group} from city ${city}? It contains ${count} members: ${members}\n" +
+                    "If you are sure, type /group confirm ${confirm}",
+                new Object[][]{
+                        {"group", group.getName()}, {"city", group.home.getName()}, {"count", group.getMembers().size()},
+                        {"members", groupMembers(group, "cmd.group.delete")}, {"confirm", code}
+                }));
+    }
+
+    @Slow
+    @Async
     @Command(value = "group.info", args = {
             @Arg(name = "city", optional = true, type = Arg.Type.GROUP_OR_CITY),
             @Arg(name = "group name", type = Arg.Type.GROUP, sticky = true, relative = "city")

@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.commands.CityCommand;
+import br.com.gamemods.minecity.commands.GeneralCommands;
 import br.com.gamemods.minecity.commands.GroupCommand;
 import br.com.gamemods.minecity.commands.PermissionCommands;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
@@ -28,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -37,6 +39,7 @@ import java.util.stream.Stream;
 
 public class MineCity
 {
+    public static final Random RANDOM = new Random();
     @NotNull
     public final IDataSource dataSource;
     public final Server server;
@@ -70,6 +73,7 @@ public class MineCity
         commands.registerCommands(new CityCommand(this));
         commands.registerCommands(new PermissionCommands(this));
         commands.registerCommands(new GroupCommand(this));
+        commands.registerCommands(GeneralCommands.class);
         Inconsistency.setMineCity(this);
     }
 

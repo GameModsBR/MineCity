@@ -191,7 +191,25 @@
                 <msg id="member.join"><![CDATA[, ]]></msg>
                 <msg id="member.empty"><i>This group is empty</i></msg>
             </info>
+            <delete>
+                <msg id="city-not-found">The city ${city} was not found</msg>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="no-group">Type a group name</msg>
+                <msg id="group-not-found">The city ${city} does not contains a group called ${group}</msg>
+                <msg id="no-permission">You don't have permission to delete groups from ${city}</msg>
+                <msg id="confirm">
+                    Are you sure that you want to delete the group ${group} from city ${city}? It contains ${count} members: ${members}<br/><br/>
+                    If you are sure, type /group confirm ${confirm}
+                </msg>
+                <msg id="success">The group ${group} from ${city} was deleted successfully</msg>
+            </delete>
         </group>
+        <confirm>
+            <msg id="args">Type the confirmation code to confirm the action or just ignore it if you don't want to continue.</msg>
+            <msg id="invalid">You've typed an incorrect code, if you want to abort the operation just don't type the /confirm command.</msg>
+            <msg id="expired"><darkred>MineCity> </darkred><red>The action were not confirmed and the confirmation code has expired.</red></msg>
+            <msg id="not-pending">You don't have any pending confirmation</msg>
+        </confirm>
     </cmd>
     <action>
         <msg id="denied">You don't have permission to perform this action.</msg>
