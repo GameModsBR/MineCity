@@ -414,10 +414,11 @@ public final class CommandTree
             arg = search;
         }
 
-        Stream<String> options;
+        Stream<String> options = null;
         String key = arg.toLowerCase();
         Predicate<String> filter = o -> o.toLowerCase().startsWith(key);
-        switch(def.type())
+        Arg.Type type = def.type();
+        switch(type)
         {
             case PLAYER:
                 options = onlinePlayers.get();
@@ -430,13 +431,7 @@ public final class CommandTree
                     return Collections.emptyList();
                 options = Stream.concat(onlinePlayers.get(), cityNames.get());
                 break;
-            case CITY:
-            {
-                options = cityNames.get();
-                String id = identity(key);
-                filter = o-> identity(o).startsWith(id);
-                break;
-            }
+            case GROUP_OR_CITY:
             case GROUP:
             {
                 String relativeName = def.relative();
@@ -450,15 +445,24 @@ public final class CommandTree
                     }
                 }
 
-                if(index < 0 || args.size() <= index)
-                    return Collections.emptyList();
+                if(index >= 0 && args.size() >= index)
+                {
+                    Optional<Set<String>> groups = dataSource.getGroupNames(args.get(index));
 
-                Optional<Set<String>> groups = dataSource.getGroupNames(args.get(index));
+                    if(groups.isPresent())
+                    {
+                        options = groups.get().stream();
+                        String id = identity(key);
+                        filter = o -> identity(o).startsWith(id);
+                    }
+                }
 
-                if(!groups.isPresent())
-                    return Collections.emptyList();
-
-                options = groups.get().stream();
+                if(type == Arg.Type.GROUP)
+                    break;
+            }
+            case CITY:
+            {
+                options = cityNames.get();
                 String id = identity(key);
                 filter = o-> identity(o).startsWith(id);
                 break;
@@ -466,6 +470,9 @@ public final class CommandTree
             default:
                 return Collections.emptyList();
         }
+
+        if(options == null)
+            return Collections.emptyList();
 
         if(!arg.isEmpty())
             options = options.filter(filter);

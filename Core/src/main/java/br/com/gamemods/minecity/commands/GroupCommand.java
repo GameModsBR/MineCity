@@ -4,7 +4,6 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.Async;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
-import br.com.gamemods.minecity.api.StringUtil;
 import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.Group;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
@@ -22,6 +21,77 @@ public class GroupCommand
     public GroupCommand(@NotNull MineCity mineCity)
     {
         this.mineCity = mineCity;
+    }
+
+    @Slow
+    @Async
+    @Command(value = "group.info", args = {
+            @Arg(name = "city", optional = true, type = Arg.Type.GROUP_OR_CITY),
+            @Arg(name = "group name", type = Arg.Type.GROUP, sticky = true, relative = "city")
+    })
+    public CommandResult<?> info(CommandEvent cmd) throws DataSourceException
+    {
+        int groupArgIndex = 0;
+        City city;
+        if(cmd.args.isEmpty())
+            city = cmd.position != null? mineCity.getCity(cmd.position.getChunk()).orElse(null) : null;
+        else
+        {
+            String cityName = cmd.args.get(0);
+            groupArgIndex = 1;
+            city = mineCity.dataSource.getCityByName(cityName).orElse(null);
+            if(city == null)
+            {
+                city = cmd.position != null? mineCity.getCity(cmd.position.getChunk()).orElse(null) : null;
+                if(city == null)
+                    return new CommandResult<>(new Message("cmd.group.info.city-not-found",
+                            "The city ${city} was not found",
+                            new Object[]{"city", cityName}
+                    ));
+            }
+        }
+
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.group.info.not-claimed", "You are not inside a city"));
+
+        if(groupArgIndex >= cmd.args.size())
+            return new CommandResult<>(new Message("cmd.group.info.no-group", "Type a group name"));
+
+        String groupName = String.join(" ", cmd.args.subList(groupArgIndex, cmd.args.size()));
+        Group group = city.getGroup(groupName);
+        if(group == null)
+            return new CommandResult<>(new Message("cmd.group.info.group-not-found",
+                    "The city ${city} does not contains a group called ${group}",
+                    new Object[][]{
+                            {"city", city.getName()}, {"group", groupName}
+                    }));
+
+        return new CommandResult<>(new Message("cmd.group.info.success",
+                "Members: ${members}",
+                new Object[]{"members",groupMembers(group, "cmd.group.info")}
+        ), null, true);
+    }
+
+    private Message groupMembers(Group g, String prefix)
+    {
+        return g.getMembers().isEmpty()? new Message(prefix+".member.empty", "This group is empty") :
+                Message.list(g.getMembers().stream().sorted().map(m-> {
+                    switch(m.getType())
+                    {
+                        case PLAYER:
+                            return new Message(prefix+".player", "${name}", new Object[][]{
+                                    {"name",m.getName()}
+                            });
+                        case ENTITY:
+                            return new Message(prefix+".entity", "${name}", new Object[][]{
+                                    {"name",m.getName()}
+                            });
+                        default:
+                            return new Message(prefix+".member", "${name}", new Object[][]{
+                                    {"name",m.getName()}
+                            });
+                    }
+                }).toArray(Message[]::new), new Message(prefix+".member.join", ", "));
     }
 
     @Slow
@@ -57,25 +127,7 @@ public class GroupCommand
                         {"name",g.getName()},
                         {"size",g.getMembers().size()},
                         {"home.compact", city.getName().replaceAll("\\s", "")},
-                        {"members", g.getMembers().isEmpty()? new Message("cmd.group.list.member.empty", "This group is empty") :
-                                Message.list(g.getMembers().stream().sorted().map(m-> {
-                            switch(m.getType())
-                            {
-                                case PLAYER:
-                                    return new Message("cmd.group.list.player", "${name}", new Object[][]{
-                                            {"name",m.getName()}
-                                    });
-                                case ENTITY:
-                                    return new Message("cmd.group.list.entity", "${name}", new Object[][]{
-                                            {"name",m.getName()}
-                                    });
-                                default:
-                                    return new Message("cmd.group.list.member", "${name}", new Object[][]{
-                                            {"name",m.getName()}
-                                    });
-                            }
-                        }).toArray(Message[]::new), new Message("cmd.group.list.member.join", ", "))
-                    }
+                        {"members", groupMembers(g, "cmd.group.list")}
                 }))
                 .toArray(Message[]::new), new Message("cmd.group.list.group.join", ", "));
 

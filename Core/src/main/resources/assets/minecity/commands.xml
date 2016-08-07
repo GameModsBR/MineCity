@@ -68,7 +68,10 @@
             <desc>Removes a player from a group</desc>
         </command>
         <command id="group.list" parent="group" cmd="list">
-            <desc>Display all city groups</desc>
+            <desc>Displays all city groups</desc>
+        </command>
+        <command id="group.info" parent="group" cmd="info">
+            <desc>Displays details about a group</desc>
         </command>
 
         <!-- Default permissions -->
