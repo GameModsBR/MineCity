@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.api.permission;
 
+import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.StringUtil;
 import br.com.gamemods.minecity.api.world.EntityUpdate;
@@ -26,12 +27,13 @@ public final class Group implements Identifiable<Integer>
     private String identityName;
     @NotNull
     private final Set<Identity<?>> members;
+    private final Set<PlayerID> managers;
     @NotNull
     private final GroupID identity;
     private boolean invalid;
 
     public Group(@NotNull ICityStorage storage, int id, @NotNull City home, @NotNull String identityName,
-                 @NotNull String name, @NotNull Collection<Identity<?>> members)
+                 @NotNull String name, @NotNull Collection<Identity<?>> members, Collection<PlayerID> managers)
     {
         this.id = id;
         this.home = home;
@@ -39,6 +41,8 @@ public final class Group implements Identifiable<Integer>
         this.identityName = identityName;
         this.members = Collections.newSetFromMap(new ConcurrentHashMap<>(members.size()));
         this.members.addAll(members);
+        this.managers = Collections.newSetFromMap(new ConcurrentHashMap<>(managers.size()));
+        this.managers.addAll(managers);
         this.storage = storage;
         identity = new GroupID(id, name, home.getName(), home.getId());
     }
@@ -61,7 +65,20 @@ public final class Group implements Identifiable<Integer>
     }
 
     @Slow
-    public synchronized void removeMember(@NotNull Identity<?> member) throws DataSourceException
+    public synchronized void addManager(@NotNull PlayerID manager) throws DataSourceException, IllegalStateException
+    {
+        if(invalid)
+            throw new IllegalStateException();
+
+        if(managers.contains(manager))
+            return;
+
+        storage.addManager(this, manager);
+        managers.add(manager);
+    }
+
+    @Slow
+    public synchronized void removeMember(@NotNull Identity<?> member) throws DataSourceException, IllegalStateException
     {
         if(invalid)
             throw new IllegalStateException();
@@ -74,9 +91,27 @@ public final class Group implements Identifiable<Integer>
         home.mineCity.entityUpdates.add(new EntityUpdate(member, EntityUpdate.Type.GROUP_REMOVED, identity));
     }
 
-    public boolean hasMember(@NotNull Identity<?> member)
+    @Slow
+    public synchronized void removeManager(@NotNull PlayerID manager) throws DataSourceException, IllegalStateException
+    {
+        if(invalid)
+            throw new IllegalStateException();
+
+        if(!managers.contains(manager))
+            return;
+
+        storage.removeManager(this, manager);
+        managers.remove(manager);
+    }
+
+    public boolean isMember(@NotNull Identity<?> member)
     {
         return !invalid && members.contains(member);
+    }
+
+    public boolean isManager(@NotNull PlayerID id)
+    {
+        return managers.contains(id);
     }
 
     @NotNull
@@ -86,6 +121,14 @@ public final class Group implements Identifiable<Integer>
             return Collections.emptySet();
 
         return Collections.unmodifiableSet(members);
+    }
+
+    public Set<PlayerID> getManagers()
+    {
+        if(invalid)
+            return Collections.emptySet();
+
+        return Collections.unmodifiableSet(managers);
     }
 
     @Slow

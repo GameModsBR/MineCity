@@ -11,6 +11,9 @@
         <group id="group" parent=",root,city" cmd="group">
             <desc>All group related commands</desc>
         </group>
+        <group id="group.manager" parent="group" cmd="manager,managers">
+            <desc>All group managers related commands</desc>
+        </group>
         <group id="allow" parent="city" cmd="allow">
             <desc>Gives permission</desc>
         </group>
@@ -80,6 +83,12 @@
         </command>
         <command id="group.delete" parent="group" cmd="delete">
             <desc>Completely deletes a group from a city</desc>
+        </command>
+        <command id="group.add.manager" parent="group.manager" cmd="add">
+            <desc>Adds a player as a group manager</desc>
+        </command>
+        <command id="group.remove.manager" parent="group.manager" cmd="remove">
+            <desc>Adds a player as a group manager</desc>
         </command>
 
         <!-- Default permissions -->

@@ -445,7 +445,7 @@ public class SQLCityStorage implements ICityStorage
                 int groupId = generatedKeys.getInt(1);
 
                 transaction.commit();
-                return new Group(this, groupId, city, id, name, Collections.emptySet());
+                return new Group(this, groupId, city, id, name, Collections.emptySet(), Collections.emptySet());
             }
             catch(Exception e)
             {
@@ -545,6 +545,28 @@ public class SQLCityStorage implements ICityStorage
 
     @Slow
     @Override
+    public void addManager(@NotNull Group group, @NotNull PlayerID manager)
+            throws DataSourceException, UnsupportedOperationException
+    {
+        try(Connection transaction = this.connection.transaction(); Statement stm = transaction.createStatement())
+        {
+            int playerId = source.playerId(transaction, manager);
+            stm.executeUpdate("INSERT INTO minecity_group_managers(group_id,player_id) VALUES("+group.id+","+playerId+");");
+
+            transaction.commit();
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+        catch(ClassCastException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+
+    @Slow
+    @Override
     public void removeMember(@NotNull Group group, @NotNull Identity<?> member)
             throws DataSourceException, UnsupportedOperationException
     {
@@ -585,6 +607,30 @@ public class SQLCityStorage implements ICityStorage
     }
 
     @Slow
+    @Override
+    public void removeManager(@NotNull Group group, @NotNull PlayerID manager)
+            throws DataSourceException, UnsupportedOperationException
+    {
+        try(Connection transaction = this.connection.transaction(); Statement stm = transaction.createStatement())
+        {
+            int playerId = source.playerId(transaction, manager);
+            int changes = stm.executeUpdate("DELETE FROM minecity_group_managers WHERE group_id="+group.id+" AND player_id="+playerId+";");
+            if(changes != 1)
+                throw new DataSourceException("Expected 1 change, got "+changes+" changes");
+
+            transaction.commit();
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+        catch(ClassCastException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+
+    @Slow
     @NotNull
     @Override
     public Collection<Group> loadGroups(@NotNull City city) throws DataSourceException
@@ -606,6 +652,12 @@ public class SQLCityStorage implements ICityStorage
                             "FROM minecity_group_entities ge " +
                             "INNER JOIN minecity_entities e ON e.entity_id = ge.entity_id " +
                             "WHERE ge.group_id = ?"
+                );
+                PreparedStatement managersPst = connection.prepareStatement(
+                        "SELECT p.player_id, player_uuid, player_name " +
+                                "FROM minecity_group_managers gm " +
+                                "INNER JOIN minecity_players p ON p.player_id = gm.player_id " +
+                                "WHERE gm.group_id = ?"
                 )
             )
             {
@@ -617,8 +669,19 @@ public class SQLCityStorage implements ICityStorage
                     int groupId = groupResult.getInt(1);
                     playerPst.setInt(1, groupId);
                     entityPst.setInt(1, groupId);
+                    managersPst.setInt(1, groupId);
 
+                    List<PlayerID> managers = new ArrayList<>();
                     List<Identity<?>> members = new ArrayList<>();
+
+                    try(ResultSet managerResult = managersPst.executeQuery())
+                    {
+                        while(managerResult.next())
+                            members.add(new PlayerID(managerResult.getInt("player_id"),
+                                    source.uuid(managerResult.getBytes("player_uuid")),
+                                    managerResult.getString("player_name")
+                            ));
+                    }
 
                     try(ResultSet memberResult = playerPst.executeQuery())
                     {
@@ -639,7 +702,7 @@ public class SQLCityStorage implements ICityStorage
                             ));
                     }
 
-                    groups.add(new Group(this, groupId, city, groupResult.getString(2), groupResult.getString(3), members));
+                    groups.add(new Group(this, groupId, city, groupResult.getString(2), groupResult.getString(3), members, managers));
                 }
 
                 return groups;

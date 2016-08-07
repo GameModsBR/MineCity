@@ -77,6 +77,12 @@ public interface ICityStorage
     void removeMember(@NotNull Group group, @NotNull Identity<?> member) throws DataSourceException, UnsupportedOperationException;
 
     @Slow
+    void addManager(@NotNull Group group, @NotNull PlayerID manager) throws DataSourceException;
+
+    @Slow
+    void removeManager(@NotNull Group group, @NotNull PlayerID manager) throws DataSourceException;
+
+    @Slow
     void deleteGroup(@NotNull Group group) throws DataSourceException;
 
     @Slow

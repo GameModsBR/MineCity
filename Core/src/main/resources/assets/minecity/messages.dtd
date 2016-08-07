@@ -1,4 +1,4 @@
-<!ENTITY % ids "msg|cmd|city|create|name|chunk|claim|disclaim|success|spawn|rename|transfer|player|setspawn|deny|allow|action|teleport|all|args|map|result|group|add|remove|empty|list|member|task|load|groups|info|delete|confirm">
+<!ENTITY % ids "msg|cmd|city|create|name|chunk|claim|disclaim|success|spawn|rename|transfer|player|setspawn|deny|allow|action|teleport|all|args|map|result|group|add|remove|empty|list|member|task|load|groups|info|delete|confirm|managers">
 <!ENTITY % formatting "click|hover|br|o|b|s|u|i|c|reset|black|darkblue|darkgreen|darkaqua|darkred|darkpurple|gold|gray|darkgray|blue|green|aqua|red|lightpurple|yellow|white">
 
 <!ELEMENT minecity-messages (%ids;)*>
@@ -88,3 +88,4 @@
 <!ELEMENT info (%ids;)*>
 <!ELEMENT delete (%ids;)*>
 <!ELEMENT confirm (%ids;)*>
+<!ELEMENT managers (%ids;)*>

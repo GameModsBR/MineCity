@@ -308,6 +308,18 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
     }
 
     @Override
+    public void addManager(@NotNull Group group, @NotNull PlayerID manager) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removeManager(@NotNull Group group, @NotNull PlayerID manager) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void deleteGroup(@NotNull Group group) throws DataSourceException
     {
         throw new UnsupportedOperationException();
@@ -346,7 +358,7 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
     public Set<GroupID> getEntityGroups(Identity<?> identity) throws DataSourceException
     {
         return cities.values().stream().map(City::getGroups).flatMap(Collection::stream)
-                .filter(g-> g.hasMember(identity)).map(Group::getIdentity).collect(Collectors.toSet());
+                .filter(g-> g.isMember(identity)).map(Group::getIdentity).collect(Collectors.toSet());
     }
 
     @Override

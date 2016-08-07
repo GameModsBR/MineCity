@@ -119,7 +119,7 @@ public class SQLSourceTest
             conn.setAutoCommit(false);
             String[] tables = new String[]{"chunks","city","islands","players","setup","world","entities","groups",
                     "group_players","group_entities", "city_perm_player", "city_perm_entity", "city_perm_group",
-                    "city_perm_defaults"
+                    "city_perm_defaults", "group_managers"
             };
             try(Statement stm =  conn.createStatement())
             {
@@ -489,14 +489,14 @@ public class SQLSourceTest
 
         Group groupA = city.createGroup("a");
         groupA.addMember(playerA);
-        assertTrue(groupA.hasMember(playerA));
+        assertTrue(groupA.isMember(playerA));
 
         Group groupB = city.createGroup("b");
         groupB.addMember(playerB);
-        assertTrue(groupB.hasMember(playerB));
+        assertTrue(groupB.isMember(playerB));
 
-        assertFalse(groupB.hasMember(playerA));
-        assertFalse(groupA.hasMember(playerB));
+        assertFalse(groupB.isMember(playerA));
+        assertFalse(groupA.isMember(playerB));
 
         // Check group persistence
         reload();
@@ -508,14 +508,14 @@ public class SQLSourceTest
 
         assertNotNull(groupA);
         assertNotNull(groupB);
-        assertTrue(groupA.hasMember(playerA));
-        assertTrue(groupB.hasMember(playerB));
+        assertTrue(groupA.isMember(playerA));
+        assertTrue(groupB.isMember(playerB));
 
-        assertFalse(groupB.hasMember(playerA));
-        assertFalse(groupA.hasMember(playerB));
+        assertFalse(groupB.isMember(playerA));
+        assertFalse(groupA.isMember(playerB));
 
-        assertFalse(groupB.hasMember(random));
-        assertFalse(groupA.hasMember(random));
+        assertFalse(groupB.isMember(random));
+        assertFalse(groupA.isMember(random));
 
         // Check group permissions
         city.allow(PermissionFlag.ENTER, groupA.getIdentity());

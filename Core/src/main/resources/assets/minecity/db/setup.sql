@@ -141,6 +141,15 @@ CONSTRAINT `city_perm_group_group` FOREIGN KEY (`group_id`) REFERENCES `minecity
 )
 ;
 
+CREATE TABLE `minecity_group_managers` (
+`group_id`  int NOT NULL ,
+`player_id`  int NOT NULL ,
+PRIMARY KEY (`group_id`, `player_id`),
+CONSTRAINT `group_managers_group` FOREIGN KEY (`group_id`) REFERENCES `minecity_groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+CONSTRAINT `group_managers_player` FOREIGN KEY (`player_id`) REFERENCES `minecity_players` (`player_id`) ON DELETE CASCADE ON UPDATE CASCADE
+)
+;
+
 CREATE TABLE `minecity_setup` (
 `property`  enum('version') NOT NULL ,
 `value`  enum('1') NOT NULL DEFAULT '1' ,

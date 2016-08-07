@@ -214,6 +214,18 @@ public class Inconsistency implements ChunkOwner
         }
 
         @Override
+        public void addManager(@NotNull Group group, @NotNull PlayerID manager) throws DataSourceException
+        {
+            throw new DataSourceException("Inconsistent city!");
+        }
+
+        @Override
+        public void removeManager(@NotNull Group group, @NotNull PlayerID manager) throws DataSourceException
+        {
+            throw new DataSourceException("Inconsistent city!");
+        }
+
+        @Override
         public void deleteGroup(@NotNull Group group) throws DataSourceException
         {
             throw new DataSourceException("Inconsistent city!");

@@ -28,5 +28,5 @@
 <!ENTITY % CityAllowCommands "city.allow.enter|city.allow.click|city.allow.pickup|city.allow.open|city.allow.pvp|city.allow.pvc">
 <!ENTITY % CityDenyAllCommands "city.deny.all.enter|city.deny.all.click|city.deny.all.pickup|city.deny.all.open|city.deny.all.pvp|city.deny.all.pvc">
 <!ENTITY % CityAllowAllCommands "city.allow.all.enter|city.allow.all.click|city.allow.all.pickup|city.allow.all.open|city.allow.all.pvp|city.allow.all.pvc">
-<!ENTITY % GroupCommands "group.create|group.add|group.remove|group.list|group.info|group.delete">
+<!ENTITY % GroupCommands "group.create|group.add|group.remove|group.list|group.info|group.delete|group.add.manager|group.remove.manager">
 <!ENTITY % GeneralCommands "confirm">
