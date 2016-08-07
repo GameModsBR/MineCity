@@ -155,8 +155,8 @@ public class MessageTransformer
                 if(c == '}')
                 {
                     String key = token.toString();
-                    Queue<String> queue = last.tokens.computeIfAbsent(sb.length(), k-> new ArrayDeque<>(1));
-                    queue.add(key);
+                    Deque<String> queue = last.tokens.computeIfAbsent(sb.length(), k-> new ArrayDeque<>(1));
+                    queue.addFirst(key);
                     token.setLength(0);
                     continue;
                 }
@@ -699,7 +699,7 @@ public class MessageTransformer
     protected final class TextComponent extends Component
     {
         public String text;
-        public SortedMap<Integer, Queue<String>> tokens = new TreeMap<>(Comparator.reverseOrder());
+        public SortedMap<Integer, Deque<String>> tokens = new TreeMap<>(Comparator.reverseOrder());
 
         public TextComponent(String text)
         {
@@ -791,10 +791,10 @@ public class MessageTransformer
             EnumSet<LegacyFormat> format = displayFormat();
 
             StringBuilder sb = new StringBuilder(text);
-            for(Map.Entry<Integer, Queue<String>> entry : tokens.entrySet())
+            for(Map.Entry<Integer, Deque<String>> entry : tokens.entrySet())
             {
                 int index = entry.getKey();
-                Queue<String> queue = entry.getValue();
+                Deque<String> queue = entry.getValue();
                 for(String t: queue)
                 {
                     Object val = args.getOrDefault(t, "${" + t + "}");
@@ -851,7 +851,7 @@ public class MessageTransformer
                 return text;
 
             StringBuilder sb = new StringBuilder(text);
-            tokens.forEach((i,t)-> sb.insert(i, "${"+t+"}"));
+            tokens.forEach((i,q)-> q.forEach((t)-> sb.insert(i, "${"+t+"}")));
             return sb.toString();
         }
     }

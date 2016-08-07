@@ -72,6 +72,11 @@ public class MessageTransformerTest
         assertEquals(legacy, EnumSet.of(GREEN, BOLD), LegacyFormat.formatAt(legacy, legacy.indexOf("bold and green")));
         assertEquals(legacy, EnumSet.of(RED), LegacyFormat.formatAt(legacy, legacy.indexOf("red ")));
         assertEquals(legacy, EnumSet.of(RED), LegacyFormat.formatAt(legacy, legacy.indexOf(" red")));
+
+        component = transformer.parse("${a}${b}${c}");
+        assertEquals("${a}${b}${c}", component.toString());
+        component.apply(Locale.US, new Object[][]{{"a","1"},{"b",4},{"c",6}});
+        assertEquals("146", component.toString());
     }
 
     @Test
