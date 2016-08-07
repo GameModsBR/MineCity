@@ -60,6 +60,11 @@ public class MineCity
     public MineCity(@NotNull Server server, @NotNull MineCityConfig config, @Nullable IDataSource dataSource,
                     @NotNull MessageTransformer messageTransformer)
     {
+        defaultCityFlags.denyAll(config.defaultCityFlags);
+        defaultNatureFlags.denyAll(config.defaultNatureFlags);
+        defaultCityFlags.setDefaultMessage(config.defaultCityFlags.getDefaultMessage());
+        defaultNatureFlags.setDefaultMessage(config.defaultNatureFlags.getDefaultMessage());
+
         this.server = server;
         this.messageTransformer = messageTransformer;
         this.dataSource = dataSource == null? new SQLSource(this, config) : dataSource;

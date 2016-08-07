@@ -4,6 +4,8 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
+import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -64,6 +66,30 @@ public class MineCityPlugin extends JavaPlugin
             config.dbUser = Optional.ofNullable(yaml.getString("database.user")).filter(u-> !u.isEmpty()).orElse(null);
             config.dbPass = Optional.ofNullable(yaml.getString("database.pass")).filter(p-> !p.isEmpty()).map(String::getBytes).orElse(null);
             config.locale = Locale.forLanguageTag(Optional.ofNullable(yaml.getString("language")).filter(l->!l.isEmpty()).orElse("en"));
+
+            for(PermissionFlag flag: PermissionFlag.values())
+            {
+                boolean allow = yaml.getBoolean("permissions.default.nature."+flag+".allow", flag.defaultNature);
+                String msg = yaml.getString("permissions.default.nature."+flag+".allow", "");
+                if(!allow)
+                {
+                    if(msg.isEmpty())
+                        config.defaultNatureFlags.deny(flag);
+                    else
+                        config.defaultNatureFlags.deny(flag, new Message("", msg));
+                }
+
+                allow = yaml.getBoolean("permissions.default.city."+flag+".allow", flag.defaultNature);
+                msg = yaml.getString("permissions.default.city."+flag+".allow", "");
+                if(!allow)
+                {
+                    if(msg.isEmpty())
+                        config.defaultCityFlags.deny(flag);
+                    else
+                        config.defaultCityFlags.deny(flag, new Message("", msg));
+                }
+            }
+
             instance = new MineCityBukkit(this, config);
             instance.mineCity.dataSource.initDB();
             instance.mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));

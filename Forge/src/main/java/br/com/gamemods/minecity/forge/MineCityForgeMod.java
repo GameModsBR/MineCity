@@ -6,6 +6,8 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
+import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.forge.accessors.IChunk;
@@ -107,6 +109,44 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
 
         this.config.dbPass = Optional.of(config.get("database", "pass", "").getString())
                 .filter(p->!p.isEmpty()).map(String::getBytes).orElse(null);
+
+        String defaultMsg = config.getString("default-message", "permissions.default.nature", "",
+                "The default message to be displayed when a permission is denied, leave blank for a translatable default message.");
+
+        if(!defaultMsg.isEmpty())
+            this.config.defaultNatureFlags.setDefaultMessage(new Message("", defaultMsg));
+
+        defaultMsg = config.getString("default-message", "permissions.default.city", "",
+                "The default message to be displayed when a permission is denied, leave blank for a translatable default message.");
+        if(!defaultMsg.isEmpty())
+            this.config.defaultCityFlags.setDefaultMessage(new Message("", defaultMsg));
+
+        for(PermissionFlag flag: PermissionFlag.values())
+        {
+            boolean allowNature = config.getBoolean("allow", "permissions.default.nature."+flag, flag.defaultNature,
+                    "If this permission is allowed by default");
+            boolean allowCity = config.getBoolean("allow", "permissions.default.city."+flag, flag.defaultCity,
+                    "If this permission is allowed by default");
+            String natureMsg = config.getString("message", "permissions.default.nature."+flag, "",
+                    "The message that will be displayed when this permission is denied, leave blank for the default message.");
+            String cityMsg = config.getString("message", "permissions.default.city."+flag, "",
+                    "The message that will be displayed when this permission is denied, leave blank for the default message.");
+            if(!allowNature)
+            {
+                if(natureMsg.isEmpty())
+                    this.config.defaultNatureFlags.deny(flag);
+                else
+                    this.config.defaultNatureFlags.deny(flag, new Message("", natureMsg));
+            }
+
+            if(!allowCity)
+            {
+                if(cityMsg.isEmpty())
+                    this.config.defaultCityFlags.deny(flag);
+                else
+                    this.config.defaultCityFlags.deny(flag, new Message("", cityMsg));
+            }
+        }
 
         config.save();
     }

@@ -3,3 +3,75 @@ database:
   url: jdbc:mysql://localhost/minecity?autoReconnect=true
   user: minecity
   pass: password
+
+permissions:
+  default:
+    nature:
+      ENTER:
+        allow: true
+        message:
+      CLICK:
+        allow: true
+        message:
+      PICKUP:
+        allow: true
+        message:
+      OPEN:
+        allow: true
+        message:
+      MODIFY:
+        allow: true
+        message:
+      LEAVE:
+        allow: true
+        message:
+      PVP:
+        allow: true
+        message:
+      PVC:
+        allow: true
+        message:
+      PVM:
+        allow: true
+        message:
+      SPAWN_VEHICLES:
+        allow: true
+        message:
+      RIDE:
+        allow: true
+        message:
+
+    city:
+      ENTER:
+        allow: true
+        message:
+      CLICK:
+        allow: false
+        message:
+      PICKUP:
+        allow: true
+        message:
+      OPEN:
+        allow: false
+        message:
+      MODIFY:
+        allow: false
+        message:
+      LEAVE:
+        allow: true
+        message:
+      PVP:
+        allow: false
+        message:
+      PVC:
+        allow: false
+        message:
+      PVM:
+        allow: true
+        message:
+      SPAWN_VEHICLES:
+        allow: false
+        message:
+      RIDE:
+        allow: true
+        message:

@@ -131,13 +131,6 @@ public final class City extends ExceptStoredHolder
     }
 
     @Slow
-    @Override
-    public void setDefaultMessage(Message message) throws UncheckedDataSourceException
-    {
-        super.setDefaultMessage(message);
-    }
-
-    @Slow
     public synchronized Group createGroup(@NotNull String name) throws IllegalArgumentException, DataSourceException
     {
         String id = identity(name);

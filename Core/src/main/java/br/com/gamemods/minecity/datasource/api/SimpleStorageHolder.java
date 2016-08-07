@@ -29,7 +29,7 @@ public class SimpleStorageHolder extends SimpleFlagHolder
 
     @Slow
     @Override
-    protected void setDefaultMessage(Message message) throws UncheckedDataSourceException
+    public void setDefaultMessage(Message message) throws UncheckedDataSourceException
     {
         if(!message.equals(defaultMessage))
             try

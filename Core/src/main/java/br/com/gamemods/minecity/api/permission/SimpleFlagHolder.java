@@ -31,7 +31,7 @@ public class SimpleFlagHolder implements FlagHolder
         return defaultMessage;
     }
 
-    protected void setDefaultMessage(Message message)
+    public void setDefaultMessage(Message message)
     {
         Message old = this.defaultMessage;
         defaultMessage = message;

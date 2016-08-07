@@ -5,67 +5,73 @@ public enum PermissionFlag
     /**
      * Allows to enter the zone
      */
-    ENTER,
+    ENTER(true, true),
 
     /**
      * Allow to click on clickable blocks that doesn't store content, like doors and buttons.
      */
-    CLICK,
+    CLICK(true, false),
 
     /**
      * Allows to pickup drops
      */
-    PICKUP,
+    PICKUP(true, true),
 
     /**
      * Allows to open containers, like chests and furnaces
      */
-    OPEN,
+    OPEN(true, false),
 
     /**
      * Allows to do structural modifications
      */
-    MODIFY,
+    MODIFY(true, false),
 
     /**
      * Allows to leave the zone
      */
-    LEAVE,
+    LEAVE(true, true),
 
     /**
      * Allows to attack players
      */
-    PVP(false),
+    PVP(true, false, false),
 
     /**
      * Allows to attack creatures that aren't monsters
      */
-    PVC,
+    PVC(true, false),
 
     /**
      * Allows to attack monsters
      */
-    PVM,
+    PVM(true, true),
 
     /**
      * Allows to spawn vehicles
      */
-    SPAWN_VEHICLES,
+    SPAWN_VEHICLES(true, false),
 
     /**
      * Allows to ride vehicles
      */
-    RIDE;
+    RIDE(true, true);
 
+    public final boolean defaultNature;
+    public final boolean defaultCity;
     public final boolean canBypass;
 
-    PermissionFlag(boolean canBypass)
+    PermissionFlag(boolean defaultNature, boolean defaultCity)
     {
-        this.canBypass = canBypass;
+        this.defaultNature = defaultNature;
+        this.defaultCity = defaultCity;
+        canBypass = true;
     }
 
-    PermissionFlag()
+    PermissionFlag(boolean defaultNature, boolean defaultCity, boolean canBypass)
     {
-        canBypass = true;
+        this.defaultNature = defaultNature;
+        this.defaultCity = defaultCity;
+        this.canBypass = canBypass;
     }
 }
