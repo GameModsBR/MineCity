@@ -155,7 +155,8 @@ public class MessageTransformer
                 if(c == '}')
                 {
                     String key = token.toString();
-                    last.tokens.put(sb.length(), key);
+                    Queue<String> queue = last.tokens.computeIfAbsent(sb.length(), k-> new ArrayDeque<>(1));
+                    queue.add(key);
                     token.setLength(0);
                     continue;
                 }
@@ -215,7 +216,24 @@ public class MessageTransformer
         return subStructure;
     }
 
-    protected Component parse(Element root)
+    private Element[] getElements(Element element, int amount)
+    {
+        NodeList childNodes = element.getChildNodes();
+        Element[] elements = new Element[amount];
+        int len = childNodes.getLength();
+        int next = 0;
+        for(int i = 0; i < len && next < amount; i++)
+        {
+            Node childNode = childNodes.item(i);
+            if(childNode.getNodeType() != Node.ELEMENT_NODE)
+                continue;
+            elements[next++] = (Element) childNode;
+        }
+
+        return elements;
+    }
+
+    protected TextComponent parse(Element root)
     {
         Deque<Struct> queue = new ArrayDeque<>();
         TextComponent rootComponent = new TextComponent("");
@@ -233,6 +251,8 @@ public class MessageTransformer
             Node node = item.element;
             short nodeType = node.getNodeType();
             Component component = item.component;
+            Hover hover = null;
+            Click click = null;
             if(nodeType == Node.TEXT_NODE || nodeType == Node.CDATA_SECTION_NODE)
             {
                 String text = node.getTextContent();
@@ -288,6 +308,80 @@ public class MessageTransformer
             else if(nodeType == Node.ELEMENT_NODE)
             {
                 Element element = (Element) node;
+                boolean repeat;
+                do
+                {
+                    repeat = false;
+                    switch(element.getTagName())
+                    {
+                        case "hover":
+                        {
+                            Element[] elements = getElements(element, 2);
+                            Element type = elements[0];
+                            Element child = elements[1];
+                            if(child == null)
+                                continue queue;
+
+                            switch(type.getTagName().toLowerCase())
+                            {
+                                case "tooltip":
+                                    hover = new HoverMessage(parse(type));
+                                    break;
+                                case "entity":
+                                    hover = new HoverEntity(type.getAttribute("id"), type.getAttribute("type"),
+                                            parseText(type.getAttribute("name"))
+                                    );
+                                    break;
+                                case "achievement":
+                                    hover = new HoverAchievement(type.getAttribute("id"));
+                                    break;
+                                case "item":
+                                    //TODO HoverItem
+                                    break;
+                                default:
+                                    continue queue;
+                            }
+
+                            node = element = child;
+                            repeat = true;
+                        }
+                        break;
+                        case "click":
+                        {
+                            Element[] elements = getElements(element, 2);
+                            Element type = elements[0];
+                            Element child = elements[1];
+                            if(child == null)
+                                continue queue;
+
+                            String value;
+                            ClickAction action;
+                            switch(type.getTagName().toLowerCase())
+                            {
+                                case "run":
+                                    action = ClickAction.RUN;
+                                    value = type.getAttribute("cmd");
+                                    break;
+                                case "suggest":
+                                    action = ClickAction.SUGGEST;
+                                    value = type.getAttribute("cmd");
+                                    break;
+                                case "url":
+                                    action = ClickAction.OPEN_URL;
+                                    value = type.getAttribute("url");
+                                    break;
+                                default:
+                                    continue queue;
+                            }
+
+                            click = new ClickCommand(action, value);
+                            node = element = child;
+                            repeat = true;
+                        }
+                        break;
+                    }
+                } while(repeat);
+
                 LegacyFormat format;
                 switch(element.getTagName())
                 {
@@ -307,7 +401,10 @@ public class MessageTransformer
                     case "lightpurple": format = LIGHT_PURPLE; break;
                     case "yellow": format = YELLOW; break;
                     case "white": format = WHITE; break;
-                    case "reset": format = RESET; break;
+                    case "reset":
+                    case "tooltip":
+                        format = RESET;
+                        break;
                     case "o": format = MAGIC; break;
                     case "b": format = BOLD; break;
                     case "s": format = STRIKE; break;
@@ -318,10 +415,13 @@ public class MessageTransformer
                         text.parent = component;
                         component.extra.add(text);
                         firstText = true;
-                    default: continue queue;
+                    default:
+                        continue;
                 }
 
                 Component extra = new TextComponent("");
+                extra.hover = hover;
+                extra.click = click;
                 extra.parent = component;
                 component.extra.add(extra);
                 extra.style.addAll(component.style);
@@ -599,7 +699,7 @@ public class MessageTransformer
     protected final class TextComponent extends Component
     {
         public String text;
-        public SortedMap<Integer, String> tokens = new TreeMap<>(Comparator.reverseOrder());
+        public SortedMap<Integer, Queue<String>> tokens = new TreeMap<>(Comparator.reverseOrder());
 
         public TextComponent(String text)
         {
@@ -669,7 +769,8 @@ public class MessageTransformer
             try
             {
                 TextComponent clone = (TextComponent) super.clone();
-                clone.tokens = new TreeMap<>(tokens);
+                clone.tokens = new TreeMap<>(tokens.comparator());
+                tokens.forEach((k,v)-> clone.tokens.put(k, new ArrayDeque<>(v)));
                 return clone;
             }
             catch(CloneNotSupportedException e)
@@ -690,42 +791,45 @@ public class MessageTransformer
             EnumSet<LegacyFormat> format = displayFormat();
 
             StringBuilder sb = new StringBuilder(text);
-            for(Map.Entry<Integer, String> entry : tokens.entrySet())
+            for(Map.Entry<Integer, Queue<String>> entry : tokens.entrySet())
             {
                 int index = entry.getKey();
-                String t = entry.getValue();
-                Object val = args.getOrDefault(t, "${" + t + "}");
-                if(val instanceof Message)
+                Queue<String> queue = entry.getValue();
+                for(String t: queue)
                 {
-                    Message msg = (Message) val;
-                    Component component = messages.get(msg.getId());
-                    try
+                    Object val = args.getOrDefault(t, "${" + t + "}");
+                    if(val instanceof Message)
                     {
-                        if(component != null)
-                            component = component.clone();
-                        else
-                            component = parse(msg.getFallback());
+                        Message msg = (Message) val;
+                        Component component = messages.get(msg.getId());
+                        try
+                        {
+                            if(component != null)
+                                component = component.clone();
+                            else
+                                component = parse(msg.getFallback());
+                        }
+                        catch(SAXException | CloneNotSupportedException e)
+                        {
+                            throw new RuntimeException(e);
+                        }
+
+                        component.replaceBaseColor(baseColor);
+                        component.addFormat(format);
+                        component.parent = this;
+
+                        TextComponent split = new TextComponent(sb.substring(index));
+                        split.parent = this;
+                        extra.add(0, split);
+                        extra.add(0, component);
+
+                        sb.setLength(index);
+
+                        component.apply(locale, msg.getArgs());
+                        continue;
                     }
-                    catch(SAXException | CloneNotSupportedException e)
-                    {
-                        throw new RuntimeException(e);
-                    }
-
-                    component.replaceBaseColor(baseColor);
-                    component.addFormat(format);
-                    component.parent = this;
-
-                    TextComponent split = new TextComponent(sb.substring(index));
-                    split.parent = this;
-                    extra.add(0, split);
-                    extra.add(0, component);
-
-                    sb.setLength(index);
-
-                    component.apply(locale, msg.getArgs());
-                    continue;
+                    sb.insert(index, val);
                 }
-                sb.insert(index, val);
             }
             tokens.clear();
             String text = sb.toString();
@@ -928,19 +1032,3 @@ public class MessageTransformer
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

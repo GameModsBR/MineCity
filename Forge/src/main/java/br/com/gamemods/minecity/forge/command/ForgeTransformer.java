@@ -75,7 +75,7 @@ public class ForgeTransformer extends MessageTransformer
     protected HoverEvent toForge(Hover hover)
     {
         if(hover instanceof HoverMessage)
-            return new HoverEvent(HoverEvent.Action.SHOW_TEXT, toForge(((HoverMessage) hover).message));
+            return new HoverEvent(HoverEvent.Action.SHOW_TEXT, toForge((Component) ((HoverMessage) hover).message));
         if(hover instanceof HoverAchievement)
             return new HoverEvent(HoverEvent.Action.SHOW_ACHIEVEMENT, new ChatComponentText(((HoverAchievement) hover).id));
 

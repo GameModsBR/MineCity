@@ -152,10 +152,11 @@
                 <msg id="city-not-found">The city ${city} was not found</msg>
                 <msg id="not-claimed">You are not inside a city</msg>
                 <msg id="success">The city ${city} contains ${count} groups: ${groups}</msg>
+                <msg id="group.join"><![CDATA[, ]]></msg>
                 <msg id="group"><hover>
                     <tooltip>${name}<br/>${members}</tooltip>
                     <click>
-                        <run cmd="group info ${home.compact} ${name}"/>
+                        <run cmd="/group info ${home.compact} ${name}"/>
                         <reset>
                             ${name} (${size} members)
                         </reset>
@@ -169,6 +170,9 @@
                 </click></msg>
                 <msg id="entity"><i>${name}</i></msg>
                 <msg id="member"><i>${name}</i></msg>
+                <msg id="member.join"><![CDATA[, ]]></msg>
+                <msg id="member.empty"><gray><i>This group is empty</i></gray></msg>
+                <msg id="group.empty">The city ${city} does not have groups</msg>
             </list>
         </group>
     </cmd>

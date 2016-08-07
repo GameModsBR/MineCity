@@ -27,7 +27,7 @@ public class GroupCommand
     @Slow
     @Async
     @Command(value = "group.list", args = @Arg(name = "city name", type = Arg.Type.CITY, optional = true, sticky = true))
-    public CommandResult<?> list(CommandEvent cmd) throws DataSourceException
+    public CommandResult<Void> list(CommandEvent cmd) throws DataSourceException
     {
         City city;
         if(cmd.args.isEmpty())
@@ -46,11 +46,19 @@ public class GroupCommand
         if(city == null)
             return new CommandResult<>(new Message("cmd.group.list.not-claimed", "You are not inside a city"));
 
+        if(city.getGroups().isEmpty())
+            return new CommandResult<>(new Message("cmd.group.list.group.empty",
+                    "The city ${city} does not have groups",
+                    new Object[]{"city", city.getName()}
+            ), null, true);
+
         Message groups = Message.list(city.getGroups().stream().sorted((a,b)-> a.getName().compareToIgnoreCase(b.getName()))
                 .map(g-> new Message("cmd.group.list.group","${name} (${size} members)", new Object[][]{
                         {"name",g.getName()},
                         {"size",g.getMembers().size()},
-                        {"members", Message.list(g.getMembers().stream().sorted().map(m-> {
+                        {"home.compact", city.getName().replaceAll("\\s", "")},
+                        {"members", g.getMembers().isEmpty()? new Message("cmd.group.list.member.empty", "This group is empty") :
+                                Message.list(g.getMembers().stream().sorted().map(m-> {
                             switch(m.getType())
                             {
                                 case PLAYER:
@@ -66,10 +74,10 @@ public class GroupCommand
                                             {"name",m.getName()}
                                     });
                             }
-                        }).toArray(Message[]::new))
+                        }).toArray(Message[]::new), new Message("cmd.group.list.member.join", ", "))
                     }
                 }))
-                .toArray(Message[]::new));
+                .toArray(Message[]::new), new Message("cmd.group.list.group.join", ", "));
 
         return new CommandResult<>(new Message("cmd.group.list.success",
                 "The city ${city} contains ${count} groups: ${groups}",
@@ -77,7 +85,7 @@ public class GroupCommand
                         {"city", city.getName()},
                         {"count", city.getGroups().size()},
                         {"groups", groups}
-                }));
+                }), null, true);
     }
 
     @Slow

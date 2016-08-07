@@ -30,17 +30,25 @@ public class Message
 
     public static Message list(Message[] messages)
     {
-        Object[][] args = new Object[messages.length][2];
+        return list(messages, new Message("",", "));
+    }
+
+    public static Message list(Message[] messages, Message join)
+    {
+        Object[][] args = new Object[messages.length+1][2];
+        args[args.length-1][0] = "join";
+        args[args.length-1][1] = join;
+
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < messages.length; i++)
         {
-            sb.append("${").append(i).append("}").append(", ");
+            sb.append("${").append(i).append("}").append("${join}");
             args[i][0] = i;
             args[i][1] = messages[i];
         }
 
         if(sb.length() > 0)
-            sb.setLength(sb.length()-2);
+            sb.setLength(sb.length()-7);
 
         return new Message("", sb.toString(), args);
     }
