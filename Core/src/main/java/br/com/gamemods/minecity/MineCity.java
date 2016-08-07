@@ -18,6 +18,7 @@ import br.com.gamemods.minecity.datasource.api.unchecked.DBSupplier;
 import br.com.gamemods.minecity.datasource.api.unchecked.DisDBConsumer;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import br.com.gamemods.minecity.datasource.sql.SQLSource;
+import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Inconsistency;
 import br.com.gamemods.minecity.structure.Nature;
@@ -80,6 +81,11 @@ public class MineCity
     public MineCity(Server server, MineCityConfig config, MessageTransformer messageTransformer)
     {
         this(server, config, null, messageTransformer);
+    }
+
+    public Optional<City> getCity(@NotNull ChunkPos pos)
+    {
+        return getChunk(pos).flatMap(ClaimedChunk::getCity);
     }
 
     @NotNull

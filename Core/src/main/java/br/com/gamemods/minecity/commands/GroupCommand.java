@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.Async;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
+import br.com.gamemods.minecity.api.StringUtil;
 import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.Group;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
@@ -21,6 +22,62 @@ public class GroupCommand
     public GroupCommand(@NotNull MineCity mineCity)
     {
         this.mineCity = mineCity;
+    }
+
+    @Slow
+    @Async
+    @Command(value = "group.list", args = @Arg(name = "city name", type = Arg.Type.CITY, optional = true, sticky = true))
+    public CommandResult<?> list(CommandEvent cmd) throws DataSourceException
+    {
+        City city;
+        if(cmd.args.isEmpty())
+            city = cmd.position != null? mineCity.getCity(cmd.position.getChunk()).orElse(null) : null;
+        else
+        {
+            String cityName = String.join(" ", cmd.args);
+            city = mineCity.dataSource.getCityByName(cityName).orElse(null);
+            if(city == null)
+                return new CommandResult<>(new Message("cmd.group.list.city-not-found",
+                        "The city ${city} was not found",
+                        new Object[]{"city",cityName}
+                ));
+        }
+
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.group.list.not-claimed", "You are not inside a city"));
+
+        Message groups = Message.list(city.getGroups().stream().sorted((a,b)-> a.getName().compareToIgnoreCase(b.getName()))
+                .map(g-> new Message("cmd.group.list.group","${name} (${size} members)", new Object[][]{
+                        {"name",g.getName()},
+                        {"size",g.getMembers().size()},
+                        {"members", Message.list(g.getMembers().stream().sorted().map(m-> {
+                            switch(m.getType())
+                            {
+                                case PLAYER:
+                                    return new Message("cmd.group.list.player", "${name}", new Object[][]{
+                                            {"name",m.getName()}
+                                    });
+                                case ENTITY:
+                                    return new Message("cmd.group.list.entity", "${name}", new Object[][]{
+                                            {"name",m.getName()}
+                                    });
+                                default:
+                                    return new Message("cmd.group.list.member", "${name}", new Object[][]{
+                                            {"name",m.getName()}
+                                    });
+                            }
+                        }).toArray(Message[]::new))
+                    }
+                }))
+                .toArray(Message[]::new));
+
+        return new CommandResult<>(new Message("cmd.group.list.success",
+                "The city ${city} contains ${count} groups: ${groups}",
+                new Object[][]{
+                        {"city", city.getName()},
+                        {"count", city.getGroups().size()},
+                        {"groups", groups}
+                }));
     }
 
     @Slow

@@ -28,6 +28,23 @@ public class Message
                 {"cause", Optional.ofNullable(ex.getMessage()).orElse("")}};
     }
 
+    public static Message list(Message[] messages)
+    {
+        Object[][] args = new Object[messages.length][2];
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < messages.length; i++)
+        {
+            sb.append("${").append(i).append("}").append(", ");
+            args[i][0] = i;
+            args[i][1] = messages[i];
+        }
+
+        if(sb.length() > 0)
+            sb.setLength(sb.length()-2);
+
+        return new Message("", sb.toString(), args);
+    }
+
     public Message(@NotNull String id, @Nullable String fallback, @Nullable Object[]... args)
     {
         this.id = id;

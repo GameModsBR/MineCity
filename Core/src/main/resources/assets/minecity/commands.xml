@@ -67,6 +67,9 @@
         <command id="group.remove" parent="group" cmd="remove">
             <desc>Removes a player from a group</desc>
         </command>
+        <command id="group.list" parent="group" cmd="list">
+            <desc>Display all city groups</desc>
+        </command>
 
         <!-- Default permissions -->
         <command id="city.allow.enter" parent="allow" cmd="enter">

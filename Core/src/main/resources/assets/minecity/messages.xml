@@ -148,6 +148,28 @@
                 <msg id="not-member">The player ${name} is not a member of the group ${group}</msg>
                 <msg id="success">The player ${player} is no longer part of the group ${group}</msg>
             </remove>
+            <list>
+                <msg id="city-not-found">The city ${city} was not found</msg>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="success">The city ${city} contains ${count} groups: ${groups}</msg>
+                <msg id="group"><hover>
+                    <tooltip>${name}<br/>${members}</tooltip>
+                    <click>
+                        <run cmd="group info ${home.compact} ${name}"/>
+                        <reset>
+                            ${name} (${size} members)
+                        </reset>
+                    </click>
+                </hover></msg>
+                <msg id="player"><click>
+                    <run cmd="city player ${name}" />
+                    <reset>
+                        ${name}
+                    </reset>
+                </click></msg>
+                <msg id="entity"><i>${name}</i></msg>
+                <msg id="member"><i>${name}</i></msg>
+            </list>
         </group>
     </cmd>
     <action>
