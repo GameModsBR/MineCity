@@ -64,6 +64,9 @@
             <desc>Show the cities around you</desc>
             <syntax>[big]</syntax>
         </command>
+        <command id="city.delete" parent="city" cmd="delete">
+            <desc>Deletes the entire city.</desc>
+        </command>
 
         <!-- Groups -->
         <command id="group.create" parent="group" cmd="create">

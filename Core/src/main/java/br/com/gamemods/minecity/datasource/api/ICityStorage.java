@@ -57,10 +57,6 @@ public interface ICityStorage
             throws DataSourceException, IllegalStateException, NoSuchElementException, ClassCastException, IllegalArgumentException;
 
     @Slow
-    @NotNull
-    IslandArea getArea(@NotNull Island island) throws DataSourceException, ClassCastException, IllegalArgumentException;
-
-    @Slow
     void setName(@NotNull City city, @NotNull String identity, @NotNull String name) throws DataSourceException;
 
     @Slow
@@ -92,4 +88,7 @@ public interface ICityStorage
     @Slow
     @NotNull
     Group createGroup(@NotNull City city, @NotNull String id, @NotNull String name) throws DataSourceException;
+
+    @Slow
+    void deleteCity(@NotNull City city) throws DataSourceException;
 }

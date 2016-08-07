@@ -162,6 +162,12 @@ public class Inconsistency implements ChunkOwner
         }
 
         @Override
+        public void deleteCity(@NotNull City city) throws DataSourceException
+        {
+            throw new DataSourceException("Inconsistent city!");
+        }
+
+        @Override
         public void disclaim(@NotNull ChunkPos chunk, @NotNull Island island)
                 throws DataSourceException, IllegalArgumentException
         {
@@ -173,14 +179,6 @@ public class Inconsistency implements ChunkOwner
         public Collection<Island> disclaim(@NotNull ChunkPos chunk, @NotNull Island island,
                                            @NotNull Set<Set<ChunkPos>> groups)
                 throws DataSourceException, IllegalStateException, NoSuchElementException, ClassCastException, IllegalArgumentException
-        {
-            throw new DataSourceException("Inconsistent city!");
-        }
-
-        @NotNull
-        @Override
-        public IslandArea getArea(@NotNull Island island)
-                throws DataSourceException, ClassCastException, IllegalArgumentException
         {
             throw new DataSourceException("Inconsistent city!");
         }

@@ -22,7 +22,7 @@
 
 <!ENTITY % Commands "%CityCommands;|%GroupCommands;|%GeneralCommands;">
 <!ENTITY % CityCommands "%CityManageCommands;|%CityPermCommands;">
-<!ENTITY % CityManageCommands "city.create|city.claim|city.disclaim|city.spawn|city.rename|city.transfer|city.setspawn|city.map">
+<!ENTITY % CityManageCommands "city.create|city.claim|city.disclaim|city.spawn|city.rename|city.transfer|city.setspawn|city.map|city.delete">
 <!ENTITY % CityPermCommands "%CityAllowCommands;|%CityDenyCommands;|%CityAllowAllCommands;|%CityDenyAllCommands;">
 <!ENTITY % CityDenyCommands "city.deny.enter|city.deny.click|city.deny.pickup|city.deny.open|city.deny.pvp|city.deny.pvc">
 <!ENTITY % CityAllowCommands "city.allow.enter|city.allow.click|city.allow.pickup|city.allow.open|city.allow.pvp|city.allow.pvc">

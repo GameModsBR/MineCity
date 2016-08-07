@@ -36,6 +36,37 @@ public class SQLCityStorage implements ICityStorage
         this.connection = connection;
     }
 
+    @Override
+    public void deleteCity(@NotNull City city) throws DataSourceException
+    {
+        int cityId = city.getId();
+        if(cityId <= 0)
+            throw new IllegalStateException("cityId = "+cityId);
+
+        try(Connection transaction = connection.transaction())
+        {
+            try(PreparedStatement pst = transaction.prepareStatement(
+                    "DELETE FROM minecity_city WHERE city_id=?"
+            ))
+            {
+                pst.setInt(1, cityId);
+                source.executeUpdate(pst, 1);
+                transaction.commit();
+                source.cityNames.remove(city.getName());
+                source.groupNames.remove(city.getIdentityName());
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
     @Slow
     @Override
     public void setOwner(@NotNull City city, @Nullable PlayerID owner) throws DataSourceException, IllegalStateException
@@ -344,37 +375,6 @@ public class SQLCityStorage implements ICityStorage
     }
 
     @Slow
-    @NotNull
-    @Override
-    public IslandArea getArea(@NotNull Island island)
-            throws DataSourceException, ClassCastException, IllegalArgumentException
-    {
-        SQLIsland sqlIsland = (SQLIsland) island;
-
-        try
-        {
-            Connection connection = this.connection.connect();
-            try(PreparedStatement pst = connection.prepareStatement(
-                    "SELECT x, z FROM minecity_chunks WHERE island_id=? AND world_id=? AND reserve=0"
-            ))
-            {
-                pst.setInt(1, sqlIsland.id);
-                pst.setInt(2, source.worldId(connection, sqlIsland.world));
-                ResultSet result = pst.executeQuery();
-                List<ChunkPos> list = new ArrayList<>();
-                while(result.next())
-                    list.add(new ChunkPos(sqlIsland.world, result.getInt(1), result.getInt(2)));
-
-                return new IslandArea(island, list);
-            }
-        }
-        catch(SQLException e)
-        {
-            throw new DataSourceException(e);
-        }
-    }
-
-    @Slow
     @Override
     public void setName(@NotNull City city, @NotNull String identity, @NotNull String name) throws DataSourceException
     {
@@ -411,7 +411,15 @@ public class SQLCityStorage implements ICityStorage
                     }
                 }
 
-            transaction.commit();
+            try
+            {
+                transaction.commit();
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
             source.cityNames.remove(previous);
             source.cityNames.add(name);
             Set<String> groups = source.groupNames.remove(identity);
@@ -445,6 +453,7 @@ public class SQLCityStorage implements ICityStorage
                 int groupId = generatedKeys.getInt(1);
 
                 transaction.commit();
+                source.groupNames.computeIfAbsent(city.getIdentityName(), i-> new HashSet<>(1)).add(name);
                 return new Group(this, groupId, city, id, name, Collections.emptySet(), Collections.emptySet());
             }
             catch(Exception e)
@@ -476,7 +485,7 @@ public class SQLCityStorage implements ICityStorage
                 if(count != 1)
                     throw new DataSourceException("Expected 1 change but got "+count+" changes");
 
-                Set<String> groups = source.groupNames.get(group.home.getIdentityName());
+                Set<String> groups = source.groupNames.computeIfAbsent(group.home.getIdentityName(), i-> new HashSet<>(1));
                 groups.remove(group.getName());
                 groups.add(name);
             }
@@ -496,9 +505,22 @@ public class SQLCityStorage implements ICityStorage
     @Override
     public void deleteGroup(@NotNull Group group) throws DataSourceException
     {
-        try(Statement stm = connection.connect().createStatement())
+        try(Connection transaction = connection.transaction())
         {
-            stm.executeUpdate("DELETE FROM minecity_groups WHERE group_id="+group.id);
+            try(PreparedStatement pst = transaction.prepareStatement(
+                    "DELETE FROM minecity_groups WHERE group_id=?"
+            ))
+            {
+                pst.setInt(1, group.id);
+                source.executeUpdate(pst, 1);
+                transaction.commit();
+                source.groupNames.computeIfAbsent(group.home.getIdentityName(), i-> new HashSet<>(0)).remove(group.getName());
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
         }
         catch(SQLException e)
         {
@@ -513,25 +535,33 @@ public class SQLCityStorage implements ICityStorage
     {
         try(Connection transaction = this.connection.transaction(); Statement stm = transaction.createStatement())
         {
-            switch(member.getType())
+            try
             {
-                case PLAYER:
+                switch(member.getType())
                 {
-                    int playerId = source.playerId(transaction, (PlayerID) member);
-                    stm.executeUpdate("INSERT INTO minecity_group_players(group_id,player_id) VALUES("+group.id+","+playerId+");");
-                    break;
+                    case PLAYER:
+                    {
+                        int playerId = source.playerId(transaction, (PlayerID) member);
+                        stm.executeUpdate("INSERT INTO minecity_group_players(group_id,player_id) VALUES("+group.id+","+playerId+");");
+                        break;
+                    }
+                    case ENTITY:
+                    {
+                        int entityId = source.entityId(transaction, (EntityID) member);
+                        stm.executeUpdate("INSERT INTO minecity_group_entities(group_id,entity_id) VALUES("+group.id+","+entityId+");");
+                        break;
+                    }
+                    default:
+                        throw new UnsupportedOperationException("Unsupported identity type: "+member.getType());
                 }
-                case ENTITY:
-                {
-                    int entityId = source.entityId(transaction, (EntityID) member);
-                    stm.executeUpdate("INSERT INTO minecity_group_entities(group_id,entity_id) VALUES("+group.id+","+entityId+");");
-                    break;
-                }
-                default:
-                    throw new UnsupportedOperationException("Unsupported identity type: "+member.getType());
-            }
 
-            transaction.commit();
+                transaction.commit();
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
         }
         catch(SQLException e)
         {
@@ -550,10 +580,18 @@ public class SQLCityStorage implements ICityStorage
     {
         try(Connection transaction = this.connection.transaction(); Statement stm = transaction.createStatement())
         {
-            int playerId = source.playerId(transaction, manager);
-            stm.executeUpdate("INSERT INTO minecity_group_managers(group_id,player_id) VALUES("+group.id+","+playerId+");");
+            try
+            {
+                int playerId = source.playerId(transaction, manager);
+                stm.executeUpdate("INSERT INTO minecity_group_managers(group_id,player_id) VALUES("+group.id+","+playerId+");");
 
-            transaction.commit();
+                transaction.commit();
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
         }
         catch(SQLException e)
         {
@@ -572,29 +610,37 @@ public class SQLCityStorage implements ICityStorage
     {
         try(Connection transaction = this.connection.transaction(); Statement stm = transaction.createStatement())
         {
-            switch(member.getType())
+            try
             {
-                case PLAYER:
+                switch(member.getType())
                 {
-                    int playerId = source.playerId(transaction, (PlayerID) member);
-                    int changes = stm.executeUpdate("DELETE FROM minecity_group_players WHERE group_id="+group.id+" AND player_id="+playerId+";");
-                    if(changes != 1)
-                        throw new DataSourceException("Expected 1 change, got "+changes+" changes");
-                    break;
+                    case PLAYER:
+                    {
+                        int playerId = source.playerId(transaction, (PlayerID) member);
+                        int changes = stm.executeUpdate("DELETE FROM minecity_group_players WHERE group_id="+group.id+" AND player_id="+playerId+";");
+                        if(changes != 1)
+                            throw new DataSourceException("Expected 1 change, got "+changes+" changes");
+                        break;
+                    }
+                    case ENTITY:
+                    {
+                        int entityId = source.entityId(transaction, (EntityID) member);
+                        int changes = stm.executeUpdate("INSERT INTO minecity_group_entities WHERE group_id="+group.id+" AND entity_id="+entityId+";");
+                        if(changes != 1)
+                            throw new DataSourceException("Expected 1 change, got "+changes+" changes");
+                        break;
+                    }
+                    default:
+                        throw new UnsupportedOperationException("Unsupported identity type: "+member.getType());
                 }
-                case ENTITY:
-                {
-                    int entityId = source.entityId(transaction, (EntityID) member);
-                    int changes = stm.executeUpdate("INSERT INTO minecity_group_entities WHERE group_id="+group.id+" AND entity_id="+entityId+";");
-                    if(changes != 1)
-                        throw new DataSourceException("Expected 1 change, got "+changes+" changes");
-                    break;
-                }
-                default:
-                    throw new UnsupportedOperationException("Unsupported identity type: "+member.getType());
-            }
 
-            transaction.commit();
+                transaction.commit();
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
         }
         catch(SQLException e)
         {
@@ -613,12 +659,20 @@ public class SQLCityStorage implements ICityStorage
     {
         try(Connection transaction = this.connection.transaction(); Statement stm = transaction.createStatement())
         {
-            int playerId = source.playerId(transaction, manager);
-            int changes = stm.executeUpdate("DELETE FROM minecity_group_managers WHERE group_id="+group.id+" AND player_id="+playerId+";");
-            if(changes != 1)
-                throw new DataSourceException("Expected 1 change, got "+changes+" changes");
+            try
+            {
+                int playerId = source.playerId(transaction, manager);
+                int changes = stm.executeUpdate("DELETE FROM minecity_group_managers WHERE group_id="+group.id+" AND player_id="+playerId+";");
+                if(changes != 1)
+                    throw new DataSourceException("Expected 1 change, got "+changes+" changes");
 
-            transaction.commit();
+                transaction.commit();
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
         }
         catch(SQLException e)
         {

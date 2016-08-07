@@ -88,6 +88,43 @@ public class CityCommand
 
     @Slow
     @Async
+    @Command(value = "city.delete", console = false)
+    public CommandResult<?> delete(CommandEvent cmd)
+    {
+        City city = mineCity.getCity(cmd.position.getChunk()).orElse(null);
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.city.delete.not-claimed", "You are not inside a city"));
+
+        if(!cmd.sender.getPlayerId().equals(city.getOwner()))
+            return new CommandResult<>(new Message("cmd.city.delete.no-permission",
+                    "You don't have permission to delete the city ${city}",
+                    new Object[]{"city", city.getName()}
+            ));
+
+        String code = cmd.sender.confirm(sender -> {
+            city.delete();
+            return new CommandResult<>(new Message("cmd.city.delete.success",
+                    "The city ${city} was deleted",
+                    new Object[]{"city", city.getName()}
+            ), true);
+        });
+
+        return new CommandResult<>(new Message("cmd.city.delete.confirm",
+                "You are about to delete the entire city ${city}, if you continue you'll delete ${islands} islands " +
+                        "and you'll release all ${chunks} chunks to the nature. All groups ${groups} created on this city will " +
+                        "also be deleted. There'll be no undo and this is the last warning!\n\n" +
+                "Are sure about it? If you still want to delete the city, type /city confirm ${code}",
+                new Object[][]{
+                        {"city", city.getName()},
+                        {"islands", city.islands().size()},
+                        {"groups", city.getGroups().size()},
+                        {"chunks", city.getChunkCount()},
+                        {"code", code}
+                }), true);
+    }
+
+    @Slow
+    @Async
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Command(value = "city.claim", console = false, args = @Arg(name = "city", type = Arg.Type.CITY, optional = true, sticky = true))
     public CommandResult<Island> claim(CommandEvent cmd) throws DataSourceException

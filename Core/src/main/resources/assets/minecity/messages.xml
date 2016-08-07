@@ -18,6 +18,17 @@
             Oops.. An error occurred while executing this command: ${error}
         </msg>
         <city>
+            <delete>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="no-permission">You don't have permission to delete the city ${city}</msg>
+                <msg id="confirm">
+                    You are about to delete the entire city ${city}, if you continue you'll delete ${islands} islands
+                    and you'll release all ${chunks} chunks to the nature. All groups ${groups} created on this city will
+                    also be deleted. There'll be no undo and this is the last warning!<br/><br/>
+                    Are sure about it? If you still want to delete the city, type /city confirm ${code}
+                </msg>
+                <msg id="success">The city ${city} was deleted</msg>
+            </delete>
             <create>
                 <name>
                     <msg id="empty">Please type a city name</msg>

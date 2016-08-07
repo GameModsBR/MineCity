@@ -46,6 +46,7 @@ public final class City extends ExceptStoredHolder
     private BlockPos spawn;
     private final Map<Integer, Island> islands;
     private final Map<String, Group> groups;
+    private boolean invalid;
 
     /**
      * Create and save a city immediately
@@ -130,9 +131,34 @@ public final class City extends ExceptStoredHolder
         loadExceptPermissions();
     }
 
-    @Slow
-    public synchronized Group createGroup(@NotNull String name) throws IllegalArgumentException, DataSourceException
+    public synchronized void delete() throws IllegalStateException, DataSourceException
     {
+        if(invalid)
+            throw new IllegalStateException();
+
+        try
+        {
+            List<ChunkPos> chunks = islands.values().stream().map(
+                    (DBFunction<Island, IslandArea>) Island::getArea).flatMap(IslandArea::claims)
+                    .collect(Collectors.toList());
+
+            storage.deleteCity(this);
+            invalid = true;
+            groups.values().forEach(Group::checkCityValidity);
+            chunks.forEach(mineCity::reloadChunkSlowly);
+        }
+        catch(UncheckedDataSourceException e)
+        {
+            throw e.getCause();
+        }
+    }
+
+    @Slow
+    public synchronized Group createGroup(@NotNull String name) throws IllegalArgumentException, DataSourceException, IllegalStateException
+    {
+        if(invalid)
+            throw new IllegalStateException();
+
         String id = identity(name);
         Group conflict = groups.get(id);
         if(conflict != null)
@@ -144,8 +170,11 @@ public final class City extends ExceptStoredHolder
     }
 
     @Slow
-    public synchronized Group removeGroup(@NotNull String name) throws NoSuchElementException, DataSourceException
+    public synchronized Group removeGroup(@NotNull String name) throws NoSuchElementException, DataSourceException, IllegalStateException
     {
+        if(invalid)
+            throw new IllegalStateException();
+
         String id = identity(name);
         Group group = groups.get(id);
         if(group == null)
@@ -178,6 +207,9 @@ public final class City extends ExceptStoredHolder
     @Nullable
     public Group getGroup(int id)
     {
+        if(invalid)
+            return null;
+
         for(Group group : groups.values())
             if(group.id == id)
                 return group;
@@ -188,16 +220,26 @@ public final class City extends ExceptStoredHolder
     @Nullable
     public Group getGroup(@NotNull String name)
     {
+        if(invalid)
+            return null;
+
+
         return groups.get(identity(name));
     }
 
     public Collection<Group> getGroups()
     {
+        if(invalid)
+            return Collections.emptyList();
+
         return Collections.unmodifiableCollection(groups.values());
     }
 
     public Set<String> getGroupNames()
     {
+        if(invalid)
+            return Collections.emptyNavigableSet();
+
         return Collections.unmodifiableSet(groups.keySet());
     }
 
@@ -205,6 +247,9 @@ public final class City extends ExceptStoredHolder
     @Override
     public Optional<Message> can(@NotNull Identity<?> identity, @NotNull PermissionFlag action)
     {
+        if(invalid)
+            return Optional.of(Inconsistency.INCONSISTENT_CHUNK_MESSAGE);
+
         if(identity.equals(owner))
             return Optional.empty();
 
@@ -215,6 +260,9 @@ public final class City extends ExceptStoredHolder
     @Override
     public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
     {
+        if(invalid)
+            return Optional.of(Inconsistency.INCONSISTENT_CHUNK_MESSAGE);
+
         if(entity.getIdentity().equals(owner))
             return Optional.empty();
 
@@ -222,8 +270,11 @@ public final class City extends ExceptStoredHolder
     }
 
     @Slow
-    public void setName(@NotNull String name) throws IllegalArgumentException, DataSourceException
+    public void setName(@NotNull String name) throws IllegalArgumentException, DataSourceException, IllegalStateException
     {
+        if(invalid)
+            throw new IllegalStateException();
+
         String identity = identity(name);
         if(identity.length() < 3)
             throw new IllegalArgumentException("Bad name");
@@ -250,33 +301,51 @@ public final class City extends ExceptStoredHolder
     @Nullable
     public Island getIsland(int id)
     {
+        if(invalid)
+            return null;
+
         return islands.get(id);
     }
 
     @NotNull
     public Collection<Island> islands()
     {
+        if(invalid)
+            return Collections.emptyList();
+
         return Collections.unmodifiableCollection(islands.values());
     }
 
     @Nullable
     public PlayerID getOwner()
     {
+        if(invalid)
+            return null;
+
         return owner;
     }
 
     public int getSizeX()
     {
+        if(invalid)
+            return 0;
+
         return islands.values().stream().mapToInt(Island::getSizeX).sum();
     }
 
     public int getSizeZ()
     {
+        if(invalid)
+            return 0;
+
         return islands.values().stream().mapToInt(Island::getSizeZ).sum();
     }
 
     public int getChunkCount()
     {
+        if(invalid)
+            return 0;
+
         return islands.values().stream().mapToInt(Island::getChunkCount).sum();
     }
 
@@ -294,6 +363,9 @@ public final class City extends ExceptStoredHolder
     @Slow
     public Stream<Island> connectedIslands(@NotNull ChunkPos chunk)
     {
+        if(invalid)
+            return Stream.empty();
+
         return Direction.cardinal.stream()
                 .map((DBFunction<Direction, Optional<ClaimedChunk>>) d-> mineCity.getOrFetchChunk(chunk.add(d)))
                 .filter(Optional::isPresent).map(Optional::get)
@@ -306,6 +378,9 @@ public final class City extends ExceptStoredHolder
     @Slow
     public Stream<Entry<Direction, Island>> connectedIslandsEntries(@NotNull ChunkPos chunk)
     {
+        if(invalid)
+            return Stream.empty();
+
         //noinspection OptionalGetWithoutIsPresent
         return Direction.cardinal.stream()
                 .map((DBFunction<Direction, Entry<Direction, Optional<ClaimedChunk>>>)
@@ -322,6 +397,9 @@ public final class City extends ExceptStoredHolder
     public Island claim(@NotNull ChunkPos chunk, boolean createIsland)
             throws IllegalArgumentException, DataSourceException, UncheckedDataSourceException, IllegalStateException
     {
+        if(invalid)
+            throw new IllegalStateException();
+
         Optional<ClaimedChunk> claimOpt = mineCity.getOrFetchChunk(chunk);
         Optional<City> cityOpt = claimOpt.flatMap(ClaimedChunk::getCity);
         //noinspection OptionalGetWithoutIsPresent
@@ -364,6 +442,9 @@ public final class City extends ExceptStoredHolder
     public Collection<Island> disclaim(@NotNull ChunkPos chunk, boolean createIslands)
             throws IllegalStateException, IllegalArgumentException, DataSourceException
     {
+        if(invalid)
+            throw new IllegalStateException();
+
         if(islands.size() == 1 && getChunkCount() == 1)
             throw new IllegalStateException("Cannot disclaim the last city's chunk, delete the city instead");
 
@@ -391,7 +472,7 @@ public final class City extends ExceptStoredHolder
         }
         else
         {
-            IslandArea area = storage.getArea(island);
+            IslandArea area = mineCity.dataSource.getArea(island);
             area.setClaimed(chunk, false);
             Set<ChunkPos> touching = area.touching(chunk);
             Set<Set<ChunkPos>> groups = touching.stream().map(area::contiguous).collect(Collectors.toSet());
@@ -415,9 +496,12 @@ public final class City extends ExceptStoredHolder
     }
 
     @Slow
-    protected void reserveChunks(Island island) throws DataSourceException
+    protected void reserveChunks(Island island) throws DataSourceException, IllegalStateException
     {
-        IslandArea area = storage.getArea(island);
+        if(invalid)
+            throw new IllegalStateException();
+
+        IslandArea area = mineCity.dataSource.getArea(island);
         int rangeX = island.getSizeX()/2;
         int rangeZ = island.getSizeZ()/2;
 
@@ -448,6 +532,9 @@ public final class City extends ExceptStoredHolder
     @Slow
     public void setSpawn(@NotNull BlockPos pos) throws DataSourceException,IllegalArgumentException
     {
+        if(invalid)
+            throw new IllegalStateException();
+
         if(!mineCity.getOrFetchChunk(pos.getChunk()).map(c->c.owner).filter(o->o instanceof Island).map(o->(Island)o)
                 .filter(i-> i.getCity().equals(this)).isPresent() )
             throw new IllegalArgumentException("The block "+pos+" is not part of the city");
@@ -462,8 +549,11 @@ public final class City extends ExceptStoredHolder
      * @throws DataSourceException If the city is registered and the change failed. The owner will not be set in this case.
      */
     @Slow
-    public void setOwner(@Nullable PlayerID owner) throws DataSourceException
+    public void setOwner(@Nullable PlayerID owner) throws DataSourceException, IllegalStateException
     {
+        if(invalid)
+            throw new IllegalStateException();
+
         storage.setOwner(this, owner);
         this.owner = owner;
     }
@@ -518,6 +608,11 @@ public final class City extends ExceptStoredHolder
             return LegacyFormat.RED;
 
         return LegacyFormat.CITY_COLORS[id%LegacyFormat.CITY_COLORS.length];
+    }
+
+    public boolean isInvalid()
+    {
+        return invalid;
     }
 
     @Override

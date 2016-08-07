@@ -17,10 +17,7 @@ import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.IDataSource;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBSupplier;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
-import br.com.gamemods.minecity.structure.City;
-import br.com.gamemods.minecity.structure.ClaimedChunk;
-import br.com.gamemods.minecity.structure.Inconsistency;
-import br.com.gamemods.minecity.structure.Island;
+import br.com.gamemods.minecity.structure.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -713,6 +710,37 @@ public class SQLSource implements IDataSource
             if(!result.next())
                 return Optional.empty();
             return Optional.of(new PlayerID(result.getInt(1), uuid(result.getBytes(2)), result.getString(3)));
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Slow
+    @NotNull
+    @Override
+    public IslandArea getArea(@NotNull Island island)
+            throws DataSourceException, ClassCastException, IllegalArgumentException
+    {
+        SQLIsland sqlIsland = (SQLIsland) island;
+
+        try
+        {
+            Connection connection = this.connection.connect();
+            try(PreparedStatement pst = connection.prepareStatement(
+                    "SELECT x, z FROM minecity_chunks WHERE island_id=? AND world_id=? AND reserve=0"
+            ))
+            {
+                pst.setInt(1, sqlIsland.id);
+                pst.setInt(2, worldId(connection, sqlIsland.world));
+                ResultSet result = pst.executeQuery();
+                List<ChunkPos> list = new ArrayList<>();
+                while(result.next())
+                    list.add(new ChunkPos(sqlIsland.world, result.getInt(1), result.getInt(2)));
+
+                return new IslandArea(island, list);
+            }
         }
         catch(SQLException e)
         {

@@ -74,6 +74,12 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
         return new CityCreationResult(this, this, island, Collections.emptyList());
     }
 
+    @Override
+    public void deleteCity(@NotNull City city) throws DataSourceException
+    {
+        cities.remove(city.getId());
+    }
+
     @Nullable
     @Override
     public String checkNameConflict(@NotNull String identityName)

@@ -159,6 +159,21 @@ public final class Group implements Identifiable<Integer>
             return;
 
         storage.deleteGroup(this);
+        invalidate();
+    }
+
+
+    public void checkCityValidity()
+    {
+        if(invalid)
+            return;
+
+        if(home.isInvalid())
+            invalidate();
+    }
+
+    private void invalidate()
+    {
         invalid = true;
         members.forEach(m-> home.mineCity.entityUpdates.add(new EntityUpdate(m, EntityUpdate.Type.GROUP_REMOVED, identity)));
         members.clear();
