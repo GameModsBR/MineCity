@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.api.shape;
 
+import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.EntityPos;
@@ -8,7 +9,6 @@ import br.com.gamemods.minecity.api.world.WorldDim;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public interface Shape
 {
@@ -47,8 +47,7 @@ public interface Shape
 
     default Stream<ChunkPos> chunks(WorldDim world)
     {
-        Objects.requireNonNull(world);
-        return StreamSupport.stream(((Iterable<int[]>) this::blockIterator).spliterator(), true)
+        return CollectionUtil.parallelStream(this.blockIterator())
                 .map(pos-> new ChunkPos(world, pos[0]>>4, pos[2]>>4)).distinct()
                 ;
     }
