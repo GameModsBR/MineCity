@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.api.shape;
 
 import br.com.gamemods.minecity.api.world.ChunkPos;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -10,6 +11,20 @@ public class Empty implements Shape
     public static final Empty INSTANCE = new Empty();
 
     private Empty(){}
+
+    @NotNull
+    @Override
+    public Type getType()
+    {
+        return Type.EMPTY;
+    }
+
+    @NotNull
+    @Override
+    public int[] serializationParams()
+    {
+        return new int[0];
+    }
 
     @Override
     public int sizeX()
@@ -42,7 +57,7 @@ public class Empty implements Shape
     }
 
     @Override
-    public boolean affects(ChunkPos chunk)
+    public boolean affects(@NotNull ChunkPos chunk)
     {
         return false;
     }
@@ -51,5 +66,11 @@ public class Empty implements Shape
     public Iterator<int[]> blockIterator()
     {
         return Collections.emptyIterator();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Shape:EMPTY";
     }
 }

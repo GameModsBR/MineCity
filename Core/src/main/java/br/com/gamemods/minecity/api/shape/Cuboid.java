@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.api.shape;
 
 import br.com.gamemods.minecity.api.world.ChunkPos;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -15,8 +16,13 @@ public class Cuboid implements Shape
         max = a.compareTo(b) < 0? b : a;
     }
 
+    protected Cuboid(int[] par)
+    {
+        this(new Point(par[0], par[1], par[2]), new Point(par[3], par[4], par[5]));
+    }
+
     @Override
-    public boolean affects(ChunkPos chunk)
+    public boolean affects(@NotNull ChunkPos chunk)
     {
         // i = mIn
         int ix = chunk.x << 4;
@@ -110,5 +116,25 @@ public class Cuboid implements Shape
     public int size()
     {
         return sizeX() * sizeZ() * sizeY();
+    }
+
+    @NotNull
+    @Override
+    public int[] serializationParams()
+    {
+        return new int[]{min.x, min.y, min.z, max.x, max.y, max.z};
+    }
+
+    @NotNull
+    @Override
+    public Type getType()
+    {
+        return Type.CUBOID;
+    }
+
+    @Override
+    public String toString()
+    {
+        return serializeString();
     }
 }

@@ -150,6 +150,22 @@ CONSTRAINT `group_managers_player` FOREIGN KEY (`player_id`) REFERENCES `minecit
 )
 ;
 
+CREATE TABLE `minecity_plots` (
+`plot_id`  int NOT NULL AUTO_INCREMENT ,
+`island_id`  int NOT NULL ,
+`name`  varchar(40) NOT NULL ,
+`display_name`  varchar(40) NOT NULL ,
+`owner`  int NULL ,
+`spawn_x`  int NOT NULL ,
+`spawn_y`  int NOT NULL ,
+`spawn_z`  int NOT NULL ,
+`shape`  blob NOT NULL ,
+PRIMARY KEY (`plot_id`),
+CONSTRAINT `plot_island` FOREIGN KEY (`island_id`) REFERENCES `minecity_islands` (`island_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+CONSTRAINT `plot_owner` FOREIGN KEY (`owner`) REFERENCES `minecity_players` (`player_id`) ON DELETE SET NULL ON UPDATE CASCADE
+)
+;
+
 CREATE TABLE `minecity_setup` (
 `property`  enum('version') NOT NULL ,
 `value`  enum('1') NOT NULL DEFAULT '1' ,

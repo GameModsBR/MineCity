@@ -935,39 +935,208 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Slow
     @Override
+    @SuppressWarnings("SuspiciousNameCombination")
     public int createPlot(Plot plot) throws DataSourceException
     {
-        throw new UnsupportedOperationException();
+        try(Connection transaction = connection.transaction())
+        {
+            try
+            {
+                int plotId;
+                try(PreparedStatement pst = transaction.prepareStatement(
+                        "INSERT INTO minecity_plots(island_id,name,display_name,owner,spawn_x,spawn_y,spawn_z,shape) " +
+                        "VALUES(?,?,?,?,?,?,?,?,?)",
+                    Statement.RETURN_GENERATED_KEYS
+                ))
+                {
+                    pst.setInt(1, plot.getIsland().getId());
+                    pst.setString(2, plot.getIdentityName());
+                    pst.setString(3, plot.getName());
+                    source.setNullableInt(pst, 4, source.playerId(transaction, plot.getOwner()));
+                    BlockPos spawn = plot.getSpawn();
+                    pst.setInt(5, spawn.x);
+                    pst.setInt(6, spawn.y);
+                    pst.setInt(7, spawn.z);
+                    pst.setBytes(8, plot.getShape().serializeBytes());
+                    pst.executeUpdate();
+
+                    ResultSet result = pst.getGeneratedKeys();
+                    result.next();
+                    plotId = result.getInt(1);
+                }
+
+                transaction.commit();
+                return plotId;
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
     }
 
+    @Slow
     @Override
     public void setOwner(@NotNull Plot plot, @Nullable PlayerID owner) throws DataSourceException, IllegalStateException
     {
-        throw new UnsupportedOperationException();
+        try(Connection transaction = connection.transaction())
+        {
+            try
+            {
+                try(PreparedStatement pst = transaction.prepareStatement(
+                        "UPDATE minecity_plots SET owner=? WHERE plot_id=?"
+                ))
+                {
+                    source.setNullableInt(pst, 1, source.playerId(transaction, owner));
+                    pst.setInt(2, plot.id);
+                    source.executeUpdate(pst, 1);
+                }
+
+                transaction.commit();
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
     }
 
+    @Slow
     @Override
     public void setShape(@NotNull Plot plot, @NotNull Shape shape) throws DataSourceException
     {
-        throw new UnsupportedOperationException();
+        try(Connection transaction = connection.transaction())
+        {
+            try
+            {
+                try(PreparedStatement pst = transaction.prepareStatement(
+                        "UPDATE minecity_plots SET shape=? WHERE plot_id=?"
+                ))
+                {
+                    pst.setBytes(1, shape.serializeBytes());
+                    pst.setInt(2, plot.id);
+                    source.executeUpdate(pst, 1);
+                }
+
+                transaction.commit();
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
     }
 
+    @Slow
     @Override
     public void setName(@NotNull Plot plot, @NotNull String identity, @NotNull String name) throws DataSourceException
     {
-        throw new UnsupportedOperationException();
+        try(Connection transaction = connection.transaction())
+        {
+            try
+            {
+                try(PreparedStatement pst = transaction.prepareStatement(
+                        "UPDATE minecity_plots SET `name`=?, `display_name`=? WHERE plot_id=?"
+                ))
+                {
+                    pst.setString(1, identity);
+                    pst.setString(2, name);
+                    pst.setInt(3, plot.id);
+                    source.executeUpdate(pst, 1);
+                }
+
+                transaction.commit();
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
     }
 
+    @Slow
     @Override
+    @SuppressWarnings("SuspiciousNameCombination")
     public void setSpawn(@NotNull Plot plot, @NotNull BlockPos spawn) throws DataSourceException
     {
-        throw new UnsupportedOperationException();
+        if(!spawn.world.equals(plot.getIsland().world))
+            throw new IllegalArgumentException("Different world!");
+
+        try(Connection transaction = connection.transaction())
+        {
+            try
+            {
+                try(PreparedStatement pst = transaction.prepareStatement(
+                        "UPDATE minecity_plots SET spawn_x=?, spawn_y=?, spawn_z=? WHERE plot_id=?"
+                ))
+                {
+                    pst.setInt(1, spawn.x);
+                    pst.setInt(2, spawn.y);
+                    pst.setInt(3, spawn.z);
+                    pst.setInt(4, plot.id);
+                    source.executeUpdate(pst, 1);
+                }
+
+                transaction.commit();
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
     }
 
+    @Slow
     @Override
     public void deletePlot(@NotNull Plot plot) throws DataSourceException
     {
-        throw new UnsupportedOperationException();
+        try(Connection transaction = connection.transaction())
+        {
+            try(PreparedStatement pst = transaction.prepareStatement(
+                    "DELETE FROM minecity_plots WHERE plot_id=?"
+            ))
+            {
+                pst.setInt(1, plot.id);
+                source.executeUpdate(pst, 1);
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
+
+            transaction.commit();
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
     }
 }
