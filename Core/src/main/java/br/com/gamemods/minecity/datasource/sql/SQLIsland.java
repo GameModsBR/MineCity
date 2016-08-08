@@ -2,42 +2,39 @@ package br.com.gamemods.minecity.datasource.sql;
 
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.datasource.api.ICityStorage;
 import br.com.gamemods.minecity.structure.City;
+import br.com.gamemods.minecity.structure.Inconsistency;
 import br.com.gamemods.minecity.structure.Island;
 import org.jetbrains.annotations.NotNull;
 
-final class SQLIsland implements Island
+final class SQLIsland extends Island
 {
-    final int id;
     int minX;
     int maxX;
     int minZ;
     int maxZ;
     int chunkCount;
-    @NotNull
-    final WorldDim world;
 
-    @SuppressWarnings("NullableProblems")
     @NotNull
     City city;
 
-    SQLIsland(int id, int minX, int maxX, int minZ, int maxZ, int chunkCount, @NotNull WorldDim world)
+    SQLIsland(ICityStorage storage, int id, int minX, int maxX, int minZ, int maxZ, int chunkCount, @NotNull WorldDim world)
     {
-        this.id = id;
+        super(storage, id, world);
         this.minX = minX;
         this.maxX = maxX;
         this.minZ = minZ;
         this.maxZ = maxZ;
         this.chunkCount = chunkCount;
-        this.world = world;
+        this.city = Inconsistency.getInconsistentCity();
     }
 
-    SQLIsland(int id, ChunkPos chunk, @NotNull City city)
+    SQLIsland(ICityStorage storage, int id, ChunkPos chunk, @NotNull City city)
     {
-        this.id = id;
+        super(storage, id, chunk.world);
         minX = maxX = chunk.x;
         minZ = maxZ = chunk.z;
-        world = chunk.world;
         chunkCount = 1;
         this.city = city;
     }
@@ -49,19 +46,6 @@ final class SQLIsland implements Island
         minZ = Math.min(minZ, chunk.z);
         maxZ = Math.max(maxZ, chunk.z);
         chunkCount++;
-    }
-
-    @Override
-    public int getId()
-    {
-        return id;
-    }
-
-    @NotNull
-    @Override
-    public WorldDim getWorld()
-    {
-        return world;
     }
 
     @NotNull

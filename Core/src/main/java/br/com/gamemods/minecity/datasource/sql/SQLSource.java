@@ -77,7 +77,10 @@ public class SQLSource implements IDataSource
             while(result.next())
             {
                 WorldDim world = world(result.getInt(7), ()->result.getInt(8), ()->result.getString(9), ()->result.getString(10));
-                islands.add(new SQLIsland(result.getInt(1), result.getInt(2), result.getInt(3), result.getInt(4), result.getInt(5), result.getInt(6), world));
+                islands.add(new SQLIsland(cityStorage,
+                        result.getInt(1), result.getInt(2), result.getInt(3),
+                        result.getInt(4), result.getInt(5), result.getInt(6), world
+                ));
             }
             islands.trimToSize();
             return islands;
@@ -527,7 +530,10 @@ public class SQLSource implements IDataSource
                 }
             }
 
-            return new CityCreationResult(cityStorage, permStorage, new SQLIsland(islandId, spawnChunk, city), Collections.emptyList());
+            return new CityCreationResult(cityStorage, permStorage,
+                    new SQLIsland(cityStorage, islandId, spawnChunk, city),
+                    Collections.emptyList()
+            );
         }
         catch(SQLException e)
         {

@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.*;
+import br.com.gamemods.minecity.api.shape.Shape;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
@@ -39,7 +40,7 @@ public class Inconsistency implements ChunkOwner
             {
                 VoidStorage voidStorage = new VoidStorage();
                 city = new City(mineCity, "#inconsistent", "#Inconsistency", null, new BlockPos(WORLD, 0, 0, 0),
-                        Collections.singleton(island = new InconsistentIsland()), -1000, voidStorage, voidStorage, null
+                        Collections.singleton(island = new InconsistentIsland(voidStorage)), -1000, voidStorage, voidStorage, null
                 );
             }
             catch(DataSourceException unexpected)
@@ -74,19 +75,11 @@ public class Inconsistency implements ChunkOwner
         return getInconsistentIsland(mineCity);
     }
 
-    private static class InconsistentIsland implements Island
+    private static class InconsistentIsland extends Island
     {
-        @Override
-        public int getId()
+        public InconsistentIsland(VoidStorage storage)
         {
-            return -1;
-        }
-
-        @NotNull
-        @Override
-        public WorldDim getWorld()
-        {
-            return WORLD;
+            super(storage, -1, WORLD);
         }
 
         @NotNull
@@ -323,6 +316,44 @@ public class Inconsistency implements ChunkOwner
                 throws DataSourceException
         {
             return Collections.emptyMap();
+        }
+
+        @Override
+        public int createPlot(Plot plot) throws DataSourceException
+        {
+            throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+        }
+
+        @Override
+        public void setOwner(@NotNull Plot plot, @Nullable PlayerID owner)
+                throws DataSourceException, IllegalStateException
+        {
+            throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+        }
+
+        @Override
+        public void setShape(@NotNull Plot plot, @NotNull Shape shape) throws DataSourceException
+        {
+            throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+        }
+
+        @Override
+        public void setName(@NotNull Plot plot, @NotNull String identity, @NotNull String name)
+                throws DataSourceException
+        {
+            throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+        }
+
+        @Override
+        public void setSpawn(@NotNull Plot plot, @NotNull BlockPos spawn) throws DataSourceException
+        {
+            throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+        }
+
+        @Override
+        public void deletePlot(@NotNull Plot plot) throws DataSourceException
+        {
+            throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
         }
     }
 }

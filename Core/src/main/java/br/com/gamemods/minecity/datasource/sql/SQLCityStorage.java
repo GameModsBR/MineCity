@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.permission.Group;
 import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.shape.Shape;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
@@ -15,6 +16,7 @@ import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.Island;
 import br.com.gamemods.minecity.structure.IslandArea;
+import br.com.gamemods.minecity.structure.Plot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -345,7 +347,7 @@ public class SQLCityStorage implements ICityStorage
                                   "WHERE world_id="+worldId+" AND island_id="+sqlIsland.id+" AND reserve=0 AND ("+sb+");"
                     );
 
-                    SQLIsland newIsland = new SQLIsland(islandId, minX, maxX, minZ, maxZ, group.size(), sqlIsland.world);
+                    SQLIsland newIsland = new SQLIsland(this, islandId, minX, maxX, minZ, maxZ, group.size(), sqlIsland.world);
                     expected[i++] = newIsland.chunkCount;
                     islands.add(newIsland);
                 }
@@ -781,7 +783,7 @@ public class SQLCityStorage implements ICityStorage
         {
             try
             {
-                SQLIsland island = new SQLIsland(source.createIsland(transaction, cityId, chunk.world), chunk, city);
+                SQLIsland island = new SQLIsland(this, source.createIsland(transaction, cityId, chunk.world), chunk, city);
                 source.createClaim(transaction, island.id, chunk);
                 island.city = city;
 
@@ -931,5 +933,41 @@ public class SQLCityStorage implements ICityStorage
         {
             throw new DataSourceException(e);
         }
+    }
+
+    @Override
+    public int createPlot(Plot plot) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setOwner(@NotNull Plot plot, @Nullable PlayerID owner) throws DataSourceException, IllegalStateException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setShape(@NotNull Plot plot, @NotNull Shape shape) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setName(@NotNull Plot plot, @NotNull String identity, @NotNull String name) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setSpawn(@NotNull Plot plot, @NotNull BlockPos spawn) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deletePlot(@NotNull Plot plot) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
     }
 }

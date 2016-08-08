@@ -5,15 +5,13 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.StringUtil;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.*;
+import br.com.gamemods.minecity.api.shape.Shape;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.datasource.api.*;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
-import br.com.gamemods.minecity.structure.City;
-import br.com.gamemods.minecity.structure.ClaimedChunk;
-import br.com.gamemods.minecity.structure.Island;
-import br.com.gamemods.minecity.structure.IslandArea;
+import br.com.gamemods.minecity.structure.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -457,6 +455,42 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
         // Nothing needs to be done here
     }
 
+    @Override
+    public int createPlot(Plot plot) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setOwner(@NotNull Plot plot, @Nullable PlayerID owner) throws DataSourceException, IllegalStateException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setShape(@NotNull Plot plot, @NotNull Shape shape) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setName(@NotNull Plot plot, @NotNull String identity, @NotNull String name) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setSpawn(@NotNull Plot plot, @NotNull BlockPos spawn) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deletePlot(@NotNull Plot plot) throws DataSourceException
+    {
+        throw new UnsupportedOperationException();
+    }
+
     @NotNull
     @Override
     public Map<PermissionFlag, Map<Identity<?>, Optional<Message>>> loadExceptPermissions(@NotNull ExceptFlagHolder holder)
@@ -473,16 +507,14 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
         return new EnumMap<>(PermissionFlag.class);
     }
 
-    private class FakeIsland implements Island
+    private class FakeIsland extends Island
     {
-        int id = nextIslandId.getAndIncrement();
-        WorldDim world;
         City city;
         int minX, maxX, minZ, maxZ, chunkCount = 1;
 
         public FakeIsland(WorldDim world, City city, ChunkPos chunk)
         {
-            this.world = world;
+            super(FakeDataSource.this, nextIslandId.getAndIncrement(), world);
             this.city = city;
             minX = maxX = chunk.x;
             minZ = maxZ = chunk.z;
@@ -495,19 +527,6 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
             minZ = Math.min(minZ, chunk.z);
             maxZ = Math.max(maxZ, chunk.z);
             chunkCount++;
-        }
-
-        @Override
-        public int getId()
-        {
-            return id;
-        }
-
-        @NotNull
-        @Override
-        public WorldDim getWorld()
-        {
-            return world;
         }
 
         @NotNull

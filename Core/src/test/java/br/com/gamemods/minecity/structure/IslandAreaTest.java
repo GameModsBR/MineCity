@@ -2,8 +2,10 @@ package br.com.gamemods.minecity.structure;
 
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.datasource.api.ICityStorage;
 import br.com.gamemods.minecity.datasource.test.DummyIsland;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,6 +17,7 @@ import static org.junit.Assert.*;
 public class IslandAreaTest
 {
     private WorldDim world = new WorldDim(0, "world");
+    private ICityStorage fakeStorage = Mockito.mock(ICityStorage.class);
     /**
      * <pre>
      *     X →
@@ -27,7 +30,7 @@ public class IslandAreaTest
      * </pre>
      */
     @SuppressWarnings("SpellCheckingInspection")
-    private IslandArea area = new IslandArea(new DummyIsland(world, null), 0, 0, new boolean[][]{
+    private IslandArea area = new IslandArea(new DummyIsland(fakeStorage, world, null), 0, 0, new boolean[][]{
             {},
             {false,true},
             {false,true,true,false,true,true},

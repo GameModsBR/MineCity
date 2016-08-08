@@ -19,10 +19,7 @@ import br.com.gamemods.minecity.datasource.api.unchecked.DBSupplier;
 import br.com.gamemods.minecity.datasource.api.unchecked.DisDBConsumer;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import br.com.gamemods.minecity.datasource.sql.SQLSource;
-import br.com.gamemods.minecity.structure.City;
-import br.com.gamemods.minecity.structure.ClaimedChunk;
-import br.com.gamemods.minecity.structure.Inconsistency;
-import br.com.gamemods.minecity.structure.Nature;
+import br.com.gamemods.minecity.structure.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,9 +89,16 @@ public class MineCity
         this(server, config, null, messageTransformer);
     }
 
+    @NotNull
     public Optional<City> getCity(@NotNull ChunkPos pos)
     {
         return getChunk(pos).flatMap(ClaimedChunk::getCity);
+    }
+
+    @NotNull
+    public Optional<Plot> getPlot(@NotNull BlockPos pos)
+    {
+        return getChunk(pos.getChunk()).flatMap(c-> c.getPlotAt(pos));
     }
 
     @NotNull

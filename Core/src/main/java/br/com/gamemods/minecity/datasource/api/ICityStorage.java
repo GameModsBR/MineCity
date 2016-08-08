@@ -4,11 +4,13 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.permission.Group;
 import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.shape.Shape;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.Island;
 import br.com.gamemods.minecity.structure.IslandArea;
+import br.com.gamemods.minecity.structure.Plot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -91,4 +93,22 @@ public interface ICityStorage
 
     @Slow
     void deleteCity(@NotNull City city) throws DataSourceException;
+
+    @Slow
+    int createPlot(Plot plot) throws DataSourceException;
+
+    @Slow
+    void setOwner(@NotNull Plot plot, @Nullable PlayerID owner) throws DataSourceException, IllegalStateException;
+
+    @Slow
+    void setShape(@NotNull Plot plot, @NotNull Shape shape) throws DataSourceException;
+
+    @Slow
+    void setName(@NotNull Plot plot, @NotNull String identity, @NotNull String name) throws DataSourceException;
+
+    @Slow
+    void setSpawn(@NotNull Plot plot, @NotNull BlockPos spawn) throws DataSourceException;
+
+    @Slow
+    void deletePlot(@NotNull Plot plot) throws DataSourceException;
 }
