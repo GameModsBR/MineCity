@@ -60,6 +60,7 @@
                 <msg id="no-permission">You are not allowed to disclaim a chunk owned by ${city}</msg>
                 <msg id="last">Cannot disclaim the last city's chunk, delete the city instead</msg>
                 <msg id="spawn">Cannot disclaim the spawn chunk</msg>
+                <msg id="contains-plots">Cannot disclaim this chunk because it contains plots.</msg>
                 <msg id="success">This chunk was disclaimed from ${city} successfully.</msg>
                 <success>
                     <msg id="one-new-island">

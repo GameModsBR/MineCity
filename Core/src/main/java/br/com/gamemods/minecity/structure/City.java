@@ -381,7 +381,6 @@ public final class City extends ExceptStoredHolder
         if(invalid)
             return Stream.empty();
 
-        //noinspection OptionalGetWithoutIsPresent
         return Direction.cardinal.stream()
                 .map((DBFunction<Direction, Entry<Direction, Optional<ClaimedChunk>>>)
                             d-> new SimpleImmutableEntry<>(d, mineCity.getOrFetchChunk(chunk.add(d)))
@@ -402,7 +401,6 @@ public final class City extends ExceptStoredHolder
 
         Optional<ClaimedChunk> claimOpt = mineCity.getOrFetchChunk(chunk);
         Optional<City> cityOpt = claimOpt.flatMap(ClaimedChunk::getCity);
-        //noinspection OptionalGetWithoutIsPresent
         if(cityOpt.isPresent() && (cityOpt.get() != this || !claimOpt.get().reserve))
             throw new IllegalArgumentException("The chunk "+chunk+" is reserved");
 
@@ -451,8 +449,12 @@ public final class City extends ExceptStoredHolder
         if(getSpawn().getChunk().equals(chunk))
             throw new IllegalArgumentException("Cannot disclaim the spawn chunk");
 
-        Island island = mineCity.getOrFetchChunk(chunk).flatMap(ClaimedChunk::getIsland).filter(i-> i.getCity().equals(this))
+        Optional<ClaimedChunk> claim = mineCity.getOrFetchChunk(chunk);
+        Island island = claim.flatMap(ClaimedChunk::getIsland).filter(i-> i.getCity().equals(this))
                 .orElseThrow(()-> new IllegalArgumentException("The chunk " + chunk + " is not owned by the city " + identityName));
+
+        if(!claim.get().getPlots().isEmpty())
+            throw new IllegalArgumentException("Cannot disclaim the chunk "+chunk+" because it contains plots.");
 
         Map<Direction, Island> islands = connectedIslandsEntries(chunk).filter(e->e.getValue().equals(island))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));

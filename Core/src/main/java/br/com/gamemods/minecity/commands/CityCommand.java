@@ -125,7 +125,6 @@ public class CityCommand
 
     @Slow
     @Async
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Command(value = "city.claim", console = false, args = @Arg(name = "city", type = Arg.Type.CITY, optional = true, sticky = true))
     public CommandResult<Island> claim(CommandEvent cmd) throws DataSourceException
     {
@@ -217,10 +216,16 @@ public class CityCommand
             throws DataSourceException
     {
         ChunkPos chunk = cmd.position.getChunk();
-        City city = mineCity.getChunk(chunk).flatMap(ClaimedChunk::getCity).orElse(null);
+        Optional<ClaimedChunk> claim = mineCity.getChunk(chunk);
+        City city = claim.flatMap(ClaimedChunk::getCity).orElse(null);
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.disclaim.not-claimed",
                     "This chunk is not claimed by any city"
+            ));
+
+        if(!claim.get().getPlots().isEmpty())
+            return new CommandResult<>(new Message("cmd.city.disclaim.contains-plots",
+                    "Cannot disclaim this chunk because it contains plots."
             ));
 
         if(!cmd.sender.getPlayerId().equals(city.getOwner()))
@@ -432,7 +437,6 @@ public class CityCommand
         City cityAtPosition = claimAtPosition.flatMap(ClaimedChunk::getCity).orElse(null);
         char cursor;
         LegacyFormat cursorColor;
-        //noinspection OptionalGetWithoutIsPresent
         if(cityAtPosition != null && !claimAtPosition.get().reserve)
         {
             cursorColor = cityAtPosition.getColor();
