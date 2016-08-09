@@ -268,6 +268,16 @@
                 <msg id="conflict">The name ${name} conflicts with ${conflict}</msg>
                 <msg id="success">The plot ${old} is now named ${name}</msg>
             </rename>
+            <return>
+                <msg id="not-claimed">You are not inside a plot</msg>
+                <msg id="already">The plot ${plot} is already owned by the mayor of the city ${city}</msg>
+                <msg id="success">The plot ${plot} has returned to the city ${city}</msg>
+                <msg id="confirm">
+                    You are about to return the plot ${plot} and everything that is in it to the city ${city}, all permissions will be reset
+                    and you'll no longer be able to control the plot unless you have the appropriate city city's permission or the mayor grants them later,
+                    <b>you'll not be refunded by this action</b>. If you are sure about this, type /plot confirm ${code}
+                </msg>
+            </return>
         </plot>
     </cmd>
     <action>

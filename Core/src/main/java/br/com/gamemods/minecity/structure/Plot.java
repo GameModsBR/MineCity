@@ -87,7 +87,7 @@ public final class Plot
     }
 
     @Slow
-    public void setOwner(@NotNull PlayerID owner)
+    public void setOwner(@Nullable PlayerID owner)
             throws DataSourceException
     {
         if(invalid)

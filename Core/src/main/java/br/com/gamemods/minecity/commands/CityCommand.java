@@ -83,8 +83,6 @@ public class CityCommand
         ), city);
     }
 
-    @Slow
-    @Async
     @Command(value = "city.delete", console = false)
     public CommandResult<?> delete(CommandEvent cmd)
     {

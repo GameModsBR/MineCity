@@ -154,4 +154,38 @@ public class PlotCommand
                 }
         ), true);
     }
+
+    @Command(value = "plot.return", console = false)
+    public static CommandResult<?> returnPlot(CommandEvent cmd)
+    {
+        Plot plot = cmd.mineCity.getPlot(cmd.position.getBlock()).orElse(null);
+        if(plot == null)
+            return new CommandResult<>(new Message("cmd.plot.return.not-claimed", "You are not inside a plot"));
+
+        if(!plot.getOwner().isPresent())
+            return new CommandResult<>(new Message("cmd.plot.return.already", "The plot ${plot} is already owned by the mayor of the city ${city}",
+                    new Object[][]{
+                            {"plot", plot.getName()}, {"city", plot.getCity().getName()}
+                    }));
+
+        String code = cmd.sender.confirm(sender -> {
+            plot.setOwner(null);
+            return new CommandResult<>(new Message("cmd.plot.return.success",
+                    "The plot ${plot} has returned to the city ${city}",
+                    new Object[][]{
+                            {"plot", plot.getName()},
+                            {"city", plot.getCity().getName()}
+                    }));
+        });
+
+        return new CommandResult<>(new Message("cmd.plot.return.confirm",
+                "<msg>You are about to return the plot ${plot} and everything that is in it to the city ${city}, all permissions will be reset " +
+                "and you'll no longer be able to control the plot unless you have the appropriate city city's permission or the mayor grants them later, " +
+                "<b>you'll not be refunded by this action</b>. If you are sure about this, type /plot confirm ${code}</msg>",
+                new Object[][]{
+                        {"plot", plot.getName()},
+                        {"city", plot.getCity().getName()},
+                        {"code", code}
+                }), code);
+    }
 }

@@ -104,6 +104,9 @@
         <command id="plot.rename" parent="plot" cmd="rename">
             <desc>Renames a plot</desc>
         </command>
+        <command id="plot.return" parent="plot" cmd="return">
+            <desc>Returns the ownership of a plot to the city</desc>
+        </command>
 
         <!-- Default permissions -->
         <command id="city.allow.enter" parent="allow" cmd="enter">

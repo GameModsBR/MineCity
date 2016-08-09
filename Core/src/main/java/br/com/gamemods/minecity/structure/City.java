@@ -131,6 +131,7 @@ public final class City extends ExceptStoredHolder
         loadExceptPermissions();
     }
 
+    @Slow
     public synchronized void delete() throws IllegalStateException, DataSourceException
     {
         if(invalid)
