@@ -474,7 +474,7 @@ public class CityCommand
         char unclaimed = '\u25A1';
         char claimed = '\u25A9';
         char oneLot = '\u25A3';
-        char multipleLots = '\u25A6';
+        char multipleLots = '\u25A3'; //'\u25A6';
         char reserved = '\u25A1';
 
         // Width: 57
