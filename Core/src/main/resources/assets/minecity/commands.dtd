@@ -15,11 +15,6 @@
         cmd CDATA #REQUIRED
         parent CDATA #IMPLIED>
 
-<!ATTLIST command
-        id (%Commands;) #REQUIRED
-        cmd CDATA #REQUIRED
-        parent CDATA #IMPLIED>
-
 <!ENTITY % Commands "%CityCommands;|%GroupCommands;|%GeneralCommands;|%PlotCommands;">
 <!ENTITY % CityCommands "%CityManageCommands;|%CityPermCommands;">
 <!ENTITY % CityManageCommands "city.create|city.claim|city.disclaim|city.spawn|city.rename|city.transfer|city.setspawn|city.map|city.delete">
@@ -31,3 +26,8 @@
 <!ENTITY % GroupCommands "group.create|group.add|group.remove|group.list|group.info|group.delete|group.add.manager|group.remove.manager">
 <!ENTITY % GeneralCommands "confirm">
 <!ENTITY % PlotCommands "plot.create|plot.rename">
+
+<!ATTLIST command
+        id (%Commands;) #REQUIRED
+        cmd CDATA #REQUIRED
+        parent CDATA #IMPLIED>
