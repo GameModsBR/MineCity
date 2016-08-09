@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.command;
 
 import br.com.gamemods.minecity.MineCity;
+import br.com.gamemods.minecity.api.Async;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.GroupID;
@@ -405,6 +406,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
             updateDisplay();
         }
 
+        @Async
         public void updateDisplay()
         {
             Map<BlockPos, Block> last = display;
@@ -607,12 +609,6 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
                         // that's why we check if it's loaded before
                         sendPacket(new S23PacketBlockChange(p.x, p.y, p.z, worldObj));
                     }
-                    else
-                    {
-                        // If it's not loaded, we need to clean the client view without loading the chunk
-                        // so we can't use the easy constructor.
-                        sendFakeBlock(p.x, p.y, p.z, 0, 0);
-                    }
                 }
 
                 for(Map.Entry<BlockPos, Block> entry: display.entrySet())
@@ -624,10 +620,6 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
                         S23PacketBlockChange packet = new S23PacketBlockChange(p.x, p.y, p.z, worldObj);
                         packet.field_148883_d = entry.getValue();
                         sendPacket(packet);
-                    }
-                    else
-                    {
-                        sendFakeBlock(p.x, p.y, p.z, entry.getValue(), 0);
                     }
                 }
             });

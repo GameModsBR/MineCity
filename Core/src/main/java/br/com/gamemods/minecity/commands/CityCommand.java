@@ -161,8 +161,7 @@ public class CityCommand
                         continue;
                     }
 
-                    assert city.getOwner() != null;
-                    if(!city.getOwner().equals(playerId))
+                    if(!playerId.equals(city.getOwner()))
                         city = city2;
                     else
                         return new CommandResult<>(new Message("cmd.city.claim.ambiguous",

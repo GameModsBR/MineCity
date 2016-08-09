@@ -101,6 +101,9 @@
         <command id="plot.create" parent="plot" cmd="create">
             <desc>Creates a new plot</desc>
         </command>
+        <command id="plot.rename" parent="plot" cmd="rename">
+            <desc>Renames a plot</desc>
+        </command>
 
         <!-- Default permissions -->
         <command id="city.allow.enter" parent="allow" cmd="enter">

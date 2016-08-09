@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public final class Plot
 {
@@ -174,16 +175,36 @@ public final class Plot
         return name;
     }
 
-    @Nullable
-    public PlayerID getOwner()
+    /**
+     * The direct owner of the plot, a plot without direct owner is owned by the city's mayor
+     * @return Empty if the plot is owned by the city's mayor
+     */
+    @NotNull
+    public Optional<PlayerID> getOwner()
     {
-        return owner;
+        return Optional.ofNullable(owner);
+    }
+
+    /**
+     * The actual owner of the plot
+     * @return {@code null} if the plot is owned by the server administrators
+     */
+    @Nullable
+    public PlayerID owner()
+    {
+        return owner != null? owner : island.getCity().getOwner();
     }
 
     @NotNull
     public BlockPos getSpawn()
     {
         return spawn;
+    }
+
+    @NotNull
+    public City getCity()
+    {
+        return island.getCity();
     }
 
     @Override

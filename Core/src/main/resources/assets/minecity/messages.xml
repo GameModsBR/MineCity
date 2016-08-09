@@ -247,6 +247,14 @@
                 </overlaps>
                 <msg id="success">The plot ${name} was created successfully</msg>
             </create>
+            <rename>
+                <msg id="not-claimed">You are not inside a plot</msg>
+                <msg id="no-permission">You don't have permission to rename the plot ${plot}</msg>
+                <msg id="name-too-short">Please type a bigger name</msg>
+                <msg id="already-named">The plot is already named ${name}</msg>
+                <msg id="conflict">The name ${name} conflicts with ${conflict}</msg>
+                <msg id="success">The plot ${old} is now named ${name}</msg>
+            </rename>
         </plot>
     </cmd>
     <action>

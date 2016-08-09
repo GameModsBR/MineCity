@@ -954,7 +954,7 @@ public class SQLCityStorage implements ICityStorage
                     pst.setInt(1, plot.getIsland().getId());
                     pst.setString(2, plot.getIdentityName());
                     pst.setString(3, plot.getName());
-                    source.setNullableInt(pst, 4, source.playerId(transaction, plot.getOwner()));
+                    source.setNullableInt(pst, 4, source.playerId(transaction, plot.getOwner().orElse(null)));
                     BlockPos spawn = plot.getSpawn();
                     pst.setInt(5, spawn.x);
                     pst.setInt(6, spawn.y);

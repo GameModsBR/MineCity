@@ -18,9 +18,6 @@ import java.util.stream.Collectors;
 
 public class PlotCommand
 {
-    private PlotCommand()
-    {}
-
     @Slow
     @Async
     @Command(value = "plot.create", console = false, args = @Arg(name = "plot name", sticky = true))
@@ -106,10 +103,55 @@ public class PlotCommand
                 ));
         }
 
-        Plot plot = island.createPlot(name, cmd.sender.getPlayerId(), cmd.position.getBlock(), shape);
+        Plot plot = island.createPlot(name, null, cmd.position.getBlock(), shape);
         return new CommandResult<>(new Message("cmd.plot.create.success",
                 "The plot ${name} was created successfully",
                 new Object[]{"name", plot.getName()}
         ), plot);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.rename", console = false, args = @Arg(name = "new name", sticky = true))
+    public static CommandResult<?> rename(CommandEvent cmd) throws DataSourceException
+    {
+        Plot plot = cmd.mineCity.getPlot(cmd.position.getBlock()).orElse(null);
+        if(plot == null)
+            return new CommandResult<>(new Message("cmd.plot.rename.not-claimed", "You are not inside a plot"));
+
+        if(!cmd.sender.getPlayerId().equals(plot.owner()))
+            return new CommandResult<>(new Message("cmd.plot.rename.no-permission",
+                    "You don't have permission to rename the plot ${plot}",
+                    new Object[]{"plot", plot.getName()}
+            ));
+
+        String name = String.join(" ", cmd.args);
+        String identity = StringUtil.identity(name);
+        if(identity.length() < 3)
+            return new CommandResult<>(new Message("cmd.plot.rename.name-too-short", "Please type a bigger name"));
+
+        if(name.equals(plot.getName()))
+            return new CommandResult<>(new Message("cmd.plot.rename.already-named",
+                    "The plot is already named ${name}",
+                    new Object[]{"name", name}
+            ));
+
+        Optional<Plot> conflict = plot.getCity().getPlot(identity);
+        if(conflict.isPresent())
+            return new CommandResult<>(new Message("cmd.plot.rename.conflict",
+                    "The name ${name} conflicts with ${conflict}",
+                    new Object[][]{
+                            {"name", name}, {"conflict", conflict.get().getName()}
+                    }
+            ));
+
+        String old = plot.getName();
+        plot.setName(name);
+        return new CommandResult<>(new Message("cmd.plot.rename.success",
+                "The plot ${old} is now named ${name}",
+                new Object[][]{
+                        {"old",old}, {"new",name}
+                }
+        ), true);
     }
 }

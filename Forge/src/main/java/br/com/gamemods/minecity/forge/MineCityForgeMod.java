@@ -327,10 +327,10 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
                 selection.a = block;
 
             selection.normalize();
-            selection.updateDisplay();
+            runAsynchronously(selection::updateDisplay);
         }
         else
-            selection.select(block);
+            runAsynchronously(()->selection.select(block));
     }
 
     public ChunkPos chunk(Chunk chunk)
