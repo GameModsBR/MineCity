@@ -1,6 +1,5 @@
 package br.com.gamemods.minecity.structure;
 
-import br.com.gamemods.minecity.api.MathUtil;
 import br.com.gamemods.minecity.api.shape.Cuboid;
 import br.com.gamemods.minecity.api.shape.Shape;
 import br.com.gamemods.minecity.api.world.BlockPos;
@@ -26,8 +25,11 @@ public class Selection
 
     public void normalize()
     {
-        BlockPos min = MathUtil.min(a, b);
-        BlockPos max = MathUtil.max(a, b);
+        if(a == null || b == null || (a.x <= b.x && a.y <= b.y && a.z <= b.z))
+            return;
+
+        BlockPos min = a.apply(b.x, b.y, b.z, Math::min);
+        BlockPos max = a.apply(b.x, b.y, b.z, Math::max);
         a = min;
         b = max;
     }
@@ -47,9 +49,9 @@ public class Selection
         }
         else
         {
-            //TODO Fix extensions not working properly
-            BlockPos min = MathUtil.min(a, MathUtil.min(b, point));
-            BlockPos max = MathUtil.max(a, MathUtil.max(b, point));
+            normalize();
+            BlockPos min = a.apply(point.x, point.y, point.z, Math::min);
+            BlockPos max = b.apply(point.x, point.y, point.z, Math::max);
             a = min;
             b = max;
         }

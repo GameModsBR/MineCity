@@ -6,6 +6,8 @@ import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.Island;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
+
 public class DummyIsland extends Island
 {
     public City city;
@@ -15,7 +17,7 @@ public class DummyIsland extends Island
 
     public DummyIsland(ICityStorage storage, WorldDim world, City city)
     {
-        super(storage, 0, world);
+        super(storage, 0, world, Collections.emptySet());
         this.city = city;
     }
 

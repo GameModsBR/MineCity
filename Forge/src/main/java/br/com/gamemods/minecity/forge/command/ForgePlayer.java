@@ -443,9 +443,6 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
                     for(int ix = 1; ix < range && a.x+ix < b.x; ix++)
                         display.put(c.add(ix, 0, 0), Blocks.glass);
 
-                    for(int ix = 1; ix < range && a.x+ix < b.x; ix++)
-                        display.put(a.add(ix, 0, 0), Blocks.gold_block);
-
                     // y
                     for(int iy = 1; iy < range && a.y+iy < b.y; iy++)
                         display.put(a.add(0, dy-iy, 0), Blocks.glass);
@@ -458,9 +455,6 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
                     for(int iy = 1; iy < range && a.y+iy < b.y; iy++)
                         display.put(c.add(0, iy, 0), Blocks.glass);
 
-                    for(int iy = 1; iy < range && a.y+iy < b.y; iy++)
-                        display.put(a.add(0, iy, 0), Blocks.gold_block);
-
                     // z
                     for(int iz = 1; iz < range && a.z+iz < b.z; iz++)
                         display.put(a.add(0, 0, dz-iz), Blocks.glass);
@@ -472,9 +466,6 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
                     c = a.add(0, dy, 0);
                     for(int iz = 1; iz < range && a.z+iz < b.z; iz++)
                         display.put(c.add(0, 0, iz), Blocks.glass);
-
-                    for(int iz = 1; iz < range && a.z+iz < b.z; iz++)
-                        display.put(a.add(0, 0, iz), Blocks.gold_block);
 
                     // Max corner
                     // x
@@ -489,9 +480,6 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
                     for(int ix = 1; ix < range && b.x-ix > a.x; ix++)
                         display.put(c.subtract(ix, 0, 0), Blocks.glass);
 
-                    for(int ix = 1; ix < range && b.x-ix > a.x; ix++)
-                        display.put(b.subtract(ix, 0, 0), Blocks.lapis_block);
-
                     // y
                     for(int iy = 1; iy < range && b.y-iy > a.y; iy++)
                         display.put(b.subtract(0, dy-iy, 0), Blocks.glass);
@@ -504,9 +492,6 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
                     for(int iy = 1; iy < range && b.y-iy > a.y; iy++)
                         display.put(c.subtract(0, iy, 0), Blocks.glass);
 
-                    for(int iy = 1; iy < range && b.y-iy > a.y; iy++)
-                        display.put(b.subtract(0, iy, 0), Blocks.lapis_block);
-
                     // z
                     for(int iz = 1; iz < range && b.z-iz > a.z; iz++)
                         display.put(b.subtract(0, 0, dz-iz), Blocks.glass);
@@ -518,6 +503,22 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
                     c = b.subtract(0, dy, 0);
                     for(int iz = 1; iz < range && b.z-iz > a.z; iz++)
                         display.put(c.subtract(0, 0, iz), Blocks.glass);
+
+                    // Selected corners
+                    for(int ix = 1; ix < range && a.x+ix < b.x; ix++)
+                        display.put(a.add(ix, 0, 0), Blocks.gold_block);
+
+                    for(int iy = 1; iy < range && a.y+iy < b.y; iy++)
+                        display.put(a.add(0, iy, 0), Blocks.gold_block);
+
+                    for(int iz = 1; iz < range && a.z+iz < b.z; iz++)
+                        display.put(a.add(0, 0, iz), Blocks.gold_block);
+
+                    for(int ix = 1; ix < range && b.x-ix > a.x; ix++)
+                        display.put(b.subtract(ix, 0, 0), Blocks.lapis_block);
+
+                    for(int iy = 1; iy < range && b.y-iy > a.y; iy++)
+                        display.put(b.subtract(0, iy, 0), Blocks.lapis_block);
 
                     for(int iz = 1; iz < range && b.z-iz > a.z; iz++)
                         display.put(b.subtract(0, 0, iz), Blocks.lapis_block);
@@ -569,9 +570,6 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
                         display.put(c.add(0, 0, iz), Blocks.glowstone);
 
                     // Corners
-                    display.put(a, Blocks.glowstone);
-                    display.put(b, Blocks.lit_redstone_lamp);
-
                     display.put(a.add(dx, 0, 0), Blocks.lit_furnace);
                     display.put(a.add(0, dy, 0), Blocks.lit_furnace);
                     display.put(a.add(0, 0, dz), Blocks.lit_furnace);
@@ -579,6 +577,9 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
                     display.put(b.subtract(dx, 0, 0), Blocks.lit_furnace);
                     display.put(b.subtract(0, dy, 0), Blocks.lit_furnace);
                     display.put(b.subtract(0, 0, dz), Blocks.lit_furnace);
+
+                    display.put(a, Blocks.glowstone);
+                    display.put(b, Blocks.lit_redstone_lamp);
                 }
             }
             else if(b != null)

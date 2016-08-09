@@ -493,6 +493,13 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
 
     @NotNull
     @Override
+    public Set<Plot> loadPlots(@NotNull Island island) throws DataSourceException
+    {
+        return Collections.emptySet();
+    }
+
+    @NotNull
+    @Override
     public Map<PermissionFlag, Map<Identity<?>, Optional<Message>>> loadExceptPermissions(@NotNull ExceptFlagHolder holder)
             throws DataSourceException
     {
@@ -514,7 +521,7 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
 
         public FakeIsland(WorldDim world, City city, ChunkPos chunk)
         {
-            super(FakeDataSource.this, nextIslandId.getAndIncrement(), world);
+            super(FakeDataSource.this, nextIslandId.getAndIncrement(), world, Collections.emptySet());
             this.city = city;
             minX = maxX = chunk.x;
             minZ = maxZ = chunk.z;

@@ -111,4 +111,8 @@ public interface ICityStorage
 
     @Slow
     void deletePlot(@NotNull Plot plot) throws DataSourceException;
+
+    @Slow
+    @NotNull
+    Set<Plot> loadPlots(@NotNull Island island) throws DataSourceException;
 }

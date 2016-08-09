@@ -2,11 +2,16 @@ package br.com.gamemods.minecity.datasource.sql;
 
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.ICityStorage;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.Inconsistency;
 import br.com.gamemods.minecity.structure.Island;
+import br.com.gamemods.minecity.structure.Plot;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.Set;
 
 final class SQLIsland extends Island
 {
@@ -19,7 +24,19 @@ final class SQLIsland extends Island
     @NotNull
     City city;
 
+    SQLIsland(ICityStorage storage, int id, int minX, int maxX, int minZ, int maxZ, int chunkCount, @NotNull WorldDim world, Set<Plot> plots)
+    {
+        super(storage, id, world, plots);
+        this.minX = minX;
+        this.maxX = maxX;
+        this.minZ = minZ;
+        this.maxZ = maxZ;
+        this.chunkCount = chunkCount;
+        this.city = Inconsistency.getInconsistentCity();
+    }
+
     SQLIsland(ICityStorage storage, int id, int minX, int maxX, int minZ, int maxZ, int chunkCount, @NotNull WorldDim world)
+            throws DataSourceException
     {
         super(storage, id, world);
         this.minX = minX;
@@ -32,7 +49,7 @@ final class SQLIsland extends Island
 
     SQLIsland(ICityStorage storage, int id, ChunkPos chunk, @NotNull City city)
     {
-        super(storage, id, chunk.world);
+        super(storage, id, chunk.world, Collections.emptySet());
         minX = maxX = chunk.x;
         minZ = maxZ = chunk.z;
         chunkCount = 1;

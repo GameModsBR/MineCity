@@ -21,13 +21,26 @@ public abstract class Island implements ChunkOwner
     protected final ICityStorage storage;
     public final int id;
     public final WorldDim world;
-    protected Map<String, Plot> plots = new HashMap<>();
+    protected Map<String, Plot> plots;
 
-    public Island(@NotNull ICityStorage storage, int id, WorldDim world)
+    public Island(@NotNull ICityStorage storage, int id, WorldDim world, Set<Plot> plots)
     {
         this.storage = storage;
         this.id = id;
         this.world = world;
+        this.plots = new HashMap<>(plots.size());
+        plots.forEach(plot -> this.plots.put(plot.getIdentityName(), plot));
+    }
+
+    public Island(@NotNull ICityStorage storage, int id, WorldDim world) throws DataSourceException
+    {
+        this.storage = storage;
+        this.id = id;
+        this.world = world;
+
+        Set<Plot> plots = storage.loadPlots(this);
+        this.plots = new HashMap<>(plots.size());
+        plots.forEach(plot -> this.plots.put(plot.getIdentityName(), plot));
     }
 
     @Slow

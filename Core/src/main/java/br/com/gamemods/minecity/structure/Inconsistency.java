@@ -79,7 +79,7 @@ public class Inconsistency implements ChunkOwner
     {
         public InconsistentIsland(VoidStorage storage)
         {
-            super(storage, -1, WORLD);
+            super(storage, -1, WORLD, Collections.emptySet());
         }
 
         @NotNull
@@ -248,9 +248,10 @@ public class Inconsistency implements ChunkOwner
 
         @Override
         public void setDefaultMessage(@NotNull SimpleFlagHolder holder, @Nullable Message message)
+                throws DataSourceException
         {
             if(holder != city)
-                throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+                throw new DataSourceException("Inconsistent city!");
         }
 
         @Override
@@ -258,7 +259,7 @@ public class Inconsistency implements ChunkOwner
                 throws DataSourceException
         {
             if(holder != city)
-                throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+                throw new DataSourceException("Inconsistent city!");
         }
 
         @Override
@@ -266,21 +267,21 @@ public class Inconsistency implements ChunkOwner
                 throws DataSourceException
         {
             if(holder != city)
-                throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+                throw new DataSourceException("Inconsistent city!");
         }
 
         @Override
         public void allow(@NotNull SimpleFlagHolder holder, @NotNull PermissionFlag flag) throws DataSourceException
         {
             if(holder != city)
-                throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+                throw new DataSourceException("Inconsistent city!");
         }
 
         @Override
         public void allowAll(@NotNull SimpleFlagHolder holder) throws DataSourceException
         {
             if(holder != city)
-                throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+                throw new DataSourceException("Inconsistent city!");
         }
 
         @NotNull
@@ -307,7 +308,7 @@ public class Inconsistency implements ChunkOwner
                 throws DataSourceException
         {
             if(holder != city)
-                throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+                throw new DataSourceException("Inconsistent city!");
         }
 
         @NotNull
@@ -321,39 +322,46 @@ public class Inconsistency implements ChunkOwner
         @Override
         public int createPlot(Plot plot) throws DataSourceException
         {
-            throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+            throw new DataSourceException("Inconsistent city!");
         }
 
         @Override
         public void setOwner(@NotNull Plot plot, @Nullable PlayerID owner)
                 throws DataSourceException, IllegalStateException
         {
-            throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+            throw new DataSourceException("Inconsistent city!");
         }
 
         @Override
         public void setShape(@NotNull Plot plot, @NotNull Shape shape) throws DataSourceException
         {
-            throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+            throw new DataSourceException("Inconsistent city!");
         }
 
         @Override
         public void setName(@NotNull Plot plot, @NotNull String identity, @NotNull String name)
                 throws DataSourceException
         {
-            throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+            throw new DataSourceException("Inconsistent city!");
         }
 
         @Override
         public void setSpawn(@NotNull Plot plot, @NotNull BlockPos spawn) throws DataSourceException
         {
-            throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+            throw new DataSourceException("Inconsistent city!");
         }
 
         @Override
         public void deletePlot(@NotNull Plot plot) throws DataSourceException
         {
-            throw new UncheckedDataSourceException(new DataSourceException("Inconsistent city!"));
+            throw new DataSourceException("Inconsistent city!");
+        }
+
+        @NotNull
+        @Override
+        public Set<Plot> loadPlots(@NotNull Island island) throws DataSourceException
+        {
+            throw new DataSourceException("Inconsistent city!");
         }
     }
 }

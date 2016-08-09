@@ -60,7 +60,7 @@ public class SQLSource implements IDataSource
     }
 
     @Slow
-    private Collection<Island> loadIslands(Connection connection, int cityId) throws SQLException
+    private Collection<Island> loadIslands(Connection connection, int cityId) throws SQLException, DataSourceException
     {
         try(PreparedStatement pst = connection.prepareStatement(
                 "SELECT c.island_id, MIN(x), MAX(x), MIN(z), MAX(z), COUNT(*), i.world_id, w.dim, w.world, w.`name` " +

@@ -25,7 +25,7 @@ public final class BlockPos extends Point implements Serializable
         this.world = world;
     }
 
-    private BlockPos(@NotNull BlockPos old, int x, int y, int z)
+    public BlockPos(@NotNull BlockPos old, int x, int y, int z)
     {
         this(old.world, x, y, z);
         if(x>>4 == old.x>>4 && z>>4 == old.z>>4)

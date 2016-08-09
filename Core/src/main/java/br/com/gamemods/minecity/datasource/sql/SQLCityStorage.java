@@ -347,7 +347,8 @@ public class SQLCityStorage implements ICityStorage
                                   "WHERE world_id="+worldId+" AND island_id="+sqlIsland.id+" AND reserve=0 AND ("+sb+");"
                     );
 
-                    SQLIsland newIsland = new SQLIsland(this, islandId, minX, maxX, minZ, maxZ, group.size(), sqlIsland.world);
+                    //TODO Split plots
+                    SQLIsland newIsland = new SQLIsland(this, islandId, minX, maxX, minZ, maxZ, group.size(), sqlIsland.world, Collections.emptySet());
                     expected[i++] = newIsland.chunkCount;
                     islands.add(newIsland);
                 }
@@ -1133,6 +1134,48 @@ public class SQLCityStorage implements ICityStorage
             }
 
             transaction.commit();
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
+    @NotNull
+    @Override
+    public Set<Plot> loadPlots(@NotNull Island island) throws DataSourceException
+    {
+        try
+        {
+           try(PreparedStatement pst = connection.connect().prepareStatement(
+                   "SELECT plot_id,`name`,display_name,spawn_x,spawn_y,spawn_z,shape, player_id,player_uuid,player_name " +
+                   "FROM minecity_plots LEFT JOIN minecity_players ON player_id=owner " +
+                   "WHERE island_id=?"
+           ))
+           {
+               pst.setInt(1, island.id);
+               ResultSet result = pst.executeQuery();
+               if(!result.next())
+                   return Collections.emptySet();
+
+               HashSet<Plot> plots = new HashSet<>(3);
+               do
+               {
+                   PlayerID owner;
+                   int ownerId = result.getInt(8);
+                   if(ownerId > 0)
+                       owner = new PlayerID(source.uuid(result.getBytes(9)), result.getString(10));
+                   else
+                       owner = null;
+
+                   plots.add(new Plot(this, result.getInt(1), island, result.getString(2), result.getString(3), owner,
+                           new BlockPos(island.world, result.getInt(4), result.getInt(5), result.getInt(6)),
+                           Shape.deserializeBytes(result.getBytes(7))
+                   ));
+               } while(result.next());
+
+               return plots;
+           }
         }
         catch(SQLException e)
         {
