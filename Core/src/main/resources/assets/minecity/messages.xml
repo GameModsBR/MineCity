@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE minecity-messages SYSTEM "http://gamemods.com.br/minecity-messages-1.0.dtd">
+<!DOCTYPE minecity-messages SYSTEM "https://raw.githubusercontent.com/GameModsBR/MineCity/master/Core/src/main/resources/assets/minecity/messages.dtd">
 <minecity-messages modified="false" add-missing="true">
     <msg id="todo.group.list">Group List: ${child}</msg>
     <cmd>
@@ -105,7 +105,19 @@
                 <msg id="already">The spawn is already set to that position</msg>
                 <msg id="success">The ${name}'s spawn was changed successfully</msg>
             </setspawn>
-            <msg id="map.header"><darkgray>---------------<gray>-=[Map]=-</gray>--------------¬-<gray>-=[City Names]=-</gray></darkgray></msg>
+            <map>
+                <msg id="header"><darkgray>---------------<gray>-=[Map]=-</gray>--------------¬-<gray>-=[City Names]=-</gray></darkgray></msg>
+                <you>
+                    <city>
+                        <msg id="no-plot"><red>That's you inside ${city}</red></msg>
+                        <msg id="one-plot"><red>That's you inside ${city}</red><br/><br/>You are near ${plot}</msg>
+                        <msg id="reserved"><red>That's you!</red><br/><br/><i>This chunk is reserved to ${city}</i></msg>
+                        <msg id="nature"><red>That's you!</red></msg>
+                        <msg id="many-plots"><red>That's you inside ${city}</red><br/><br/>You are near:<br/> - ${plots}</msg>
+                        <msg id="many-plots-join"><br/><![CDATA[ - ]]></msg>
+                    </city>
+                </you>
+            </map>
             <deny>
                 <msg id="not-claimed">You are not inside a city</msg>
                 <msg id="no-permission">You are not allowed to change the ${city}'s permissions</msg>

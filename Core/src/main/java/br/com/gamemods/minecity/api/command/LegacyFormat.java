@@ -36,18 +36,21 @@ public enum  LegacyFormat
     };
     public final char code;
     public final boolean format;
+    public final String tag;
     public Object server;
 
     LegacyFormat(char c)
     {
         code = c;
         format = false;
+        tag = name().toLowerCase().replace("_", "");
     }
 
     LegacyFormat(char code, boolean format)
     {
         this.code = code;
         this.format = format;
+        tag = name().toLowerCase().replace("_", "");
     }
 
     @SuppressWarnings("unchecked")

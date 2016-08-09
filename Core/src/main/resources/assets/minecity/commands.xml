@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE minecity-commands SYSTEM "http://gamemods.com.br/minecity-commands-1.0.dtd">
+<!DOCTYPE minecity-commands SYSTEM "https://raw.githubusercontent.com/GameModsBR/MineCity/master/Core/src/main/resources/assets/minecity/commands.dtd">
 <minecity-commands modified="false" add-missing="true">
     <groups>
         <group id="root" cmd="minecity,mc">

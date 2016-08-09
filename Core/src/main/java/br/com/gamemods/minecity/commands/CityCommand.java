@@ -10,10 +10,7 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
-import br.com.gamemods.minecity.structure.City;
-import br.com.gamemods.minecity.structure.ClaimedChunk;
-import br.com.gamemods.minecity.structure.Inconsistency;
-import br.com.gamemods.minecity.structure.Island;
+import br.com.gamemods.minecity.structure.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -482,6 +479,7 @@ public class CityCommand
         // Names: 58
         int height = big? 20 : 10;
         StringBuilder[] lines = new StringBuilder[height-1];
+        List<Map<String,Object>> lineArgs = new ArrayList<>();
         int cursorHeight =  lines.length / 2;
         chunk = chunk.subtract(28, cursorHeight);
         Map<City, Float> cityDistances = new HashMap<>();
@@ -499,15 +497,49 @@ public class CityCommand
         for(int z=0; z< lines.length; z++)
         {
             @SuppressWarnings("MismatchedQueryAndUpdateOfStringBuilder")
-            StringBuilder sb = lines[z] = new StringBuilder();
+            StringBuilder sb = lines[z] = new StringBuilder("<msg><![CDATA[");
+            Map<String, Object> args = new HashMap<>();
+            lineArgs.add(args);
             LegacyFormat current = LegacyFormat.RESET;
+            City lastCity = null;
             for(int x = 0; x < 57; x++)
             {
                 if(x == 28 && z == cursorHeight)
                 {
-                    if(current != cursorColor)
-                        sb.append(current = cursorColor);
-                    sb.append(cursor);
+                    sb.append("]]><hover><tooltip>${you}</tooltip><").append(cursorColor.tag).append('>')
+                            .append(cursor)
+                            .append("</").append(cursorColor.tag).append("></hover><![CDATA[");
+
+                    if(cityAtPosition != null && !claimAtPosition.get().reserve)
+                    {
+                        Collection<Plot> plots = claimAtPosition.get().getPlots();
+                        int size = plots.size();
+                        if(size == 0)
+                            args.put("you", new Message("cmd.city.map.you.city.no-plot", "<msg><red>That's you inside ${city}</red></msg>",
+                                    new Object[]{"city", cursorColor+cityAtPosition.getName()}
+                            ));
+                        else if(size == 1)
+                            args.put("you", new Message("cmd.city.map.you.city.one-plot", "<msg><red>That's you inside ${city}</red><br/><br/>You are near ${plot}</msg>",
+                                    new Object[][]{
+                                            {"city", cursorColor+cityAtPosition.getName()},
+                                            {"plot", plots.iterator().next().getName()}
+                            }));
+                        else
+                            args.put("you", new Message("cmd.city.map.you.city.many-plots", "<msg><red>That's you inside ${city}</red><br/><br/>You are near:<br/> - ${plots}</msg>",
+                                    new Object[][]{
+                                            {"city", cursorColor+cityAtPosition.getName()},
+                                            {"plots", Message.list(plots.stream().map(Plot::getName).sorted().map(Message::new).toArray(Message[]::new),
+                                                    new Message("cmd.city.map.you.city.many-plots-join","\n - "))
+                                            }
+                                    }
+                            ));
+                    }
+                    else if(cityAtPosition != null)
+                        args.put("you", new Message("cmd.city.map.you.reserved", "<msg><red>That's you!</red><br/><br/><i>This chunk is reserved to ${city}</i></msg>",
+                                new Object[]{"city", cursorColor+cityAtPosition.getName()}
+                        ));
+                    else
+                        args.put("you", new Message("cmd.city.map.you.nature", LegacyFormat.RED+"That's you!"));
                     continue;
                 }
 
@@ -516,6 +548,29 @@ public class CityCommand
                 if(cache != null)
                 {
                     cache.used = time;
+                    if(cache.owner != null)
+                    {
+                        City city = cache.owner;
+                        LegacyFormat color = cache.color;
+                        if(lastCity != city)
+                        {
+                            if(lastCity != null)
+                                sb.append("]]></").append(current.tag).append("></hover>");
+                            else
+                                sb.append("]]>");
+
+                            sb.append("<hover><tooltip>${city-").append(city.getId()).append("}</tooltip><").append(color.tag).append("><![CDATA[");
+                            args.put("city-"+city.getId(), color+city.getName());
+                            lastCity = city;
+                        }
+                    }
+                    else
+                    {
+                        if(lastCity != null)
+                            sb.append("]]></").append(current.tag).append("></hover><![CDATA[");
+                        lastCity = null;
+                    }
+
                     if(current != cache.color)
                         sb.append(current = cache.color);
                     sb.append(cache.c);
@@ -527,6 +582,10 @@ public class CityCommand
                 Optional<ClaimedChunk> claim = mineCity.getChunk(pos);
                 if(!claim.isPresent())
                 {
+                    if(lastCity != null)
+                        sb.append("]]></").append(current.tag).append("></hover><![CDATA[");
+                    lastCity = null;
+
                     sb.append(unloaded);
                     mineCity.mapService.submit(()->{
                         try
@@ -555,8 +614,19 @@ public class CityCommand
                     updateDistance.accept(city, pos);
 
                     LegacyFormat color = city.getColor();
-                    if(color != current)
-                        sb.append(current = color);
+                    if(lastCity != city)
+                    {
+                        if(lastCity != null)
+                            sb.append("]]></").append(current.tag).append("></hover>");
+                        else
+                            sb.append("]]>");
+
+                        sb.append("<hover><tooltip>${city-").append(city.getId()).append("}</tooltip><").append(color.tag).append("><![CDATA[");
+                        args.put("city-"+city.getId(), color+city.getName());
+                        lastCity = city;
+                    }
+
+                    current = color;
 
                     ClaimedChunk cc = claim.get();
                     int plots = cc.getPlots().size();
@@ -567,6 +637,10 @@ public class CityCommand
                 }
                 else
                 {
+                    if(lastCity != null)
+                        sb.append("]]></").append(current.tag).append("></hover><![CDATA[");
+                    lastCity = null;
+
                     if(current != LegacyFormat.BLACK)
                         sb.append(current = LegacyFormat.BLACK);
                     sb.append(unclaimed);
@@ -575,7 +649,11 @@ public class CityCommand
                 }
             }
 
-            sb.append(LegacyFormat.DARK_GRAY).append("| ");
+            if(lastCity != null)
+                sb.append("]]></").append(current.tag).append("></hover><![CDATA[");
+
+            args.put("name", "");
+            sb.append(LegacyFormat.DARK_GRAY).append("| ${name}]]></msg>");
         }
 
         int line = lines.length-1;
@@ -583,9 +661,18 @@ public class CityCommand
         {
             City city = entry.getKey();
             String name = city.getName();
+            Object val;
+            LegacyFormat color = city.getColor();
             if(name.length() > 15)
-                name = name.substring(0,14)+"\u2192";
-            lines[line--].append(city.getColor()).append(name);
+                val = new Message("", "<msg><hover><tooltip>${name}</tooltip><reset>${short}</reset></hover></msg>",
+                        new Object[][]{
+                                {"short", color+name.substring(0,14)+"\u2192"},
+                                {"name", color+name}
+                        }
+                );
+            else
+                val = color +name;
+            lineArgs.get(line--).put("name", val);
             if(line < 0)
                 break;
         }
@@ -595,7 +682,7 @@ public class CityCommand
                 "<msg><darkgray>---------------<gray>-=[Map]=-</gray>--------------¬-<gray>-=[City Names]=-</gray></darkgray></msg>"
         );
         for(int i = 0; i < lines.length; i++)
-            messages[i+1] = new Message("", lines[i].toString());
+            messages[i + 1] = new Message("", lines[i].toString(), lineArgs.get(i).entrySet().stream().map(e-> new Object[]{e.getKey(), e.getValue()}).toArray(Object[][]::new));
 
         cmd.sender.send(messages);
 

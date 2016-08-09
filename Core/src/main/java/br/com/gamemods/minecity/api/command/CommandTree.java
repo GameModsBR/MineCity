@@ -170,8 +170,10 @@ public final class CommandTree
         Document doc;
         try
         {
-            doc = DocumentBuilderFactory.newInstance()
-                    .newDocumentBuilder().parse(xml);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setValidating(false);
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            doc = factory.newDocumentBuilder().parse(xml);
         }
         catch(ParserConfigurationException e)
         {
