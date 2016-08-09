@@ -217,7 +217,7 @@ public class CityCommand
     {
         ChunkPos chunk = cmd.position.getChunk();
         Optional<ClaimedChunk> claim = mineCity.getChunk(chunk);
-        City city = claim.flatMap(ClaimedChunk::getCity).orElse(null);
+        City city = claim.filter(c-> !c.reserve).flatMap(ClaimedChunk::getCity).orElse(null);
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.disclaim.not-claimed",
                     "This chunk is not claimed by any city"
@@ -558,7 +558,9 @@ public class CityCommand
                     if(color != current)
                         sb.append(current = color);
 
-                    char c = claim.get().reserve? reserved : claimed;
+                    ClaimedChunk cc = claim.get();
+                    int plots = cc.getPlots().size();
+                    char c = cc.reserve? reserved : plots == 0? claimed : plots == 1? oneLot : multipleLots;
                     sb.append(c);
 
                     mineCity.mapCache.put(pos, new MapCache(current, c, city));

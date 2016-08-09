@@ -33,16 +33,16 @@ public class Cuboid implements Shape
 
         return
                // Chunk's min point is inside the shape
-               min.x >= ix && max.x <= ix && min.z >= iz && max.z <= iz
+               min.x <= ix && max.x >= ix && min.z <= iz && max.z >= iz
 
                // Chunk's max point is inside the shape
-            || min.x >= ax && max.x <= ax && min.z >= az && max.z <= az
+            || min.x <= ax && max.x >= ax && min.z <= az && max.z >= az
 
                // Shape's min point is inside the chunk
-            || ix >= min.x && ax <= min.x && iz >= min.z && az <= min.z
+            || ix <= min.x && ax >= min.x && iz <= min.z && az >= min.z
 
                // Shape's max point is inside the chunk
-            || ix >= max.x && ax <= max.x && iz >= max.z && az <= max.z
+            || ix <= max.x && ax >= max.x && iz <= max.z && az >= max.z
             ;
     }
 

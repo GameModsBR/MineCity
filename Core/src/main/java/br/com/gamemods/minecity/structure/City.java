@@ -450,7 +450,7 @@ public final class City extends ExceptStoredHolder
             throw new IllegalArgumentException("Cannot disclaim the spawn chunk");
 
         Optional<ClaimedChunk> claim = mineCity.getOrFetchChunk(chunk);
-        Island island = claim.flatMap(ClaimedChunk::getIsland).filter(i-> i.getCity().equals(this))
+        Island island = claim.filter(c-> !c.reserve).flatMap(ClaimedChunk::getIsland).filter(i-> i.getCity().equals(this))
                 .orElseThrow(()-> new IllegalArgumentException("The chunk " + chunk + " is not owned by the city " + identityName));
 
         if(!claim.get().getPlots().isEmpty())
