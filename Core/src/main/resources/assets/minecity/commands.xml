@@ -14,6 +14,9 @@
         <group id="group.manager" parent="group" cmd="manager,managers">
             <desc>All group managers related commands</desc>
         </group>
+        <group id="plot" parent=",city,root" cmd="plot">
+            <desc>All plot related commands</desc>
+        </group>
         <group id="allow" parent="city" cmd="allow">
             <desc>Gives permission</desc>
         </group>
@@ -92,6 +95,11 @@
         </command>
         <command id="group.remove.manager" parent="group.manager" cmd="remove">
             <desc>Adds a player as a group manager</desc>
+        </command>
+
+        <!-- Plots -->
+        <command id="plot.create" parent="plot" cmd="create">
+            <desc>Creates a new plot</desc>
         </command>
 
         <!-- Default permissions -->

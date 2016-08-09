@@ -8,10 +8,7 @@ import br.com.gamemods.minecity.api.command.CommandTree;
 import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.*;
-import br.com.gamemods.minecity.commands.CityCommand;
-import br.com.gamemods.minecity.commands.GeneralCommands;
-import br.com.gamemods.minecity.commands.GroupCommand;
-import br.com.gamemods.minecity.commands.PermissionCommands;
+import br.com.gamemods.minecity.commands.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.IDataSource;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
@@ -76,6 +73,7 @@ public class MineCity
         commands.registerCommands(new PermissionCommands(this));
         commands.registerCommands(new GroupCommand(this));
         commands.registerCommands(GeneralCommands.class);
+        commands.registerCommands(PlotCommand.class);
         Inconsistency.setMineCity(this);
     }
 
@@ -120,16 +118,21 @@ public class MineCity
     }
 
     /**
-     * @deprecated It's impossible to know if the optional is empty because the chunk is unloaded or because
-     * the chunk is not claimed
+     * Gets a chunk claim data from the memory when it's available or fetches from the database when it's not
+     * @return Empty optional if the chunk is unloaded and not claimed. Non-empty optional may still contains an
+     * unclaimed chunk that is already loaded.
      */
     @Slow
-    @Deprecated
+    public Optional<ClaimedChunk> getOrFetchChunkUnchecked(@NotNull ChunkPos pos)
+    {
+        return Optional.ofNullable(getChunk(pos).orElseGet((DBSupplier<ClaimedChunk>) () -> dataSource.getCityChunk(pos)));
+    }
+
     public Optional<ClaimedChunk> getOrFetchChunk(@NotNull ChunkPos pos) throws DataSourceException
     {
         try
         {
-            return Optional.ofNullable(getChunk(pos).orElseGet((DBSupplier<ClaimedChunk>) () -> dataSource.getCityChunk(pos)));
+            return getOrFetchChunkUnchecked(pos);
         }
         catch(UncheckedDataSourceException e)
         {

@@ -3,10 +3,8 @@ package br.com.gamemods.minecity.api.command;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.unchecked.UFunction;
-import br.com.gamemods.minecity.api.world.BlockPos;
-import br.com.gamemods.minecity.api.world.Direction;
-import br.com.gamemods.minecity.api.world.EntityPos;
-import br.com.gamemods.minecity.api.world.MinecraftEntity;
+import br.com.gamemods.minecity.api.world.*;
+import br.com.gamemods.minecity.structure.Selection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +27,17 @@ public interface CommandSender
     }
 
     default String confirm(UFunction<CommandSender, CommandResult<?>> onConfirm)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @NotNull
+    default Selection getSelection(WorldDim world)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    default void giveSelectionTool()
     {
         throw new UnsupportedOperationException();
     }

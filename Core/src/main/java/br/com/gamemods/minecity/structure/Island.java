@@ -31,7 +31,7 @@ public abstract class Island implements ChunkOwner
     }
 
     @Slow
-    public Plot create(@NotNull String name, @Nullable PlayerID owner, @NotNull BlockPos spawn, @NotNull Shape shape)
+    public Plot createPlot(@NotNull String name, @Nullable PlayerID owner, @NotNull BlockPos spawn, @NotNull Shape shape)
             throws DataSourceException
     {
         String identity = StringUtil.identity(name);
@@ -70,6 +70,9 @@ public abstract class Island implements ChunkOwner
 
     public Optional<Plot> getPlotAt(BlockPos pos)
     {
+        if(!pos.world.equals(world))
+            return Optional.empty();
+
         for(Plot plot : plots.values())
             if(plot.getShape().contains(pos.x, pos.y, pos.z))
                 return Optional.of(plot);
@@ -77,7 +80,12 @@ public abstract class Island implements ChunkOwner
         return Optional.empty();
     }
 
-    public Set<String> getPlotNames()
+    public Stream<String> getPlotNames()
+    {
+        return plots.values().stream().map(Plot::getName);
+    }
+
+    public Set<String> getPlotIdNames()
     {
         return Collections.unmodifiableSet(plots.keySet());
     }

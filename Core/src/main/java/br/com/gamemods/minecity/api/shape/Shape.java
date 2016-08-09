@@ -61,7 +61,7 @@ public interface Shape
                 ;
     }
 
-    default boolean contains(@NotNull BlockPos pos)
+    default boolean contains(@NotNull Point pos)
     {
         return contains(pos.x, pos.y, pos.z);
     }
@@ -153,6 +153,22 @@ public interface Shape
             default:
                 throw new UnsupportedOperationException("Unsupported Type: "+type);
         }
+    }
+
+    default boolean overlaps(Shape shape)
+    {
+        if(shape.getType() == Type.EMPTY)
+            return false;
+
+        int sizeA = size();
+        int sizeB = shape.size();
+
+        Shape smaller = sizeA <= sizeB? this : shape;
+        Shape bigger  = sizeA <= sizeB? shape : this;
+
+        return CollectionUtil.parallelStream(smaller.blockIterator())
+                .filter(p-> bigger.contains(p[0], p[1], p[2]))
+                .findAny().isPresent();
     }
 
     enum Type {

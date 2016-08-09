@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 public class CityCommandTest
 {
     private TestData test = new TestData();
-    private TestPlayer joserobjr = new TestPlayer(test.joserobjr, new EntityPos(test.overWorld, 440,65,338));
+    private TestPlayer joserobjr = new TestPlayer(test, test.joserobjr, new EntityPos(test.overWorld, 440,65,338));
     private CityCommand cmd = new CityCommand(test.mineCity);
 
     @Test

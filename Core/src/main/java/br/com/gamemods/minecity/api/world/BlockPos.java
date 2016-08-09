@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.api.world;
 
+import br.com.gamemods.minecity.api.shape.Point;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,49 +10,58 @@ import java.util.function.BiFunction;
 /**
  * A block in a world
  */
-public final class BlockPos implements Serializable
+public final class BlockPos extends Point implements Serializable
 {
     private static final long serialVersionUID = 3427762977942769143L;
 
     @NotNull
     public final WorldDim world;
-    public final int x, y, z;
 
     private ChunkPos chunk;
 
     public BlockPos(@NotNull WorldDim world, int x, int y, int z)
     {
+        super(x, y, z);
         this.world = world;
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    }
+
+    private BlockPos(@NotNull BlockPos old, int x, int y, int z)
+    {
+        this(old.world, x, y, z);
+        if(x>>4 == old.x>>4 && z>>4 == old.z>>4)
+            chunk = old.chunk;
     }
 
     @NotNull
+    @Override
     public <T> BlockPos apply(@Nullable T x, @Nullable T y, @Nullable T z, @NotNull BiFunction<Integer, T, Integer> op)
     {
-        return new BlockPos(world, op.apply(this.x, x), op.apply(this.y, y), op.apply(this.z, z));
+        return new BlockPos(this, op.apply(this.x, x), op.apply(this.y, y), op.apply(this.z, z));
     }
 
     @NotNull
+    @Override
     public BlockPos apply(@NotNull Direction direction, double multiplier, @NotNull BiFunction<Integer, Double, Integer> op)
     {
         return apply(direction.x*multiplier, direction.y*multiplier, direction.z*multiplier, op);
     }
 
     @NotNull
+    @Override
     public BlockPos applyI(@NotNull Direction direction, int multiplier, @NotNull BiFunction<Integer, Integer, Integer> op)
     {
         return apply(direction.x*multiplier, direction.y*multiplier, direction.z*multiplier, op);
     }
 
     @NotNull
+    @Override
     public BlockPos add(@NotNull Direction direction, double multiplier)
     {
         return apply(direction, multiplier, (a,b)-> (int)(a+b));
     }
 
     @NotNull
+    @Override
     public BlockPos subtract(@NotNull Direction direction, double multiplier)
     {
         return apply(direction, multiplier, (a,b)-> (int)(a-b));
@@ -59,56 +69,64 @@ public final class BlockPos implements Serializable
 
 
     @NotNull
+    @Override
     public BlockPos add(@NotNull Direction direction, int multiplier)
     {
         return applyI(direction, multiplier, (a,b)-> a+b);
     }
 
     @NotNull
+    @Override
     public BlockPos subtract(@NotNull Direction direction, int multiplier)
     {
         return applyI(direction, multiplier, (a,b)-> a-b);
     }
 
     @NotNull
+    @Override
     public BlockPos add(@NotNull Direction direction)
     {
         return add(direction.x, direction.y, direction.z);
     }
 
     @NotNull
+    @Override
     public BlockPos subtract(@NotNull Direction direction)
     {
         return subtract(direction.x, direction.y, direction.z);
     }
 
     @NotNull
+    @Override
     public BlockPos add(int x, int y, int z)
     {
-        return new BlockPos(world, this.x+x, this.y+y, this.z+z);
+        return new BlockPos(this, this.x+x, this.y+y, this.z+z);
     }
 
     @NotNull
+    @Override
     public BlockPos subtract(int x, int y, int z)
     {
-        return new BlockPos(world, this.x-x, this.y-y, this.z-z);
+        return new BlockPos(this, this.x-x, this.y-y, this.z-z);
     }
 
     @NotNull
+    @Override
     public BlockPos multiply(int x, int y, int z)
     {
-        return new BlockPos(world, this.x*x, this.y*y, this.z*z);
+        return new BlockPos(this, this.x*x, this.y*y, this.z*z);
     }
 
     @NotNull
+    @Override
     public BlockPos divide(int x, int y, int z)
     {
-        return new BlockPos(world, this.x/x, this.y/y, this.z/z);
+        return new BlockPos(this, this.x/x, this.y/y, this.z/z);
     }
 
     public EntityPos toEntity(float pitch, float yaw)
     {
-        EntityPos pos = new EntityPos(world, x+0.5, y+0.5, z+0.5, pitch, yaw);
+        EntityPos pos = new EntityPos(this, pitch, yaw);
         pos.block = this;
         return pos;
     }

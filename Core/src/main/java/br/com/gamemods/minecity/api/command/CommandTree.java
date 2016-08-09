@@ -64,7 +64,6 @@ public final class CommandTree
         return result.run(sender);
     }
 
-    @SuppressWarnings("unused")
     public Set<String> getRootCommands()
     {
         return Collections.unmodifiableSet(tree.keySet());

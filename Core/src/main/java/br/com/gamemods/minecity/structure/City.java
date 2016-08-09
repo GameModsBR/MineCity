@@ -495,6 +495,37 @@ public final class City extends ExceptStoredHolder
         }
     }
 
+    public Optional<Plot> getPlot(String name)
+    {
+        return islands().stream().map(i-> i.getPlot(name)).filter(Optional::isPresent).map(Optional::get).findAny();
+    }
+
+    public Stream<String> plotNames()
+    {
+        return islands().stream().flatMap(Island::getPlotNames);
+    }
+
+    public Stream<String> plotIdNames()
+    {
+        return islands().stream().flatMap(i-> i.getPlotIdNames().stream());
+    }
+
+    public Stream<Plot> plots()
+    {
+        return islands().stream().flatMap(i-> i.getPlots().stream());
+    }
+
+    public Optional<Plot> getPlotAt(BlockPos pos)
+    {
+        return islands().stream().filter(i-> pos.world.equals(i.world)).map(i-> i.getPlotAt(pos))
+                .filter(Optional::isPresent).map(Optional::get).findAny();
+    }
+
+    public Stream<Plot> getPlotsAt(ChunkPos pos)
+    {
+        return islands().stream().filter(i-> pos.world.equals(i.world)).flatMap(i-> i.getPlotsAt(pos));
+    }
+
     @Slow
     protected void reserveChunks(Island island) throws DataSourceException, IllegalStateException
     {

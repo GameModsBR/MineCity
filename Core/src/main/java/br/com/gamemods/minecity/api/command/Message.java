@@ -65,9 +65,9 @@ public class Message
         this(id, simple, (Object[][]) null);
     }
 
-    public Message(@NotNull String id)
+    public Message(@NotNull String simple)
     {
-        this(id, id);
+        this("", simple);
     }
 
     @NotNull

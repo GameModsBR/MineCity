@@ -6,6 +6,8 @@ import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.forge.ForgeUtil;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.IChatComponent;
@@ -21,6 +23,17 @@ public class ForgeTransformer extends MessageTransformer
         Component component = toComponent(message);
         component.apply(Locale.getDefault(), message.getArgs());
         return toForge(component);
+    }
+
+    public NBTTagList toLore(Message message)
+    {
+        String[] lines = toMultilineLegacy(message);
+
+        NBTTagList tagList = new NBTTagList();
+        for(String line : lines)
+            tagList.appendTag(new NBTTagString(line));
+
+        return tagList;
     }
 
     public IChatComponent[] toMultilineForge(Message message)

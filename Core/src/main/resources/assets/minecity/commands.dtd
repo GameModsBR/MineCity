@@ -20,7 +20,7 @@
         cmd CDATA #REQUIRED
         parent CDATA #IMPLIED>
 
-<!ENTITY % Commands "%CityCommands;|%GroupCommands;|%GeneralCommands;">
+<!ENTITY % Commands "%CityCommands;|%GroupCommands;|%GeneralCommands;|%PlotCommands;">
 <!ENTITY % CityCommands "%CityManageCommands;|%CityPermCommands;">
 <!ENTITY % CityManageCommands "city.create|city.claim|city.disclaim|city.spawn|city.rename|city.transfer|city.setspawn|city.map|city.delete">
 <!ENTITY % CityPermCommands "%CityAllowCommands;|%CityDenyCommands;|%CityAllowAllCommands;|%CityDenyAllCommands;">
@@ -30,3 +30,4 @@
 <!ENTITY % CityAllowAllCommands "city.allow.all.enter|city.allow.all.click|city.allow.all.pickup|city.allow.all.open|city.allow.all.pvp|city.allow.all.pvc">
 <!ENTITY % GroupCommands "group.create|group.add|group.remove|group.list|group.info|group.delete|group.add.manager|group.remove.manager">
 <!ENTITY % GeneralCommands "confirm">
+<!ENTITY % PlotCommands "plot.create">

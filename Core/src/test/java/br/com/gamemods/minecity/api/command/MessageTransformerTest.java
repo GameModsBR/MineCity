@@ -82,7 +82,7 @@ public class MessageTransformerTest
     @Test
     public void testLegacy() throws Exception
     {
-        Message message = new Message("test.bold");
+        Message message = new Message("test.bold", "");
         assertEquals("This message has a bold word", transformer.toSimpleText(message));
 
         String legacy = transformer.toLegacy(new Message("","<msg>A <b>bold</b> word</msg>"));

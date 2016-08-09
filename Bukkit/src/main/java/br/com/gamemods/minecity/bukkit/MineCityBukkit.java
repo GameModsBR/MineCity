@@ -108,7 +108,6 @@ public class MineCityBukkit implements Server
         return world(pos.world).map(world -> new Location(world, pos.x, pos.y, pos.z, pos.yaw, pos.pitch));
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public Optional<PlayerID> getPlayerId(String name)
     {

@@ -232,6 +232,22 @@
             <msg id="expired"><darkred>MineCity> </darkred><red>The action were not confirmed and the confirmation code has expired.</red></msg>
             <msg id="not-pending">You don't have any pending confirmation</msg>
         </confirm>
+        <plot>
+            <create>
+                <msg id="no-selection">Select the plot area and then execute this command again.</msg>
+                <msg id="name-too-short">Please type a bigger name</msg>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="no-permission">You don't have permission to create plots inside ${city}</msg>
+                <msg id="outside">Stand inside the plot and execute this command again.</msg>
+                <msg id="conflict">The name ${name} conflicts with ${conflict}</msg>
+                <overlaps>
+                    <msg id="unclaimed">The selected area overlaps an unclaimed chunk located at: X: ${x} and Z: ${z}</msg>
+                    <msg id="plots">The selected area overlaps ${count} plots: ${plots}</msg>
+                    <msg id="plot">The selected area overlaps the plot ${name}</msg>
+                </overlaps>
+                <msg id="success">The plot ${name} was created successfully</msg>
+            </create>
+        </plot>
     </cmd>
     <action>
         <msg id="denied">You don't have permission to perform this action.</msg>
@@ -243,6 +259,15 @@
             <msg id="world-not-found">The destiny world ${name} was not found or is not loaded</msg>
         </teleport>
     </action>
+    <action>
+        <msg id="give.tool.inventory-full">You haven't received the tool because your inventory is full.</msg>
+    </action>
+    <tool>
+        <selection>
+            <msg id="title"><aqua>Selection Tool</aqua></msg>
+            <msg id="lore">Right click two blocks in the world<br/>to mark a cuboid selection.</msg>
+        </selection>
+    </tool>
     <msg id="task.player.load.groups.failed">
         Oops, an error occurred while loading your groups: ${error}
     </msg>

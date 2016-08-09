@@ -63,6 +63,12 @@ public class Empty implements Shape
     }
 
     @Override
+    public boolean overlaps(Shape shape)
+    {
+        return false;
+    }
+
+    @Override
     public Iterator<int[]> blockIterator()
     {
         return Collections.emptyIterator();

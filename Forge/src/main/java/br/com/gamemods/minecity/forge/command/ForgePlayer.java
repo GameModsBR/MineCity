@@ -2,9 +2,7 @@ package br.com.gamemods.minecity.forge.command;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
-import br.com.gamemods.minecity.api.command.CommandResult;
-import br.com.gamemods.minecity.api.command.CommandSender;
-import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.GroupID;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.unchecked.UFunction;
@@ -13,20 +11,32 @@ import br.com.gamemods.minecity.forge.MineCityForgeMod;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Inconsistency;
-import net.minecraft.entity.player.EntityPlayer;
+import br.com.gamemods.minecity.structure.Selection;
+import io.netty.buffer.Unpooled;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagByte;
+import net.minecraft.network.Packet;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 
 import static br.com.gamemods.minecity.api.CollectionUtil.optionalStream;
 import static br.com.gamemods.minecity.api.permission.FlagHolder.can;
 
-public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements MinecraftEntity
+public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements MinecraftEntity
 {
     private final PlayerID identity;
     public ChunkPos lastChunk;
@@ -38,8 +48,9 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements Min
     private UFunction<CommandSender, CommandResult<?>> confirmAction;
     private String confirmCode;
     private short confirmExpires;
+    private ForgeSelection selection;
 
-    public ForgePlayer(MineCityForgeMod mod, EntityPlayer player)
+    public ForgePlayer(MineCityForgeMod mod, EntityPlayerMP player)
     {
         super(mod, player);
         identity = new PlayerID(player.getUniqueID(), player.getCommandSenderName());
@@ -66,9 +77,41 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements Min
 
     public void tick()
     {
+        checkStepOnFakeBlock();
         tickConfirm();
         updateGroups();
         checkPosition();
+    }
+
+    public void checkStepOnFakeBlock()
+    {
+        EntityPlayerMP sender = this.sender;
+        if(selection == null || selection.a == null || selection.display.isEmpty()
+                || !selection.world.equals(mod.world(sender.worldObj)))
+            return;
+
+        int x = (int) sender.posX;
+        int y = (int) sender.posY;
+        int z = (int) sender.posZ;
+        if(x == lastX && y == lastY && z == lastZ)
+            return;
+
+        for(int i = 0; i <= 1; i++)
+        {
+            y--;
+            if(sender.worldObj.getBlock(x, y, z).isOpaqueCube())
+                return;
+
+            for(BlockPos pos : selection.display.keySet())
+            {
+                if(pos.x == x && pos.y == y && pos.z == z)
+                {
+                    selection.display.remove(pos);
+                    sendPacket(new S23PacketBlockChange(x, y, z, sender.worldObj));
+                    return;
+                }
+            }
+        }
     }
 
     public void tickConfirm()
@@ -159,9 +202,32 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements Min
     }
 
     @Override
+    public void giveSelectionTool()
+    {
+        ItemStack stack = new ItemStack(Items.wooden_hoe);
+        stack.setTagInfo("MineCity", new NBTTagByte((byte)1));
+        stack.setStackDisplayName(mod.transformer.toLegacy(new Message("tool.selection.title", LegacyFormat.AQUA+"Selection Tool")));
+        stack.setTagInfo("Lore", mod.transformer.toLore(new Message("tool.selection.lore", "Selects an area in the world")));
+        if(!sender.inventory.addItemStackToInventory(stack))
+            send(CommandFunction.messageFailed(new Message(
+                    "action.give.tool.inventory-full",
+                    "You haven't received the tool because your inventory is full."
+            )));
+    }
+
+    @NotNull
+    @Override
+    public ForgeSelection getSelection(WorldDim world)
+    {
+        if(selection == null || !selection.world.equals(world))
+            selection = new ForgeSelection(world);
+        return selection;
+    }
+
+    @Override
     public boolean kick(Message message)
     {
-        ((EntityPlayerMP)sender).playerNetServerHandler.kickPlayerFromServer(mod.transformer.toLegacy(message));
+        sender.playerNetServerHandler.kickPlayerFromServer(mod.transformer.toLegacy(message));
         return true;
     }
 
@@ -210,7 +276,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements Min
             );
 
         sender.mountEntity(null);
-        mod.server.getConfigurationManager().transferPlayerToDimension((EntityPlayerMP) sender, pos.world.dim, worldServer.getDefaultTeleporter());
+        mod.server.getConfigurationManager().transferPlayerToDimension(sender, pos.world.dim, worldServer.getDefaultTeleporter());
         sender.setPositionAndUpdate(x, y, z);
 
         return null;
@@ -290,5 +356,281 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayer> implements Min
     public Set<GroupID> getGroupIds()
     {
         return groups == null? Collections.emptySet() : groups;
+    }
+
+    public void sendPacket(Packet packet)
+    {
+        sender.playerNetServerHandler.sendPacket(packet);
+    }
+
+    public void sendFakeBlock(int x, int y, int z, Block block, int metadata)
+    {
+        sendFakeBlock(x, y, z, Block.getIdFromBlock(block), metadata);
+    }
+
+    public void sendFakeBlock(int x, int y, int z, int block, int metadata)
+    {
+        PacketBuffer buf = new PacketBuffer(Unpooled.buffer(4 + 1 + 4 + 4 + 1));
+        buf.writeInt(x);
+        buf.writeByte(y);
+        buf.writeInt(z);
+        buf.writeVarIntToBuffer(block);
+        buf.writeByte(metadata);
+
+        S23PacketBlockChange empty = new S23PacketBlockChange();
+        try
+        {
+            empty.readPacketData(buf);
+            sendPacket(empty);
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public class ForgeSelection extends Selection
+    {
+        private Map<BlockPos, Block> display = new HashMap<>();
+
+        private ForgeSelection(@NotNull WorldDim world)
+        {
+            super(world);
+        }
+
+        @Override
+        public void select(BlockPos point)
+        {
+            super.select(point);
+            updateDisplay();
+        }
+
+        public void updateDisplay()
+        {
+            Map<BlockPos, Block> last = display;
+            Map<BlockPos, Block> display = new HashMap<>(last.size());
+
+            if(a != null)
+            {
+                if(b == null)
+                {
+                    display.put(a, Blocks.glowstone);
+                    for(Direction direction: Direction.cardinal)
+                        display.put(a.add(direction), Blocks.gold_block);
+                }
+                else
+                {
+                    //TODO: Simplify
+
+                    int range = 5;
+                    int dx = b.x - a.x;
+                    int dy = b.y - a.y;
+                    int dz = b.z - a.z;
+                    BlockPos c;
+
+                    // Min corner
+                    // x
+                    for(int ix = 1; ix < range && a.x+ix < b.x; ix++)
+                        display.put(a.add(dx-ix, 0, 0), Blocks.glass);
+
+                    c = a.add(0, dy, 0);
+                    for(int ix = 1; ix < range && a.x+ix < b.x; ix++)
+                        display.put(c.add(ix, 0, 0), Blocks.glass);
+
+                    c = a.add(0, 0, dz);
+                    for(int ix = 1; ix < range && a.x+ix < b.x; ix++)
+                        display.put(c.add(ix, 0, 0), Blocks.glass);
+
+                    for(int ix = 1; ix < range && a.x+ix < b.x; ix++)
+                        display.put(a.add(ix, 0, 0), Blocks.gold_block);
+
+                    // y
+                    for(int iy = 1; iy < range && a.y+iy < b.y; iy++)
+                        display.put(a.add(0, dy-iy, 0), Blocks.glass);
+
+                    c = a.add(dx, 0, 0);
+                    for(int iy = 1; iy < range && a.y+iy < b.y; iy++)
+                        display.put(c.add(0, iy, 0), Blocks.glass);
+
+                    c = a.add(0, 0, dz);
+                    for(int iy = 1; iy < range && a.y+iy < b.y; iy++)
+                        display.put(c.add(0, iy, 0), Blocks.glass);
+
+                    for(int iy = 1; iy < range && a.y+iy < b.y; iy++)
+                        display.put(a.add(0, iy, 0), Blocks.gold_block);
+
+                    // z
+                    for(int iz = 1; iz < range && a.z+iz < b.z; iz++)
+                        display.put(a.add(0, 0, dz-iz), Blocks.glass);
+
+                    c = a.add(dx, 0, 0);
+                    for(int iz = 1; iz < range && a.z+iz < b.z; iz++)
+                        display.put(c.add(0, 0, iz), Blocks.glass);
+
+                    c = a.add(0, dy, 0);
+                    for(int iz = 1; iz < range && a.z+iz < b.z; iz++)
+                        display.put(c.add(0, 0, iz), Blocks.glass);
+
+                    for(int iz = 1; iz < range && a.z+iz < b.z; iz++)
+                        display.put(a.add(0, 0, iz), Blocks.gold_block);
+
+                    // Max corner
+                    // x
+                    for(int ix = 1; ix < range && b.x-ix > a.x; ix++)
+                        display.put(b.subtract(dx-ix, 0, 0), Blocks.glass);
+
+                    c = b.subtract(0, dy, 0);
+                    for(int ix = 1; ix < range && b.x-ix > a.x; ix++)
+                        display.put(c.subtract(ix, 0, 0), Blocks.glass);
+
+                    c = b.subtract(0, 0, dz);
+                    for(int ix = 1; ix < range && b.x-ix > a.x; ix++)
+                        display.put(c.subtract(ix, 0, 0), Blocks.glass);
+
+                    for(int ix = 1; ix < range && b.x-ix > a.x; ix++)
+                        display.put(b.subtract(ix, 0, 0), Blocks.lapis_block);
+
+                    // y
+                    for(int iy = 1; iy < range && b.y-iy > a.y; iy++)
+                        display.put(b.subtract(0, dy-iy, 0), Blocks.glass);
+
+                    c = b.subtract(dx, 0, 0);
+                    for(int iy = 1; iy < range && b.y-iy > a.y; iy++)
+                        display.put(c.subtract(0, iy, 0), Blocks.glass);
+
+                    c = b.subtract(0, 0, dz);
+                    for(int iy = 1; iy < range && b.y-iy > a.y; iy++)
+                        display.put(c.subtract(0, iy, 0), Blocks.glass);
+
+                    for(int iy = 1; iy < range && b.y-iy > a.y; iy++)
+                        display.put(b.subtract(0, iy, 0), Blocks.lapis_block);
+
+                    // z
+                    for(int iz = 1; iz < range && b.z-iz > a.z; iz++)
+                        display.put(b.subtract(0, 0, dz-iz), Blocks.glass);
+
+                    c = b.subtract(dx, 0, 0);
+                    for(int iz = 1; iz < range && b.z-iz > a.z; iz++)
+                        display.put(c.subtract(0, 0, iz), Blocks.glass);
+
+                    c = b.subtract(0, dy, 0);
+                    for(int iz = 1; iz < range && b.z-iz > a.z; iz++)
+                        display.put(c.subtract(0, 0, iz), Blocks.glass);
+
+                    for(int iz = 1; iz < range && b.z-iz > a.z; iz++)
+                        display.put(b.subtract(0, 0, iz), Blocks.lapis_block);
+
+                    // Extension
+                    for(int ix = range; a.x+ix < b.x-range; ix += 5)
+                        display.put(a.add(ix, 0, 0), Blocks.glowstone);
+
+                    c = a.add(0, dy, 0);
+                    for(int ix = range; a.x+ix < b.x-range; ix += 5)
+                        display.put(c.add(ix, 0, 0), Blocks.glowstone);
+
+                    c = c.add(0, 0, dz);
+                    for(int ix = range; a.x+ix < b.x-range; ix += 5)
+                        display.put(c.add(ix, 0, 0), Blocks.glowstone);
+
+                    c = a.add(0, 0, dz);
+                    for(int ix = range; a.x+ix < b.x-range; ix += 5)
+                        display.put(c.add(ix, 0, 0), Blocks.glowstone);
+
+                    for(int iy = range; a.y+iy < b.y-range; iy += 5)
+                        display.put(a.add(0, iy, 0), Blocks.glowstone);
+
+                    c = a.add(0, 0, dz);
+                    for(int iy = range; a.y+iy < b.y-range; iy += 5)
+                        display.put(c.add(0, iy, 0), Blocks.glowstone);
+
+                    c = a.add(dx, 0, 0);
+                    for(int iy = range; a.y+iy < b.y-range; iy += 5)
+                        display.put(c.add(0, iy, 0), Blocks.glowstone);
+
+                    c = c.add(0, 0, dz);
+                    for(int iy = range; a.y+iy < b.y-range; iy += 5)
+                        display.put(c.add(0, iy, 0), Blocks.glowstone);
+
+                    for(int iz = range; a.z+iz < b.z-range; iz += 5)
+                        display.put(a.add(0, 0, iz), Blocks.glowstone);
+
+                    c = a.add(0, dy, 0);
+                    for(int iz = range; a.z+iz < b.z-range; iz += 5)
+                        display.put(c.add(0, 0, iz), Blocks.glowstone);
+
+                    c = c.add(dx, 0, 0);
+                    for(int iz = range; a.z+iz < b.z-range; iz += 5)
+                        display.put(c.add(0, 0, iz), Blocks.glowstone);
+
+                    c = a.add(dx, 0, 0);
+                    for(int iz = range; a.z+iz < b.z-range; iz += 5)
+                        display.put(c.add(0, 0, iz), Blocks.glowstone);
+
+                    // Corners
+                    display.put(a, Blocks.glowstone);
+                    display.put(b, Blocks.lit_redstone_lamp);
+
+                    display.put(a.add(dx, 0, 0), Blocks.lit_furnace);
+                    display.put(a.add(0, dy, 0), Blocks.lit_furnace);
+                    display.put(a.add(0, 0, dz), Blocks.lit_furnace);
+
+                    display.put(b.subtract(dx, 0, 0), Blocks.lit_furnace);
+                    display.put(b.subtract(0, dy, 0), Blocks.lit_furnace);
+                    display.put(b.subtract(0, 0, dz), Blocks.lit_furnace);
+                }
+            }
+            else if(b != null)
+            {
+                display.put(b, Blocks.lit_redstone_lamp);
+                for(Direction direction: Direction.cardinal)
+                    display.put(b.add(direction), Blocks.lapis_block);
+            }
+
+            if(last.equals(display))
+                return;
+
+            this.display = new HashMap<>(display);
+
+            mod.callSyncMethod(()->{
+                World worldObj = sender.worldObj;
+                if(!mod.world(worldObj).equals(world))
+                    return;
+
+                Set<BlockPos> removed = last.keySet();
+                removed.removeAll(display.keySet());
+                for(BlockPos p: removed)
+                {
+                    Chunk chunk = mod.chunk(p.getChunk());
+                    if(chunk != null)
+                    {
+                        // This constructor loads the chunk when it's unloaded,
+                        // that's why we check if it's loaded before
+                        sendPacket(new S23PacketBlockChange(p.x, p.y, p.z, worldObj));
+                    }
+                    else
+                    {
+                        // If it's not loaded, we need to clean the client view without loading the chunk
+                        // so we can't use the easy constructor.
+                        sendFakeBlock(p.x, p.y, p.z, 0, 0);
+                    }
+                }
+
+                for(Map.Entry<BlockPos, Block> entry: display.entrySet())
+                {
+                    BlockPos p = entry.getKey();
+                    Chunk chunk = mod.chunk(p.getChunk());
+                    if(chunk != null)
+                    {
+                        S23PacketBlockChange packet = new S23PacketBlockChange(p.x, p.y, p.z, worldObj);
+                        packet.field_148883_d = entry.getValue();
+                        sendPacket(packet);
+                    }
+                    else
+                    {
+                        sendFakeBlock(p.x, p.y, p.z, entry.getValue(), 0);
+                    }
+                }
+            });
+        }
     }
 }

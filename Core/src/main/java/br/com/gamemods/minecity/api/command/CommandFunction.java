@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.api.command;
 
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -42,20 +43,32 @@ public interface CommandFunction<R>
         {
             Message message;
             if(result.success)
-                 message = new Message("cmd.result.success",
-                        "<msg><blue><![CDATA[MineCity> ]]></blue><gray>${msg}</gray></msg>",
-                        new Object[]{"msg", result.message}
-                );
+                 message = messageSuccess(result.message);
             else
-                message = new Message("cmd.result.failed",
-                        "<msg><darkred><![CDATA[MineCity> ]]></darkred><red>${msg}</red></msg>",
-                        new Object[]{"msg", result.message}
-                );
+                message = messageFailed(result.message);
 
             event.sender.send(message);
         }
 
         return result;
+    }
+
+    @NotNull
+    static Message messageSuccess(@NotNull Message message)
+    {
+        return new Message("cmd.result.success",
+                "<msg><blue><![CDATA[MineCity> ]]></blue><gray>${msg}</gray></msg>",
+                new Object[]{"msg", message}
+        );
+    }
+
+    @NotNull
+    static Message messageFailed(@NotNull Message message)
+    {
+        return new Message("cmd.result.failed",
+                "<msg><darkred><![CDATA[MineCity> ]]></darkred><red>${msg}</red></msg>",
+                new Object[]{"msg", message}
+        );
     }
 
     CommandResult<R> execute(CommandEvent cmd) throws Exception;

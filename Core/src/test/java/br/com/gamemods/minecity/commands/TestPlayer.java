@@ -15,8 +15,9 @@ public class TestPlayer implements CommandSender
     public PlayerID playerId;
     public EntityPos position;
 
-    public TestPlayer(PlayerID playerId, EntityPos position)
+    public TestPlayer(Server server, PlayerID playerId, EntityPos position)
     {
+        this.server = server;
         this.playerId = playerId;
         this.position = position;
     }
@@ -24,7 +25,7 @@ public class TestPlayer implements CommandSender
     @Override
     public Server getServer()
     {
-        return null;
+        return server;
     }
 
     @Override

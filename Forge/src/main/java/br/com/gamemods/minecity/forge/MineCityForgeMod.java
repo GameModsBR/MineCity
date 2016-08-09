@@ -32,6 +32,8 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -41,6 +43,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import org.apache.logging.log4j.Logger;
@@ -302,6 +305,34 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         }
     }
 
+    @SubscribeEvent
+    public void onPlayerInteract(PlayerInteractEvent event)
+    {
+        if(event.world.isRemote || event.action == PlayerInteractEvent.Action.RIGHT_CLICK_AIR)
+            return;
+
+        ItemStack heldItem = event.entityPlayer.getHeldItem();
+        if(heldItem == null || !heldItem.hasTagCompound() || heldItem.getTagCompound().getByte("MineCity") != 1)
+            return;
+
+        event.setCanceled(true);
+        BlockPos block = new BlockPos(world(event.world), event.x, event.y, event.z);
+        ForgePlayer.ForgeSelection selection = player(event.entityPlayer).getSelection(world(event.world));
+
+        if(event.entityPlayer.isSneaking())
+        {
+            if(event.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK)
+                selection.b = block;
+            else
+                selection.a = block;
+
+            selection.normalize();
+            selection.updateDisplay();
+        }
+        else
+            selection.select(block);
+    }
+
     public ChunkPos chunk(Chunk chunk)
     {
         if(chunk instanceof IChunk)
@@ -316,6 +347,12 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         return pos;
     }
 
+    @Nullable
+    public Chunk chunk(ChunkPos pos)
+    {
+        return getLoadedChunk(world(pos.world), pos.x, pos.z);
+    }
+
     public ForgePlayer player(EntityPlayer player)
     {
         if(player instanceof IEntityPlayerMP)
@@ -325,12 +362,12 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
             if(cache != null)
                 return cache;
 
-            cache = new ForgePlayer(this, player);
+            cache = new ForgePlayer(this, (EntityPlayerMP) player);
             cast.setMineCityPlayer(cache);
             return cache;
         }
 
-        return new ForgePlayer(this, player);
+        return new ForgePlayer(this, (EntityPlayerMP) player);
     }
 
     @Nullable

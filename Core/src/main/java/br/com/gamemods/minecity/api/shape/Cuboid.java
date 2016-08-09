@@ -49,9 +49,9 @@ public class Cuboid implements Shape
     @Override
     public boolean contains(int x, int y, int z)
     {
-        return min.x >= x && max.x <= x
-                && min.z >= z && max.z <= z
-                && min.y >= y && max.y <= y
+        return min.x <= x && max.x >= x
+                && min.z <= z && max.z >= z
+                && min.y <= y && max.y >= y
                 ;
     }
 
@@ -93,6 +93,26 @@ public class Cuboid implements Shape
                 return ret;
             }
         };
+    }
+
+    @Override
+    public boolean overlaps(Shape shape)
+    {
+        if(shape instanceof Cuboid)
+        {
+            Cuboid a = this;
+            Cuboid b = (Cuboid) shape;
+
+            return a.min.x <= b.max.x
+                && a.max.x >= b.min.x
+                && a.min.y <= b.max.y
+                && a.max.y >= b.min.y
+                && a.min.z <= b.max.z
+                && a.max.z >= b.min.z
+                ;
+        }
+
+        return Shape.super.overlaps(shape);
     }
 
     @Override

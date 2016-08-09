@@ -33,6 +33,17 @@ public final class EntityPos
         this.yaw = yaw;
     }
 
+    public EntityPos(BlockPos block, float pitch, float yaw)
+    {
+        this.world = block.world;
+        this.x = block.x + 0.5;
+        this.y = block.y + 0.5;
+        this.z = block.z + 0.5;
+        this.pitch = pitch;
+        this.yaw = yaw;
+        this.block = block;
+    }
+
     public Direction getCardinalDirection()
     {
         double d = (double)((yaw + 180.0F)*8.0F/360.0F) + 0.5D;
@@ -124,7 +135,7 @@ public final class EntityPos
         if(block != null)
             return block;
 
-        return new BlockPos(world, (int)x, (int)y, (int)z);
+        return block = new BlockPos(world, (int)x, (int)y, (int)z);
     }
 
     public ChunkPos getChunk()

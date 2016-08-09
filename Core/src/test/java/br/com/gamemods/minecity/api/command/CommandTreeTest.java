@@ -29,7 +29,7 @@ public class CommandTreeTest
     @Test
     public void testBasic() throws Exception
     {
-        TestPlayer player = new TestPlayer(testData.joserobjr, new EntityPos(testData.overWorld, 2,2,3));
+        TestPlayer player = new TestPlayer(testData, testData.joserobjr, new EntityPos(testData.overWorld, 2,2,3));
         CommandTree tree = new CommandTree();
         tree.register("", new CommandInfo<>("city", CommandTreeTest::echoCommand, "c"), true);
         CommandTree.Result getResult = tree.get("city 1 2 3").orElse(null);
@@ -115,7 +115,7 @@ public class CommandTreeTest
         assertEquals("[C]", result.path.toString());
         assertEquals(Arrays.asList("creATE", "A","b","2"), result.args);
 
-        TestPlayer player = new TestPlayer(testData.joserobjr, new EntityPos(testData.overWorld, 2,2,3));
+        TestPlayer player = new TestPlayer(testData, testData.joserobjr, new EntityPos(testData.overWorld, 2,2,3));
         CommandResult cmd = tree.invoke(player, "city create test");
         assertFalse(cmd.success);
         assertEquals("Group List: [new, create]", cmd.message.toString());
@@ -143,7 +143,7 @@ public class CommandTreeTest
         assertEquals("[c, create]", tree.get("c create a").get().path.toString());
 
         assertEquals("[city]", tree.complete(new String[]{"cit"}).toString());
-        assertEquals("[city, group, minecity]", tree.complete(new String[]{""}).toString());
+        assertEquals("[city, group, minecity, plot]", tree.complete(new String[]{""}).toString());
         assertEquals("[c, city]", tree.complete(new String[]{"c"}).toString());
 
         assertEquals("[]", tree.complete(new String[]{"c","map","big","b"}).toString());

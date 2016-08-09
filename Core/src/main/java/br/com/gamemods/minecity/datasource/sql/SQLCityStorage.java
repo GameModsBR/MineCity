@@ -947,7 +947,7 @@ public class SQLCityStorage implements ICityStorage
                 int plotId;
                 try(PreparedStatement pst = transaction.prepareStatement(
                         "INSERT INTO minecity_plots(island_id,name,display_name,owner,spawn_x,spawn_y,spawn_z,shape) " +
-                        "VALUES(?,?,?,?,?,?,?,?,?)",
+                        "VALUES(?,?,?,?,?,?,?,?)",
                     Statement.RETURN_GENERATED_KEYS
                 ))
                 {
