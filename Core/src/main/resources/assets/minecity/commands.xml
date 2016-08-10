@@ -23,10 +23,10 @@
         <group id="city.deny" parent="city" cmd="deny">
             <desc>Revokes permission</desc>
         </group>
-        <group id="city.allow.all" parent="city.allow" cmd="player">
+        <group id="city.allow.all" parent="city.allow" cmd="all">
             <desc>Gives permission to everybody, including players that were directly prohibited</desc>
         </group>
-        <group id="city.deny.all" parent="city.deny" cmd="player">
+        <group id="city.deny.all" parent="city.deny" cmd="all">
             <desc>Prohibits everybody, including players that were directly allowed</desc>
         </group>
         <group id="plot.allow" parent="plot" cmd="allow">
@@ -35,10 +35,10 @@
         <group id="plot.deny" parent="plot" cmd="deny">
             <desc>Revokes permission</desc>
         </group>
-        <group id="plot.allow.all" parent="plot.allow" cmd="player">
+        <group id="plot.allow.all" parent="plot.allow" cmd="all">
             <desc>Gives permission to everybody, including players that were directly prohibited</desc>
         </group>
-        <group id="plot.deny.all" parent="plot.deny" cmd="player">
+        <group id="plot.deny.all" parent="plot.deny" cmd="all">
             <desc>Prohibits everybody, including players that were directly allowed</desc>
         </group>
     </groups>
