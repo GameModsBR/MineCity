@@ -153,13 +153,13 @@ public class MineCity
     }
 
     @NotNull
-    public Nature loadNature(@NotNull WorldDim world)
+    public Nature loadNature(@NotNull WorldDim world) throws DataSourceException
     {
         Nature nature = natures.get(world);
         if(nature != null)
             nature.invalidate();
 
-        nature = new Nature(this, world);
+        nature = dataSource.getNature(world);
         world.nature = nature;
         natures.put(world, nature);
         return nature;
@@ -170,7 +170,14 @@ public class MineCity
     {
         Nature nature = getNature(world);
         if(nature != null && nature.isValid()) return nature;
-        return loadNature(world);
+        try
+        {
+            return loadNature(world);
+        }
+        catch(DataSourceException e)
+        {
+            return Inconsistency.nature(world);
+        }
     }
 
     public Optional<ChunkProvider> getChunkProvider()

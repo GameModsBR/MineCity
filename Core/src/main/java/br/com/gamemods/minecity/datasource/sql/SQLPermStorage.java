@@ -7,7 +7,9 @@ import br.com.gamemods.minecity.api.permission.*;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.IExceptPermissionStorage;
+import br.com.gamemods.minecity.datasource.api.INatureStorage;
 import br.com.gamemods.minecity.structure.City;
+import br.com.gamemods.minecity.structure.Nature;
 import br.com.gamemods.minecity.structure.Plot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-public class SQLPermStorage implements IExceptPermissionStorage
+public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
 {
     private final SQLConnection connection;
     private final SQLSource source;
@@ -76,6 +78,32 @@ public class SQLPermStorage implements IExceptPermissionStorage
                         {
                             source.setNullableString(pst, 1, message == null? null : message.getFallback());
                             pst.setInt(2, plotId);
+                            source.executeUpdate(pst, 1);
+                        }
+
+                        transaction.commit();
+                        return;
+                    }
+                    catch(Exception e)
+                    {
+                        transaction.rollback();
+                        throw e;
+                    }
+                }
+            }
+            else if(holder instanceof Nature)
+            {
+                int worldId = ((Nature) holder).world.getDataSourceId();
+                try(Connection transaction = connection.transaction())
+                {
+                    try
+                    {
+                        try(PreparedStatement pst = transaction.prepareStatement(
+                                "UPDATE minecity_world SET perm_denial_message=? WHERE world_id=?"
+                        ))
+                        {
+                            source.setNullableString(pst, 1, message == null? null : message.getFallback());
+                            pst.setInt(2, worldId);
                             source.executeUpdate(pst, 1);
                         }
 
@@ -207,6 +235,56 @@ public class SQLPermStorage implements IExceptPermissionStorage
                     }
                 }
             }
+            else if(holder instanceof Nature)
+            {
+                int worldId = ((Nature) holder).world.getDataSourceId();
+                try(Connection transaction = connection.transaction())
+                {
+                    int size = flags.size();
+                    try
+                    {
+                        try(PreparedStatement pst = transaction.prepareStatement(
+                                "DELETE FROM minecity_world_perm_defaults " +
+                                        "WHERE world_id=? AND perm IN ("+String.join(",",Collections.nCopies(size,"?"))+")"
+                        ))
+                        {
+                            pst.setInt(1, worldId);
+                            int i = 2;
+                            for(PermissionFlag flag : flags.keySet())
+                                pst.setString(i++, flag.name());
+
+                            pst.executeUpdate();
+                        }
+
+                        try(PreparedStatement pst = transaction.prepareStatement(
+                                "INSERT INTO minecity_world_perm_defaults(world_id,perm,message) " +
+                                        "VALUES "+String.join(",",Collections.nCopies(size,"(?,?,?)"))
+                        ))
+                        {
+                            int i = 1;
+                            for(Map.Entry<? extends PermissionFlag, ? extends Message> entry : flags.entrySet())
+                            {
+                                pst.setInt(i++, worldId);
+                                pst.setString(i++, entry.getKey().name());
+                                Message message = entry.getValue();
+                                source.setNullableString(pst, i++,
+                                        FlagHolder.DEFAULT_DENIAL_MESSAGE.equals(message)? null: message.getFallback()
+                                );
+                            }
+
+                            source.executeUpdate(pst, size);
+                        }
+
+                        transaction.commit();
+                        return;
+                    }
+                    catch(Exception e)
+                    {
+                        transaction.rollback();
+                        throw e;
+                    }
+                }
+            }
         }
         catch(SQLException e)
         {
@@ -295,6 +373,42 @@ public class SQLPermStorage implements IExceptPermissionStorage
                     }
                 }
             }
+            else if(holder instanceof Nature)
+            {
+                int worldId = ((Nature) holder).world.getDataSourceId();
+                try(Connection transaction = connection.transaction())
+                {
+                    try
+                    {
+                        try(PreparedStatement pst = transaction.prepareStatement(
+                                "DELETE FROM minecity_world_perm_defaults WHERE world_id=? AND perm=?"
+                        ))
+                        {
+                            pst.setInt(1, worldId);
+                            pst.setString(2, flag.name());
+                            pst.executeUpdate();
+                        }
+
+                        try(PreparedStatement pst = transaction.prepareStatement(
+                                "INSERT INTO minecity_world_perm_defaults(world_id,perm,message) VALUES(?,?,?)"
+                        ))
+                        {
+                            pst.setInt(1, worldId);
+                            pst.setString(2, flag.name());
+                            source.setNullableString(pst, 3, message == null? null : message.getFallback());
+                            source.executeUpdate(pst, 1);
+                        }
+
+                        transaction.commit();
+                        return;
+                    }
+                    catch(Exception e)
+                    {
+                        transaction.rollback();
+                        throw e;
+                    }
+                }
+            }
         }
         catch(SQLException e)
         {
@@ -362,6 +476,32 @@ public class SQLPermStorage implements IExceptPermissionStorage
                     }
                 }
             }
+            else if(holder instanceof Nature)
+            {
+                int worldId = ((Nature) holder).world.getDataSourceId();
+                try(Connection transaction = connection.transaction())
+                {
+                    try
+                    {
+                        try(PreparedStatement pst = transaction.prepareStatement(
+                                "DELETE FROM minecity_world_perm_defaults WHERE world_id=? AND perm=?"
+                        ))
+                        {
+                            pst.setInt(1, worldId);
+                            pst.setString(2, flag.name());
+                            pst.executeUpdate();
+                        }
+
+                        transaction.commit();
+                        return;
+                    }
+                    catch(Exception e)
+                    {
+                        transaction.rollback();
+                        throw e;
+                    }
+                }
+            }
         }
         catch(SQLException e)
         {
@@ -414,6 +554,31 @@ public class SQLPermStorage implements IExceptPermissionStorage
                         ))
                         {
                             pst.setInt(1, plotId);
+                            pst.executeUpdate();
+                        }
+
+                        transaction.commit();
+                        return;
+                    }
+                    catch(Exception e)
+                    {
+                        transaction.rollback();
+                        throw e;
+                    }
+                }
+            }
+            else if(holder instanceof Nature)
+            {
+                int worldId = ((Nature) holder).world.getDataSourceId();
+                try(Connection transaction = connection.transaction())
+                {
+                    try
+                    {
+                        try(PreparedStatement pst = transaction.prepareStatement(
+                                "DELETE FROM minecity_world_perm_defaults WHERE world_id=?"
+                        ))
+                        {
+                            pst.setInt(1, worldId);
                             pst.executeUpdate();
                         }
 
@@ -834,6 +999,31 @@ public class SQLPermStorage implements IExceptPermissionStorage
                     return map;
                 }
             }
+            else if(holder instanceof Nature)
+            {
+                int worldId = ((Nature) holder).world.getDataSourceId();
+                try(PreparedStatement pst = connection.connect().prepareStatement(
+                        "SELECT perm, message FROM minecity_world_perm_defaults WHERE world_id=?"
+                ))
+                {
+                    pst.setInt(1, worldId);
+                    ResultSet result = pst.executeQuery();
+                    EnumMap<PermissionFlag, Message> map = new EnumMap<>(PermissionFlag.class);
+                    while(result.next())
+                    {
+                        Message message;
+                        String str = result.getString(2);
+                        if(str == null)
+                            message = holder.getDefaultMessage();
+                        else
+                            message = new Message("", str);
+
+                        map.put(PermissionFlag.valueOf(result.getString(1)), message);
+                    }
+
+                    return map;
+                }
+            }
         }
         catch(SQLException e)
         {
@@ -1108,6 +1298,46 @@ public class SQLPermStorage implements IExceptPermissionStorage
                 message = new Message("", str);
 
             subMap.put(identity, Optional.of(message));
+        }
+    }
+
+    @Override
+    public void setCityCreationDenied(@NotNull Nature nature, boolean denied) throws DataSourceException
+    {
+        try(Connection connection = this.connection.connect())
+        {
+            try(PreparedStatement pst = connection.prepareStatement(
+                "UPDATE minecity_world SET city_creations=? WHERE world_id=?"
+            ))
+            {
+                pst.setBoolean(1, !denied);
+                pst.setInt(2, nature.world.getDataSourceId());
+                source.executeUpdate(pst, 1);
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
+    public void setName(@NotNull Nature nature, @NotNull String name) throws DataSourceException
+    {
+        try(Connection connection = this.connection.connect())
+        {
+            try(PreparedStatement pst = connection.prepareStatement(
+                    "UPDATE minecity_world SET name=? WHERE world_id=?"
+            ))
+            {
+                pst.setString(1, name);
+                pst.setInt(2, nature.world.getDataSourceId());
+                source.executeUpdate(pst, 1);
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
         }
     }
 }

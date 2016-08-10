@@ -5,10 +5,8 @@ import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.permission.GroupID;
 import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.world.ChunkPos;
-import br.com.gamemods.minecity.structure.City;
-import br.com.gamemods.minecity.structure.ClaimedChunk;
-import br.com.gamemods.minecity.structure.Island;
-import br.com.gamemods.minecity.structure.IslandArea;
+import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.structure.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,4 +60,7 @@ public interface IDataSource
     @Slow
     @NotNull
     IslandArea getArea(@NotNull Island island) throws DataSourceException, ClassCastException, IllegalArgumentException;
+
+    @NotNull
+    Nature getNature(@NotNull WorldDim world) throws DataSourceException;
 }

@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
+import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
@@ -196,6 +197,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         return future;
     }
 
+    @Slow
     @EventHandler
     public void onServerStart(FMLServerAboutToStartEvent event) throws IOException, DataSourceException, SAXException
     {
@@ -222,6 +224,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
                 .forEach(i-> event.registerServerCommand(new RootCommand<>(this, i)));
     }
 
+    @Slow
     @EventHandler
     public void onServerStop(FMLServerStoppedEvent event) throws DataSourceException
     {
@@ -277,6 +280,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         mineCity.unloadChunk(chunk(event.getChunk()));
     }
 
+    @Slow
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onWorldLoad(WorldEvent.Load event) throws DataSourceException
     {
@@ -318,6 +322,9 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
             mineCity.entityUpdates.poll();
 
         mineCity.reloadQueuedChunk();
+
+        // Using iterator instead of poll() to avoid infinite loop when a task register an other task.
+        // This won't happens on iterator because it's weakly consistent.
         Iterator<FutureTask> iterator = syncTasks.iterator();
         while(iterator.hasNext())
         {

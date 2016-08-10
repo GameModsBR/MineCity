@@ -3,6 +3,8 @@ CREATE TABLE `minecity_world` (
 `dim`  int(11) NOT NULL DEFAULT 0 ,
 `world`  varchar(255) NOT NULL DEFAULT '' ,
 `name`  varchar(255) NULL DEFAULT NULL ,
+`city_creations`  bit(1) NOT NULL DEFAULT b'1',
+`perm_denial_message`  varchar(255) NULL DEFAULT NULL ,
 PRIMARY KEY (`world_id`),
 UNIQUE INDEX `world_dir` (`dim`, `world`) USING BTREE
 );
@@ -203,12 +205,21 @@ CONSTRAINT `plot_perm_entity_entity` FOREIGN KEY (`entity_id`) REFERENCES `minec
 CREATE TABLE `minecity_plot_perm_group` (
 `plot_id`  int NOT NULL ,
 `group_id`  int NOT NULL ,
-`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
 `allow`  bit NOT NULL ,
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`plot_id`, `group_id`, `perm`),
 CONSTRAINT `plot_perm_group_plot` FOREIGN KEY (`plot_id`) REFERENCES `minecity_plots` (`plot_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `plot_perm_group_entity` FOREIGN KEY (`group_id`) REFERENCES `minecity_groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE
+)
+;
+
+CREATE TABLE `minecity_world_perm_defaults` (
+`world_id`  int NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`message`  varchar(100) NULL ,
+PRIMARY KEY (`world_id`, `perm`),
+CONSTRAINT `world_perm_world` FOREIGN KEY (`world_id`) REFERENCES `minecity_world` (`world_id`) ON DELETE CASCADE ON UPDATE CASCADE
 )
 ;
 

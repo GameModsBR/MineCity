@@ -37,10 +37,10 @@ public class SQLSourceTest
     MineCityConfig config;
     MineCity mineCity;
     @SuppressWarnings("SpellCheckingInspection")
-    WorldDim overworld = new WorldDim(0, ".");
-    WorldDim nether = new WorldDim(-1, "DIM-1", "Nether");
-    WorldDim custom = new WorldDim(0, "custom");
-    PlayerID joserobjr = new PlayerID(UUID.fromString("185e2176-0095-4ff8-a201-6f2aed9a032a"), "joserobjr");
+    WorldDim overworld;
+    WorldDim nether;
+    WorldDim custom;
+    PlayerID joserobjr;
     Nature overNature;
     Nature netherNature;
     Nature customNature;
@@ -48,6 +48,11 @@ public class SQLSourceTest
     @Before
     public void setUp() throws Exception
     {
+        overworld = new WorldDim(0, ".");
+        nether = new WorldDim(-1, "DIM-1", "Nether");
+        custom = new WorldDim(0, "custom");
+        joserobjr = new PlayerID(UUID.fromString("185e2176-0095-4ff8-a201-6f2aed9a032a"), "joserobjr");
+
         config = new MineCityConfig();
         config.dbUrl = "jdbc:mysql://localhost/minecity_test";
         config.dbUser = "unit_test";
@@ -120,7 +125,7 @@ public class SQLSourceTest
             String[] tables = new String[]{"chunks","city","islands","players","setup","world","entities","groups",
                     "group_players","group_entities", "city_perm_player", "city_perm_entity", "city_perm_group",
                     "city_perm_defaults", "group_managers", "plot_perm_defaults", "plot_perm_player",
-                    "plot_perm_entity", "plot_perm_group", "plots"
+                    "plot_perm_entity", "plot_perm_group", "plots", "world_perm_defaults"
             };
             try(Statement stm =  conn.createStatement())
             {
@@ -141,6 +146,10 @@ public class SQLSourceTest
         mineCity = new MineCity(new TestData(), config);
         mineCity.lazyReloads = false;
         mineCity.dataSource.initDB();
+
+        overNature = mineCity.loadNature(overworld);
+        netherNature = mineCity.loadNature(nether);
+        customNature = mineCity.loadNature(custom);
     }
 
     private void reload() throws DataSourceException, IOException

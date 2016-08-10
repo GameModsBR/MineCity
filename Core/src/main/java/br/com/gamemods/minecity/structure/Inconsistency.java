@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.ICityStorage;
 import br.com.gamemods.minecity.datasource.api.IExceptPermissionStorage;
+import br.com.gamemods.minecity.datasource.api.INatureStorage;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,6 +27,19 @@ public class Inconsistency implements ChunkOwner
     private static Island island;
     private static City city;
     private Inconsistency(){}
+
+    public static Nature nature(WorldDim world)
+    {
+        VoidStorage voidStorage = new VoidStorage();
+        try
+        {
+            return new Nature(mineCity, world, INCONSISTENT_CHUNK_MESSAGE, voidStorage, voidStorage, true);
+        }
+        catch(DataSourceException unexpected)
+        {
+            throw new RuntimeException(unexpected);
+        }
+    }
 
     public static void setMineCity(MineCity mineCity)
     {
@@ -108,7 +122,7 @@ public class Inconsistency implements ChunkOwner
         }
     }
 
-    private static class VoidStorage implements ICityStorage, IExceptPermissionStorage
+    private static class VoidStorage implements ICityStorage, IExceptPermissionStorage, INatureStorage
     {
         @Override
         public void setOwner(@NotNull City city, @Nullable PlayerID owner)
@@ -362,6 +376,18 @@ public class Inconsistency implements ChunkOwner
         public Set<Plot> loadPlots(@NotNull Island island) throws DataSourceException
         {
             throw new DataSourceException("Inconsistent city!");
+        }
+
+        @Override
+        public void setCityCreationDenied(@NotNull Nature nature, boolean denied) throws DataSourceException
+        {
+            throw new DataSourceException("Inconsistent nature!");
+        }
+
+        @Override
+        public void setName(@NotNull Nature nature, @NotNull String name) throws DataSourceException
+        {
+            throw new DataSourceException("Inconsistent nature!");
         }
     }
 }

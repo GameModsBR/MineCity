@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermissionStorage
+public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermissionStorage, INatureStorage
 {
     public MineCity mineCity;
     private Map<ChunkPos, FakeIsland> claims = new HashMap<>();
@@ -512,6 +512,25 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
             throws DataSourceException
     {
         return new EnumMap<>(PermissionFlag.class);
+    }
+
+    @NotNull
+    @Override
+    public Nature getNature(@NotNull WorldDim world) throws DataSourceException
+    {
+        return new Nature(mineCity, world, this, this);
+    }
+
+    @Override
+    public void setCityCreationDenied(@NotNull Nature nature, boolean denied) throws DataSourceException
+    {
+        // Nothing needs to be done
+    }
+
+    @Override
+    public void setName(@NotNull Nature nature, @NotNull String name) throws DataSourceException
+    {
+        // Nothing needs to be done
     }
 
     private class FakeIsland extends Island

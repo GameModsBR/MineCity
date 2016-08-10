@@ -114,7 +114,7 @@ public class SQLSource implements IDataSource
         {
             try(PreparedStatement pst = connection.prepareStatement(
                     "SELECT `c`.`name`, `owner`, `o`.`player_uuid`, `o`.`player_name`, `spawn_world`, `spawn_x`, `spawn_y`, `spawn_z`, " +
-                        "`w`.`dim`, `w`.`world`, `w`.`name`, `display_name`, `perm_denial_message`, `city_id` " +
+                        "`w`.`dim`, `w`.`world`, `w`.`name`, `display_name`, c.`perm_denial_message`, `city_id` " +
                     "FROM `minecity_city` AS `c` " +
                         "LEFT JOIN `minecity_players` AS `o` ON `owner` = `o`.`player_id` "+
                         "LEFT JOIN `minecity_world` AS `w` ON `spawn_world` = `w`.`world_id` "+
@@ -163,6 +163,23 @@ public class SQLSource implements IDataSource
             throw new DataSourceException("Expected "+expected+" but got "+changes);
     }
 
+    private int insertWorld(Connection connection, WorldDim world) throws SQLException
+    {
+        try(PreparedStatement pst = connection.prepareStatement(
+                "INSERT INTO `minecity_world`(`dim`,`world`,`name`) VALUES(?,?,?)",
+                Statement.RETURN_GENERATED_KEYS
+        ))
+        {
+            pst.setInt(1, world.dim);
+            pst.setString(2, world.dir);
+            setNullableString(pst, 3, world.name);
+            pst.executeUpdate();
+            ResultSet keys = pst.getGeneratedKeys();
+            keys.next();
+            return keys.getInt(1);
+        }
+    }
+
     @Slow
     int worldId(Connection connection, WorldDim world) throws DataSourceException
     {
@@ -184,19 +201,7 @@ public class SQLSource implements IDataSource
             }
 
             if(id <= 0)
-                try(PreparedStatement pst = connection.prepareStatement(
-                        "INSERT INTO `minecity_world`(`dim`,`world`,`name`) VALUES(?,?,?)",
-                    Statement.RETURN_GENERATED_KEYS
-                ))
-                {
-                    pst.setInt(1, world.dim);
-                    pst.setString(2, world.dir);
-                    setNullableString(pst, 3, world.name);
-                    pst.executeUpdate();
-                    ResultSet keys = pst.getGeneratedKeys();
-                    keys.next();
-                    id = keys.getInt(1);
-                }
+                insertWorld(connection, world);
 
             world.setDataSourceId(id);
             worldDimMap.putIfAbsent(id, world);
@@ -733,6 +738,62 @@ public class SQLSource implements IDataSource
 
                 return new IslandArea(island, list);
             }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Slow
+    @NotNull
+    @Override
+    public Nature getNature(@NotNull WorldDim world) throws DataSourceException
+    {
+        try
+        {
+            int id = world.getDataSourceId();
+            Connection connection = this.connection.connect();
+            try(PreparedStatement pst = connection.prepareStatement(
+                    "SELECT world_id, `name`, city_creations, perm_denial_message " +
+                    "FROM minecity_world " +
+                    "WHERE "+(id > 0? "world_id=?":"dim=? AND world=?")
+            ))
+            {
+                if(id > 0)
+                    pst.setInt(1, id);
+                else
+                {
+                    pst.setInt(1, world.dim);
+                    pst.setString(2, world.dir);
+                }
+
+                ResultSet result = pst.executeQuery();
+                if(result.next())
+                {
+                    if(id == 0)
+                        world.setDataSourceId(result.getInt(1));
+
+                    world.name = result.getString(2);
+
+                    boolean cityCreation = result.getBoolean(3);
+
+                    String str = result.getString(4);
+                    Message message;
+                    if(str == null)
+                        message = null;
+                    else
+                        message = new Message(str);
+                    pst.close();
+
+                    return new Nature(mineCity, world, message, permStorage, permStorage, !cityCreation);
+                }
+            }
+
+            if(id == 0)
+                world.setDataSourceId(insertWorld(connection, world));
+
+            return new Nature(mineCity, world, permStorage, permStorage);
         }
         catch(SQLException e)
         {

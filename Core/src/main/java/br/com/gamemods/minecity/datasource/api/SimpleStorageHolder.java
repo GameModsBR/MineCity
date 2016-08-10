@@ -6,6 +6,7 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -14,12 +15,19 @@ public class SimpleStorageHolder extends SimpleFlagHolder
 {
     protected ISimplePermissionStorage permissionStorage;
 
-    public SimpleStorageHolder()
+    public SimpleStorageHolder(@Nullable Message defaultMessage)
     {
         super(new SimpleMap());
+        this.defaultMessage = defaultMessage;
+
         SimpleMap map = (SimpleMap) generalPermissions;
         map.holder = this;
         map.permissionStorage = ()-> permissionStorage;
+    }
+
+    public SimpleStorageHolder()
+    {
+        this(null);
     }
 
     protected void loadPermissions() throws DataSourceException

@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.bukkit;
 
+import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import org.bukkit.Chunk;
 import org.bukkit.event.EventHandler;
@@ -21,10 +22,11 @@ public class WorldListener implements Listener
         this.bukkit = bukkit;
     }
 
+    @Slow
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    void on(WorldLoadEvent event)
+    void on(WorldLoadEvent event) throws DataSourceException
     {
-        bukkit.scheduler.runTaskAsynchronously(bukkit.plugin,()-> bukkit.mineCity.loadNature(bukkit.world(event.getWorld())));
+        bukkit.mineCity.loadNature(bukkit.world(event.getWorld()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
