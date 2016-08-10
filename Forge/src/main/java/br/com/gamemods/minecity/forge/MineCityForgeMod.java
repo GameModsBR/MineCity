@@ -255,7 +255,17 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         if(chunk instanceof IChunk)
             ((IChunk) chunk).setMineCityClaim(new ClaimedChunk(Inconsistency.INSTANCE, pos));
 
-        mineCity.loadChunk(pos);
+        runAsynchronously(() ->
+        {
+            try
+            {
+                mineCity.loadChunk(pos);
+            }
+            catch(DataSourceException e)
+            {
+                logger.error("Failed to load the chunk: "+pos, e);
+            }
+        });
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
