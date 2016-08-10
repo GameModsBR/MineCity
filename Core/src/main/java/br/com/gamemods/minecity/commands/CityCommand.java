@@ -507,6 +507,7 @@ public class CityCommand
                     sb.append("]]><hover><tooltip>${you}</tooltip><").append(cursorColor.tag).append('>')
                             .append(cursor)
                             .append("</").append(cursorColor.tag).append("></hover><![CDATA[");
+                    current = cursorColor;
 
                     if(cityAtPosition != null && !claimAtPosition.get().reserve)
                     {
