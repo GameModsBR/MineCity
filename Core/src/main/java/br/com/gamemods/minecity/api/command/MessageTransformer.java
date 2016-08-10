@@ -23,7 +23,7 @@ import static br.com.gamemods.minecity.api.command.LegacyFormat.*;
 
 public class MessageTransformer
 {
-    private Map<String, Component> messages = new HashMap<>();
+    private final Map<String, Component> messages = new HashMap<>();
     private DocumentBuilder documentBuilder;
     {
         try
@@ -71,12 +71,19 @@ public class MessageTransformer
 
     protected Component toComponent(Message message)
     {
-        Component component = messages.get(message.getId());
         try
         {
+            String id = message.getId();
+            if(id.isEmpty())
+                return parse(message.getFallback());
+
+            Component component = messages.get(id);
             if(component != null)
                 return component.clone();
-            return parse(message.getFallback());
+
+            component = parse(message.getFallback());
+            messages.put(id, component);
+            return component.clone();
         }
         catch(SAXException | CloneNotSupportedException e)
         {
