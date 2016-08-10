@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.commands;
 
 import br.com.gamemods.minecity.api.Async;
+import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.StringUtil;
 import br.com.gamemods.minecity.api.command.*;
@@ -168,6 +169,14 @@ public class PlotCommand
                             {"plot", plot.getName()}, {"city", plot.getCity().getName()}
                     }));
 
+        if(!cmd.sender.getPlayerId().equals(plot.owner()))
+            return new CommandResult<>(new Message("cmd.plot.return.no-permission",
+                    "You don't have permission to return the ownership of ${plot} to the city ${city}",
+                    new Object[][]{
+                            {"plot", plot.getName()},
+                            {"city", plot.getCity().getName()}
+                    }));
+
         String code = cmd.sender.confirm(sender -> {
             plot.setOwner(null);
             return new CommandResult<>(new Message("cmd.plot.return.success",
@@ -175,7 +184,7 @@ public class PlotCommand
                     new Object[][]{
                             {"plot", plot.getName()},
                             {"city", plot.getCity().getName()}
-                    }));
+                    }), true);
         });
 
         return new CommandResult<>(new Message("cmd.plot.return.confirm",
@@ -187,5 +196,104 @@ public class PlotCommand
                         {"city", plot.getCity().getName()},
                         {"code", code}
                 }), code);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.transfer", console = false, args = @Arg(name = "player name", type = Arg.Type.PLAYER))
+    public static CommandResult<?> transfer(CommandEvent cmd) throws DataSourceException
+    {
+        Plot plot = cmd.mineCity.getPlot(cmd.position.getBlock()).orElse(null);
+        if(plot == null)
+            return new CommandResult<>(new Message("cmd.plot.transfer.not-claimed", "You are not inside a plot"));
+
+        PlayerID senderId = cmd.sender.getPlayerId();
+        if(!senderId.equals(plot.owner()))
+            return new CommandResult<>(new Message("cmd.plot.transfer.no-permission",
+                    "You don't have permission to transfer the plot ${plot}",
+                    new Object[]{"plot", plot.getName()}
+            ));
+
+        if(cmd.args.isEmpty())
+            return new CommandResult<>(new Message("cmd.plot.transfer.player.empty",
+                    "Type a player name"));
+
+        if(cmd.args.size() > 1)
+            return new CommandResult<>(new Message("cmd.plot.transfer.too-many-args",
+                    "Player names does not have spaces"
+        ));
+
+        String playerName = cmd.args.get(0);
+        PlayerID target = cmd.mineCity.findPlayer(playerName).orElse(null);
+        if(target == null)
+            return new CommandResult<>(new Message("cmd.plot.transfer.player.not-found",
+                    "No player was found with name ${name}",
+                    new Object[]{"name",playerName}
+            ));
+
+        if(target.equals(senderId))
+        {
+            if(plot.getOwner().isPresent())
+                return new CommandResult<>(new Message("cmd.plot.transfer.self.already",
+                        "You already own the plot ${plot}",
+                        new Object[]{"plot", plot.getName()}
+                ));
+
+            plot.setOwner(senderId);
+            return new CommandResult<>(new Message("cmd.plot.transfer.self.success",
+                    "The plot ${plot} is now your personal plot",
+                    new Object[]{"plot", plot.getName()}
+            ), senderId);
+        }
+
+        if(target.equals(plot.getCity().getOwner()))
+        {
+            String code = cmd.sender.confirm(sender -> {
+                plot.setOwner(target);
+                return new CommandResult<>(new Message("cmd.plot.transfer.mayor.success",
+                        "The plot ${plot} is now a ${target}'s personal plot.",
+                        new Object[][]{
+                                {"plot", plot.getName()},
+                                {"target", target.getName()}
+                        }
+                ), true);
+            });
+
+            return new CommandResult<>(new Message("cmd.plot.transfer.mayor.confirm",
+                    "<msg>You are about to transfer the plot ${plot} and everything that is in it to ${target}, the plot " +
+                    "<b>will not be returned to the city</b> " +
+                    "and will become a ${target}'s personal plot. You'll not be refunded and you'll not be able to " +
+                    "undo this action. If you are sure about it type /plot confirm ${code}</msg>",
+                    new Object[][]{
+                            {"plot", plot.getName()},
+                            {"target", target.getName()},
+                            {"code", code}
+                    }
+            ), code);
+        }
+        else
+        {
+            String code = cmd.sender.confirm(sender -> {
+                plot.setOwner(target);
+                return new CommandResult<>(new Message("cmd.plot.transfer.player.success",
+                        "The plot ${plot} is now owned by ${target}",
+                        new Object[][]{
+                                {"plot", plot.getName()},
+                                {"target", target.getName()}
+                        }
+                ), true);
+            });
+
+            return new CommandResult<>(new Message("cmd.plot.transfer.player.confirm",
+                    "<msg>You are about to transfer the plot ${plot} and everything that is in it to ${target}. " +
+                    "You'll not be refunded and <b>you'll not be able to  undo this action</b>. " +
+                    "If you are sure about it type /plot confirm ${code}</msg>",
+                    new Object[][]{
+                            {"plot", plot.getName()},
+                            {"target", target.getName()},
+                            {"code", code}
+                    }
+            ), code);
+        }
     }
 }

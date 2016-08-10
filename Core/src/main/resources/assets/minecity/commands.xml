@@ -32,7 +32,7 @@
     </groups>
     <commands>
         <!-- General -->
-        <command id="confirm" parent=",city,group,root" cmd="confirm">
+        <command id="confirm" parent=",city,group,root,plot" cmd="confirm">
             <desc>Confirms a dangerous action</desc>
         </command>
 
@@ -106,6 +106,9 @@
         </command>
         <command id="plot.return" parent="plot" cmd="return">
             <desc>Returns the ownership of a plot to the city</desc>
+        </command>
+        <command id="plot.transfer" parent="plot" cmd="transfer">
+            <desc>Transfers the ownership of a plot to an other player</desc>
         </command>
 
         <!-- Default permissions -->

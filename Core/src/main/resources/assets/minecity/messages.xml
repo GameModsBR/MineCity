@@ -270,6 +270,7 @@
             </rename>
             <return>
                 <msg id="not-claimed">You are not inside a plot</msg>
+                <msg id="no-permission">You don't have permission to return the ownership of ${plot} to the city ${city}</msg>
                 <msg id="already">The plot ${plot} is already owned by the mayor of the city ${city}</msg>
                 <msg id="success">The plot ${plot} has returned to the city ${city}</msg>
                 <msg id="confirm">
@@ -278,6 +279,34 @@
                     <b>you'll not be refunded by this action</b>. If you are sure about this, type /plot confirm ${code}
                 </msg>
             </return>
+            <transfer>
+                <msg id="not-claimed">You are not inside a plot</msg>
+                <msg id="no-permission">You don't have permission to transfer the plot ${plot}</msg>
+                <msg id="too-many-args">Player names does not have spaces</msg>
+                <player>
+                    <msg id="empty">Type a player name</msg>
+                    <msg id="not-found">No player was found with name ${name}</msg>
+                    <msg id="success">The plot ${plot} is now owned by ${target}</msg>
+                    <msg id="confirm">
+                        You are about to transfer the plot ${plot} and everything that is in it to ${target}.
+                        You'll not be refunded and <b>you'll not be able to  undo this action</b>.
+                        If you are sure about it type /plot confirm ${code}
+                    </msg>
+                </player>
+                <self>
+                    <msg id="already">You already own the plot ${plot}</msg>
+                    <msg id="success">The plot ${plot} is now your personal plot</msg>
+                </self>
+                <mayor>
+                    <msg id="success">The plot ${plot} is now a ${target}'s personal plot.</msg>
+                    <msg id="confirm">
+                        You are about to transfer the plot ${plot} and everything that is in it to ${target}, the plot
+                        <b>will not be returned to the city</b>
+                        and will become a ${target}'s personal plot. You'll not be refunded and you'll not be able to
+                        undo this action. If you are sure about it type /plot confirm ${code}
+                    </msg>
+                </mayor>
+            </transfer>
         </plot>
     </cmd>
     <action>

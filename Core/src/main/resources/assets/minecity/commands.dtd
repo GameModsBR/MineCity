@@ -22,7 +22,7 @@
 <!ENTITY % CityAllowAllCommands "city.allow.all.enter|city.allow.all.click|city.allow.all.pickup|city.allow.all.open|city.allow.all.pvp|city.allow.all.pvc">
 <!ENTITY % GroupCommands "group.create|group.add|group.remove|group.list|group.info|group.delete|group.add.manager|group.remove.manager">
 <!ENTITY % GeneralCommands "confirm">
-<!ENTITY % PlotCommands "plot.create|plot.rename|plot.return">
+<!ENTITY % PlotCommands "plot.create|plot.rename|plot.return|plot.transfer">
 
 <!ENTITY % CityPermCommands "%CityAllowCommands;|%CityDenyCommands;|%CityAllowAllCommands;|%CityDenyAllCommands;">
 <!ENTITY % CityCommands "%CityManageCommands;|%CityPermCommands;">
