@@ -296,4 +296,46 @@ public class PlotCommand
             ), code);
         }
     }
+
+    @Command(value = "plot.delete", console = false)
+    public static CommandResult<?> delete(CommandEvent cmd)
+    {
+        Plot plot = cmd.mineCity.getPlot(cmd.position.getBlock()).orElse(null);
+        if(plot == null)
+            return new CommandResult<>(new Message("cmd.plot.delete.not-claimed", "You are not inside a plot"));
+
+        PlayerID senderId = cmd.sender.getPlayerId();
+        if(!senderId.equals(plot.getCity().getOwner()))
+            return new CommandResult<>(new Message("cmd.plot.delete.not-mayor",
+                    "Only the mayor of ${city} can delete plots, you can return this plot to the city using /plot return",
+                    new Object[]{"city", plot.getCity().getName()}
+            ));
+
+        Optional<PlayerID> plotOwner = plot.getOwner();
+        if(plotOwner.isPresent() && !plotOwner.get().equals(senderId))
+            return new CommandResult<>(new Message("cmd.plot.delete.no-permission",
+                    "You don't have permission to delete the plot ${plot} because it's owned by ${owner}",
+                    new Object[][]{
+                            {"plot", plot.getName()},
+                            {"owner", plotOwner.get().getName()}
+                    }
+            ));
+
+        String code = cmd.sender.confirm(sender -> {
+            plot.delete();
+            return new CommandResult<>(new Message("cmd.plot.delete.success",
+                    "The plot ${plot} was deleted successfully",
+                    new Object[]{"plot", plot.getName()}
+            ), true);
+        });
+
+        return new CommandResult<>(new Message("cmd.plot.delete.confirm",
+                "You are about to delete the plot ${plot} from the city ${city}, if you are sure about it type /plot confirm ${code}",
+                new Object[][]{
+                        {"plot", plot.getName()},
+                        {"city", plot.getCity().getName()},
+                        {"code", code}
+                }), true
+        );
+    }
 }

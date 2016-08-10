@@ -307,6 +307,13 @@
                     </msg>
                 </mayor>
             </transfer>
+            <delete>
+                <msg id="not-claimed">You are not inside a plot</msg>
+                <msg id="not-mayor">Only the mayor of ${city} can delete plots, you can return this plot to the city using /plot return</msg>
+                <msg id="no-permission">You don't have permission to delete the plot ${plot} because it's owned by ${owner}</msg>
+                <msg id="success">The plot ${plot} was deleted successfully</msg>
+                <msg id="confirm">You are about to delete the plot ${plot} from the city ${city}, if you are sure about it type /plot confirm ${code}</msg>
+            </delete>
         </plot>
     </cmd>
     <action>

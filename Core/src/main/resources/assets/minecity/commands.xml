@@ -72,7 +72,7 @@
         </command>
 
         <!-- Groups -->
-        <command id="group.create" parent="group" cmd="create">
+        <command id="group.create" parent="group" cmd="create,new">
             <desc>Creates a new group</desc>
         </command>
         <command id="group.add" parent="group" cmd="add">
@@ -98,7 +98,7 @@
         </command>
 
         <!-- Plots -->
-        <command id="plot.create" parent="plot" cmd="create">
+        <command id="plot.create" parent="plot" cmd="create,new">
             <desc>Creates a new plot</desc>
         </command>
         <command id="plot.rename" parent="plot" cmd="rename">
@@ -109,6 +109,9 @@
         </command>
         <command id="plot.transfer" parent="plot" cmd="transfer">
             <desc>Transfers the ownership of a plot to an other player</desc>
+        </command>
+        <command id="plot.delete" parent="plot" cmd="delete">
+            <desc>Deletes a plot from a city</desc>
         </command>
 
         <!-- Default permissions -->
