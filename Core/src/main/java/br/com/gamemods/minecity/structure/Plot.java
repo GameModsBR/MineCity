@@ -4,17 +4,27 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.StringUtil;
+import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.Shape;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import br.com.gamemods.minecity.datasource.api.ExceptStoredHolder;
 import br.com.gamemods.minecity.datasource.api.ICityStorage;
+import br.com.gamemods.minecity.datasource.api.IExceptPermissionStorage;
+import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
-public final class Plot
+import static java.util.Collections.emptyMap;
+
+public final class Plot extends ExceptStoredHolder
 {
     public final int id;
 
@@ -41,9 +51,13 @@ public final class Plot
 
     private boolean invalid;
 
-    public Plot(@NotNull ICityStorage storage, int id, @NotNull Island island, @NotNull String identityName,
-                @NotNull String name, @Nullable PlayerID owner, @NotNull BlockPos spawn, @NotNull Shape shape)
+    public Plot(@NotNull ICityStorage storage, @NotNull IExceptPermissionStorage permissionStorage, int id,
+                @NotNull Island island, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
+                @NotNull BlockPos spawn, @NotNull Shape shape, @Nullable Message defaultMessage)
+            throws DataSourceException
     {
+        super(defaultMessage);
+        this.permissionStorage = permissionStorage;
         this.storage = storage;
         this.island = island;
         this.identityName = identityName;
@@ -52,13 +66,18 @@ public final class Plot
         this.spawn = spawn;
         this.shape = shape;
         this.id = id;
+
+        loadSimplePermissions();
+        loadExceptPermissions();
     }
 
     @Slow
-    public Plot(@NotNull ICityStorage storage, @NotNull Island island, @NotNull String identityName,
-                @NotNull String name, @Nullable PlayerID owner, @NotNull BlockPos spawn, @NotNull Shape shape)
+    public Plot(@NotNull ICityStorage storage, IExceptPermissionStorage permissionStorage,
+                @NotNull Island island, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
+                @NotNull BlockPos spawn, @NotNull Shape shape)
             throws DataSourceException
     {
+        this.permissionStorage = permissionStorage;
         this.storage = storage;
         this.island = island;
         this.name = name;
@@ -69,7 +88,89 @@ public final class Plot
         this.id = storage.createPlot(this);
 
         MineCity mineCity = island.getCity().mineCity;
+
+        try
+        {
+            denyAll(mineCity.defaultPlotFlags);
+        }
+        catch(UncheckedDataSourceException e)
+        {
+            System.err.println("[MineCity][SQL] Exception applying the default plot flags!");
+            e.getCause().printStackTrace(System.err);
+        }
+
         shape.chunks(island.world).forEach(mineCity::reloadChunkSlowly);
+    }
+
+    @NotNull
+    @Override
+    public Optional<Message> can(@NotNull Identity<?> identity, @NotNull PermissionFlag action)
+    {
+        if(invalid)
+            return Optional.of(Inconsistency.INCONSISTENT_CHUNK_MESSAGE);
+
+        if(owner != null)
+        {
+            if(identity.equals(owner))
+                return Optional.empty();
+
+            return super.can(identity, action);
+        }
+
+        if(identity.equals(island.getCity().getOwner()))
+            return Optional.empty();
+
+        Status status = strictPermission.getOrDefault(action, emptyMap()).get(identity);
+        if(status != null)
+        {
+            if(status.message != null)
+                return Optional.of(status.message);
+
+            if(action.canBypass)
+                return Optional.empty();
+        }
+
+        Message message = generalPermissions.get(action);
+        if(message != null)
+            return Optional.of(message);
+
+        return island.getCity().can(identity, action);
+    }
+
+    @NotNull
+    @Override
+    public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
+    {
+        if(invalid)
+            return Optional.of(Inconsistency.INCONSISTENT_CHUNK_MESSAGE);
+
+        Identity<UUID> identity = entity.getIdentity();
+        if(owner != null)
+        {
+            if(identity.equals(owner))
+                return Optional.empty();
+
+            return super.can(entity, action);
+        }
+
+        if(identity.equals(island.getCity().getOwner()))
+            return Optional.empty();
+
+        Status status = getDirectPermission(entity, action);
+        if(status != null)
+        {
+            if(status.message != null)
+                return Optional.of(status.message);
+
+            if(action.canBypass)
+                return Optional.empty();
+        }
+
+        Message message = generalPermissions.get(action);
+        if(message != null)
+            return Optional.of(message);
+
+        return island.getCity().can(identity, action);
     }
 
     @Slow

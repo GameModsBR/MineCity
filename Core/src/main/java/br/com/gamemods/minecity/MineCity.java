@@ -48,6 +48,7 @@ public class MineCity
     public MessageTransformer messageTransformer;
     public SimpleFlagHolder defaultNatureFlags = new SimpleFlagHolder();
     public SimpleFlagHolder defaultCityFlags = new SimpleFlagHolder();
+    public SimpleFlagHolder defaultPlotFlags = new SimpleFlagHolder();
     private Queue<ChunkPos> reloadQueue = new DistinctQueue<>();
     public boolean lazyReloads = true;
 
@@ -56,8 +57,10 @@ public class MineCity
     {
         defaultCityFlags.denyAll(config.defaultCityFlags);
         defaultNatureFlags.denyAll(config.defaultNatureFlags);
+        defaultPlotFlags.denyAll(config.defaultPlotFlags);
         defaultCityFlags.setDefaultMessage(config.defaultCityFlags.getDefaultMessage());
         defaultNatureFlags.setDefaultMessage(config.defaultNatureFlags.getDefaultMessage());
+        defaultPlotFlags.setDefaultMessage(config.defaultPlotFlags.getDefaultMessage());
 
         this.server = server;
         this.messageTransformer = messageTransformer;

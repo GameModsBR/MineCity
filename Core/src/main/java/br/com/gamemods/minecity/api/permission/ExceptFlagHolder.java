@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.api.permission;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -62,21 +63,19 @@ public class ExceptFlagHolder extends SimpleFlagHolder
         return Optional.ofNullable(generalPermissions.get(action));
     }
 
-    @NotNull
-    @Override
-    public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
+    @Nullable
+    protected Status getDirectPermission(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
     {
         Map<Identity<?>, Status> perms = strictPermission.get(action);
-        Status direct;
         if(perms == null || perms.isEmpty())
-            direct = null;
+            return null;
         else
         {
-            direct = perms.get(entity.getIdentity());
+            Status direct = perms.get(entity.getIdentity());
             if(direct == null)
             {
                 if(!entity.isGroupLoaded())
-                    return Optional.of(new Message("action.group-loading",
+                    return new Status(new Message("action.group-loading",
                             "You can't perform this action yet, your permission groups are still loading."
                     ));
 
@@ -84,11 +83,19 @@ public class ExceptFlagHolder extends SimpleFlagHolder
                 {
                     direct = perms.get(group);
                     if(direct != null)
-                        break;
+                        return direct;
                 }
             }
-        }
 
+            return direct;
+        }
+    }
+
+    @NotNull
+    @Override
+    public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
+    {
+        Status direct = getDirectPermission(entity, action);
         if(direct != null)
         {
             if(direct.message != null)

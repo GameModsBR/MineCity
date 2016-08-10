@@ -521,7 +521,7 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
 
         public FakeIsland(WorldDim world, City city, ChunkPos chunk)
         {
-            super(FakeDataSource.this, nextIslandId.getAndIncrement(), world, Collections.emptySet());
+            super(FakeDataSource.this, FakeDataSource.this, nextIslandId.getAndIncrement(), world, Collections.emptySet());
             this.city = city;
             minX = maxX = chunk.x;
             minZ = maxZ = chunk.z;

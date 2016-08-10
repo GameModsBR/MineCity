@@ -314,6 +314,30 @@
                 <msg id="success">The plot ${plot} was deleted successfully</msg>
                 <msg id="confirm">You are about to delete the plot ${plot} from the city ${city}, if you are sure about it type /plot confirm ${code}</msg>
             </delete>
+            <deny>
+                <msg id="not-claimed">You are not inside a plot</msg>
+                <msg id="no-permission">You are not allowed to change the ${plot}'s permissions</msg>
+                <msg id="got-city-expected-player">You've typed a city name, type a player name instead to allow a specific player or type a group name after the city name to prohibit that specific group. Do not use spaces in the names.</msg>
+                <msg id="player-not-found">No player was found with name ${name}</msg>
+                <msg id="group-not-found">The city ${city} does not have a group named ${group}</msg>
+                <msg id="city-not-found">No city was found with name ${name}</msg>
+                <msg id="success.player">The player ${player} was prohibited successfully</msg>
+                <msg id="success.group">The permission was granted to the group ${group} from ${home} successfully</msg>
+                <msg id="success">The permission was denied by default successfully</msg>
+            </deny>
+            <allow>
+                <msg id="not-claimed">You are not inside a plot</msg>
+                <msg id="no-permission">You are not allowed to change the ${plot}'s permissions</msg>
+                <msg id="got-city-expected-player">You've typed a city name, type a player name instead to allow a specific player or type a group name after the city name to allow that specific group. <b>Do not use spaces in the names.</b></msg>
+                <msg id="player-not-found">No player was found with name ${name}</msg>
+                <msg id="too-many-args">You've typed too many arguments, you can't give reason messages when allowing somebody.</msg>
+                <msg id="group-not-found">The city ${city} does not have a group named ${group}</msg>
+                <msg id="city-not-found">No city was found with name ${name}</msg>
+                <msg id="success">The permission was granted by default successfully</msg>
+                <msg id="success.player">The permission was granted to ${player} successfully</msg>
+                <msg id="success.group">The permission was granted to the group ${group} from ${home} successfully</msg>
+                <msg id="all.args.count">This command does not expect extra arguments, are you sure that you want to allow everybody?</msg>
+            </allow>
         </plot>
     </cmd>
     <action>

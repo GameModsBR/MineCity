@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.ICityStorage;
+import br.com.gamemods.minecity.datasource.api.IExceptPermissionStorage;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.Inconsistency;
 import br.com.gamemods.minecity.structure.Island;
@@ -24,9 +25,10 @@ final class SQLIsland extends Island
     @NotNull
     City city;
 
-    SQLIsland(ICityStorage storage, int id, int minX, int maxX, int minZ, int maxZ, int chunkCount, @NotNull WorldDim world, Set<Plot> plots)
+    SQLIsland(ICityStorage storage, IExceptPermissionStorage permissionStorage, int id,
+              int minX, int maxX, int minZ, int maxZ, int chunkCount, @NotNull WorldDim world, Set<Plot> plots)
     {
-        super(storage, id, world, plots);
+        super(storage, permissionStorage, id, world, plots);
         this.minX = minX;
         this.maxX = maxX;
         this.minZ = minZ;
@@ -35,10 +37,11 @@ final class SQLIsland extends Island
         this.city = Inconsistency.getInconsistentCity();
     }
 
-    SQLIsland(ICityStorage storage, int id, int minX, int maxX, int minZ, int maxZ, int chunkCount, @NotNull WorldDim world)
+    SQLIsland(ICityStorage storage, IExceptPermissionStorage permissionStorage, int id,
+              int minX, int maxX, int minZ, int maxZ, int chunkCount, @NotNull WorldDim world)
             throws DataSourceException
     {
-        super(storage, id, world);
+        super(storage, permissionStorage, id, world);
         this.minX = minX;
         this.maxX = maxX;
         this.minZ = minZ;
@@ -47,9 +50,9 @@ final class SQLIsland extends Island
         this.city = Inconsistency.getInconsistentCity();
     }
 
-    SQLIsland(ICityStorage storage, int id, ChunkPos chunk, @NotNull City city)
+    SQLIsland(ICityStorage storage, IExceptPermissionStorage permissionStorage, int id, ChunkPos chunk, @NotNull City city)
     {
-        super(storage, id, chunk.world, Collections.emptySet());
+        super(storage, permissionStorage, id, chunk.world, Collections.emptySet());
         minX = maxX = chunk.x;
         minZ = maxZ = chunk.z;
         chunkCount = 1;

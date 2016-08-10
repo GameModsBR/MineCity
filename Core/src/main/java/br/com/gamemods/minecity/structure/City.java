@@ -109,7 +109,7 @@ public final class City extends ExceptStoredHolder
     @Slow
     public City(@NotNull MineCity mineCity, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
                 @NotNull BlockPos spawn, Collection<Island> islands, int id, @NotNull ICityStorage storage,
-                @NotNull IExceptPermissionStorage permissionStorage, Message defaultDenialMessage)
+                @NotNull IExceptPermissionStorage permissionStorage, @Nullable Message defaultDenialMessage)
             throws DataSourceException
     {
         super(defaultDenialMessage);

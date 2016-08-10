@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.datasource.test;
 
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.datasource.api.ICityStorage;
+import br.com.gamemods.minecity.datasource.api.IExceptPermissionStorage;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.Island;
 import org.jetbrains.annotations.NotNull;
@@ -15,9 +16,9 @@ public class DummyIsland extends Island
     public int sizeZ;
     public int chunkCount;
 
-    public DummyIsland(ICityStorage storage, WorldDim world, City city)
+    public DummyIsland(ICityStorage storage, IExceptPermissionStorage permissionStorage, WorldDim world, City city)
     {
-        super(storage, 0, world, Collections.emptySet());
+        super(storage, permissionStorage, 0, world, Collections.emptySet());
         this.city = city;
     }
 

@@ -12,4 +12,5 @@ public class MineCityConfig
     public Locale locale;
     public SimpleFlagHolder defaultNatureFlags = new SimpleFlagHolder();
     public SimpleFlagHolder defaultCityFlags = new SimpleFlagHolder();
+    public SimpleFlagHolder defaultPlotFlags = new SimpleFlagHolder();
 }

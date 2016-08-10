@@ -130,9 +130,13 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
                     "If this permission is allowed by default");
             boolean allowCity = config.getBoolean("allow", "permissions.default.city."+flag, flag.defaultCity,
                     "If this permission is allowed by default");
+            boolean allowPlot = config.getBoolean("allow", "permissions.default.plot."+flag, flag.defaultCity,
+                    "If this permission is allowed by default");
             String natureMsg = config.getString("message", "permissions.default.nature."+flag, "",
                     "The message that will be displayed when this permission is denied, leave blank for the default message.");
             String cityMsg = config.getString("message", "permissions.default.city."+flag, "",
+                    "The message that will be displayed when this permission is denied, leave blank for the default message.");
+            String plotMsg = config.getString("message", "permissions.default.plot."+flag, "",
                     "The message that will be displayed when this permission is denied, leave blank for the default message.");
             if(!allowNature)
             {
@@ -148,6 +152,14 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
                     this.config.defaultCityFlags.deny(flag);
                 else
                     this.config.defaultCityFlags.deny(flag, new Message("", cityMsg));
+            }
+
+            if(!allowPlot)
+            {
+                if(plotMsg.isEmpty())
+                    this.config.defaultPlotFlags.deny(flag);
+                else
+                    this.config.defaultPlotFlags.deny(flag, new Message("", plotMsg));
             }
         }
 

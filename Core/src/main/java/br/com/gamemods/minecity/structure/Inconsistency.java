@@ -79,7 +79,7 @@ public class Inconsistency implements ChunkOwner
     {
         public InconsistentIsland(VoidStorage storage)
         {
-            super(storage, -1, WORLD, Collections.emptySet());
+            super(storage, storage, -1, WORLD, Collections.emptySet());
         }
 
         @NotNull

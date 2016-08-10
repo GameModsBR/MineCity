@@ -88,6 +88,16 @@ public class MineCityPlugin extends JavaPlugin
                     else
                         config.defaultCityFlags.deny(flag, new Message("", msg));
                 }
+
+                allow = yaml.getBoolean("permissions.default.plot."+flag+".allow", flag.defaultNature);
+                msg = yaml.getString("permissions.default.plot."+flag+".allow", "");
+                if(!allow)
+                {
+                    if(msg.isEmpty())
+                        config.defaultPlotFlags.deny(flag);
+                    else
+                        config.defaultPlotFlags.deny(flag, new Message("", msg));
+                }
             }
 
             instance = new MineCityBukkit(this, config);

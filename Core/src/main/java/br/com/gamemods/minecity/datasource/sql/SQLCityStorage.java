@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.datasource.sql;
 
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
+import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.permission.Group;
 import br.com.gamemods.minecity.api.permission.Identity;
@@ -32,10 +33,14 @@ public class SQLCityStorage implements ICityStorage
     @NotNull
     private final SQLConnection connection;
 
-    SQLCityStorage(@NotNull SQLSource source, @NotNull SQLConnection connection)
+    @NotNull
+    private final SQLPermStorage permStorage;
+
+    SQLCityStorage(@NotNull SQLSource source, @NotNull SQLConnection connection, @NotNull SQLPermStorage permStorage)
     {
         this.source = source;
         this.connection = connection;
+        this.permStorage = permStorage;
     }
 
     @Override
@@ -348,7 +353,7 @@ public class SQLCityStorage implements ICityStorage
                     );
 
                     //TODO Split plots
-                    SQLIsland newIsland = new SQLIsland(this, islandId, minX, maxX, minZ, maxZ, group.size(), sqlIsland.world, Collections.emptySet());
+                    SQLIsland newIsland = new SQLIsland(this, permStorage, islandId, minX, maxX, minZ, maxZ, group.size(), sqlIsland.world, Collections.emptySet());
                     expected[i++] = newIsland.chunkCount;
                     islands.add(newIsland);
                 }
@@ -784,7 +789,7 @@ public class SQLCityStorage implements ICityStorage
         {
             try
             {
-                SQLIsland island = new SQLIsland(this, source.createIsland(transaction, cityId, chunk.world), chunk, city);
+                SQLIsland island = new SQLIsland(this, permStorage, source.createIsland(transaction, cityId, chunk.world), chunk, city);
                 source.createClaim(transaction, island.id, chunk);
                 island.city = city;
 
@@ -1148,7 +1153,7 @@ public class SQLCityStorage implements ICityStorage
         try
         {
            try(PreparedStatement pst = connection.connect().prepareStatement(
-                   "SELECT plot_id,`name`,display_name,spawn_x,spawn_y,spawn_z,shape, player_id,player_uuid,player_name " +
+                   "SELECT plot_id,`name`,display_name,spawn_x,spawn_y,spawn_z,shape, player_id,player_uuid,player_name,perm_denial_message " +
                    "FROM minecity_plots LEFT JOIN minecity_players ON player_id=owner " +
                    "WHERE island_id=?"
            ))
@@ -1168,9 +1173,16 @@ public class SQLCityStorage implements ICityStorage
                    else
                        owner = null;
 
-                   plots.add(new Plot(this, result.getInt(1), island, result.getString(2), result.getString(3), owner,
+                   Message denial;
+                   String str = result.getString(11);
+                   if(str == null)
+                       denial = null;
+                   else
+                       denial = new Message("", str);
+
+                   plots.add(new Plot(this, permStorage, result.getInt(1), island, result.getString(2), result.getString(3), owner,
                            new BlockPos(island.world, result.getInt(4), result.getInt(5), result.getInt(6)),
-                           Shape.deserializeBytes(result.getBytes(7))
+                           Shape.deserializeBytes(result.getBytes(7)), denial
                    ));
                } while(result.next());
 

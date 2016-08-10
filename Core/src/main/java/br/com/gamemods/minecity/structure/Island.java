@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.ICityStorage;
+import br.com.gamemods.minecity.datasource.api.IExceptPermissionStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,22 +20,30 @@ public abstract class Island implements ChunkOwner
 {
     @NotNull
     protected final ICityStorage storage;
+
+    @NotNull
+    protected final IExceptPermissionStorage permissionStorage;
     public final int id;
     public final WorldDim world;
     protected Map<String, Plot> plots;
 
-    public Island(@NotNull ICityStorage storage, int id, WorldDim world, Set<Plot> plots)
+    public Island(@NotNull ICityStorage storage, @NotNull IExceptPermissionStorage permissionStorage,
+                  int id, WorldDim world, Set<Plot> plots)
     {
         this.storage = storage;
+        this.permissionStorage = permissionStorage;
         this.id = id;
         this.world = world;
         this.plots = new HashMap<>(plots.size());
         plots.forEach(plot -> this.plots.put(plot.getIdentityName(), plot));
     }
 
-    public Island(@NotNull ICityStorage storage, int id, WorldDim world) throws DataSourceException
+    public Island(@NotNull ICityStorage storage, @NotNull IExceptPermissionStorage permissionStorage,
+                  int id, WorldDim world)
+            throws DataSourceException
     {
         this.storage = storage;
+        this.permissionStorage = permissionStorage;
         this.id = id;
         this.world = world;
 
@@ -58,7 +67,7 @@ public abstract class Island implements ChunkOwner
         if(!spawn.world.equals(world))
             throw new IllegalArgumentException("The spawn is in a different world");
 
-        Plot plot = new Plot(storage, this, identity, name, owner, spawn, shape);
+        Plot plot = new Plot(storage, permissionStorage, this, identity, name, owner, spawn, shape);
         plots.put(identity, plot);
         return plot;
     }

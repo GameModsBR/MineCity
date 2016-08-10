@@ -119,7 +119,8 @@ public class SQLSourceTest
             conn.setAutoCommit(false);
             String[] tables = new String[]{"chunks","city","islands","players","setup","world","entities","groups",
                     "group_players","group_entities", "city_perm_player", "city_perm_entity", "city_perm_group",
-                    "city_perm_defaults", "group_managers"
+                    "city_perm_defaults", "group_managers", "plot_perm_defaults", "plot_perm_player",
+                    "plot_perm_entity", "plot_perm_group", "plots"
             };
             try(Statement stm =  conn.createStatement())
             {

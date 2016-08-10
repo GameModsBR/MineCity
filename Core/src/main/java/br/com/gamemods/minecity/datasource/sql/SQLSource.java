@@ -55,8 +55,9 @@ public class SQLSource implements IDataSource
         connection = new SQLConnection(config.dbUrl, config.dbUser, config.dbPass != null? config.dbPass.clone() : null);
         if(config.dbPass != null)
             Arrays.fill(config.dbPass, (byte) 0);
-        cityStorage = new SQLCityStorage(this, connection);
+
         permStorage = new SQLPermStorage(this, connection);
+        cityStorage = new SQLCityStorage(this, connection, permStorage);
     }
 
     @Slow
@@ -77,7 +78,7 @@ public class SQLSource implements IDataSource
             while(result.next())
             {
                 WorldDim world = world(result.getInt(7), ()->result.getInt(8), ()->result.getString(9), ()->result.getString(10));
-                islands.add(new SQLIsland(cityStorage,
+                islands.add(new SQLIsland(cityStorage, permStorage,
                         result.getInt(1), result.getInt(2), result.getInt(3),
                         result.getInt(4), result.getInt(5), result.getInt(6), world
                 ));
@@ -237,21 +238,6 @@ public class SQLSource implements IDataSource
         {
             throw new DataSourceException("Bad UUID", e);
         }
-    }
-
-    void setNullableUUID(PreparedStatement pst, int field, UUID uuid) throws SQLException
-    {
-        if(uuid == null)
-            pst.setNull(field, Types.BINARY);
-        else
-            pst.setBytes(field, uuid(uuid));
-    }
-
-    UUID getNullableUUID(ResultSet result, int field) throws SQLException, DataSourceException
-    {
-        byte[] bytes = result.getBytes(field);
-        if(bytes == null) return null;
-        return uuid(bytes);
     }
 
     void setNullableInt(PreparedStatement pst, int field, int val) throws SQLException
@@ -531,7 +517,7 @@ public class SQLSource implements IDataSource
             }
 
             return new CityCreationResult(cityStorage, permStorage,
-                    new SQLIsland(cityStorage, islandId, spawnChunk, city),
+                    new SQLIsland(cityStorage, permStorage, islandId, spawnChunk, city),
                     Collections.emptyList()
             );
         }

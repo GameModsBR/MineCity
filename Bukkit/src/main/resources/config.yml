@@ -75,3 +75,38 @@ permissions:
       RIDE:
         allow: true
         message:
+
+    plot:
+      ENTER:
+        allow: true
+        message:
+      CLICK:
+        allow: false
+        message:
+      PICKUP:
+        allow: false
+        message:
+      OPEN:
+        allow: false
+        message:
+      MODIFY:
+        allow: false
+        message:
+      LEAVE:
+        allow: true
+        message:
+      PVP:
+        allow: false
+        message:
+      PVC:
+        allow: false
+        message:
+      PVM:
+        allow: false
+        message:
+      SPAWN_VEHICLES:
+        allow: false
+        message:
+      RIDE:
+        allow: false
+        message:

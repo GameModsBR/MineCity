@@ -160,9 +160,55 @@ CREATE TABLE `minecity_plots` (
 `spawn_y`  int NOT NULL ,
 `spawn_z`  int NOT NULL ,
 `shape`  blob NOT NULL ,
+`perm_denial_message`  varchar(255) NULL ,
 PRIMARY KEY (`plot_id`),
 CONSTRAINT `plot_island` FOREIGN KEY (`island_id`) REFERENCES `minecity_islands` (`island_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `plot_owner` FOREIGN KEY (`owner`) REFERENCES `minecity_players` (`player_id`) ON DELETE SET NULL ON UPDATE CASCADE
+)
+;
+
+CREATE TABLE `minecity_plot_perm_defaults` (
+`plot_id`  int NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`message`  varchar(100) NULL ,
+PRIMARY KEY (`plot_id`, `perm`),
+CONSTRAINT `plot_perm_plot` FOREIGN KEY (`plot_id`) REFERENCES `minecity_plots` (`plot_id`) ON DELETE CASCADE ON UPDATE CASCADE
+)
+;
+
+CREATE TABLE `minecity_plot_perm_player` (
+`plot_id`  int NOT NULL ,
+`player_id`  int NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`allow`  bit NOT NULL ,
+`message`  varchar(100) NULL ,
+PRIMARY KEY (`plot_id`, `player_id`, `perm`),
+CONSTRAINT `plot_perm_player_plot` FOREIGN KEY (`plot_id`) REFERENCES `minecity_plots` (`plot_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+CONSTRAINT `plot_perm_player_player` FOREIGN KEY (`player_id`) REFERENCES `minecity_players` (`player_id`) ON DELETE CASCADE ON UPDATE CASCADE
+)
+;
+
+CREATE TABLE `minecity_plot_perm_entity` (
+`plot_id`  int NOT NULL ,
+`entity_id`  int NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`allow`  bit NOT NULL ,
+`message`  varchar(100) NULL ,
+PRIMARY KEY (`plot_id`, `entity_id`, `perm`),
+CONSTRAINT `plot_perm_entity_plot` FOREIGN KEY (`plot_id`) REFERENCES `minecity_plots` (`plot_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+CONSTRAINT `plot_perm_entity_entity` FOREIGN KEY (`entity_id`) REFERENCES `minecity_entities` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE
+)
+;
+
+CREATE TABLE `minecity_plot_perm_group` (
+`plot_id`  int NOT NULL ,
+`group_id`  int NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`allow`  bit NOT NULL ,
+`message`  varchar(100) NULL ,
+PRIMARY KEY (`plot_id`, `group_id`, `perm`),
+CONSTRAINT `plot_perm_group_plot` FOREIGN KEY (`plot_id`) REFERENCES `minecity_plots` (`plot_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+CONSTRAINT `plot_perm_group_entity` FOREIGN KEY (`group_id`) REFERENCES `minecity_groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE
 )
 ;
 
