@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE minecity-messages SYSTEM "https://raw.githubusercontent.com/GameModsBR/MineCity/master/Core/src/main/resources/assets/minecity/messages.dtd">
 <minecity-messages modified="false" add-missing="true">
-    <msg id="todo.group.list">Group List: ${child}</msg>
     <cmd>
         <msg id="not-found">Unknown command: /${base}</msg>
         <result>

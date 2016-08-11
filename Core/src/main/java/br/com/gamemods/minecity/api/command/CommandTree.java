@@ -346,9 +346,7 @@ public final class CommandTree
         }
 
         Result result = get(cmd.args).orElseGet(()-> get(cmd.path.subList(0, cmd.path.size()-1)).orElseGet(()-> rootResult(cmd.args)));
-        String helpPath = (String.join(" ", cmd.path) + " " +
-                String.join(" ", result.path.subList(1, result.path.size()))
-        ).trim();
+        String helpPath = (String.join(" ", cmd.path)+" "+String.join(" ", cmd.args.subList(Math.min(cmd.args.size(), cmd.path.size()-1), cmd.args.size()))).trim();
         Result shortest = result;
         for(int i = 1; i < result.path.size(); i++)
             shortest = get(result.path.subList(i, result.path.size())).filter(r-> r.entry.equals(result.entry)).orElse(shortest);
@@ -586,11 +584,11 @@ public final class CommandTree
 
     public CommandResult<Void> groupExecutor(CommandEvent cmd)
     {
-        Map<String, CommandEntry> subTree= get(cmd.path).map(r->r.entry).map(CommandEntry::getSubTree).orElseGet(HashMap::new);
-
-        return new CommandResult<>(new Message("todo.group.list", "Group List: ${child}",
-                new Object[]{"child", subTree.keySet()}
-        ), cmd.args.isEmpty());
+        cmd.path.add("help");
+        if(!cmd.args.isEmpty() && cmd.args.get(0).equals("help"))
+            cmd.args.remove(0);
+        help(cmd);
+        return CommandResult.success();
     }
 
     public void register(@NotNull String path, @NotNull CommandInfo info, boolean group)
