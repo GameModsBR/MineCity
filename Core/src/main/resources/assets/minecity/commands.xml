@@ -88,6 +88,9 @@
         <command id="city.delete" parent="city" cmd="delete">
             <desc>Deletes the entire city.</desc>
         </command>
+        <command id="city.list" parent="city" cmd="list">
+            <desc>Lists all cities</desc>
+        </command>
 
         <!-- Groups -->
         <command id="group.create" parent="group" cmd="create,new">
