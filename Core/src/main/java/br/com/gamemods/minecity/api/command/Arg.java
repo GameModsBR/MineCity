@@ -24,6 +24,7 @@ public @interface Arg
         PLAYER,
         CITY,
         GROUP,
-        GROUP_OR_CITY
+        GROUP_OR_CITY,
+        HELP
     }
 }

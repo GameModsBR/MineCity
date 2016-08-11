@@ -293,7 +293,7 @@ public final class CommandTree
                     .collect(Collectors.toList());
     }
 
-    @Command(value = "help", args = {@Arg(name = "command", sticky = true, optional = true), @Arg(name = "page", optional = true)})
+    @Command(value = "help", args = {@Arg(name = "command", sticky = true, optional = true, type = Arg.Type.HELP), @Arg(name = "page", optional = true, type = Arg.Type.HELP)})
     public CommandResult<?> help(CommandEvent cmd)
     {
         int page = 1;
@@ -306,9 +306,14 @@ public final class CommandTree
                 page = Integer.parseInt(last);
                 cmd.args.remove(index);
             }
+            cmd.args.addAll(0, cmd.path.subList(0, cmd.path.size()-1));
         }
 
         Result result = get(cmd.args).orElseGet(()-> get(cmd.path.subList(0, cmd.path.size()-1)).orElseGet(()-> rootResult(cmd.args)));
+        String helpPath = (String.join(" ", cmd.path) + " " +
+                String.join(" ", result.path.subList(1, result.path.size()))
+        ).trim();
+
         if(result.entry instanceof CommandGroup)
         {
             CommandEntry[] items = result.entry.getSubTree().values().stream().distinct()
@@ -329,6 +334,7 @@ public final class CommandTree
                     return (Message) val;
                 return new Message("", "${arg}", new Object[]{"arg", val});
             };
+            boolean root = result.path.isEmpty() || result.path.equals(Collections.singletonList("minecity"));
             for(int i = 1; i < lines.length-1; index++, i++)
             {
                 CommandEntry item = items[index];
@@ -341,14 +347,15 @@ public final class CommandTree
                         "    </tooltip>\n" +
                         "    <click>\n" +
                         "        <suggest cmd=\"${help-command}\"/>\n" +
-                    "            <aqua>${command} <gold>${short-args}</gold> <darkgray>-</darkgray> <gray>${short-info}</gray></aqua>\n" +
+                    "            <aqua>${command}${spacer}<gold>${short-args}</gold> <darkgray>-</darkgray> <gray>${short-info}</gray></aqua>\n" +
                         "        </reset>\n" +
                         "    </click>\n" +
                         "</hover></msg>",
                         new Object[][]{
+                                {"spacer", item.getInfo().args == null || item.getInfo().args.length == 0? "" : " "},
                                 {"full-command", "/"+fullCommand},
-                                {"command", result.path.isEmpty()? ("/"+item.getInfo().getName()) : item.getInfo().getName()},
-                                {"help-command", "/"+String.join(" ", cmd.path)+" "+fullCommand},
+                                {"command", root? ("/"+item.getInfo().getName()) : item.getInfo().getName()},
+                                {"help-command", "/"+helpPath+" "+item.getInfo().getName()},
                                 {"full-info", item.getInfo().description == null? "" :
                                         Arrays.stream(item.getInfo().description.trim().split("\\s+"))
                                         .reduce((a,b) -> a.matches(
@@ -359,8 +366,8 @@ public final class CommandTree
                                 },
                                 {"short-info",
                                         item.getInfo().description == null? "":
-                                        item.getInfo().description.length()>40?
-                                                item.getInfo().description.substring(0,40)+"..."
+                                        item.getInfo().description.length()>45?
+                                                item.getInfo().description.substring(0,45)+"..."
                                                 :
                                                 item.getInfo().description
                                 },
@@ -392,17 +399,19 @@ public final class CommandTree
                 );
             }
 
-            lines[0] = result.path.isEmpty()?
-                    new Message("cmd.help.header", "<msg><darkgray>---------------<gray>-=[Help]=-</gray>---------------</darkgray></msg>"):
-                    new Message("cmd.help.group.header",
-                            "<msg><darkgray>---------------<gray>-=[Help:${cmd}]=-</gray>---------------</darkgray></msg>",
+            lines[0] = root?
+                    new Message(/*"cmd.help.header",*/"",
+                            "<msg><darkgreen>---<yellow>-=[MineCity Help]=-</yellow>----- <green>Click the items for info</green> -----</darkgreen></msg>"):
+                    new Message(/*"cmd.help.group.header",*/"",
+                            "<msg><darkgreen>---<yellow>-=[MineCity Help]=-</yellow>----- <green>Click the items for info</green> -----</darkgreen></msg>",
                             new Object[] {"cmd", "/"+String.join(" ", result.path)}
                     );
 
-            lines[lines.length-1] = new Message("cmd.help.footer","<msg><gray>Page <gold>${page}</gold>/<gold>${total}</gold> " +
-                    "<darkgray>---</darkgray> Type: <gold>${next-page}</gold> for the next page</gray></msg>",
+            lines[lines.length-1] = new Message(/*"cmd.help.footer",*/"",
+                    "<msg><green>Page <gold>${page}</gold>/<gold>${total}</gold> " +
+                    "<darkgreen>---</darkgreen> Next page: <gold>${next-page}</gold></green></msg>",
                     new Object[][]{
-                            {"next-page", "/"+String.join(" ", cmd.path) + " " + (Math.max(pages, page + 1))},
+                            {"next-page", "/"+ helpPath +" "+Math.min(pages, page + 1)},
                             {"page", page},
                             {"total", pages}
                     }
@@ -503,7 +512,7 @@ public final class CommandTree
         return Optional.of(result);
     }
 
-    protected List<String> completeFunction(Arg[] defs, @NotNull List<String> args, @NotNull String search)
+    protected List<String> completeFunction(Arg[] defs, @NotNull List<String> args, @NotNull List<String> path, @NotNull String search)
     {
         if(defs == null || defs.length == 0)
         {
@@ -523,7 +532,20 @@ public final class CommandTree
         {
             def = defs[defs.length - 1];
             if(!def.sticky())
-                return Collections.emptyList();
+            {
+                if(defs.length == 1)
+                    return Collections.emptyList();
+
+                for(int i = defs.length - 2; i >= 0; i--)
+                {
+                    def = defs[i];
+                    if(def.sticky())
+                        break;
+                }
+
+                if(!def.sticky())
+                    return Collections.emptyList();
+            }
 
             arg = String.join(" ", args) + " " + search;
         }
@@ -538,6 +560,7 @@ public final class CommandTree
             arg = search;
         }
 
+        boolean sort = true;
         Stream<String> options = null;
         String key = arg.toLowerCase();
         Predicate<String> filter = o -> o.toLowerCase().startsWith(key);
@@ -591,6 +614,32 @@ public final class CommandTree
                 filter = o-> identity(o).startsWith(id);
                 break;
             }
+            case HELP:
+            {
+                List<String> helpPath = new ArrayList<>(path.size()+args.size()-1);
+                helpPath.addAll(path.subList(0, path.size()-1));
+                helpPath.addAll(args);
+                Collection<CommandEntry> entries = get(helpPath).map(r -> r.entry.getSubTree())
+                        .map(Map::values).orElse(Collections.emptyList());
+                if(entries.isEmpty())
+                    return Collections.emptyList();
+
+                options = Stream.concat(
+                        entries.stream().map(CommandEntry::getInfo).map(CommandInfo::getName).distinct().sorted(),
+                        Stream.generate(new Supplier<String>()
+                        {
+                            int current;
+                            @Override
+                            public String get()
+                            {
+                                return Integer.toString(++current);
+                            }
+                        }).limit((int) Math.ceil(entries.size()/8.0) - 1)
+                );
+                arg = search;
+                sort = false;
+                break;
+            }
             default:
                 return Collections.emptyList();
         }
@@ -622,7 +671,10 @@ public final class CommandTree
             }).filter(o-> o != null);
         }
 
-        return options.sorted().flatMap(s-> Stream.of(s.replaceAll("\\s", ""), s.split("\\s",2)[0])).distinct().collect(Collectors.toList());
+        if(sort)
+            options = options.sorted();
+
+        return options.flatMap(s-> Stream.of(s.replaceAll("\\s", ""), s.split("\\s",2)[0])).distinct().collect(Collectors.toList());
     }
 
     private Result rootResult(List<String> args)
@@ -643,7 +695,7 @@ public final class CommandTree
 
         Map<String, CommandEntry> subTree = result.entry.getSubTree();
         if(subTree == null)
-            return completeFunction(result.entry.getInfo().args, result.args, search);
+            return completeFunction(result.entry.getInfo().args, result.args, result.path, search);
 
         if(!result.args.isEmpty())
             return Collections.emptyList();

@@ -349,7 +349,7 @@
                         </tooltip>
                         <click>
                             <suggest cmd="${help-command}"/>
-                            <aqua>${command} <gold>${short-args}</gold> <darkgray>-</darkgray> <gray>${short-info}</gray></aqua>
+                            <aqua>${command}${spacer}<gold>${short-args}</gold> <darkgray>-</darkgray> <gray>${short-info}</gray></aqua>
                         </click>
                     </hover>
                 </msg>
