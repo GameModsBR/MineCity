@@ -131,6 +131,10 @@ public class MessageTransformer
             {
                 throw new RuntimeException(e);
             }
+            catch(SAXException e)
+            {
+                throw new SAXException("Message: "+message, e);
+            }
         else
         {
             TextComponent textComponent = parseText(message);

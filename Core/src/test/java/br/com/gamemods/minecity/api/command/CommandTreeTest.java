@@ -108,7 +108,9 @@ public class CommandTreeTest
                 "    </commands>\n" +
                 "</minecity-commands>";
 
+        MessageTransformer transformer = new MessageTransformer();
         CommandTree tree = new CommandTree();
+        tree.messageTransformer = ()-> transformer;
         tree.parseXml(new ByteArrayInputStream(xml.getBytes()));
         CommandTree.Result result = tree.get("C creATE A b 2").orElse(null);
         assertNotNull(result);
@@ -118,7 +120,6 @@ public class CommandTreeTest
         TestPlayer player = new TestPlayer(testData, testData.joserobjr, new EntityPos(testData.overWorld, 2,2,3));
         CommandResult cmd = tree.invoke(player, "city create test");
         assertFalse(cmd.success);
-        assertEquals("Group List: [new, create]", cmd.message.toString());
 
         tree.registerCommands(this);
 
@@ -127,9 +128,9 @@ public class CommandTreeTest
         assertEquals("[C, creATE]", result.path.toString());
         assertEquals(Arrays.asList("A","b","2"), result.args);
 
-        cmd = tree.invoke(player, "city create test");
+        cmd = tree.invoke(player, "city new test");
         assertFalse(cmd.success);
-        assertEquals("Path: [city, create] Args: [test]", cmd.message.toString());
+        assertEquals("Path: [city, new] Args: [test]", cmd.message.toString());
     }
 
     @Test

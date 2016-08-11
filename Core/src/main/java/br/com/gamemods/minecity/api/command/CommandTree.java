@@ -335,18 +335,21 @@ public final class CommandTree
     public CommandResult<?> help(CommandEvent cmd)
     {
         int page = 1;
-        if(!cmd.args.isEmpty())
+        List<String> args = cmd.args instanceof ArrayList? cmd.args : new ArrayList<>(cmd.args);
+        if(!args.isEmpty())
         {
-            int index = cmd.args.size() - 1;
-            String last = cmd.args.get(index);
+            int index = args.size() - 1;
+            String last = args.get(index);
             if(last.matches("^[0-9]+$"))
                 page = Integer.parseInt(last);
-            cmd.args.removeIf(str-> str.matches("^[0-9]+$"));
-            cmd.args.addAll(0, cmd.path.subList(0, cmd.path.size()-1));
+            args.removeIf(str-> str.matches("^[0-9]+$"));
+            args.addAll(0, cmd.path.subList(0, cmd.path.size()-1));
         }
 
-        Result result = get(cmd.args).orElseGet(()-> get(cmd.path.subList(0, cmd.path.size()-1)).orElseGet(()-> rootResult(cmd.args)));
-        String helpPath = (String.join(" ", cmd.path)+" "+String.join(" ", cmd.args.subList(Math.min(cmd.args.size(), cmd.path.size()-1), cmd.args.size()))).trim();
+        Result result = get(args).orElseGet(()-> get(cmd.path.subList(0, cmd.path.size()-1)).orElseGet(()-> rootResult(
+                args)));
+        String helpPath = (String.join(" ", cmd.path)+" "+String.join(" ", args.subList(Math.min(
+                args.size(), cmd.path.size()-1), args.size()))).trim();
         Result shortest = result;
         for(int i = 1; i < result.path.size(); i++)
             shortest = get(result.path.subList(i, result.path.size())).filter(r-> r.entry.equals(result.entry)).orElse(shortest);
@@ -403,7 +406,6 @@ public final class CommandTree
                             "    <click>\n" +
                             "        <suggest cmd=\"${help-command}\"/>\n" +
                         "            <aqua>${command}${spacer}<gold>${short-args}</gold> <darkgray>-</darkgray> <gray>${short-info}</gray></aqua>\n" +
-                            "        </reset>\n" +
                             "    </click>\n" +
                             "</hover></msg>",
                             new Object[][]{
@@ -584,11 +586,13 @@ public final class CommandTree
 
     public CommandResult<Void> groupExecutor(CommandEvent cmd)
     {
-        cmd.path.add("help");
-        if(!cmd.args.isEmpty() && cmd.args.get(0).equals("help"))
-            cmd.args.remove(0);
-        help(cmd);
-        return CommandResult.success();
+        List<String> path = cmd.path instanceof ArrayList? cmd.path : new ArrayList<>(cmd.path);
+        path.add("help");
+        List<String> args = cmd.args instanceof ArrayList? cmd.args : new ArrayList<>(cmd.args);
+        if(!args.isEmpty() && args.get(0).equals("help"))
+            args.remove(0);
+        help(path == cmd.path && args == cmd.args? cmd : new CommandEvent(cmd.sender, path, args));
+        return CommandResult.failed();
     }
 
     public void register(@NotNull String path, @NotNull CommandInfo info, boolean group)
