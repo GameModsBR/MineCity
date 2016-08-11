@@ -782,9 +782,14 @@ public final class CommandTree
                 helpPath.addAll(path.subList(0, path.size()-1));
                 helpPath.addAll(args);
                 helpPath.removeIf(str-> str.matches("^[0-9]+$"));
-                Collection<CommandEntry> entries = get(helpPath).map(r -> r.entry.getSubTree())
+                Optional<Result> result = get(helpPath);
+                Collection<CommandEntry> entries = result.filter(r-> r.args.isEmpty()).map(r -> r.entry.getSubTree())
                         .map(Map::values).orElse(Collections.emptyList());
-                if(entries.isEmpty())
+                int limit = (int) Math.ceil(result.map(r-> r.entry.getSubTree())
+                        .map(Map::values).map(Collection::stream).orElse(Stream.empty())
+                        .distinct().count() / 8.0);
+
+                if(limit <= 1 && entries.isEmpty())
                     return Collections.emptyList();
 
                 options = Stream.concat(
@@ -797,7 +802,7 @@ public final class CommandTree
                             {
                                 return Integer.toString(++current);
                             }
-                        }).limit((int) Math.ceil(entries.size()/8.0) - 1)
+                        }).limit(limit == 1? 0 : limit)
                 );
                 String starts = search.toLowerCase();
                 filter = o -> o.toLowerCase().startsWith(starts);
