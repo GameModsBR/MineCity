@@ -340,10 +340,8 @@ public final class CommandTree
             int index = cmd.args.size() - 1;
             String last = cmd.args.get(index);
             if(last.matches("^[0-9]+$"))
-            {
                 page = Integer.parseInt(last);
-                cmd.args.remove(index);
-            }
+            cmd.args.removeIf(str-> str.matches("^[0-9]+$"));
             cmd.args.addAll(0, cmd.path.subList(0, cmd.path.size()-1));
         }
 
@@ -783,6 +781,7 @@ public final class CommandTree
                 List<String> helpPath = new ArrayList<>(path.size()+args.size()-1);
                 helpPath.addAll(path.subList(0, path.size()-1));
                 helpPath.addAll(args);
+                helpPath.removeIf(str-> str.matches("^[0-9]+$"));
                 Collection<CommandEntry> entries = get(helpPath).map(r -> r.entry.getSubTree())
                         .map(Map::values).orElse(Collections.emptyList());
                 if(entries.isEmpty())
