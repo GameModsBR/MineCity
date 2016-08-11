@@ -206,7 +206,7 @@ public class CityCommand
 
     @Slow
     @Async
-    @Command(value = "city.disclaim", console = false, args = @Arg(name = "city", type = Arg.Type.CITY, optional = true, sticky = true))
+    @Command(value = "city.disclaim", console = false)
     public CommandResult<Collection<Island>> disclaim(CommandEvent cmd)
             throws DataSourceException
     {

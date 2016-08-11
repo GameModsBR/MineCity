@@ -9,13 +9,13 @@
             <msg id="failed"><darkred>MineCity> </darkred><red>${msg}</red></msg>
         </result>
         <msg id="exception">
+            Oops.. An error occurred while executing this command: ${error}
             <!-- Possible arguments:
                     ${error} = ${className}: ${cause} (omits ": ${cause}" when the cause is empty)
                         IllegalArgumentException: Cannot disclaim the last chunk
                     ${className} = The exception class name without package
                     ${cause} = The exception message, may be empty.
             -->
-            Oops.. An error occurred while executing this command: ${error}
         </msg>
         <city>
             <delete>
@@ -30,6 +30,7 @@
                 <msg id="success">The city ${city} was deleted</msg>
             </delete>
             <create>
+                <msg id="arg.name">name</msg>
                 <name>
                     <msg id="empty">Please type a city name</msg>
                     <msg id="short">The name ${name} is not valid, try a bigger name</msg>
@@ -45,6 +46,7 @@
                 </msg>
             </create>
             <claim>
+                <msg id="arg.city">city</msg>
                 <msg id="already-claimed">This chunk is already claimed in name of ${city}</msg>
                 <msg id="reserved">This chunk is reserved to ${name}</msg>
                 <msg id="ambiguous">Both cities ${1} and ${2} are touching this chunk, repeat the command specifying the city name.</msg>
@@ -72,10 +74,12 @@
                 </success>
             </disclaim>
             <spawn>
+                <msg id="arg.city">city</msg>
                 <msg id="invalid-name">Please type a valid name</msg>
                 <msg id="not-found">There're no city named ${name}</msg>
             </spawn>
             <rename>
+                <msg id="arg.new-name">new-name</msg>
                 <msg id="empty">You need to type the new name</msg>
                 <msg id="invalid">The name ${name} is invalid, try a bigger name</msg>
                 <msg id="same">This city is already named ${name}</msg>
@@ -84,6 +88,7 @@
                 <msg id="success">The city ${old} is now named ${new}</msg>
             </rename>
             <transfer>
+                <msg id="arg.player">player</msg>
                 <player>
                     <msg id="empty">
                         This will transfer this city to an other player, type the player name that will be the new owner
@@ -106,6 +111,7 @@
                 <msg id="success">The ${name}'s spawn was changed successfully</msg>
             </setspawn>
             <map>
+                <msg id="arg.big">big</msg>
                 <msg id="header"><darkgray>---------------<gray>-=[Map]=-</gray>--------------¬-<gray>-=[City Names]=-</gray></darkgray></msg>
                 <you>
                     <city>
@@ -119,6 +125,48 @@
                 </you>
             </map>
             <deny>
+                <all>
+                    <msg id="enter.arg.reason">reason</msg>
+                    <msg id="click.arg.reason">reason</msg>
+                    <msg id="pickup.arg.reason">reason</msg>
+                    <msg id="open.arg.reason">reason</msg>
+                    <msg id="pvp.arg.reason">reason</msg>
+                    <msg id="pvc.arg.reason">reason</msg>
+                </all>
+                <enter>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </enter>
+                <msg id="click.arg.player-or-city">player or city</msg>
+                <msg id="click.arg.group-name">group name</msg>
+                <msg id="click.arg.reason">reason</msg>
+                <pickup>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </pickup>
+                <msg id="open.arg.player-or-city">player or city</msg>
+                <msg id="open.arg.group-name">group name</msg>
+                <msg id="open.arg.reason">reason</msg>
+                <pvp>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </pvp>
+                <pvc>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </pvc>
                 <msg id="not-claimed">You are not inside a city</msg>
                 <msg id="no-permission">You are not allowed to change the ${city}'s permissions</msg>
                 <msg id="got-city-expected-player">You've typed a city name, type a player name instead to allow a specific player or type a group name after the city name to prohibit that specific group. Do not use spaces in the names.</msg>
@@ -141,10 +189,39 @@
                 <msg id="success.player">The permission was granted to ${player} successfully</msg>
                 <msg id="success.group">The permission was granted to the group ${group} from ${home} successfully</msg>
                 <msg id="all.args.count">This command does not expect extra arguments, are you sure that you want to allow everybody?</msg>
+                <enter>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </enter>
+                <msg id="click.arg.player-or-city">player or city</msg>
+                <msg id="click.arg.group-name">group name</msg>
+                <pickup>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </pickup>
+                <msg id="open.arg.player-or-city">player or city</msg>
+                <msg id="open.arg.group-name">group name</msg>
+                <pvp>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </pvp>
+                <pvc>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </pvc>
             </allow>
         </city>
         <group>
             <create>
+                <msg id="arg.group-name">group-name</msg>
                 <msg id="empty">You need to type a name</msg>
                 <msg id="invalid">The name ${name} is invalid, try a bigger name</msg>
                 <msg id="not-claimed">You are not inside a city</msg>
@@ -153,6 +230,10 @@
                 <msg id="success">The group ${group} were created successfully</msg>
             </create>
             <add>
+                <arg>
+                    <msg id="player">player</msg>
+                    <msg id="group">group</msg>
+                </arg>
                 <msg id="empty.player">Type a player name</msg>
                 <msg id="empty.group">Type a group name</msg>
                 <msg id="not-claimed">You are not inside a city</msg>
@@ -161,8 +242,26 @@
                 <msg id="player-not-found">No player was found with name ${name}</msg>
                 <msg id="already-member">The player ${name} is already part of the group ${group}</msg>
                 <msg id="success">The player ${player} is now part of the group ${group}</msg>
+                <manager>
+                    <arg>
+                        <msg id="player">player</msg>
+                        <msg id="group">group</msg>
+                    </arg>
+                    <msg id="empty.player">Type a player name</msg>
+                    <msg id="empty.group">Type a group name</msg>
+                    <msg id="not-claimed">You are not inside a city</msg>
+                    <msg id="group-not-found">The group ${group} was not found in ${city}</msg>
+                    <msg id="no-permission">You don't have permission to add managers to groups from ${city}</msg>
+                    <msg id="player-not-found">No player was found with name ${name}</msg>
+                    <msg id="already-manager">The player ${name} is already a manager of the group ${group}</msg>
+                    <msg id="success">The player ${player} is now a manager of the group ${group}</msg>
+                </manager>
             </add>
             <remove>
+                <arg>
+                    <msg id="player">player</msg>
+                    <msg id="group">group</msg>
+                </arg>
                 <msg id="empty.player">Type a player name</msg>
                 <msg id="empty.group">Type a group name</msg>
                 <msg id="not-claimed">You are not inside a city</msg>
@@ -171,8 +270,23 @@
                 <msg id="player-not-found">No player was found with name ${name}</msg>
                 <msg id="not-member">The player ${name} is not a member of the group ${group}</msg>
                 <msg id="success">The player ${player} is no longer part of the group ${group}</msg>
+                <manager>
+                    <arg>
+                        <msg id="player">player</msg>
+                        <msg id="group">group</msg>
+                    </arg>
+                    <msg id="empty.player">Type a player name</msg>
+                    <msg id="empty.group">Type a group name</msg>
+                    <msg id="not-claimed">You are not inside a city</msg>
+                    <msg id="group-not-found">The group ${group} was not found in ${city}</msg>
+                    <msg id="no-permission">You don't have permission to demote players from groups from ${city}</msg>
+                    <msg id="player-not-found">No player was found with name ${name}</msg>
+                    <msg id="not-manager">The player ${name} is not a manager of the group ${group}</msg>
+                    <msg id="success">The player ${player} is no longer a manager of the group ${group}</msg>
+                </manager>
             </remove>
             <list>
+                <msg id="arg.city-name">city</msg>
                 <msg id="city-not-found">The city ${city} was not found</msg>
                 <msg id="not-claimed">You are not inside a city</msg>
                 <msg id="success">The city ${city} contains ${count} groups: ${groups}</msg>
@@ -199,6 +313,10 @@
                 <msg id="no-groups">The city ${city} does not have groups</msg>
             </list>
             <info>
+                <arg>
+                    <msg id="city">city</msg>
+                    <msg id="group-name">group-name</msg>
+                </arg>
                 <msg id="city-not-found">The city ${city} was not found</msg>
                 <msg id="not-claimed">You are not inside a city</msg>
                 <msg id="no-group">Type a group name</msg>
@@ -227,6 +345,10 @@
                 </managers>
             </info>
             <delete>
+                <arg>
+                    <msg id="city">city</msg>
+                    <msg id="group-name">group-name</msg>
+                </arg>
                 <msg id="city-not-found">The city ${city} was not found</msg>
                 <msg id="not-claimed">You are not inside a city</msg>
                 <msg id="no-group">Type a group name</msg>
@@ -240,6 +362,7 @@
             </delete>
         </group>
         <confirm>
+            <msg id="arg.confirmation-code">confirmation-code</msg>
             <msg id="args">Type the confirmation code to confirm the action or just ignore it if you don't want to continue.</msg>
             <msg id="invalid">You've typed an incorrect code, if you want to abort the operation just don't type the /confirm command.</msg>
             <msg id="expired"><darkred>MineCity> </darkred><red>The action were not confirmed and the confirmation code has expired.</red></msg>
@@ -247,6 +370,7 @@
         </confirm>
         <plot>
             <create>
+                <msg id="arg.plot-name">plot-name</msg>
                 <msg id="no-selection">Select the plot area and then execute this command again.</msg>
                 <msg id="name-too-short">Please type a bigger name</msg>
                 <msg id="not-claimed">You are not inside a city</msg>
@@ -261,6 +385,7 @@
                 <msg id="success">The plot ${name} was created successfully</msg>
             </create>
             <rename>
+                <msg id="arg.new-name">new-name</msg>
                 <msg id="not-claimed">You are not inside a plot</msg>
                 <msg id="no-permission">You don't have permission to rename the plot ${plot}</msg>
                 <msg id="name-too-short">Please type a bigger name</msg>
@@ -280,6 +405,7 @@
                 </msg>
             </return>
             <transfer>
+                <msg id="arg.player-name">player-name</msg>
                 <msg id="not-claimed">You are not inside a plot</msg>
                 <msg id="no-permission">You don't have permission to transfer the plot ${plot}</msg>
                 <msg id="too-many-args">Player names does not have spaces</msg>
@@ -315,6 +441,48 @@
                 <msg id="confirm">You are about to delete the plot ${plot} from the city ${city}, if you are sure about it type /plot confirm ${code}</msg>
             </delete>
             <deny>
+                <all>
+                    <msg id="enter.arg.reason">reason</msg>
+                    <msg id="click.arg.reason">reason</msg>
+                    <msg id="pickup.arg.reason">reason</msg>
+                    <msg id="open.arg.reason">reason</msg>
+                    <msg id="pvp.arg.reason">reason</msg>
+                    <msg id="pvc.arg.reason">reason</msg>
+                </all>
+                <enter>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </enter>
+                <msg id="click.arg.player-or-city">player or city</msg>
+                <msg id="click.arg.group-name">group name</msg>
+                <msg id="click.arg.reason">reason</msg>
+                <pickup>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </pickup>
+                <msg id="open.arg.player-or-city">player or city</msg>
+                <msg id="open.arg.group-name">group name</msg>
+                <msg id="open.arg.reason">reason</msg>
+                <pvp>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </pvp>
+                <pvc>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </pvc>
                 <msg id="not-claimed">You are not inside a plot</msg>
                 <msg id="no-permission">You are not allowed to change the ${plot}'s permissions</msg>
                 <msg id="got-city-expected-player">You've typed a city name, type a player name instead to allow a specific player or type a group name after the city name to prohibit that specific group. Do not use spaces in the names.</msg>
@@ -337,9 +505,41 @@
                 <msg id="success.player">The permission was granted to ${player} successfully</msg>
                 <msg id="success.group">The permission was granted to the group ${group} from ${home} successfully</msg>
                 <msg id="all.args.count">This command does not expect extra arguments, are you sure that you want to allow everybody?</msg>
+                <enter>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </enter>
+                <msg id="click.arg.player-or-city">player or city</msg>
+                <msg id="click.arg.group-name">group name</msg>
+                <pickup>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </pickup>
+                <msg id="open.arg.player-or-city">player or city</msg>
+                <msg id="open.arg.group-name">group name</msg>
+                <pvp>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </pvp>
+                <pvc>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </pvc>
             </allow>
         </plot>
         <help>
+            <arg>
+                <msg id="command">command</msg>
+                <msg id="page">page</msg>
+            </arg>
             <group>
                 <msg id="header"><darkgreen>---<yellow>-=[MineCity Help]=-</yellow>----- <green>Click the items for info</green> -----</darkgreen></msg>
                 <footer>
@@ -405,8 +605,6 @@
             <msg id="cancelled">The teleport were cancelled</msg>
             <msg id="world-not-found">The destiny world ${name} was not found or is not loaded</msg>
         </teleport>
-    </action>
-    <action>
         <msg id="give.tool.inventory-full">You haven't received the tool because your inventory is full.</msg>
     </action>
     <tool>

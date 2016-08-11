@@ -17,8 +17,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -324,8 +324,8 @@ public final class CommandTree
             page = Math.min(page, pages);
             int index = itemsPerPage * (page - 1);
             Message[] lines = new Message[2 + Math.min(itemsPerPage, items.length-index)];
-            Function<Arg, Message> formatArg = arg -> {
-                Object val = arg.name();
+            BiFunction<String, Arg, Message> formatArg = (id, arg) -> {
+                Message val = new Message("cmd."+id+".arg."+arg.name().toLowerCase().replaceAll("[^a-z0-9]+","-"), arg.name());
                 if(arg.sticky())
                     val = new Message("cmd.help.group.expanded.arg.sticky", "${arg}...", new Object[]{"arg", val});
                 if(arg.optional())
@@ -374,13 +374,15 @@ public final class CommandTree
                                             new Message("cmd.help.group.expanded.no-args", "")
                                         : item.getInfo().args.length == 1?
                                             new Message("cmd.help.group.expanded.one-arg", "${arg}",
-                                                    new Object[]{ "arg", formatArg.apply(item.getInfo().args[0])}
+                                                    new Object[]{ "arg", formatArg.apply(item.getInfo().commandId, item.getInfo().args[0])}
                                             )
                                         :
                                             new Message("cmd.help.group.expanded.n-args.base", "${args}", new Object[]{
                                                     "args",
                                                     Message.list(
-                                                        Arrays.stream(item.getInfo().args).map(formatArg).toArray(Message[]::new),
+                                                        Arrays.stream(item.getInfo().args)
+                                                                .map(arg -> formatArg.apply(item.getInfo().commandId, arg))
+                                                                .toArray(Message[]::new),
                                                         new Message("cmd.help.group.expanded.n-args.join", "<msg><gray><i>, </i></gray></msg>")
                                                     )
                                             })

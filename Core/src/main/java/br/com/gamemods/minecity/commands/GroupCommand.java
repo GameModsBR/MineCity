@@ -318,7 +318,7 @@ public class GroupCommand
             ));
 
         if(group.isManager(player))
-            return new CommandResult<>(new Message("cmd.group.add.manager.already-member",
+            return new CommandResult<>(new Message("cmd.group.add.manager.already-manager",
                     "The player ${name} is already a manager of the group ${group}", new Object[][]{
                     {"name",player.getName()}, {"group",group.getName()}
             }));
@@ -371,7 +371,7 @@ public class GroupCommand
             ));
 
         if(!group.isManager(player))
-            return new CommandResult<>(new Message("cmd.group.remove.manager.not-member",
+            return new CommandResult<>(new Message("cmd.group.remove.manager.not-manager",
                     "The player ${name} is not a manager of the group ${group}", new Object[][]{
                     {"name",player.getName()}, {"group",group.getName()}
             }));
