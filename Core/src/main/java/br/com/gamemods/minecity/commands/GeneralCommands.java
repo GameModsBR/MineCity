@@ -1,7 +1,11 @@
 package br.com.gamemods.minecity.commands;
 
+import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.Async;
 import br.com.gamemods.minecity.api.command.*;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 
 public class GeneralCommands
 {
@@ -20,5 +24,12 @@ public class GeneralCommands
             return new CommandResult<>(new Message("cmd.confirm.invalid", "You've typed an incorrect code, if you want to abort the operation just don't type the /confirm command."));
 
         return confirm.result;
+    }
+
+    @Command(value = "reload", console = false)
+    public static CommandResult<?> reload(CommandEvent cmd) throws IOException, SAXException
+    {
+        cmd.mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
+        return CommandResult.success();
     }
 }

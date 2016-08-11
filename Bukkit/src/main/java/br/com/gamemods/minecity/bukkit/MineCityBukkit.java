@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
+import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.EntityPos;
@@ -37,13 +38,13 @@ public class MineCityBukkit implements Server
     public final MineCityPlugin plugin;
     public final Logger logger;
 
-    public MineCityBukkit(MineCityPlugin plugin, MineCityConfig config)
+    public MineCityBukkit(MineCityPlugin plugin, MineCityConfig config, MessageTransformer transformer)
     {
         this.plugin = plugin;
         logger = plugin.getLogger();
         scheduler = plugin.getScheduler();
 
-        mineCity = new MineCity(this, config);
+        mineCity = new MineCity(this, config, transformer);
         PluginManager pluginManager = plugin.getPluginManager();
         pluginManager.registerEvents(new WorldListener(this), plugin);
     }

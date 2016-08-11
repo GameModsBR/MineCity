@@ -75,10 +75,9 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
     private final ConcurrentLinkedQueue<FutureTask> syncTasks = new ConcurrentLinkedQueue<>();
 
     @EventHandler
-    public void onPreInit(FMLPreInitializationEvent event)
+    public void onPreInit(FMLPreInitializationEvent event) throws IOException, SAXException
     {
         logger = event.getModLog();
-        transformer = new ForgeTransformer();
         LegacyFormat.BLACK.server = EnumChatFormatting.BLACK;
         LegacyFormat.DARK_BLUE.server = EnumChatFormatting.DARK_BLUE;
         LegacyFormat.DARK_GREEN.server = EnumChatFormatting.DARK_GREEN;
@@ -165,6 +164,9 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         }
 
         config.save();
+
+        transformer = new ForgeTransformer();
+        transformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
     }
 
     @SuppressWarnings("unchecked")

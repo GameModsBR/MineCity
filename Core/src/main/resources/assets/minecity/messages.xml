@@ -111,7 +111,10 @@
                 <msg id="success">The ${name}'s spawn was changed successfully</msg>
             </setspawn>
             <map>
-                <msg id="arg.big">big</msg>
+                <arg>
+                    <msg id="big">big</msg>
+                    <msg id="big.option.big">big</msg>
+                </arg>
                 <msg id="header"><darkgray>---------------<gray>-=[Map]=-</gray>--------------¬-<gray>-=[City Names]=-</gray></darkgray></msg>
                 <you>
                     <city>
@@ -540,6 +543,54 @@
                 <msg id="command">command</msg>
                 <msg id="page">page</msg>
             </arg>
+            <info>
+                <args>
+                    <msg id="no-args">
+                        <gray>Args:</gray><br/>
+                        <darkgray><![CDATA[  None]]></darkgray>
+                        <br/>
+                    </msg>
+                    <msg id="body"><darkgray><![CDATA[ * ]]></darkgray>${args}<br/></msg>
+                    <msg id="join"><br/><darkgray><![CDATA[ * ]]></darkgray></msg>
+                    <details>
+                        <msg id="body"><yellow>${short}</yellow><darkgray> :
+                        </darkgray><gray>${optional} ${type}. ${sticky}</gray>
+                        </msg>
+                        <type>
+                            <msg id="undefined">Anything</msg>
+                            <msg id="player">A player name</msg>
+                            <msg id="city">A city name</msg>
+                            <msg id="group">A group name</msg>
+                            <msg id="group-or-city">A city name or a group name from the city you that are now</msg>
+                            <msg id="player-or-city">A city or player name</msg>
+                            <msg id="help">A command name or page number</msg>
+                            <msg id="predefined">A predefined value</msg>
+                            <msg id="single-predefinition">Can only be "${val}"</msg>
+                            <msg id="multiple-predefinitions">Can be: ${val}</msg>
+                        </type>
+                        <props>
+                            <msg id="optional">Optional.</msg>
+                            <msg id="sticky">Can use spaces.</msg>
+                            <msg id="required"><red>Required!</red></msg>
+                            <msg id="not-sticky"><white>Without spaces!</white></msg>
+                        </props>
+                    </details>
+                </args>
+                <msg id="body"><darkgray>---<gray>-=[MineCity Help]=-</gray>--------------------</darkgray><br/><br/>
+                    <aqua>${full-command}</aqua> <yellow>${full-args}</yellow><br/>
+                    ${args-info}<br/><![CDATA[ ]]>
+                    ${description}<br/>
+                    <green>
+                        <br/><darkgray>---</darkgray>
+                        More commands: <hover>
+                        <tooltip><gold>${more-commands}</gold></tooltip>
+                        <click>
+                            <suggest cmd="${more-commands}"/>
+                            <gold>${more-commands}</gold>
+                        </click></hover> <darkgray>---------</darkgray>
+                    </green>
+                </msg>
+            </info>
             <group>
                 <msg id="header"><darkgreen>---<yellow>-=[MineCity Help]=-</yellow>----- <green>Click the items for info</green> -----</darkgreen></msg>
                 <footer>
@@ -561,7 +612,12 @@
                         <green>
                             Page <gold>${page}</gold>/<gold>${total}</gold>
                             <darkgreen>---</darkgreen>
-                            Next page: <gold>${next-page}</gold>
+                            Next page: <hover>
+                            <tooltip><gold>${next-page}</gold></tooltip>
+                            <click>
+                                <suggest cmd="${next-page}"/>
+                                <gold>${next-page}</gold>
+                            </click></hover>
                         </green>
                     </msg>
                 </footer>

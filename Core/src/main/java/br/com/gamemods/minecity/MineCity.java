@@ -4,8 +4,7 @@ import br.com.gamemods.minecity.api.DistinctQueue;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.Slow;
-import br.com.gamemods.minecity.api.command.CommandTree;
-import br.com.gamemods.minecity.api.command.MessageTransformer;
+import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.commands.*;
@@ -72,6 +71,26 @@ public class MineCity
         commands.onlinePlayers = server::getOnlinePlayerNames;
         commands.cityNames = this.dataSource.cityNameSupplier();
         commands.scheduler = server::runAsynchronously;
+        commands.optionTransformer = (id, args) ->
+            Arrays.stream(args).map(arg ->
+            {
+                String[] options = arg.options();
+                if(options.length == 0)
+                    return arg;
+
+                for(int i = 0; i < options.length; i++)
+                {
+                    String option = options[i];
+                    options[i] = messageTransformer.toSimpleText(new Message(
+                            "cmd."+id+".arg."+arg.name().toLowerCase().replaceAll("[^a-z0-9]+", "-")+".option."+
+                                    option.toLowerCase().replaceAll("[^a-z-0-9]+","-"),
+                            option
+                    )).replaceAll("\\s","");
+                }
+
+                return new TranslatedOptions(arg, options);
+            }).toArray(Arg[]::new)
+        ;
         commands.registerCommands(new CityCommand(this));
         commands.registerCommands(new PermissionCommands(this));
         commands.registerCommands(new GroupCommand(this));

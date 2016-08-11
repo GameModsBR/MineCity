@@ -1,6 +1,9 @@
 package br.com.gamemods.minecity.api.command;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class CommandInfo<R>
 {
@@ -12,6 +15,7 @@ public class CommandInfo<R>
     public String syntax;
     public Set<String> aliases;
     public boolean async;
+    public boolean translatedArg;
 
     public CommandInfo(String name, CommandFunction<R> function, String... aliases)
     {

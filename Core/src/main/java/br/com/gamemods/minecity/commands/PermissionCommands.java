@@ -488,7 +488,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "city.deny.enter", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
                     @Arg(name = "reason", sticky = true, optional = true)
     })
@@ -500,7 +500,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "city.deny.click", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
                     @Arg(name = "reason", sticky = true, optional = true)
             })
@@ -512,7 +512,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "city.deny.pickup", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
                     @Arg(name = "reason", sticky = true, optional = true)
             })
@@ -525,7 +525,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "city.deny.open", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
                     @Arg(name = "reason", sticky = true, optional = true)
             })
@@ -537,7 +537,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "city.deny.pvp", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
                     @Arg(name = "reason", sticky = true, optional = true)
             })
@@ -549,7 +549,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "city.deny.pvc", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
                     @Arg(name = "reason", sticky = true, optional = true)
             })
@@ -561,7 +561,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "city.allow.enter", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
     public CommandResult<?> allowEnter(CommandEvent cmd)
@@ -573,7 +573,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "city.allow.click", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
     public CommandResult<?> allowClick(CommandEvent cmd)
@@ -585,7 +585,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "city.allow.pickup", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
     public CommandResult<?> allowPickup(CommandEvent cmd)
@@ -597,7 +597,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "city.allow.open", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
     public CommandResult<?> allowOpen(CommandEvent cmd) throws DataSourceException
@@ -608,7 +608,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "city.allow.pvp", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
     public CommandResult<?> allowPVP(CommandEvent cmd) throws DataSourceException
@@ -619,7 +619,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "city.allow.pvc", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
     public CommandResult<?> allowPVC(CommandEvent cmd) throws DataSourceException
@@ -726,7 +726,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "plot.deny.enter", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
                     @Arg(name = "reason", sticky = true, optional = true)
             })
@@ -738,7 +738,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "plot.deny.click", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
                     @Arg(name = "reason", sticky = true, optional = true)
             })
@@ -750,7 +750,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "plot.deny.pickup", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
                     @Arg(name = "reason", sticky = true, optional = true)
             })
@@ -763,7 +763,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "plot.deny.open", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
                     @Arg(name = "reason", sticky = true, optional = true)
             })
@@ -775,7 +775,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "plot.deny.pvp", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
                     @Arg(name = "reason", sticky = true, optional = true)
             })
@@ -787,7 +787,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "plot.deny.pvc", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
                     @Arg(name = "reason", sticky = true, optional = true)
             })
@@ -799,7 +799,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "plot.allow.enter", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
     public CommandResult<?> allowEnterPlot(CommandEvent cmd)
@@ -811,7 +811,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "plot.allow.click", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
     public CommandResult<?> allowClickPlot(CommandEvent cmd)
@@ -823,7 +823,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "plot.allow.pickup", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
     public CommandResult<?> allowPickupPlot(CommandEvent cmd)
@@ -835,7 +835,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "plot.allow.open", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
     public CommandResult<?> allowOpenPlot(CommandEvent cmd) throws DataSourceException
@@ -846,7 +846,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "plot.allow.pvp", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
     public CommandResult<?> allowPVPPlot(CommandEvent cmd) throws DataSourceException
@@ -857,7 +857,7 @@ public class PermissionCommands
     @Slow
     @Async
     @Command(value = "plot.allow.pvc", console = false,
-            args = {@Arg(name = "player or city", optional = true),
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
     public CommandResult<?> allowPVCPlot(CommandEvent cmd) throws DataSourceException

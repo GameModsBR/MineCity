@@ -50,6 +50,9 @@
         <command id="help" parent="city,group,root,plot" cmd="help">
             <desc>Show information about MineCity's commands</desc>
         </command>
+        <command id="reload" parent="root" cmd="reload">
+            <desc>Reloads the messages from the disk</desc>
+        </command>
 
         <!-- Management -->
         <command id="city.create" parent="city" cmd="create,new">

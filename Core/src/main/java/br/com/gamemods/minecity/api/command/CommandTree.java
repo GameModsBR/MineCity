@@ -31,6 +31,7 @@ public final class CommandTree
     private Map<String, CommandEntry> tree = new HashMap<>();
     private Map<String, CommandDefinition> commands = new HashMap<>();
     public IDataSource dataSource;
+    public BiFunction<String, Arg[], Arg[]> optionTransformer = (id, args)-> args;
     public Consumer<Runnable> scheduler = Runnable::run;
     public Supplier<Stream<String>> onlinePlayers = Stream::empty;
     public Supplier<Stream<String>> cityNames = Stream::empty;
@@ -94,6 +95,7 @@ public final class CommandTree
             {
                 info.function = def.function;
                 info.args = def.args;
+                info.translatedArg = Arrays.stream(info.args).anyMatch(arg -> arg instanceof TranslatedOptions);
                 info.async = def.async;
             }
 
@@ -103,6 +105,9 @@ public final class CommandTree
 
     public void registerCommand(String id, boolean console, boolean async, Arg[] argSet, @Nullable Object instance, @NotNull Method method)
     {
+        if(Arrays.stream(argSet).map(Arg::options).filter(o-> o.length > 0).findAny().isPresent())
+            argSet = optionTransformer.apply(id, argSet);
+
         registerCommand(id, new CommandDefinition(argSet, async, (cmd) -> {
             if(!console && !cmd.sender.isPlayer())
                 return CommandResult.ONLY_PLAYERS;
@@ -238,6 +243,7 @@ public final class CommandTree
                     info.function = commandDefinition.function;
                     info.args = commandDefinition.args;
                     info.async = commandDefinition.async;
+                    info.translatedArg = Arrays.stream(info.args).anyMatch(arg -> arg instanceof TranslatedOptions);
                     for(String parent: parents)
                     {
                         List<CommandInfo> commandList = commands.get(parent);
@@ -293,6 +299,37 @@ public final class CommandTree
                     .collect(Collectors.toList());
     }
 
+    private static Message formatArg(String id, Arg arg)
+    {
+        Message val = new Message("cmd."+id+".arg."+arg.name().toLowerCase().replaceAll("[^a-z0-9]+","-"), arg.name());
+        if(arg.sticky())
+            val = new Message("cmd.help.group.expanded.arg.sticky", "${arg}...", new Object[]{"arg", val});
+        if(arg.optional())
+            return new Message("cmd.help.group.expanded.arg.optional", "<msg><i>[${arg}]</i></msg>", new Object[]{"arg", val});
+        else
+            return new Message("cmd.help.group.expanded.arg.required", "${arg}", new Object[]{"arg", val});
+    }
+
+    private static Message fullArgs(CommandInfo info)
+    {
+        return info.args == null || info.args.length == 0?
+                new Message("cmd.help.group.expanded.no-args", "")
+                : info.args.length == 1?
+                new Message("cmd.help.group.expanded.one-arg", "${arg}",
+                        new Object[]{"arg", formatArg(info.commandId, info.args[0])}
+                )
+                :
+                new Message("cmd.help.group.expanded.n-args.base", "${args}", new Object[]{
+                        "args",
+                        Message.list(
+                                Arrays.stream(info.args)
+                                        .map(arg -> formatArg(info.commandId, arg))
+                                        .toArray(Message[]::new),
+                                new Message("cmd.help.group.expanded.n-args.join", "<msg><gray><i>, </i></gray></msg>")
+                        )
+                });
+    }
+
     @Command(value = "help", args = {@Arg(name = "command", sticky = true, optional = true, type = Arg.Type.HELP), @Arg(name = "page", optional = true, type = Arg.Type.HELP)})
     public CommandResult<?> help(CommandEvent cmd)
     {
@@ -324,20 +361,12 @@ public final class CommandTree
             page = Math.min(page, pages);
             int index = itemsPerPage * (page - 1);
             Message[] lines = new Message[2 + Math.min(itemsPerPage, items.length-index)];
-            BiFunction<String, Arg, Message> formatArg = (id, arg) -> {
-                Message val = new Message("cmd."+id+".arg."+arg.name().toLowerCase().replaceAll("[^a-z0-9]+","-"), arg.name());
-                if(arg.sticky())
-                    val = new Message("cmd.help.group.expanded.arg.sticky", "${arg}...", new Object[]{"arg", val});
-                if(arg.optional())
-                    return new Message("cmd.help.group.expanded.arg.optional", "<msg><i>[${arg}]</i></msg>", new Object[]{"arg", val});
-                else
-                    return new Message("cmd.help.group.expanded.arg.required", "${arg}", new Object[]{"arg", val});
-            };
             boolean root = result.path.isEmpty() || result.path.equals(Collections.singletonList("minecity"));
             for(int i = 1; i < lines.length-1; index++, i++)
             {
                 CommandEntry item = items[index];
-                String fullCommand = (!result.path.isEmpty()?String.join(" ", result.path)+" ":"")+item.getInfo().getName();
+                CommandInfo info = item.getInfo();
+                String fullCommand = "/"+(!result.path.isEmpty()?String.join(" ", result.path)+" ":"")+ info.getName();
                 lines[i] = new Message("cmd.help.group.item",
                         "<msg><hover>\n" +
                         "    <tooltip>\n" +
@@ -351,12 +380,12 @@ public final class CommandTree
                         "    </click>\n" +
                         "</hover></msg>",
                         new Object[][]{
-                                {"spacer", item.getInfo().args == null || item.getInfo().args.length == 0? "" : " "},
-                                {"full-command", "/"+fullCommand},
-                                {"command", root? ("/"+item.getInfo().getName()) : item.getInfo().getName()},
-                                {"help-command", "/"+helpPath+" "+item.getInfo().getName()},
-                                {"full-info", item.getInfo().description == null? "" :
-                                        Arrays.stream(item.getInfo().description.trim().split("\\s+"))
+                                {"spacer", info.args == null || info.args.length == 0? "" : " "},
+                                {"full-command", fullCommand},
+                                {"command", root? ("/"+ info.getName()) : info.getName()},
+                                {"help-command", "/"+helpPath+" "+ info.getName()},
+                                {"full-info", info.description == null? "" :
+                                        Arrays.stream(info.description.trim().split("\\s+"))
                                         .reduce((a,b) -> a.matches(
                                                     "^(\n?[^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+)+$"
                                                 )? a+"\n"+b
@@ -364,36 +393,20 @@ public final class CommandTree
                                         ).get()
                                 },
                                 {"short-info",
-                                        item.getInfo().description == null? "":
-                                        item.getInfo().description.length()>45?
-                                                item.getInfo().description.substring(0,45)+"..."
+                                        info.description == null? "":
+                                        info.description.length()>45?
+                                                info.description.substring(0,45)+"..."
                                                 :
-                                                item.getInfo().description
+                                                info.description
                                 },
-                                {"full-args", item.getInfo().args == null || item.getInfo().args.length == 0?
-                                            new Message("cmd.help.group.expanded.no-args", "")
-                                        : item.getInfo().args.length == 1?
-                                            new Message("cmd.help.group.expanded.one-arg", "${arg}",
-                                                    new Object[]{ "arg", formatArg.apply(item.getInfo().commandId, item.getInfo().args[0])}
-                                            )
-                                        :
-                                            new Message("cmd.help.group.expanded.n-args.base", "${args}", new Object[]{
-                                                    "args",
-                                                    Message.list(
-                                                        Arrays.stream(item.getInfo().args)
-                                                                .map(arg -> formatArg.apply(item.getInfo().commandId, arg))
-                                                                .toArray(Message[]::new),
-                                                        new Message("cmd.help.group.expanded.n-args.join", "<msg><gray><i>, </i></gray></msg>")
-                                                    )
-                                            })
-                                },
-                                {"short-args", item.getInfo().args == null || item.getInfo().args.length == 0?
+                                {"full-args", fullArgs(info)},
+                                {"short-args", info.args == null || info.args.length == 0?
                                             new Message("cmd.help.group.short.no-args", "")
-                                        : item.getInfo().args.length == 1?
+                                        : info.args.length == 1?
                                             new Message("cmd.help.group.short.one-arg", "1 arg")
                                         :
                                             new Message("cmd.help.group.short.n-args", "${n} args",
-                                                    new Object[]{"n", item.getInfo().args.length}
+                                                    new Object[]{"n", info.args.length}
                                             )
                                 }
                         }
@@ -438,7 +451,102 @@ public final class CommandTree
             cmd.sender.send(lines);
             return CommandResult.success();
         }
-        throw new UnsupportedOperationException();
+        else
+        {
+            CommandInfo info = result.entry.getInfo();
+            Message argsInfo;
+            if(info.args == null || info.args.length == 0)
+                argsInfo = new Message(
+                        "cmd.help.info.args.no-args",
+                        "<msg><gray>Arguments:<darkgray><![CDATA[\n  None]]></darkgray></gray></msg>"
+                );
+            else
+                argsInfo = new Message(
+                        "cmd.help.info.args.body",
+                        "<msg><gray>Arguments:</gray><br/><darkgray><![CDATA[ * ${args}]]></darkgray></msg>",
+                        new Object[]{
+                            "args",
+                            Message.list(
+                                    Arrays.stream(info.args).map(arg ->
+                                        new Message("cmd.help.info.args.details.body",
+                                                "<msg><yellow>${short}</yellow><darkgray: : </darkgray>${type}. ${optional}. ${sticky}.</msg>",
+                                                new Object[][]{
+                                                        {"type",
+                                                                arg.type() != Arg.Type.PREDEFINED || arg.options().length == 0?
+                                                                    new Message(
+                                                                        "cmd.help.info.args.details.type."+
+                                                                            arg.type().name().toLowerCase().replace('_','-'),
+                                                                        arg.type().name()
+                                                                    )
+                                                                : arg.options().length == 1?
+                                                                    new Message(
+                                                                        "cmd.help.info.args.details.type.single-predefinition",
+                                                                        "${val}",
+                                                                        new Object[]{"val", arg.options()[0]}
+                                                                    )
+                                                                :
+                                                                    new Message(
+                                                                        "cmd.help.info.args.details.type.multiple-predefinitions",
+                                                                        "${val}",
+                                                                        new Object[]{
+                                                                            "val",
+                                                                            Arrays.stream(arg.options())
+                                                                                .distinct().sorted()
+                                                                                .reduce((a,b)-> a+", "+b)
+                                                                                .get()
+                                                                        }
+                                                                    )
+
+
+                                                        },
+                                                        {"short", formatArg(info.commandId, arg)},
+                                                        {"optional", arg.optional()?
+                                                                new Message(
+                                                                        "cmd.help.info.args.details.props.optional",
+                                                                        "Optional"
+                                                                )
+                                                                :
+                                                                new Message(
+                                                                        "cmd.help.info.args.details.props.required",
+                                                                        "Required"
+                                                                )
+                                                        },
+                                                        {"sticky", arg.sticky()?
+                                                                new Message(
+                                                                        "cmd.help.info.args.details.props.sticky",
+                                                                        "Can use spaces"
+                                                                )
+                                                                :
+                                                                new Message(
+                                                                        "cmd.help.info.args.details.props.not-sticky",
+                                                                        "Without spaces"
+                                                                )
+                                                        },
+                                                })
+                                    ).toArray(Message[]::new),
+                                    new Message("cmd.help.info.args.join", "<msg><darkgray><![CDATA[\n * ]]></darkgray></msg>")
+                            )
+                        }
+                );
+
+            cmd.sender.send(new Message(
+                    "cmd.help.info.body",
+                    "<msg>" +
+                        "<darkgreen>---<yellow>-=[MineCity Help]=-</yellow>--------------------</darkgreen><br/>\n" +
+                        "<aqua>${full-command}</aqua> <yellow>${full-args}</yellow><br/>" +
+                        "${args-info}<br/>" +
+                        "${description}" +
+                    "</msg>",
+                    new Object[][]{
+                            {"full-command","/"+String.join(" ", result.path)},
+                            {"full-args", fullArgs(info)},
+                            {"args-info", argsInfo},
+                            {"more-commands", "/"+String.join(" ", cmd.path)+" "+String.join(" ",result.path.subList(cmd.path.size()-1, result.path.size()-1))},
+                            {"description", info.description}
+                    }
+            ));
+            return CommandResult.success();
+        }
     }
 
     public CommandResult<Void> groupExecutor(CommandEvent cmd)
@@ -591,6 +699,7 @@ public final class CommandTree
             case PREDEFINED:
                 options = Stream.of(def.options());
                 break;
+            case PLAYER_OR_CITY:
             case UNDEFINED:
                 if(arg.isEmpty())
                     return Collections.emptyList();
@@ -808,6 +917,8 @@ public final class CommandTree
             this.command = command;
             this.args = args;
             this.path = path;
+            if(command.translatedArg && !args.isEmpty())
+                reverseArgTranslation();
         }
 
         private Result(CommandInfo<?> command, List<String> args, List<String> path,
@@ -817,6 +928,26 @@ public final class CommandTree
             this.args = args;
             this.path = path;
             this.entry = entry;
+            if(command.translatedArg && !args.isEmpty())
+                reverseArgTranslation();
+        }
+
+        private void reverseArgTranslation()
+        {
+            int size = args.size();
+            for(int i = 0; i < command.args.length && i < size; i++)
+            {
+                Arg arg = command.args[i];
+                if(arg instanceof TranslatedOptions)
+                {
+                    List<String> translations = Arrays.stream(arg.options())
+                            .map(String::toLowerCase).collect(Collectors.toList());
+
+                    int index = translations.indexOf(args.get(i).toLowerCase());
+                    if(index >= 0)
+                        args.set(i, ((TranslatedOptions) arg).originalOptions()[index]);
+                }
+            }
         }
 
         public CommandResult run(CommandSender sender)

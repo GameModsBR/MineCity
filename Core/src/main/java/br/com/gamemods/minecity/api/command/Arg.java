@@ -23,6 +23,7 @@ public @interface Arg
         PREDEFINED,
         PLAYER,
         CITY,
+        PLAYER_OR_CITY,
         GROUP,
         GROUP_OR_CITY,
         HELP

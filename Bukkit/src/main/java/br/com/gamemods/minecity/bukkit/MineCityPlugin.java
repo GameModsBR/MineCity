@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import org.bukkit.Bukkit;
@@ -100,10 +101,11 @@ public class MineCityPlugin extends JavaPlugin
                 }
             }
 
-            instance = new MineCityBukkit(this, config);
+            MessageTransformer transformer = new MessageTransformer();
+            transformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
+            instance = new MineCityBukkit(this, config, transformer);
             instance.mineCity.dataSource.initDB();
             instance.mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
-            instance.mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
 
             reloadTask = getScheduler().runTaskTimer(this, instance.mineCity::reloadQueuedChunk, 1, 1);
         }
