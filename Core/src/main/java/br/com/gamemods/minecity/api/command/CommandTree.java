@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -38,6 +39,7 @@ public final class CommandTree
     public CommandTree()
     {
         root.subTree = tree;
+        registerCommands(this);
     }
 
     public CommandResult invoke(CommandSender sender, String args)
@@ -289,6 +291,127 @@ public final class CommandTree
         else
             return Arrays.stream(node.getTextContent().split(",")).map(StringUtil::identity)
                     .collect(Collectors.toList());
+    }
+
+    @Command(value = "help", args = {@Arg(name = "command", sticky = true, optional = true), @Arg(name = "page", optional = true)})
+    public CommandResult<?> help(CommandEvent cmd)
+    {
+        int page = 1;
+        if(!cmd.args.isEmpty())
+        {
+            int index = cmd.args.size() - 1;
+            String last = cmd.args.get(index);
+            if(last.matches("^[0-9]+$"))
+            {
+                page = Integer.parseInt(last);
+                cmd.args.remove(index);
+            }
+        }
+
+        Result result = get(cmd.args).orElseGet(()-> get(cmd.path.subList(0, cmd.path.size()-1)).orElseGet(()-> rootResult(cmd.args)));
+        if(result.entry instanceof CommandGroup)
+        {
+            CommandEntry[] items = result.entry.getSubTree().values().stream().distinct()
+                    .sorted((a,b)-> a.getInfo().getName().compareToIgnoreCase(b.getInfo().getName()))
+                    .toArray(CommandEntry[]::new);
+            int itemsPerPage = 8;
+            int pages = (int) Math.ceil( items.length / (double) itemsPerPage );
+            page = Math.min(page, pages);
+            int index = itemsPerPage * (page - 1);
+            Message[] lines = new Message[2 + Math.min(itemsPerPage, items.length-index)];
+            Function<Arg, Message> formatArg = arg -> {
+                Object val = arg.name();
+                if(arg.sticky())
+                    val = new Message("cmd.help.group.expanded.arg.sticky", "${arg}...", new Object[]{"arg", val});
+                if(arg.optional())
+                    val = new Message("cmd.help.group.expanded.arg.optional", "<msg><i>[${arg}]</i></msg>", new Object[]{"arg", val});
+                if(val instanceof Message)
+                    return (Message) val;
+                return new Message("", "${arg}", new Object[]{"arg", val});
+            };
+            for(int i = 1; i < lines.length-1; index++, i++)
+            {
+                CommandEntry item = items[index];
+                String fullCommand = (!result.path.isEmpty()?String.join(" ", result.path)+" ":"")+item.getInfo().getName();
+                lines[i] = new Message("cmd.help.group.item",
+                        "<msg><hover>\n" +
+                        "    <tooltip>\n" +
+                        "        <aqua>${full-command}</aqua> <gold>${full-args}</gold>\n" +
+                        "        <br/><br/>${full-info}\n" +
+                        "    </tooltip>\n" +
+                        "    <click>\n" +
+                        "        <suggest cmd=\"${help-command}\"/>\n" +
+                    "            <aqua>${command} <gold>${short-args}</gold> <darkgray>-</darkgray> <gray>${short-info}</gray></aqua>\n" +
+                        "        </reset>\n" +
+                        "    </click>\n" +
+                        "</hover></msg>",
+                        new Object[][]{
+                                {"full-command", "/"+fullCommand},
+                                {"command", result.path.isEmpty()? ("/"+item.getInfo().getName()) : item.getInfo().getName()},
+                                {"help-command", "/"+String.join(" ", cmd.path)+" "+fullCommand},
+                                {"full-info", item.getInfo().description == null? "" :
+                                        Arrays.stream(item.getInfo().description.trim().split("\\s+"))
+                                        .reduce((a,b) -> a.matches(
+                                                    "^(\n?[^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+)+$"
+                                                )? a+"\n"+b
+                                                 : a+" "+b
+                                        ).get()
+                                },
+                                {"short-info",
+                                        item.getInfo().description == null? "":
+                                        item.getInfo().description.length()>40?
+                                                item.getInfo().description.substring(0,40)+"..."
+                                                :
+                                                item.getInfo().description
+                                },
+                                {"full-args", item.getInfo().args == null || item.getInfo().args.length == 0?
+                                            new Message("cmd.help.group.expanded.no-args", "")
+                                        : item.getInfo().args.length == 1?
+                                            new Message("cmd.help.group.expanded.one-arg", "${arg}",
+                                                    new Object[]{ "arg", formatArg.apply(item.getInfo().args[0])}
+                                            )
+                                        :
+                                            new Message("cmd.help.group.expanded.n-args.base", "${args}", new Object[]{
+                                                    "args",
+                                                    Message.list(
+                                                        Arrays.stream(item.getInfo().args).map(formatArg).toArray(Message[]::new),
+                                                        new Message("cmd.help.group.expanded.n-args.join", "<msg><gray><i>, </i></gray></msg>")
+                                                    )
+                                            })
+                                },
+                                {"short-args", item.getInfo().args == null || item.getInfo().args.length == 0?
+                                            new Message("cmd.help.group.short.no-args", "")
+                                        : item.getInfo().args.length == 1?
+                                            new Message("cmd.help.group.short.one-arg", "1 arg")
+                                        :
+                                            new Message("cmd.help.group.short.n-args", "${n} args",
+                                                    new Object[]{"n", item.getInfo().args.length}
+                                            )
+                                }
+                        }
+                );
+            }
+
+            lines[0] = result.path.isEmpty()?
+                    new Message("cmd.help.header", "<msg><darkgray>---------------<gray>-=[Help]=-</gray>---------------</darkgray></msg>"):
+                    new Message("cmd.help.group.header",
+                            "<msg><darkgray>---------------<gray>-=[Help:${cmd}]=-</gray>---------------</darkgray></msg>",
+                            new Object[] {"cmd", "/"+String.join(" ", result.path)}
+                    );
+
+            lines[lines.length-1] = new Message("cmd.help.footer","<msg><gray>Page <gold>${page}</gold>/<gold>${total}</gold> " +
+                    "<darkgray>---</darkgray> Type: <gold>${next-page}</gold> for the next page</gray></msg>",
+                    new Object[][]{
+                            {"next-page", "/"+String.join(" ", cmd.path) + " " + (Math.max(pages, page + 1))},
+                            {"page", page},
+                            {"total", pages}
+                    }
+            );
+
+            cmd.sender.send(lines);
+            return CommandResult.success();
+        }
+        throw new UnsupportedOperationException();
     }
 
     public CommandResult<Void> groupExecutor(CommandEvent cmd)

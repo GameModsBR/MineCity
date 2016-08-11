@@ -1,4 +1,4 @@
-<!ENTITY % ids "msg|cmd|city|create|name|chunk|claim|disclaim|success|spawn|rename|transfer|player|setspawn|deny|allow|action|teleport|all|args|map|result|group|add|remove|empty|list|member|task|load|groups|info|delete|confirm|managers|plot|conflict|overlaps|give|tool|selection|you|return|mayor|self">
+<!ENTITY % ids "msg|cmd|city|create|name|chunk|claim|disclaim|success|spawn|rename|transfer|player|setspawn|deny|allow|action|teleport|all|args|map|result|group|add|remove|empty|list|member|task|load|groups|info|delete|confirm|managers|plot|conflict|overlaps|give|tool|selection|you|return|mayor|self|help">
 <!ENTITY % formatting "click|hover|br|o|b|s|u|i|c|reset|black|darkblue|darkgreen|darkaqua|darkred|darkpurple|gold|gray|darkgray|blue|green|aqua|red|lightpurple|yellow|white">
 
 <!ELEMENT minecity-messages (%ids;)*>
@@ -9,7 +9,7 @@
 <!ELEMENT msg (#PCDATA|%formatting;)*>
 <!ATTLIST msg id CDATA #REQUIRED>
 
-<!ELEMENT click ((run|suggest|open),(%formatting;)+)>
+<!ELEMENT click ((run|suggest|open),(%formatting;))>
 <!ELEMENT run EMPTY>
 <!ATTLIST run cmd CDATA #REQUIRED>
 <!ELEMENT suggest EMPTY>
@@ -17,7 +17,7 @@
 <!ELEMENT open EMPTY>
 <!ATTLIST open url CDATA #REQUIRED>
 
-<!ELEMENT hover ((tooltip|item|entity|achievement),(%formatting;)*)>
+<!ELEMENT hover ((tooltip|item|entity|achievement),(%formatting;))>
 <!ELEMENT tooltip (#PCDATA|%formatting;)*>
 <!ELEMENT item EMPTY>
 <!ATTLIST item nbt CDATA #REQUIRED>
@@ -99,3 +99,4 @@
 <!ELEMENT return (%ids;)*>
 <!ELEMENT mayor (%ids;)*>
 <!ELEMENT self (%ids;)*>
+<!ELEMENT help (%ids;)*>

@@ -47,6 +47,9 @@
         <command id="confirm" parent=",city,group,root,plot" cmd="confirm">
             <desc>Confirms a dangerous action</desc>
         </command>
+        <command id="help" parent=",city,group,root,plot" cmd="help">
+            <desc>Show information about MineCity's commands</desc>
+        </command>
 
         <!-- Management -->
         <command id="city.create" parent="city" cmd="create,new">

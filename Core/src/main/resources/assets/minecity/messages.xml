@@ -339,6 +339,22 @@
                 <msg id="all.args.count">This command does not expect extra arguments, are you sure that you want to allow everybody?</msg>
             </allow>
         </plot>
+        <help>
+            <group>
+                <msg id="item">
+                    <hover>
+                        <tooltip>
+                            <aqua>${full-command}</aqua> <yellow>${full-args}</yellow>
+                            <br/><br/>${full-info}
+                        </tooltip>
+                        <click>
+                            <suggest cmd="${help-command}"/>
+                            <aqua>${command} <gold>${short-args}</gold> <darkgray>-</darkgray> <gray>${short-info}</gray></aqua>
+                        </click>
+                    </hover>
+                </msg>
+            </group>
+        </help>
     </cmd>
     <action>
         <msg id="denied">You don't have permission to perform this action.</msg>
