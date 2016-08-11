@@ -35,6 +35,7 @@ public final class CommandTree
     public Consumer<Runnable> scheduler = Runnable::run;
     public Supplier<Stream<String>> onlinePlayers = Stream::empty;
     public Supplier<Stream<String>> cityNames = Stream::empty;
+    public Supplier<MessageTransformer> messageTransformer;
     private CommandGroup root = new CommandGroup(new CommandInfo<>("", this::groupExecutor));
 
     public CommandTree()
@@ -367,50 +368,66 @@ public final class CommandTree
                 CommandEntry item = items[index];
                 CommandInfo info = item.getInfo();
                 String fullCommand = "/"+(!result.path.isEmpty()?String.join(" ", result.path)+" ":"")+ info.getName();
-                lines[i] = new Message("cmd.help.group.item",
-                        "<msg><hover>\n" +
-                        "    <tooltip>\n" +
-                        "        <aqua>${full-command}</aqua> <gold>${full-args}</gold>\n" +
-                        "        <br/><br/>${full-info}\n" +
-                        "    </tooltip>\n" +
-                        "    <click>\n" +
-                        "        <suggest cmd=\"${help-command}\"/>\n" +
-                    "            <aqua>${command}${spacer}<gold>${short-args}</gold> <darkgray>-</darkgray> <gray>${short-info}</gray></aqua>\n" +
-                        "        </reset>\n" +
-                        "    </click>\n" +
-                        "</hover></msg>",
-                        new Object[][]{
-                                {"spacer", info.args == null || info.args.length == 0? "" : " "},
-                                {"full-command", fullCommand},
-                                {"command", root? ("/"+ info.getName()) : info.getName()},
-                                {"help-command", "/"+helpPath+" "+ info.getName()},
-                                {"full-info", info.description == null? "" :
-                                        Arrays.stream(info.description.trim().split("\\s+"))
-                                        .reduce((a,b) -> a.matches(
-                                                    "^(\n?[^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+)+$"
-                                                )? a+"\n"+b
-                                                 : a+" "+b
-                                        ).get()
-                                },
-                                {"short-info",
-                                        info.description == null? "":
-                                        info.description.length()>45?
-                                                info.description.substring(0,45)+"..."
-                                                :
-                                                info.description
-                                },
-                                {"full-args", fullArgs(info)},
-                                {"short-args", info.args == null || info.args.length == 0?
-                                            new Message("cmd.help.group.short.no-args", "")
-                                        : info.args.length == 1?
-                                            new Message("cmd.help.group.short.one-arg", "1 arg")
-                                        :
-                                            new Message("cmd.help.group.short.n-args", "${n} args",
-                                                    new Object[]{"n", info.args.length}
-                                            )
-                                }
-                        }
-                );
+                boolean repeat = true;
+                int limit = 80;
+                do
+                {
+                    String shortInfo = info.description == null? "":
+                            info.description.length()>limit?
+                                    info.description.substring(0,limit)+"..."
+                                    :
+                                    info.description;
+
+                    Message message = new Message("cmd.help.group.item",
+                            "<msg><hover>\n" +
+                            "    <tooltip>\n" +
+                            "        <aqua>${full-command}</aqua> <gold>${full-args}</gold>\n" +
+                            "        <br/><br/>${full-info}\n" +
+                            "    </tooltip>\n" +
+                            "    <click>\n" +
+                            "        <suggest cmd=\"${help-command}\"/>\n" +
+                        "            <aqua>${command}${spacer}<gold>${short-args}</gold> <darkgray>-</darkgray> <gray>${short-info}</gray></aqua>\n" +
+                            "        </reset>\n" +
+                            "    </click>\n" +
+                            "</hover></msg>",
+                            new Object[][]{
+                                    {"spacer", info.args == null || info.args.length == 0? "" : " "},
+                                    {"full-command", fullCommand},
+                                    {"command", root? ("/"+ info.getName()) : info.getName()},
+                                    {"help-command", "/"+helpPath+" "+ info.getName()},
+                                    {"full-info", info.description == null? "" :
+                                            Arrays.stream(info.description.trim().split("\\s+"))
+                                            .reduce((a,b) -> a.matches(
+                                                        "^(\n?[^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+ [^\n ]+)+$"
+                                                    )? a+"\n"+b
+                                                     : a+" "+b
+                                            ).get()
+                                    },
+                                    {"short-info", shortInfo},
+                                    {"full-args", fullArgs(info)},
+                                    {"short-args", info.args == null || info.args.length == 0?
+                                                new Message("cmd.help.group.short.no-args", "")
+                                            : info.args.length == 1?
+                                                new Message("cmd.help.group.short.one-arg", "1 arg")
+                                            :
+                                                new Message("cmd.help.group.short.n-args", "${n} args",
+                                                        new Object[]{"n", info.args.length}
+                                                )
+                                    }
+                            }
+                    );
+                    if(limit < 80)
+                        repeat = false;
+                    else
+                    {
+                        int length = messageTransformer.get().toSimpleText(message).length();
+                        if(length < 70)
+                            repeat = false;
+                        else
+                            limit = Math.max(20, 60-(length-shortInfo.length()));
+                    }
+                    lines[i] = message;
+                }while(repeat);
             }
 
             lines[0] =  new Message("cmd.help.group.header", "<msg><darkgreen>---<yellow>-=[MineCity Help]=-</yellow>----- <green>Click the items for info</green> -----</darkgreen></msg>");

@@ -71,6 +71,7 @@ public class MineCity
         commands.onlinePlayers = server::getOnlinePlayerNames;
         commands.cityNames = this.dataSource.cityNameSupplier();
         commands.scheduler = server::runAsynchronously;
+        commands.messageTransformer = ()-> messageTransformer;
         commands.optionTransformer = (id, args) ->
             Arrays.stream(args).map(arg ->
             {
