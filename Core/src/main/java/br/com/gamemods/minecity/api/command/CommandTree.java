@@ -351,23 +351,43 @@ public final class CommandTree
         String helpPath = (String.join(" ", cmd.path) + " " +
                 String.join(" ", result.path.subList(1, result.path.size()))
         ).trim();
+        Result shortest = result;
+        for(int i = 1; i < result.path.size(); i++)
+            shortest = get(result.path.subList(i, result.path.size())).filter(r-> r.entry.equals(result.entry)).orElse(shortest);
 
         if(result.entry instanceof CommandGroup)
         {
             CommandEntry[] items = result.entry.getSubTree().values().stream().distinct()
-                    .sorted((a,b)-> a.getInfo().getName().compareToIgnoreCase(b.getInfo().getName()))
+                    .sorted((a,b)->
+                    {
+                        boolean aRoot = get(a.getInfo().getName()).filter(r-> r.entry.equals(a)).map(r -> r.path.size()).orElse(2) == 1;
+                        boolean bRoot = get(b.getInfo().getName()).filter(r-> r.entry.equals(b)).map(r -> r.path.size()).orElse(2) == 1;
+                        if(aRoot == bRoot)
+                            return a.getInfo().getName().compareToIgnoreCase(b.getInfo().getName());
+                        else if(aRoot)
+                            return 1;
+                        else
+                            return -1;
+                    })
                     .toArray(CommandEntry[]::new);
             int itemsPerPage = 8;
             int pages = (int) Math.ceil( items.length / (double) itemsPerPage );
             page = Math.min(page, pages);
             int index = itemsPerPage * (page - 1);
             Message[] lines = new Message[2 + Math.min(itemsPerPage, items.length-index)];
-            boolean root = result.path.isEmpty() || result.path.equals(Collections.singletonList("minecity"));
             for(int i = 1; i < lines.length-1; index++, i++)
             {
                 CommandEntry item = items[index];
                 CommandInfo info = item.getInfo();
-                String fullCommand = "/"+(!result.path.isEmpty()?String.join(" ", result.path)+" ":"")+ info.getName();
+                Result shortestItem = shortest;
+                List<String> path = new ArrayList<>(shortest.path.size());
+                path.addAll(shortest.path);
+                path.add(info.getName());
+                for(int j = 0; j < path.size(); j++)
+                    shortestItem = get(path.subList(j, path.size())).filter(r-> r.entry.equals(item)).orElse(shortestItem);
+                boolean root = shortestItem.path.size() == 1;
+
+                String fullCommand = "/"+String.join(" ", shortestItem.path);
                 boolean repeat = true;
                 int limit = 80;
                 do
@@ -898,6 +918,12 @@ public final class CommandTree
         {
             return subTree;
         }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            return obj == this || obj instanceof CommandGroup && subTree.equals(((CommandGroup) obj).subTree);
+        }
     }
 
     static class CommandInfoEntry implements CommandEntry
@@ -919,6 +945,20 @@ public final class CommandTree
         public Map<String, CommandEntry> getSubTree()
         {
             return null;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if(obj == this)
+                return true;
+
+            if(!(obj instanceof CommandInfoEntry))
+                return false;
+
+            CommandInfoEntry other = ((CommandInfoEntry) obj);
+            return !(command == null || other.command == null) && command.commandId.equals(other.command.commandId);
+
         }
     }
 
