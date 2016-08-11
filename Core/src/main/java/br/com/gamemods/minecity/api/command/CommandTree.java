@@ -652,7 +652,8 @@ public final class CommandTree
                             }
                         }).limit((int) Math.ceil(entries.size()/8.0) - 1)
                 );
-                arg = search;
+                String starts = search.toLowerCase();
+                filter = o -> o.toLowerCase().startsWith(starts);
                 sort = false;
                 break;
             }
