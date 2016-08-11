@@ -409,17 +409,18 @@ public class CityCommand
     }
 
     @Command(value = "city.list", args = @Arg(name = "page", type = Arg.Type.NUMBER, optional = true))
-    public CommandResult<?> list(CommandEvent cmd)
+    public void list(CommandEvent cmd)
     {
         int page = 1;
-        if(!cmd.args.isEmpty())
+        List<String> args = cmd.args instanceof ArrayList? cmd.args : new ArrayList<>(cmd.args);
+        if(!args.isEmpty())
         {
-            int index = cmd.args.size() - 1;
-            String last = cmd.args.get(index);
+            int index = args.size() - 1;
+            String last = args.get(index);
             if(last.matches("^[0-9]+$"))
             {
                 page = Integer.parseInt(last);
-                cmd.args.remove(index);
+                args.remove(index);
             }
         }
 
@@ -448,7 +449,7 @@ public class CityCommand
                 : page == pages?
                 new Message("cmd.city.list.footer.last-page",
                         "<msg><green>\n" +
-                        "    Page <gold>${page}</gold>/<gold>${total}</gold>\n" +
+                        "    Page <gold>${page}</gold>/<gold>${page}</gold>\n" +
                         "    <darkgreen>---</darkgreen>\n" +
                         "    Tip: Type <click><suggest cmd='/city go '/><hover><tooltip><gold>/city go</gold></tooltip><gold>/city go</gold></hover></click> to go to the city\n" +
                         "</green></msg>",
@@ -475,7 +476,6 @@ public class CityCommand
         );
 
         cmd.sender.send(lines);
-        return CommandResult.success();
     }
 
     @Command(value = "city.map", console = false, args = @Arg(name = "big", type = Arg.Type.PREDEFINED, options = "big", optional = true))

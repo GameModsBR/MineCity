@@ -134,6 +134,9 @@
         <command id="plot.delete" parent="plot" cmd="delete">
             <desc>Deletes a plot from a city</desc>
         </command>
+        <command id="plot.list" parent="plot" cmd="list">
+            <desc>Lists all plots from a city</desc>
+        </command>
 
         <!-- ========== City Permissions ========== -->
         <!-- Default permissions -->

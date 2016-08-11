@@ -18,6 +18,7 @@
         </msg>
         <city>
             <list>
+                <msg id="arg.page">page</msg>
                 <msg id="header"><green>---<yellow>-=[Cities]=-</yellow>--------------------</green></msg>
                 <msg id="city"><darkgray><![CDATA[ * ]]></darkgray><white>${city}</white></msg>
                 <footer>
@@ -403,6 +404,50 @@
             <msg id="not-pending">You don't have any pending confirmation</msg>
         </confirm>
         <plot>
+            <list>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="not-found">No city were found named ${name}</msg>
+                <msg id="no-plots">The city ${city} does not have plots.</msg>
+                <msg id="header"><green>---<yellow>-=[Plots at ${city}]=-</yellow>---</green></msg>
+                <msg id="plot"><darkgray><![CDATA[ * ]]></darkgray><white>${plot}</white> <gray>${size-x}x${size-z}x${size-y} ~${owner}</gray></msg>
+                <footer>
+                    <msg id="one-page">
+                        <green>Page <gold>1</gold>/<gold>1</gold>
+                            <darkgreen>---</darkgreen>
+                            Tip: Type <click>
+                                <suggest cmd='/city go '/>
+                                <hover>
+                                    <tooltip><gold>/city go</gold></tooltip>
+                                    <gold>/city go</gold>
+                                </hover>
+                            </click> to go to the city
+                        </green>
+                    </msg>
+                    <msg id="last-page">
+                        <green>Page <gold>${page}</gold>/<gold>${page}</gold>
+                            <darkgreen>---</darkgreen>
+                            Tip: Type <click>
+                            <suggest cmd='/city go '/>
+                            <hover>
+                                <tooltip><gold>/city go</gold></tooltip>
+                                <gold>/city go</gold>
+                            </hover>
+                        </click> to go to the city
+                        </green>
+                    </msg>
+                    <msg id="more-pages">
+                        <green>Page <gold>${page}</gold>/<gold>${total}</gold>
+                            <darkgreen>---</darkgreen>
+                            Next page: <hover>
+                            <tooltip><gold>${next-page}</gold></tooltip>
+                            <click>
+                                <suggest cmd="${next-page}"/>
+                                <gold>${next-page}</gold>
+                           </click></hover>
+                        </green>
+                    </msg>
+                </footer>
+            </list>
             <create>
                 <msg id="arg.plot-name">plot-name</msg>
                 <msg id="no-selection">Select the plot area and then execute this command again.</msg>

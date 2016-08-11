@@ -8,11 +8,9 @@ import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.shape.Shape;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
-import br.com.gamemods.minecity.structure.ClaimedChunk;
-import br.com.gamemods.minecity.structure.Island;
-import br.com.gamemods.minecity.structure.Plot;
-import br.com.gamemods.minecity.structure.Selection;
+import br.com.gamemods.minecity.structure.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -196,6 +194,121 @@ public class PlotCommand
                         {"city", plot.getCity().getName()},
                         {"code", code}
                 }), code);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.list", console = false, args = {
+            @Arg(name = "city", optional = true, sticky = true, type = Arg.Type.CITY),
+            @Arg(name = "page", type = Arg.Type.NUMBER, optional = true)
+    })
+    public static CommandResult<?> list(CommandEvent cmd) throws DataSourceException
+    {
+        int page = 1;
+        List<String> args = cmd.args instanceof ArrayList? cmd.args : new ArrayList<>(cmd.args);
+        if(!args.isEmpty())
+        {
+            int index = args.size() - 1;
+            String last = args.get(index);
+            if(last.matches("^[0-9]+$"))
+            {
+                page = Integer.parseInt(last);
+                args.remove(index);
+            }
+        }
+
+        City city;
+        if(args.isEmpty())
+        {
+            city = cmd.getChunk().getCity().orElse(null);
+            if(city == null)
+                return new CommandResult<>(new Message("cmd.plot.list.not-claimed", "You are not inside a city"));
+        }
+        else
+        {
+            String cityName = String.join(" ", args);
+            city = cmd.mineCity.dataSource.getCityByName(cityName).orElse(null);
+            if(city == null)
+                return new CommandResult<>(new Message("cmd.plot.list.not-found", "No city were found named ${name}",
+                        new Object[]{"name", cityName})
+                );
+        }
+
+        List<Plot> plots = city.plots().sorted((a, b) -> a.getIdentityName().compareToIgnoreCase(b.getIdentityName()))
+                .collect(Collectors.toList());
+
+        if(plots.isEmpty())
+            return new CommandResult<>(new Message(
+                    "cmd.plot.list.no-plots",
+                    "The city ${city} does not have plots.",
+                    new Object[]{"city", city.getName()}
+            ), true);
+
+        int pages = (int) Math.ceil(plots.size() / 8.0);
+        page = Math.min(pages, page);
+        int index = 8 * (page-1);
+
+        Message[] lines = new Message[2 + Math.min(8, plots.size()-index)];
+        for(int i = 1; i < lines.length-1; i++, index++)
+        {
+            Plot plot = plots.get(index);
+            lines[i] = new Message("cmd.plot.list.plot",
+                    "<msg><darkgray><![CDATA[ * ]]></darkgray><white>${plot}</white> <gray>${size-x}x${size-z}x${size-y} ~${owner}</gray></msg>",
+                    new Object[][]{
+                            {"plot", plot.getName()},
+                            {"size-x", plot.getShape().sizeX()},
+                            {"size-y", plot.getShape().sizeY()},
+                            {"size-z", plot.getShape().sizeZ()},
+                            {"owner", plot.getOwner()
+                                    .map(id-> new Message("cmd.plot.list.owner", "${name}", new Object[]{"name", id.getName()}))
+                                    .orElseGet(()-> new Message("cmd.plot.list.no-owner", "<msg><darkgray>nobody</darkgray></msg>"))
+                            }
+                    }
+            );
+        }
+
+        lines[0] = new Message("cmd.plot.list.header",
+                "<msg><green>---<yellow>-=[Plots at ${city}]=-</yellow>---</green></msg>",
+                new Object[]{"city", city.getName()}
+        );
+        lines[lines.length-1] = (pages == 1)?
+                new Message("cmd.plot.list.footer.one-page",
+                        "<msg><green>\n" +
+                                "    Page <gold>1</gold>/<gold>1</gold>\n" +
+                                "    <darkgreen>---</darkgreen>\n" +
+                                "    Tip: Type <click><suggest cmd='/city go '/><hover><tooltip><gold>/city go</gold></tooltip><gold>/city go</gold></hover></click> to go to the city\n" +
+                                "</green></msg>")
+                : page == pages?
+                new Message("cmd.plot.list.footer.last-page",
+                        "<msg><green>\n" +
+                                "    Page <gold>${page}</gold>/<gold>${page}</gold>\n" +
+                                "    <darkgreen>---</darkgreen>\n" +
+                                "    Tip: Type <click><suggest cmd='/city go '/><hover><tooltip><gold>/city go</gold></tooltip><gold>/city go</gold></hover></click> to go to the city\n" +
+                                "</green></msg>",
+                        new Object[][]{
+                                {"page", page}
+                        })
+                :
+                new Message("cmd.plot.list.footer.more-pages",
+                        "<msg><green>\n" +
+                                "    Page <gold>${page}</gold>/<gold>${total}</gold>\n" +
+                                "    <darkgreen>---</darkgreen>\n" +
+                                "    Next page: <hover>\n" +
+                                "    <tooltip><gold>${next-page}</gold></tooltip>\n" +
+                                "    <click>\n" +
+                                "        <suggest cmd=\"${next-page}\"/>\n" +
+                                "        <gold>${next-page}</gold>\n" +
+                                "    </click></hover>\n" +
+                                "</green></msg>",
+                        new Object[][]{
+                                {"page", page},
+                                {"total", pages},
+                                {"next-page", "/"+String.join(" ", cmd.path)+" "+(page + 1)}
+                        }
+                );
+
+        cmd.sender.send(lines);
+        return CommandResult.success();
     }
 
     @Slow
