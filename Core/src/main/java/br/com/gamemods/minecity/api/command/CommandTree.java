@@ -96,7 +96,7 @@ public final class CommandTree
             {
                 info.function = def.function;
                 info.args = def.args;
-                info.translatedArg = Arrays.stream(info.args).anyMatch(arg -> arg instanceof TranslatedOptions);
+                info.translatedArg = info.args != null && Arrays.stream(info.args).anyMatch(arg -> arg instanceof TranslatedOptions);
                 info.async = def.async;
             }
 
@@ -244,7 +244,7 @@ public final class CommandTree
                     info.function = commandDefinition.function;
                     info.args = commandDefinition.args;
                     info.async = commandDefinition.async;
-                    info.translatedArg = Arrays.stream(info.args).anyMatch(arg -> arg instanceof TranslatedOptions);
+                    info.translatedArg = info.args != null && Arrays.stream(info.args).anyMatch(arg -> arg instanceof TranslatedOptions);
                     for(String parent: parents)
                     {
                         List<CommandInfo> commandList = commands.get(parent);
