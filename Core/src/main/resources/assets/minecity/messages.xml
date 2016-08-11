@@ -341,6 +341,46 @@
         </plot>
         <help>
             <group>
+                <msg id="header"><darkgreen>---<yellow>-=[MineCity Help]=-</yellow>----- <green>Click the items for info</green> -----</darkgreen></msg>
+                <footer>
+                    <msg id="one-page">
+                        <green>
+                            Page <gold>1</gold>/<gold>1</gold>
+                            <darkgreen>---</darkgreen>
+                            Tip: Click on the commands for more info
+                        </green>
+                    </msg>
+                    <msg id="last-page">
+                        <green>
+                            Page <gold>${page}</gold>/<gold>${total}</gold>
+                            <darkgreen>---</darkgreen>
+                            Tip: Click on the commands for more info
+                        </green>
+                    </msg>
+                    <msg id="more-pages">
+                        <green>
+                            Page <gold>${page}</gold>/<gold>${total}</gold>
+                            <darkgreen>---</darkgreen>
+                            Next page: <gold>${next-page}</gold>
+                        </green>
+                    </msg>
+                </footer>
+                <expanded>
+                    <arg>
+                        <msg id="sticky">${arg}...</msg>
+                        <msg id="optional"><i>[${arg}]</i></msg>
+                        <msg id="required">${arg}</msg>
+                    </arg>
+                    <msg id="no-args"/>
+                    <msg id="one-arg">${arg}</msg>
+                    <msg id="n-args.base">${args}</msg>
+                    <msg id="n-args.join"><gray><i><![CDATA[, ]]></i></gray></msg>
+                </expanded>
+                <short>
+                    <msg id="no-args"/>
+                    <msg id="one-arg">1 arg</msg>
+                    <msg id="n-args">${n} args</msg>
+                </short>
                 <msg id="item">
                     <hover>
                         <tooltip>

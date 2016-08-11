@@ -329,10 +329,9 @@ public final class CommandTree
                 if(arg.sticky())
                     val = new Message("cmd.help.group.expanded.arg.sticky", "${arg}...", new Object[]{"arg", val});
                 if(arg.optional())
-                    val = new Message("cmd.help.group.expanded.arg.optional", "<msg><i>[${arg}]</i></msg>", new Object[]{"arg", val});
-                if(val instanceof Message)
-                    return (Message) val;
-                return new Message("", "${arg}", new Object[]{"arg", val});
+                    return new Message("cmd.help.group.expanded.arg.optional", "<msg><i>[${arg}]</i></msg>", new Object[]{"arg", val});
+                else
+                    return new Message("cmd.help.group.expanded.arg.required", "${arg}", new Object[]{"arg", val});
             };
             boolean root = result.path.isEmpty() || result.path.equals(Collections.singletonList("minecity"));
             for(int i = 1; i < lines.length-1; index++, i++)
@@ -399,23 +398,40 @@ public final class CommandTree
                 );
             }
 
-            lines[0] = root?
-                    new Message(/*"cmd.help.header",*/"",
-                            "<msg><darkgreen>---<yellow>-=[MineCity Help]=-</yellow>----- <green>Click the items for info</green> -----</darkgreen></msg>"):
-                    new Message(/*"cmd.help.group.header",*/"",
-                            "<msg><darkgreen>---<yellow>-=[MineCity Help]=-</yellow>----- <green>Click the items for info</green> -----</darkgreen></msg>",
-                            new Object[] {"cmd", "/"+String.join(" ", result.path)}
-                    );
+            lines[0] =  new Message("cmd.help.group.header", "<msg><darkgreen>---<yellow>-=[MineCity Help]=-</yellow>----- <green>Click the items for info</green> -----</darkgreen></msg>");
 
-            lines[lines.length-1] = new Message(/*"cmd.help.footer",*/"",
-                    "<msg><green>Page <gold>${page}</gold>/<gold>${total}</gold> " +
-                    "<darkgreen>---</darkgreen> Next page: <gold>${next-page}</gold></green></msg>",
-                    new Object[][]{
-                            {"next-page", "/"+ helpPath +" "+Math.min(pages, page + 1)},
-                            {"page", page},
-                            {"total", pages}
-                    }
-            );
+            lines[lines.length-1] = pages == 1?
+                    new Message("cmd.help.group.footer.one-page",
+                            "<msg><green>\n" +
+                            "    Page <gold>1</gold>/<gold>1</gold>\n" +
+                            "    <darkgreen>---</darkgreen>\n" +
+                            "    Tip: Click on the commands for more info\n" +
+                            "</green></msg>")
+                    : page == pages?
+                    new Message("cmd.help.group.footer.last-page",
+                            "<msg><green>\n" +
+                            "    Page <gold>${page}</gold>/<gold>${total}</gold>\n" +
+                            "    <darkgreen>---</darkgreen>\n" +
+                            "    Tip: Click on the commands for more info\n" +
+                            "</green></msg>",
+                            new Object[][]{
+                                    {"prev-page", "/"+ helpPath +" "+(page - 1)},
+                                    {"page", page},
+                                    {"total", pages}
+                            })
+                    :
+                    new Message("cmd.help.group.footer.more-pages",
+                            "<msg><green>\n" +
+                            "    Page <gold>${page}</gold>/<gold>${total}</gold>\n" +
+                            "    <darkgreen>---</darkgreen>\n" +
+                            "    Next page: <gold>${next-page}</gold>\n" +
+                            "</green></msg>",
+                            new Object[][]{
+                                    {"next-page", "/"+ helpPath +" "+(page + 1)},
+                                    {"page", page},
+                                    {"total", pages}
+                            })
+                    ;
 
             cmd.sender.send(lines);
             return CommandResult.success();
