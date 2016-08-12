@@ -24,6 +24,7 @@ subprojects {
 
     dependencies {
         compile "org.jetbrains:annotations:13.0"
+        testCompile "org.luaj:luaj-jse:3.0.1"
 
         testCompile "junit:junit:4.12"
         testCompile "org.powermock:powermock-module-junit4:1.6.5"
