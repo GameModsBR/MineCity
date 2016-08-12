@@ -32,7 +32,7 @@ public class MessageTool
         Container panel = frame.getContentPane();
 
         JTextArea textArea = new JTextArea();
-        try(InputStream is = MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"))
+        try(InputStream is = MineCity.class.getResourceAsStream("/assets/minecity/messages-en.xml"))
         {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             int read;

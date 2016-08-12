@@ -166,7 +166,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         config.save();
 
         transformer = new ForgeTransformer();
-        transformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
+        transformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages-en.xml"));
     }
 
     @SuppressWarnings("unchecked")
@@ -211,8 +211,8 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         FMLCommonHandler.instance().bus().register(this);
         mineCity = new MineCity(this, config, transformer);
         mineCity.worldProvider = Optional.of(this);
-        mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
-        mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
+        mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands-en.xml"));
+        mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages-en.xml"));
         mineCity.dataSource.initDB();
     }
 

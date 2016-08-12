@@ -102,10 +102,10 @@ public class MineCityPlugin extends JavaPlugin
             }
 
             MessageTransformer transformer = new MessageTransformer();
-            transformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages.xml"));
+            transformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages-en.xml"));
             instance = new MineCityBukkit(this, config, transformer);
             instance.mineCity.dataSource.initDB();
-            instance.mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands.xml"));
+            instance.mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands-en.xml"));
 
             reloadTask = getScheduler().runTaskTimer(this, instance.mineCity::reloadQueuedChunk, 1, 1);
         }
