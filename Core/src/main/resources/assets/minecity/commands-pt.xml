@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE minecity-commands SYSTEM "https://raw.githubusercontent.com/GameModsBR/MineCity/master/Core/src/main/resources/assets/minecity/commands.dtd">
+<minecity-commands modified="false" add-missing="true">
+    <groups>
+        <group id="root" cmd="minecity,mc">
+            <desc>Todos os comandos do MineCity</desc>
+        </group>
+        <group id="city" parent=",root" cmd="cidade,c">
+            <desc>Todos os comandos relacionados a cidades</desc>
+        </group>
+        <group id="group" parent=",root,city" cmd="grupo">
+            <desc>Todos os comandos relacionados a grupos</desc>
+        </group>
+        <group id="group.manager" parent="group" cmd="gerente,gerentes">
+            <desc>Todos os comandos relacionados aos gerentes de grupos</desc>
+        </group>
+        <group id="plot" parent=",city,root" cmd="lotes">
+            <desc>Todos os comandos relacionados aos lotes</desc>
+        </group>
+        <group id="city.allow" parent="city" cmd="permitir">
+            <desc>Concede permissões</desc>
+        </group>
+        <group id="city.deny" parent="city" cmd="proibir">
+            <desc>Aplica proibições</desc>
+        </group>
+        <group id="city.allow.all" parent="city.allow" cmd="todos">
+            <desc>Concede permissões a todos, incluindo jogadores que foram proibidos diretamente</desc>
+        </group>
+        <group id="city.deny.all" parent="city.deny" cmd="todos">
+            <desc>Aplica proibições a todos, incluindo jogadores que foram diretamente permitidos</desc>
+        </group>
+        <group id="plot.allow" parent="plot" cmd="permitir">
+            <desc>Concede permissões</desc>
+        </group>
+        <group id="plot.deny" parent="plot" cmd="proibir">
+            <desc>Aplica proibições</desc>
+        </group>
+        <group id="plot.allow.all" parent="plot.allow" cmd="todos">
+            <desc>Concede permissões a todos, incluindo jogadores que foram proibidos diretamente</desc>
+        </group>
+        <group id="plot.deny.all" parent="plot.deny" cmd="todos">
+            <desc>Aplica proibições a todos, incluindo jogadores que foram diretamente permitidos</desc>
+        </group>
+    </groups>
+    <commands>
+        <!-- Geral -->
+        <command id="confirm" parent=",city,group,root,plot" cmd="confirmar">
+            <desc>Confirma uma ação perigosa</desc>
+        </command>
+        <command id="help" parent="city,group,root,plot" cmd="ajuda">
+            <desc>Exibe informações sobre comandos do MineCity</desc>
+        </command>
+        <command id="reload" parent="root" cmd="recarregar,reload">
+            <desc>Recarrega as mensagens do disco</desc>
+        </command>
+
+        <!-- Gerência -->
+        <command id="city.create" parent="city" cmd="criar,nova">
+            <desc>Cria uma cidade</desc>
+        </command>
+        <command id="city.claim" parent="city" cmd="expandir,reivindicar">
+            <desc>Reinvindica um chunk para a cidade</desc>
+        </command>
+        <command id="city.disclaim" parent="city" cmd="reduzir,renunciar,desreivindicar">
+            <desc>Renuncia um chunk da cidade</desc>
+        </command>
+        <command id="city.spawn" parent="city" cmd="ir,spawn">
+            <desc>Teleporta para a cidade</desc>
+        </command>
+        <command id="city.rename" parent="city" cmd="renomear">
+            <desc>Altera o nome da cidade que você está dentro</desc>
+        </command>
+        <command id="city.transfer" parent="city" cmd="transferir">
+            <desc>Transfere a cidade para um outro jogador</desc>
+        </command>
+        <command id="city.setspawn" parent="city" cmd="entrada,definir-entrada,entrada,definirspawn,definir-spawn">
+            <desc>Muda o ponto de entrada da cidade para quem chega por teleporte</desc>
+        </command>
+        <command id="city.map" parent="city" cmd="mapa">
+            <desc>Exibe um mapa com as cidades em volta de você</desc>
+        </command>
+        <command id="city.delete" parent="city" cmd="excluir,deletar">
+            <desc>Apaga a cidade inteira.</desc>
+        </command>
+        <command id="city.list" parent="city" cmd="listar">
+            <desc>Lista todas as cidades</desc>
+        </command>
+
+        <!-- Grupos -->
+        <command id="group.create" parent="group" cmd="criar,novo">
+            <desc>Cria um novo grupo de jogadores</desc>
+        </command>
+        <command id="group.add" parent="group" cmd="adicionar">
+            <desc>Adiciona um jogador a um grupo</desc>
+        </command>
+        <command id="group.remove" parent="group" cmd="remover">
+            <desc>Remove um jogador de um grupo</desc>
+        </command>
+        <command id="group.list" parent="group" cmd="listar">
+            <desc>Lista todos os grupos de uma cidade</desc>
+        </command>
+        <command id="group.info" parent="group" cmd="info">
+            <desc>Lista detalhes sobre um grupo</desc>
+        </command>
+        <command id="group.delete" parent="group" cmd="excluir,deletar">
+            <desc>Apaga um grupo de uma cidade completamente</desc>
+        </command>
+        <command id="group.add.manager" parent="group.manager" cmd="adicionar">
+            <desc>Adiciona um jogador como gerente de grupo</desc>
+        </command>
+        <command id="group.remove.manager" parent="group.manager" cmd="remover">
+            <desc>Demite um jogador do cargo de gerente de grupo</desc>
+        </command>
+
+        <!-- Lotes -->
+        <command id="plot.create" parent="plot" cmd="criar,novo">
+            <desc>Cria um novo lote</desc>
+        </command>
+        <command id="plot.rename" parent="plot" cmd="renomear">
+            <desc>Renomeia um lote</desc>
+        </command>
+        <command id="plot.return" parent="plot" cmd="devolver">
+            <desc>Devolve o lote para cidade</desc>
+        </command>
+        <command id="plot.transfer" parent="plot" cmd="transferir">
+            <desc>Transfere o lote para um outro jogador</desc>
+        </command>
+        <command id="plot.delete" parent="plot" cmd="excluir,deletar">
+            <desc>Apaga o lote da cidade</desc>
+        </command>
+        <command id="plot.list" parent="plot" cmd="listar">
+            <desc>Lista todos os lotes na cidade</desc>
+        </command>
+
+        <!-- ========== Permissões de Cidades ========== -->
+        <!-- Permissões padrões -->
+        <command id="city.allow.enter" parent="city.allow" cmd="entrar">
+            <desc>Permite que jogaores entrem na cidade</desc>
+        </command>
+        <command id="city.allow.click" parent="city.allow" cmd="clicar">
+            <desc>Permite que jogadores cliquem em blocos clicaveis, como portas, botões e alavancas</desc>
+        </command>
+        <command id="city.allow.pickup" parent="city.allow" cmd="pegar">
+            <desc>Permite que jogadores peguem itens soltos</desc>
+        </command>
+        <command id="city.allow.open" parent="city.allow" cmd="abrir">
+            <desc>Permite que jogadores abram contêiner como baús, molduras e fornalhas</desc>
+        </command>
+        <command id="city.allow.pvp" parent="city.allow" cmd="pvp">
+            <desc>Permite que jogadores ataquem outros jogadores</desc>
+        </command>
+        <command id="city.allow.pvc" parent="city.allow" cmd="pvc">
+            <desc>Permite que jogadores ataquem criaturas</desc>
+        </command>
+        <command id="city.deny.enter" parent="city.deny" cmd="entrar">
+            <desc>Proíbe que jogadores entrem na cidade, não irá expulsar jogadores que já estão dentro.</desc>
+        </command>
+        <command id="city.deny.click" parent="city.deny" cmd="clicar">
+            <desc>Proíbe que jogadores cliquem em blocos clicáveis como portas, botões e alavancas</desc>
+        </command>
+        <command id="city.deny.pickup" parent="city.deny" cmd="pegar">
+            <desc>Proíbe que jogadores peguem itens soltos</desc>
+        </command>
+        <command id="city.deny.open" parent="city.deny" cmd="abrir">
+            <desc>Proíbe que jogadores abram contêiner como baús, molduras e fornalhas</desc>
+        </command>
+        <command id="city.deny.pvp" parent="city.deny" cmd="pvp">
+            <desc>Proíbe que jogadores ataquem outros jogadores</desc>
+        </command>
+        <command id="city.deny.pvc" parent="city.deny" cmd="pvc">
+            <desc>Proíbe que jogadores ataquem criaturas</desc>
+        </command>
+
+        <!-- Permissões para todos -->
+        <command id="city.allow.all.enter" parent="city.allow.all" cmd="entrar">
+            <desc>Permite que todos entrem na cidade, incluindo quem foi proibido diretamente.</desc>
+        </command>
+        <command id="city.allow.all.click" parent="city.allow.all" cmd="clicar">
+            <desc>Permite que todos cliquem em blocos clicáveis como portas, botões e alavancas. Também irá permitir quem foi proibido diretamente.</desc>
+        </command>
+        <command id="city.allow.all.pickup" parent="city.allow.all" cmd="pegar">
+            <desc>Permite que todos peguem itens soltos, incluindo quem foi proibido diretamente.</desc>
+        </command>
+        <command id="city.allow.all.open" parent="city.allow.all" cmd="abrir">
+            <desc>Permite que todos abram contêiner como baús, molduras e fornalhas. Também irá permitir quem foi proibido diretamente.</desc>
+        </command>
+        <command id="city.allow.all.pvp" parent="city.allow.all" cmd="pvp">
+            <desc>Permite que todos ataquem outros jogadores, inclundo quem foi proibido diretamente.</desc>
+        </command>
+        <command id="city.allow.all.pvc" parent="city.allow.all" cmd="pvc">
+            <desc>Permite que todos ataquem criaturas, incluindo quem foi proibido diretamente.</desc>
+        </command>
+        <command id="city.deny.all.enter" parent="city.deny.all" cmd="entrar">
+            <desc>Proíbe que todos entrem na cidade, incluindo quem foi permitido diretamente.</desc>
+        </command>
+        <command id="city.deny.all.click" parent="city.deny.all" cmd="clicar">
+            <desc>Proíbe que todos cliquem em blocos clicáveis como portas, botões e alavancas. Também irá proibir quem foi permitido diretamente.</desc>
+        </command>
+        <command id="city.deny.all.pickup" parent="city.deny.all" cmd="pegar">
+            <desc>Proíbe que todos peguem itens soltos. Também irá proibir quem foi permitido diretamente.</desc>
+        </command>
+        <command id="city.deny.all.open" parent="city.deny.all" cmd="abrir">
+            <desc>Proíbe que todos abram contêiner como baús, molduras e fornalhas. Também irá proibir quem foi permitido diretamente.</desc>
+        </command>
+        <command id="city.deny.all.pvp" parent="city.deny.all" cmd="pvp">
+            <desc>Proíbe que todos ataquem outros jogadores. Também irá proibir quem foi permitido diretamente.</desc>
+        </command>
+        <command id="city.deny.all.pvc" parent="city.deny.all" cmd="pvc">
+            <desc>Proíbe que todos ataquem criaturas. Também irá proibir quem foi permitido diretamente.</desc>
+        </command>
+
+        <!-- ========== Permissões de lotes ========== -->
+        <!-- Permissões padrões -->
+        <command id="plot.allow.enter" parent="plot.allow" cmd="entrar">
+            <desc>Permite que jogadores entrem no lote.</desc>
+        </command>
+        <command id="plot.allow.click" parent="plot.allow" cmd="clicar">
+            <desc>Permite que jogadores cliquem em blocos clicáveis como portas, botões e alavancas</desc>
+        </command>
+        <command id="plot.allow.pickup" parent="plot.allow" cmd="pegar">
+            <desc>Permite que jogadores peguem itens soltos</desc>
+        </command>
+        <command id="plot.allow.open" parent="plot.allow" cmd="abrir">
+            <desc>Permite que jogadores abram contêiner como baús, molduras e fornalhas</desc>
+        </command>
+        <command id="plot.allow.pvp" parent="plot.allow" cmd="pvp">
+            <desc>Permite que jogadores ataquem outros jogadores</desc>
+        </command>
+        <command id="plot.allow.pvc" parent="plot.allow" cmd="pvc">
+            <desc>Permite que jogadores ataquem animais</desc>
+        </command>
+        <command id="plot.deny.enter" parent="plot.deny" cmd="entrar">
+            <desc>Proíbe que jogadores entrem no lote, não irá expulsar quem já estiver dentro.</desc>
+        </command>
+        <command id="plot.deny.click" parent="plot.deny" cmd="clicar">
+            <desc>Proíbe que jogadores cliquem em blocos clicáveis como portas, botões e alavancas</desc>
+        </command>
+        <command id="plot.deny.pickup" parent="plot.deny" cmd="pegar">
+            <desc>Proíbe que jogadores peguem itens soltos</desc>
+        </command>
+        <command id="plot.deny.open" parent="plot.deny" cmd="abir">
+            <desc>Proíbe que jogadores abram contêiner como baús, molduras e fornalhas</desc>
+        </command>
+        <command id="plot.deny.pvp" parent="plot.deny" cmd="pvp">
+            <desc>Proíbe que jogadores ataquem outros jogadores</desc>
+        </command>
+        <command id="plot.deny.pvc" parent="plot.deny" cmd="pvc">
+            <desc>Proíbe que jogadores ataquem criaturas</desc>
+        </command>
+
+        <!-- Permissões para todos -->
+        <command id="plot.allow.all.enter" parent="plot.allow.all" cmd="entrar">
+            <desc>Permite que todos entrem no lote, incluindo quem foi proibido diretamente.</desc>
+        </command>
+        <command id="plot.allow.all.click" parent="plot.allow.all" cmd="clicar">
+            <desc>Permite que todos cliquem em blocos clicáveis como portas, botões e alavancas. Também irá permitir quem foi proibido diretamente.</desc>
+        </command>
+        <command id="plot.allow.all.pickup" parent="plot.allow.all" cmd="pegar">
+            <desc>Permite que todos peguem itens soltos, incluindo quem foi proibido diretamente.</desc>
+        </command>
+        <command id="plot.allow.all.open" parent="plot.allow.all" cmd="abrir">
+            <desc>Permite que todos abram contêiner como baús, molduras e fornalhas. Também irá permitir quem foi proibido diretamente.</desc>
+        </command>
+        <command id="plot.allow.all.pvp" parent="plot.allow.all" cmd="pvp">
+            <desc>Permite que todos ataquem outros jogadores, incluindo quem foi proibido diretamente.</desc>
+        </command>
+        <command id="plot.allow.all.pvc" parent="plot.allow.all" cmd="pvc">
+            <desc>Permite que todos ataquem criaturas, incluindo quem foi proibido diretamente.</desc>
+        </command>
+        <command id="plot.deny.all.enter" parent="plot.deny.all" cmd="entrar">
+            <desc>Proibe que todos entrem no lote, incluindo quem foi permitido diretamente. Não irá expulsar quem já estiver dentro</desc>
+        </command>
+        <command id="plot.deny.all.click" parent="plot.deny.all" cmd="clicar">
+            <desc>Proíbe que todos cliquem em blocos clicáveis como portas, botões e alavancas. Também irá permitir quem foi proibido diretamente.</desc>
+        </command>
+        <command id="plot.deny.all.pickup" parent="plot.deny.all" cmd="pegar">
+            <desc>Proíbe que todos peguem itens soltos, incluindo quem foi diretamente permitido.</desc>
+        </command>
+        <command id="plot.deny.all.open" parent="plot.deny.all" cmd="abrir">
+            <desc>Proíbe que todos abram contêiner como baús, molduras e fornalhas. Também irá proibir quem foi diretamente permitido.</desc>
+        </command>
+        <command id="plot.deny.all.pvp" parent="plot.deny.all" cmd="pvp">
+            <desc>Proíbe que todos ataquem outros jogadores. Também irá proibir quem foi diretamente permitido.</desc>
+        </command>
+        <command id="plot.deny.all.pvc" parent="plot.deny.all" cmd="pvc">
+            <desc>Proíbe que todos ataquem criaturas. Também irá proibir quem foi diretamente permitido.</desc>
+        </command>
+    </commands>
+</minecity-commands>
