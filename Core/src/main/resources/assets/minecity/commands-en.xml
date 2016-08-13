@@ -24,10 +24,10 @@
             <desc>Revokes permission</desc>
         </group>
         <group id="city.allow.all" parent="city.allow" cmd="all">
-            <desc>Gives permission to everybody, including players that were directly prohibited</desc>
+            <desc>Gives permission to everybody, including players who were directly prohibited</desc>
         </group>
         <group id="city.deny.all" parent="city.deny" cmd="all">
-            <desc>Prohibits everybody, including players that were directly allowed</desc>
+            <desc>Prohibits everybody, including players who were directly allowed</desc>
         </group>
         <group id="plot.allow" parent="plot" cmd="allow">
             <desc>Gives permission</desc>
@@ -36,10 +36,10 @@
             <desc>Revokes permission</desc>
         </group>
         <group id="plot.allow.all" parent="plot.allow" cmd="all">
-            <desc>Gives permission to everybody, including players that were directly prohibited</desc>
+            <desc>Gives permission to everybody, including players who were directly prohibited</desc>
         </group>
         <group id="plot.deny.all" parent="plot.deny" cmd="all">
-            <desc>Prohibits everybody, including players that were directly allowed</desc>
+            <desc>Prohibits everybody, including players who were directly allowed</desc>
         </group>
     </groups>
     <commands>
@@ -57,36 +57,30 @@
         <!-- Management -->
         <command id="city.create" parent="city" cmd="create,new">
             <desc>Creates a city</desc>
-            <syntax>name (may have spaces)</syntax>
         </command>
         <command id="city.claim" parent="city" cmd="claim,expand">
             <desc>Claims a chunk to a city</desc>
-            <syntax>[city name]</syntax>
         </command>
         <command id="city.disclaim" parent="city" cmd="disclaim,unclaim">
             <desc>Disclaims a chunk from a city</desc>
         </command>
         <command id="city.spawn" parent="city" cmd="go,spawn">
             <desc>Teleport you to the city</desc>
-            <syntax>[city name]</syntax>
         </command>
         <command id="city.rename" parent="city" cmd="rename">
             <desc>Changes name of the city that you are inside</desc>
-            <syntax>[new city name]</syntax>
         </command>
         <command id="city.transfer" parent="city" cmd="transfer">
             <desc>Transfer the city to an other player</desc>
-            <syntax>[player name]</syntax>
         </command>
         <command id="city.setspawn" parent="city" cmd="setspawn">
             <desc>Changes the city's spawn location</desc>
         </command>
         <command id="city.map" parent="city" cmd="map">
-            <desc>Show the cities around you</desc>
-            <syntax>[big]</syntax>
+            <desc>Shows a map of the cities around you</desc>
         </command>
         <command id="city.delete" parent="city" cmd="delete">
-            <desc>Deletes the entire city.</desc>
+            <desc>Deletes the entire city</desc>
         </command>
         <command id="city.list" parent="city" cmd="list">
             <desc>Lists all cities</desc>
@@ -115,7 +109,7 @@
             <desc>Adds a player as a group manager</desc>
         </command>
         <command id="group.remove.manager" parent="group.manager" cmd="remove">
-            <desc>Adds a player as a group manager</desc>
+            <desc>Demotes a player from group managers</desc>
         </command>
 
         <!-- Plots -->
@@ -141,203 +135,155 @@
         <!-- ========== City Permissions ========== -->
         <!-- Default permissions -->
         <command id="city.allow.enter" parent="city.allow" cmd="enter">
-            <desc>Allows players to enter the city, will not affect players who are already inside.</desc>
-            <syntax>[target]</syntax>
+            <desc>Allows players to enter the city</desc>
         </command>
         <command id="city.allow.click" parent="city.allow" cmd="click">
             <desc>Allows players to click on clickable blocks, like doors, buttons and levelers</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.allow.pickup" parent="city.allow" cmd="pickup">
             <desc>Allows players to pickup dropped items</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.allow.open" parent="city.allow" cmd="open">
             <desc>Allows players to open container like chests, furnaces, frames</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.allow.pvp" parent="city.allow" cmd="pvp">
             <desc>Allows players to attack other players</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.allow.pvc" parent="city.allow" cmd="pvc">
             <desc>Allows players to attack creatures</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.deny.enter" parent="city.deny" cmd="enter">
             <desc>Deny players to enter the city, will not affect players who are already inside.</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.deny.click" parent="city.deny" cmd="click">
             <desc>Deny players to click on clickable blocks, like doors, buttons and levelers</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.deny.pickup" parent="city.deny" cmd="pickup">
             <desc>Deny players to pickup dropped items</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.deny.open" parent="city.deny" cmd="open">
             <desc>Deny players to open container like chests, furnaces, frames</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.deny.pvp" parent="city.deny" cmd="pvp">
             <desc>Deny players to attack other players</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.deny.pvc" parent="city.deny" cmd="pvc">
             <desc>Deny players to attack creatures</desc>
-            <syntax>[target]</syntax>
         </command>
 
         <!-- All permissions -->
         <command id="city.allow.all.enter" parent="city.allow.all" cmd="enter">
             <desc>Allows everybody to enter the city, including who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.allow.all.click" parent="city.allow.all" cmd="click">
             <desc>Allows everybody to click on clickable blocks, like doors, buttons and levelers. Will also allow who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.allow.all.pickup" parent="city.allow.all" cmd="pickup">
             <desc>Allows everybody to pickup dropped items, will also allow who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.allow.all.open" parent="city.allow.all" cmd="open">
             <desc>Allows everybody to open container like chests, furnaces, frames. Will also allow who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.allow.all.pvp" parent="city.allow.all" cmd="pvp">
             <desc>Allows everybody to attack other players, including who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.allow.all.pvc" parent="city.allow.all" cmd="pvc">
             <desc>Allows everybody to attack creatures, including who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="city.deny.all.enter" parent="city.deny.all" cmd="enter">
-            <desc>Prohibits everybody to enter the city, including who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
+            <desc>Prohibits everybody to enter the city, including who were directly allowed.</desc>
         </command>
         <command id="city.deny.all.click" parent="city.deny.all" cmd="click">
-            <desc>Prohibits everybody to click on clickable blocks, like doors, buttons and levelers. Will also prohibit who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
+            <desc>Prohibits everybody to click on clickable blocks, like doors, buttons and levelers. Will also prohibit who were directly allowed.</desc>
         </command>
         <command id="city.deny.all.pickup" parent="city.deny.all" cmd="pickup">
-            <desc>Prohibits everybody to pickup dropped items. Will also prohibit who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
+            <desc>Prohibits everybody to pickup dropped items. Will also prohibit who were directly allowed.</desc>
         </command>
         <command id="city.deny.all.open" parent="city.deny.all" cmd="open">
-            <desc>Prohibits everybody to open container like chests, furnaces, frames. Will also prohibit who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
+            <desc>Prohibits everybody to open container like chests, furnaces, frames. Will also prohibit who were directly allowed.</desc>
         </command>
         <command id="city.deny.all.pvp" parent="city.deny.all" cmd="pvp">
-            <desc>Prohibits everybody to attack other players. Will also prohibit who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
+            <desc>Prohibits everybody to attack other players. Will also prohibit who were directly allowed.</desc>
         </command>
         <command id="city.deny.all.pvc" parent="city.deny.all" cmd="pvc">
-            <desc>Prohibits everybody to attack creatures. Will also prohibit who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
+            <desc>Prohibits everybody to attack creatures. Will also prohibit who were directly allowed.</desc>
         </command>
 
         <!-- ========== Plot Permissions ========== -->
         <!-- Default permissions -->
         <command id="plot.allow.enter" parent="plot.allow" cmd="enter">
-            <desc>Allows players to enter the plot, will not affect players who are already inside.</desc>
-            <syntax>[target]</syntax>
+            <desc>Allows players to enter the plot</desc>
         </command>
         <command id="plot.allow.click" parent="plot.allow" cmd="click">
             <desc>Allows players to click on clickable blocks, like doors, buttons and levelers</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.allow.pickup" parent="plot.allow" cmd="pickup">
             <desc>Allows players to pickup dropped items</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.allow.open" parent="plot.allow" cmd="open">
             <desc>Allows players to open container like chests, furnaces, frames</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.allow.pvp" parent="plot.allow" cmd="pvp">
             <desc>Allows players to attack other players</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.allow.pvc" parent="plot.allow" cmd="pvc">
             <desc>Allows players to attack creatures</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.deny.enter" parent="plot.deny" cmd="enter">
             <desc>Deny players to enter the plot, will not affect players who are already inside.</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.deny.click" parent="plot.deny" cmd="click">
             <desc>Deny players to click on clickable blocks, like doors, buttons and levelers</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.deny.pickup" parent="plot.deny" cmd="pickup">
             <desc>Deny players to pickup dropped items</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.deny.open" parent="plot.deny" cmd="open">
             <desc>Deny players to open container like chests, furnaces, frames</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.deny.pvp" parent="plot.deny" cmd="pvp">
             <desc>Deny players to attack other players</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.deny.pvc" parent="plot.deny" cmd="pvc">
             <desc>Deny players to attack creatures</desc>
-            <syntax>[target]</syntax>
         </command>
 
         <!-- All permissions -->
         <command id="plot.allow.all.enter" parent="plot.allow.all" cmd="enter">
             <desc>Allows everybody to enter the plot, including who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.allow.all.click" parent="plot.allow.all" cmd="click">
             <desc>Allows everybody to click on clickable blocks, like doors, buttons and levelers. Will also allow who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.allow.all.pickup" parent="plot.allow.all" cmd="pickup">
             <desc>Allows everybody to pickup dropped items, will also allow who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.allow.all.open" parent="plot.allow.all" cmd="open">
             <desc>Allows everybody to open container like chests, furnaces, frames. Will also allow who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.allow.all.pvp" parent="plot.allow.all" cmd="pvp">
             <desc>Allows everybody to attack other players, including who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.allow.all.pvc" parent="plot.allow.all" cmd="pvc">
             <desc>Allows everybody to attack creatures, including who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
         </command>
         <command id="plot.deny.all.enter" parent="plot.deny.all" cmd="enter">
-            <desc>Prohibits everybody to enter the plot, including who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
+            <desc>Prohibits everybody to enter the plot, including who were directly allowed.</desc>
         </command>
         <command id="plot.deny.all.click" parent="plot.deny.all" cmd="click">
-            <desc>Prohibits everybody to click on clickable blocks, like doors, buttons and levelers. Will also prohibit who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
+            <desc>Prohibits everybody to click on clickable blocks, like doors, buttons and levelers. Will also prohibit who were directly allowed.</desc>
         </command>
         <command id="plot.deny.all.pickup" parent="plot.deny.all" cmd="pickup">
-            <desc>Prohibits everybody to pickup dropped items. Will also prohibit who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
+            <desc>Prohibits everybody to pickup dropped items. Will also prohibit who were directly allowed.</desc>
         </command>
         <command id="plot.deny.all.open" parent="plot.deny.all" cmd="open">
-            <desc>Prohibits everybody to open container like chests, furnaces, frames. Will also prohibit who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
+            <desc>Prohibits everybody to open container like chests, furnaces, frames. Will also prohibit who were directly allowed.</desc>
         </command>
         <command id="plot.deny.all.pvp" parent="plot.deny.all" cmd="pvp">
-            <desc>Prohibits everybody to attack other players. Will also prohibit who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
+            <desc>Prohibits everybody to attack other players. Will also prohibit who were directly allowed.</desc>
         </command>
         <command id="plot.deny.all.pvc" parent="plot.deny.all" cmd="pvc">
-            <desc>Prohibits everybody to attack creatures. Will also prohibit who were directly prohibited.</desc>
-            <syntax>[target]</syntax>
+            <desc>Prohibits everybody to attack creatures. Will also prohibit who were directly allowed.</desc>
         </command>
     </commands>
 </minecity-commands>
