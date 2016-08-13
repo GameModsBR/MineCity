@@ -15,20 +15,22 @@
         parent CDATA #IMPLIED>
 
 <!ENTITY % CityManageCommands "city.create|city.claim|city.disclaim|city.spawn|city.rename|city.transfer|city.setspawn|city.map|city.delete">
-<!ENTITY % CityDenyCommands "city.deny.enter|city.deny.click|city.deny.pickup|city.deny.open|city.deny.pvp|city.deny.pvc">
-<!ENTITY % CityAllowCommands "city.allow.enter|city.allow.click|city.allow.pickup|city.allow.open|city.allow.pvp|city.allow.pvc">
-<!ENTITY % CityDenyAllCommands "city.deny.all.enter|city.deny.all.click|city.deny.all.pickup|city.deny.all.open|city.deny.all.pvp|city.deny.all.pvc">
-<!ENTITY % CityAllowAllCommands "city.allow.all.enter|city.allow.all.click|city.allow.all.pickup|city.allow.all.open|city.allow.all.pvp|city.allow.all.pvc">
-<!ENTITY % PlotDenyCommands "plot.deny.enter|plot.deny.click|plot.deny.pickup|plot.deny.open|plot.deny.pvp|plot.deny.pvc">
-<!ENTITY % PlotAllowCommands "plot.allow.enter|plot.allow.click|plot.allow.pickup|plot.allow.open|plot.allow.pvp|plot.allow.pvc">
-<!ENTITY % PlotDenyAllCommands "plot.deny.all.enter|plot.deny.all.click|plot.deny.all.pickup|plot.deny.all.open|plot.deny.all.pvp|plot.deny.all.pvc">
-<!ENTITY % PlotAllowAllCommands "plot.allow.all.enter|plot.allow.all.click|plot.allow.all.pickup|plot.allow.all.open|plot.allow.all.pvp|plot.allow.all.pvc">
+<!ENTITY % CityDenyCommands "city.deny.enter|city.deny.click|city.deny.pickup|city.deny.open|city.deny.pvp|city.deny.pvc|city.deny.modify">
+<!ENTITY % CityAllowCommands "city.allow.enter|city.allow.click|city.allow.pickup|city.allow.open|city.allow.pvp|city.allow.pvc|city.allow.modify">
+<!ENTITY % CityDenyAllCommands "city.deny.all.enter|city.deny.all.click|city.deny.all.pickup|city.deny.all.open|city.deny.all.pvp|city.deny.all.pvc|city.deny.all.modify">
+<!ENTITY % CityAllowAllCommands "city.allow.all.enter|city.allow.all.click|city.allow.all.pickup|city.allow.all.open|city.allow.all.pvp|city.allow.all.pvc|city.allow.all.modify">
+<!ENTITY % PlotDenyCommands "plot.deny.enter|plot.deny.click|plot.deny.pickup|plot.deny.open|plot.deny.pvp|plot.deny.pvc|plot.deny.modify">
+<!ENTITY % PlotAllowCommands "plot.allow.enter|plot.allow.click|plot.allow.pickup|plot.allow.open|plot.allow.pvp|plot.allow.pvc|plot.allow.modify">
+<!ENTITY % PlotDenyAllCommands "plot.deny.all.enter|plot.deny.all.click|plot.deny.all.pickup|plot.deny.all.open|plot.deny.all.pvp|plot.deny.all.pvc|plot.deny.all.modify">
+<!ENTITY % PlotAllowAllCommands "plot.allow.all.enter|plot.allow.all.click|plot.allow.all.pickup|plot.allow.all.open|plot.allow.all.pvp|plot.allow.all.pvc|plot.allow.all.modify">
+<!ENTITY % PlotPermListCommands "plot.perms.enter|plot.perms.click|plot.perms.pickup|plot.perms.open|plot.perms.pvp|plot.perms.pvc|plot.perms.modify|plot.perms">
+<!ENTITY % CityPermListCommands "city.perms.enter|city.perms.click|city.perms.pickup|city.perms.open|city.perms.pvp|city.perms.pvc|city.perms.modify|city.perms">
 <!ENTITY % GroupCommands "group.create|group.add|group.remove|group.list|group.info|group.delete|group.add.manager|group.remove.manager">
 <!ENTITY % GeneralCommands "confirm|help|reload">
 <!ENTITY % PlotManageCommands "plot.create|plot.rename|plot.return|plot.transfer|plot.delete">
 
-<!ENTITY % PlotPermCommands "%PlotAllowCommands;|%PlotDenyCommands;|%PlotAllowAllCommands;|%PlotDenyAllCommands;|plot.perms">
-<!ENTITY % CityPermCommands "%CityAllowCommands;|%CityDenyCommands;|%CityAllowAllCommands;|%CityDenyAllCommands;|city.perms">
+<!ENTITY % PlotPermCommands "%PlotAllowCommands;|%PlotDenyCommands;|%PlotAllowAllCommands;|%PlotDenyAllCommands;|%PlotPermListCommands;">
+<!ENTITY % CityPermCommands "%CityAllowCommands;|%CityDenyCommands;|%CityAllowAllCommands;|%CityDenyAllCommands;|%CityPermListCommands;">
 <!ENTITY % PlotCommands "%PlotManageCommands;|%PlotPermCommands;|plot.list">
 <!ENTITY % CityCommands "%CityManageCommands;|%CityPermCommands;|city.list">
 <!ENTITY % Commands "%CityCommands;|%GroupCommands;|%GeneralCommands;|%PlotCommands;">

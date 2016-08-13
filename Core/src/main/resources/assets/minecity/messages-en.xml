@@ -18,6 +18,100 @@
         </msg>
         <city>
             <perms>
+                <nobody>
+                    <enter>
+                        <msg id="no-exception"><red><b>Nobody</b></red> can enter on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can enter on ${name}, that will be shown when that happens:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </enter>
+                    <pickup>
+                        <msg id="no-exception"><red><b>Nobody</b></red> can collect drops on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can collect drops on ${name}, that will be shown when that happens:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </pickup>
+                    <pvp>
+                        <msg id="no-exception"><red><b>Nobody</b></red> can attack players on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can attack players on ${name}, that will be shown when that happens:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </pvp>
+                    <pvc>
+                        <msg id="no-exception"><red><b>Nobody</b></red> can attack creatures on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can attack creatures on ${name}, that will be shown when that happens:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </pvc>
+                    <modify>
+                        <msg id="no-exception"><red><b>Nobody</b></red> can modify ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can modify ${name}, that will be shown when that happens:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </modify>
+                    <msg id="click.no-exception"><red><b>Nobody</b></red> can click on things on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                    <msg id="click.except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can click on things on ${name}, that will be shown when that happens:
+                        <br/><red>${msg}</red><br/><br/>
+                        <yellow>Exceptions:</yellow><br/>${exceptions}
+                    </msg>
+                    <msg id="open.no-exception"><red><b>Nobody</b></red> can open containers on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                    <msg id="open.except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can open containers on ${name}, that will be shown when that happens:
+                        <br/><red>${msg}</red><br/><br/>
+                        <yellow>Exceptions:</yellow><br/>${exceptions}
+                    </msg>
+                </nobody>
+                <everybody>
+                    <enter>
+                        <msg id="no-exception"><green><b>Everybody</b></green> can enter on ${name}</msg>
+                        <msg id="except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can enter on ${name}
+                            <br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </enter>
+                    <pickup>
+                        <msg id="no-exception"><green><b>Everybody</b></green> can collect drops on ${name}</msg>
+                        <msg id="except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can collect drops on ${name}
+                            <br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </pickup>
+                    <pvp>
+                        <msg id="no-exception"><green><b>Everybody</b></green> can attack players on ${name}</msg>
+                        <msg id="except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can attack players on ${name}
+                            <br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </pvp>
+                    <pvc>
+                        <msg id="no-exception"><green><b>Everybody</b></green> can attack creatures on ${name}</msg>
+                        <msg id="except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can attack creatures on ${name}
+                            <br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </pvc>
+                    <modify>
+                        <msg id="no-exception"><green><b>Everybody</b></green> can modify ${name}</msg>
+                        <msg id="except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can modify ${name}
+                            <br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </modify>
+                    <msg id="click.no-exception"><green><b>Everybody</b></green> can click on things on ${name}</msg>
+                    <msg id="click.except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can click on things on ${name}
+                        <br/><br/>
+                        <yellow>Exceptions:</yellow><br/>${exceptions}
+                    </msg>
+                    <msg id="open.no-exception"><green><b>Everybody</b></green> can open containers on ${name}</msg>
+                    <msg id="open.except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can open containers on ${name}
+                        <br/><br/>
+                        <yellow>Exceptions:</yellow><br/>${exceptions}
+                    </msg>
+                </everybody>
                 <msg id="not-claimed">You are not inside a city</msg>
                 <msg id="not-found">No city were found with name ${name}</msg>
                 <msg id="header"><darkgreen>----[ ${name}'s Permissions ]--------</darkgreen></msg>
@@ -485,6 +579,100 @@
         </confirm>
         <plot>
             <perms>
+                <nobody>
+                    <enter>
+                        <msg id="no-exception"><red><b>Nobody</b></red> can enter on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can enter on ${name}, that will be shown when that happens:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </enter>
+                    <pickup>
+                        <msg id="no-exception"><red><b>Nobody</b></red> can collect drops on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can collect drops on ${name}, that will be shown when that happens:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </pickup>
+                    <pvp>
+                        <msg id="no-exception"><red><b>Nobody</b></red> can attack players on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can attack players on ${name}, that will be shown when that happens:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </pvp>
+                    <pvc>
+                        <msg id="no-exception"><red><b>Nobody</b></red> can attack creatures on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can attack creatures on ${name}, that will be shown when that happens:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </pvc>
+                    <modify>
+                        <msg id="no-exception"><red><b>Nobody</b></red> can modify ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can modify ${name}, that will be shown when that happens:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </modify>
+                    <msg id="click.no-exception"><red><b>Nobody</b></red> can click on things on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                    <msg id="click.except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can click on things on ${name}, that will be shown when that happens:
+                        <br/><red>${msg}</red><br/><br/>
+                        <yellow>Exceptions:</yellow><br/>${exceptions}
+                    </msg>
+                    <msg id="open.no-exception"><red><b>Nobody</b></red> can open containers on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                    <msg id="open.except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can open containers on ${name}, that will be shown when that happens:
+                        <br/><red>${msg}</red><br/><br/>
+                        <yellow>Exceptions:</yellow><br/>${exceptions}
+                    </msg>
+                </nobody>
+                <everybody>
+                    <enter>
+                        <msg id="no-exception"><green><b>Everybody</b></green> can enter on ${name}</msg>
+                        <msg id="except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can enter on ${name}
+                            <br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </enter>
+                    <pickup>
+                        <msg id="no-exception"><green><b>Everybody</b></green> can collect drops on ${name}</msg>
+                        <msg id="except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can collect drops on ${name}
+                            <br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </pickup>
+                    <pvp>
+                        <msg id="no-exception"><green><b>Everybody</b></green> can attack players on ${name}</msg>
+                        <msg id="except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can attack players on ${name}
+                            <br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </pvp>
+                    <pvc>
+                        <msg id="no-exception"><green><b>Everybody</b></green> can attack creatures on ${name}</msg>
+                        <msg id="except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can attack creatures on ${name}
+                            <br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </pvc>
+                    <modify>
+                        <msg id="no-exception"><green><b>Everybody</b></green> can modify ${name}</msg>
+                        <msg id="except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can modify ${name}
+                            <br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </modify>
+                    <msg id="click.no-exception"><green><b>Everybody</b></green> can click on things on ${name}</msg>
+                    <msg id="click.except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can click on things on ${name}
+                        <br/><br/>
+                        <yellow>Exceptions:</yellow><br/>${exceptions}
+                    </msg>
+                    <msg id="open.no-exception"><green><b>Everybody</b></green> can open containers on ${name}</msg>
+                    <msg id="open.except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can open containers on ${name}
+                        <br/><br/>
+                        <yellow>Exceptions:</yellow><br/>${exceptions}
+                    </msg>
+                </everybody>
                 <msg id="type-city">Type a city name</msg>
                 <msg id="not-claimed">You are not inside a plot</msg>
                 <msg id="not-found">No plot was found with ${search}</msg>

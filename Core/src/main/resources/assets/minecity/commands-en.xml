@@ -29,6 +29,9 @@
         <group id="city.deny.all" parent="city.deny" cmd="all">
             <desc>Prohibits everybody, including players who were directly allowed</desc>
         </group>
+        <group id="city.check" parent="city" cmd="check">
+            <desc>Shows details about permissions</desc>
+        </group>
         <group id="plot.allow" parent="plot" cmd="allow">
             <desc>Gives permission</desc>
         </group>
@@ -40,6 +43,9 @@
         </group>
         <group id="plot.deny.all" parent="plot.deny" cmd="all">
             <desc>Prohibits everybody, including players who were directly allowed</desc>
+        </group>
+        <group id="plot.check" parent="plot" cmd="check">
+            <desc>Shows details about permissions</desc>
         </group>
     </groups>
     <commands>
@@ -133,8 +139,31 @@
         </command>
 
         <!-- ========== City Permissions ========== -->
+        <!-- List permissions -->
+        <command id="city.perms.enter" parent="city.check" cmd="enter">
+            <desc>View who can enter the city</desc>
+        </command>
+        <command id="city.perms.click" parent="city.check" cmd="click">
+            <desc>View who can click blocks in the city</desc>
+        </command>
+        <command id="city.perms.pickup" parent="city.check" cmd="pickup">
+            <desc>View who can pickup dropped items in the city</desc>
+        </command>
+        <command id="city.perms.open" parent="city.check" cmd="open">
+            <desc>View who can open containers in the city</desc>
+        </command>
+        <command id="city.perms.pvp" parent="city.check" cmd="pvp">
+            <desc>View who can attack other players in the city</desc>
+        </command>
+        <command id="city.perms.pvc" parent="city.check" cmd="pvc">
+            <desc>View who can attack creatures in the city</desc>
+        </command>
+        <command id="city.perms.modify" parent="city.check" cmd="modify">
+            <desc>View who can do structural modifications to the city</desc>
+        </command>
+
         <!-- Default permissions -->
-        <command id="city.perms" parent="city" cmd="perms,permissions">
+        <command id="city.perms" parent="city" cmd="perms,permissions,perm">
             <desc>Displays all city permissions</desc>
         </command>
         <command id="city.allow.enter" parent="city.allow" cmd="enter">
@@ -155,6 +184,9 @@
         <command id="city.allow.pvc" parent="city.allow" cmd="pvc">
             <desc>Allows players to attack creatures</desc>
         </command>
+        <command id="city.allow.modify" parent="city.allow" cmd="modify">
+            <desc>Allows players to do structural modifications</desc>
+        </command>
         <command id="city.deny.enter" parent="city.deny" cmd="enter">
             <desc>Deny players to enter the city, will not affect players who are already inside.</desc>
         </command>
@@ -172,6 +204,9 @@
         </command>
         <command id="city.deny.pvc" parent="city.deny" cmd="pvc">
             <desc>Deny players to attack creatures</desc>
+        </command>
+        <command id="city.deny.modify" parent="city.deny" cmd="modify">
+            <desc>Stop players from doing structural modifications</desc>
         </command>
 
         <!-- All permissions -->
@@ -193,6 +228,9 @@
         <command id="city.allow.all.pvc" parent="city.allow.all" cmd="pvc">
             <desc>Allows everybody to attack creatures, including who were directly prohibited.</desc>
         </command>
+        <command id="city.allow.all.modify" parent="city.allow.all" cmd="modify">
+            <desc>Allows everybody to do structural modifications, including who were directly prohibited.</desc>
+        </command>
         <command id="city.deny.all.enter" parent="city.deny.all" cmd="enter">
             <desc>Prohibits everybody to enter the city, including who were directly allowed.</desc>
         </command>
@@ -211,10 +249,36 @@
         <command id="city.deny.all.pvc" parent="city.deny.all" cmd="pvc">
             <desc>Prohibits everybody to attack creatures. Will also prohibit who were directly allowed.</desc>
         </command>
+        <command id="city.deny.all.modify" parent="city.deny.all" cmd="modify">
+            <desc>Prohibits everybody from doing structural modifications, including who were directly allowed</desc>
+        </command>
 
         <!-- ========== Plot Permissions ========== -->
+        <!-- List permissions -->
+        <command id="plot.perms.enter" parent="plot.check" cmd="enter">
+            <desc>View who can enter the plot</desc>
+        </command>
+        <command id="plot.perms.click" parent="plot.check" cmd="click">
+            <desc>View who can click blocks in the plot</desc>
+        </command>
+        <command id="plot.perms.pickup" parent="plot.check" cmd="pickup">
+            <desc>View who can pickup dropped items in the plot</desc>
+        </command>
+        <command id="plot.perms.open" parent="plot.check" cmd="open">
+            <desc>View who can open containers in the plot</desc>
+        </command>
+        <command id="plot.perms.pvp" parent="plot.check" cmd="pvp">
+            <desc>View who can attack other players in the plot</desc>
+        </command>
+        <command id="plot.perms.pvc" parent="plot.check" cmd="pvc">
+            <desc>View who can attack creatures in the plot</desc>
+        </command>
+        <command id="plot.perms.modify" parent="plot.check" cmd="modify">
+            <desc>View who can do structural modifications to the plot</desc>
+        </command>
+
         <!-- Default permissions -->
-        <command id="plot.perms" parent="plot" cmd="perms,permissions">
+        <command id="plot.perms" parent="plot" cmd="perms,permissions,perm">
             <desc>Displays all plot permissions</desc>
         </command>
         <command id="plot.allow.enter" parent="plot.allow" cmd="enter">
@@ -235,6 +299,9 @@
         <command id="plot.allow.pvc" parent="plot.allow" cmd="pvc">
             <desc>Allows players to attack creatures</desc>
         </command>
+        <command id="plot.allow.modify" parent="plot.allow" cmd="modify">
+            <desc>Allows players to do structural modifications</desc>
+        </command>
         <command id="plot.deny.enter" parent="plot.deny" cmd="enter">
             <desc>Deny players to enter the plot, will not affect players who are already inside.</desc>
         </command>
@@ -252,6 +319,9 @@
         </command>
         <command id="plot.deny.pvc" parent="plot.deny" cmd="pvc">
             <desc>Deny players to attack creatures</desc>
+        </command>
+        <command id="plot.deny.modify" parent="plot.deny" cmd="modify">
+            <desc>Stop players from doing structural modifications</desc>
         </command>
 
         <!-- All permissions -->
@@ -273,6 +343,9 @@
         <command id="plot.allow.all.pvc" parent="plot.allow.all" cmd="pvc">
             <desc>Allows everybody to attack creatures, including who were directly prohibited.</desc>
         </command>
+        <command id="plot.allow.all.modify" parent="plot.allow.all" cmd="modify">
+            <desc>Allows everybody to do structural modifications, including who were directly prohibited.</desc>
+        </command>
         <command id="plot.deny.all.enter" parent="plot.deny.all" cmd="enter">
             <desc>Prohibits everybody to enter the plot, including who were directly allowed.</desc>
         </command>
@@ -290,6 +363,9 @@
         </command>
         <command id="plot.deny.all.pvc" parent="plot.deny.all" cmd="pvc">
             <desc>Prohibits everybody to attack creatures. Will also prohibit who were directly allowed.</desc>
+        </command>
+        <command id="plot.deny.all.modify" parent="plot.deny.all" cmd="modify">
+            <desc>Prohibits everybody from doing structural modifications, including who were directly allowed</desc>
         </command>
     </commands>
 </minecity-commands>

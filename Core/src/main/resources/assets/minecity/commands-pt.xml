@@ -29,6 +29,9 @@
         <group id="city.deny.all" parent="city.deny" cmd="todos">
             <desc>Aplica proibições a todos, incluindo jogadores que foram diretamente permitidos</desc>
         </group>
+        <group id="city.check" parent="city" cmd="ver,checar">
+            <desc>Mostra detalhes sobre as permissões</desc>
+        </group>
         <group id="plot.allow" parent="plot" cmd="permitir">
             <desc>Concede permissões</desc>
         </group>
@@ -40,6 +43,9 @@
         </group>
         <group id="plot.deny.all" parent="plot.deny" cmd="todos">
             <desc>Aplica proibições a todos, incluindo jogadores que foram diretamente permitidos</desc>
+        </group>
+        <group id="plot.check" parent="plot" cmd="ver,checar">
+            <desc>Mostra detalhes sobre as permissões</desc>
         </group>
     </groups>
     <commands>
@@ -133,8 +139,31 @@
         </command>
 
         <!-- ========== Permissões de Cidades ========== -->
+        <!-- Listar permissões -->
+        <command id="city.perms.enter" parent="city.check" cmd="entrar">
+            <desc>Ver quem tem permissão para entrar na cidade</desc>
+        </command>
+        <command id="city.perms.click" parent="city.check" cmd="clicar">
+            <desc>Ver quem pode clicar em blocos clicáveis na cidade</desc>
+        </command>
+        <command id="city.perms.pickup" parent="city.check" cmd="pegar">
+            <desc>Ver quem pode pegar itens soltos na cidade</desc>
+        </command>
+        <command id="city.perms.open" parent="city.check" cmd="abrir">
+            <desc>Ver quem pode abrir contêiners na cidade</desc>
+        </command>
+        <command id="city.perms.pvp" parent="city.check" cmd="pvp">
+            <desc>Ver quem pode atacar outros jogadnores na cidade</desc>
+        </command>
+        <command id="city.perms.pvc" parent="city.check" cmd="pvc">
+            <desc>Ver quem pode atacar criaturas na cidade</desc>
+        </command>
+        <command id="city.perms.modify" parent="city.check" cmd="modificar">
+            <desc>Ver quem pode fazer modificações estruturais na cidade</desc>
+        </command>
+
         <!-- Permissões padrões -->
-        <command id="city.perms" parent="city" cmd="perms,permissões">
+        <command id="city.perms" parent="city" cmd="perms,permissões,perm">
             <desc>Exibe todas as permissões da cidade</desc>
         </command>
         <command id="city.allow.enter" parent="city.allow" cmd="entrar">
@@ -155,6 +184,9 @@
         <command id="city.allow.pvc" parent="city.allow" cmd="pvc">
             <desc>Permite que jogadores ataquem criaturas</desc>
         </command>
+        <command id="city.allow.modify" parent="city.allow" cmd="modificar">
+            <desc>Permite que jogadores façam modificações estruturais na cidade</desc>
+        </command>
         <command id="city.deny.enter" parent="city.deny" cmd="entrar">
             <desc>Proíbe que jogadores entrem na cidade, não irá expulsar jogadores que já estão dentro.</desc>
         </command>
@@ -172,6 +204,9 @@
         </command>
         <command id="city.deny.pvc" parent="city.deny" cmd="pvc">
             <desc>Proíbe que jogadores ataquem criaturas</desc>
+        </command>
+        <command id="city.deny.modify" parent="city.deny" cmd="modificar">
+            <desc>Proíbe que jogadores façam modificações estruturais na cidade</desc>
         </command>
 
         <!-- Permissões para todos -->
@@ -193,6 +228,9 @@
         <command id="city.allow.all.pvc" parent="city.allow.all" cmd="pvc">
             <desc>Permite que todos ataquem criaturas, incluindo quem foi proibido diretamente.</desc>
         </command>
+        <command id="city.allow.all.modify" parent="city.allow.all" cmd="modificar">
+            <desc>Permite que todos façam modificações estruturais na cidade, inclusive quem foi proibido diretamente</desc>
+        </command>
         <command id="city.deny.all.enter" parent="city.deny.all" cmd="entrar">
             <desc>Proíbe que todos entrem na cidade, incluindo quem foi permitido diretamente.</desc>
         </command>
@@ -211,10 +249,36 @@
         <command id="city.deny.all.pvc" parent="city.deny.all" cmd="pvc">
             <desc>Proíbe que todos ataquem criaturas. Também irá proibir quem foi permitido diretamente.</desc>
         </command>
+        <command id="city.deny.all.modify" parent="city.deny.all" cmd="modificar">
+            <desc>Proíbe que todos façam modificações estruturais na cidade, inclusive quem foi permitido diretamente</desc>
+        </command>
 
         <!-- ========== Permissões de lotes ========== -->
+        <!-- Listar permissões -->
+        <command id="plot.perms.enter" parent="plot.check" cmd="entrar">
+            <desc>Ver quem tem permissão para entrar no lote</desc>
+        </command>
+        <command id="plot.perms.click" parent="plot.check" cmd="clicar">
+            <desc>Ver quem pode clicar em blocos clicáveis no lote</desc>
+        </command>
+        <command id="plot.perms.pickup" parent="plot.check" cmd="pegar">
+            <desc>Ver quem pode pegar itens soltos no lote</desc>
+        </command>
+        <command id="plot.perms.open" parent="plot.check" cmd="abrir">
+            <desc>Ver quem pode abrir contêiners no lote</desc>
+        </command>
+        <command id="plot.perms.pvp" parent="plot.check" cmd="pvp">
+            <desc>Ver quem pode atacar outros jogadnores no lote</desc>
+        </command>
+        <command id="plot.perms.pvc" parent="plot.check" cmd="pvc">
+            <desc>Ver quem pode atacar criaturas no lote</desc>
+        </command>
+        <command id="plot.perms.modify" parent="plot.check" cmd="modificar">
+            <desc>Ver quem pode fazer modificações estruturais no lote</desc>
+        </command>
+
         <!-- Permissões padrões -->
-        <command id="plot.perms" parent="plot" cmd="perms,permissões">
+        <command id="plot.perms" parent="plot" cmd="perms,permissões,perm">
             <desc>Exibe todas as permissões do lote</desc>
         </command>
         <command id="plot.allow.enter" parent="plot.allow" cmd="entrar">
@@ -235,6 +299,9 @@
         <command id="plot.allow.pvc" parent="plot.allow" cmd="pvc">
             <desc>Permite que jogadores ataquem animais</desc>
         </command>
+        <command id="plot.allow.modify" parent="plot.allow" cmd="modificar">
+            <desc>Permite que jogadores façam modificações estruturais no lote</desc>
+        </command>
         <command id="plot.deny.enter" parent="plot.deny" cmd="entrar">
             <desc>Proíbe que jogadores entrem no lote, não irá expulsar quem já estiver dentro.</desc>
         </command>
@@ -252,6 +319,9 @@
         </command>
         <command id="plot.deny.pvc" parent="plot.deny" cmd="pvc">
             <desc>Proíbe que jogadores ataquem criaturas</desc>
+        </command>
+        <command id="plot.deny.modify" parent="plot.deny" cmd="modificar">
+            <desc>Proíbe que jogadores façam modificações estruturais no lote</desc>
         </command>
 
         <!-- Permissões para todos -->
@@ -273,6 +343,9 @@
         <command id="plot.allow.all.pvc" parent="plot.allow.all" cmd="pvc">
             <desc>Permite que todos ataquem criaturas, incluindo quem foi proibido diretamente.</desc>
         </command>
+        <command id="plot.allow.all.modify" parent="plot.allow.all" cmd="modificar">
+            <desc>Permite que todos façam modificações estruturais no lote, inclusive quem foi proibido diretamente</desc>
+        </command>
         <command id="plot.deny.all.enter" parent="plot.deny.all" cmd="entrar">
             <desc>Proibe que todos entrem no lote, incluindo quem foi permitido diretamente. Não irá expulsar quem já estiver dentro</desc>
         </command>
@@ -290,6 +363,9 @@
         </command>
         <command id="plot.deny.all.pvc" parent="plot.deny.all" cmd="pvc">
             <desc>Proíbe que todos ataquem criaturas. Também irá proibir quem foi diretamente permitido.</desc>
+        </command>
+        <command id="plot.deny.all.modify" parent="plot.deny.all" cmd="modificar">
+            <desc>Proíbe que todos façam modificações estruturais no lote, inclusive quem foi permitido diretamente</desc>
         </command>
     </commands>
 </minecity-commands>
