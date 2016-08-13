@@ -86,7 +86,7 @@ public class MineCityBukkit implements Server
 
     public ChunkPos chunk(Chunk chunk)
     {
-        return new ChunkPos(world(chunk.getWorld()), chunk.getX(), chunk.getX());
+        return new ChunkPos(world(chunk.getWorld()), chunk.getX(), chunk.getZ());
     }
 
     public BlockPos blockPos(Location location)

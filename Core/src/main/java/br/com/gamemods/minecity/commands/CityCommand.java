@@ -25,6 +25,8 @@ import static br.com.gamemods.minecity.api.StringUtil.identity;
 
 public class CityCommand
 {
+    private static final boolean ENABLE_CACHE = true;
+
     @NotNull
     private final MineCity mineCity;
 
@@ -613,7 +615,7 @@ public class CityCommand
                 }
 
                 ChunkPos pos = new ChunkPos(chunk.world, chunk.x + x, chunk.z + z);
-                MapCache cache = mineCity.mapCache.get(pos);
+                MapCache cache = ENABLE_CACHE? mineCity.mapCache.get(pos) : null;
                 if(cache != null)
                 {
                     cache.used = time;
@@ -660,12 +662,15 @@ public class CityCommand
                         try
                         {
                             ClaimedChunk dbClaim = mineCity.dataSource.getCityChunk(pos);
-                            if(dbClaim == null)
-                                mineCity.mapCache.put(pos, new MapCache(LegacyFormat.BLACK, unclaimed, null));
-                            else
+                            if(ENABLE_CACHE)
                             {
-                                City city = dbClaim.getCity().orElseGet(Inconsistency::getInconsistentCity);
-                                mineCity.mapCache.put(pos, new MapCache(city.getColor(), dbClaim.reserve?reserved:claimed, city));
+                                if(dbClaim == null)
+                                    mineCity.mapCache.put(pos, new MapCache(LegacyFormat.BLACK, unclaimed, null));
+                                else
+                                {
+                                    City city = dbClaim.getCity().orElseGet(Inconsistency::getInconsistentCity);
+                                    mineCity.mapCache.put(pos, new MapCache(city.getColor(), dbClaim.reserve?reserved:claimed, city));
+                                }
                             }
                         }
                         catch(DataSourceException e)
@@ -702,7 +707,8 @@ public class CityCommand
                     char c = cc.reserve? reserved : plots == 0? claimed : plots == 1? oneLot : multipleLots;
                     sb.append(c);
 
-                    mineCity.mapCache.put(pos, new MapCache(current, c, city));
+                    if(ENABLE_CACHE)
+                        mineCity.mapCache.put(pos, new MapCache(current, c, city));
                 }
                 else
                 {
@@ -714,7 +720,8 @@ public class CityCommand
                         sb.append(current = LegacyFormat.BLACK);
                     sb.append(unclaimed);
 
-                    mineCity.mapCache.put(pos, new MapCache(current, unclaimed, null));
+                    if(ENABLE_CACHE)
+                        mineCity.mapCache.put(pos, new MapCache(current, unclaimed, null));
                 }
             }
 
@@ -755,9 +762,12 @@ public class CityCommand
 
         cmd.sender.send(messages);
 
-        long cut = time - 5*60*1000L;
-        mineCity.mapCache.entrySet().parallelStream().filter(e-> e.getValue().used <= cut)
-                .map(Map.Entry::getKey).forEach(mineCity.mapCache::remove);
+        if(ENABLE_CACHE)
+        {
+            long cut = time - 5*60*1000L;
+            mineCity.mapCache.entrySet().parallelStream().filter(e -> e.getValue().used <= cut)
+                    .map(Map.Entry::getKey).forEach(mineCity.mapCache::remove);
+        }
 
         return CommandResult.success();
     }

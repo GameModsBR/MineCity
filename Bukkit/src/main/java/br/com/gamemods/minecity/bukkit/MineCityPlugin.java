@@ -5,9 +5,12 @@ import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -17,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -141,6 +145,9 @@ public class MineCityPlugin extends JavaPlugin
                         }
                     }
             );
+
+            getServer().getWorlds().stream().map(World::getLoadedChunks).flatMap(Arrays::stream).map(instance::chunk)
+                    .forEachOrdered((DBConsumer< ChunkPos>) instance.mineCity::loadChunk);
 
             reloadTask = getScheduler().runTaskTimer(this, instance.mineCity::reloadQueuedChunk, 1, 1);
         }
