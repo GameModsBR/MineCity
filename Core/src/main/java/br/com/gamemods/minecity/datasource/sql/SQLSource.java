@@ -143,7 +143,7 @@ public class SQLSource implements IDataSource
                 String displayName = result.getString(12);
 
                 String str = result.getString("perm_denial_message");
-                Message message = str == null? null : new Message("", str);
+                Message message = str == null? null : new Message("", "${msg}", new Object[]{"msg",str});
                 id = result.getInt("city_id");
                 pst.close();
 

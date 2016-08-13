@@ -966,7 +966,7 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                         if(str == null)
                             message = holder.getDefaultMessage();
                         else
-                            message = new Message("", str);
+                            message = new Message("", "${msg}", new Object[]{"msg", str});
 
                         map.put(PermissionFlag.valueOf(result.getString(1)), message);
                     }
@@ -991,7 +991,7 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                         if(str == null)
                             message = holder.getDefaultMessage();
                         else
-                            message = new Message("", str);
+                            message = new Message("", "${msg}", new Object[]{"msg", str});
 
                         map.put(PermissionFlag.valueOf(result.getString(1)), message);
                     }
@@ -1016,7 +1016,7 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                         if(str == null)
                             message = holder.getDefaultMessage();
                         else
-                            message = new Message("", str);
+                            message = new Message("", "${msg}", new Object[]{"msg", str});
 
                         map.put(PermissionFlag.valueOf(result.getString(1)), message);
                     }
@@ -1295,7 +1295,7 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
             if(str == null)
                 message = defaultMessage;
             else
-                message = new Message("", str);
+                message = new Message("", "${msg}", new Object[]{"msg", str});
 
             subMap.put(identity, Optional.of(message));
         }
