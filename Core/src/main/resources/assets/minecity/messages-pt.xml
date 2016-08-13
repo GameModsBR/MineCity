@@ -104,227 +104,223 @@
                 <msg id="invalid">O nome ${name} é inválido, tente um nome maior</msg>
                 <msg id="same">A cidade This city is already named ${name}</msg>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                <msg id="no-permission">You don't have permission to rename the city ${name}</msg>
-                <msg id="success">The city ${old} is now named ${new}</msg>
+                <msg id="no-permission">Você não tem permissão para renomear a cidade ${name}</msg>
+                <msg id="success">A cidade ${old} agora se chama ${new}</msg>
             </rename>
             <transfer>
-                <msg id="arg.player">player</msg>
+                <msg id="arg.player">jogador</msg>
                 <player>
-                    <msg id="empty">
-                        This will transfer this city to an other player, type the player name that will be the new owner
-                    </msg>
-                    <msg id="space-in-name">
-                        This will transfer this city to an other player, type the player name that will be the new owner, player names does not have spaces...
-                    </msg>
+                    <msg id="empty">Isto irá transferir a cidade para um outro jogador, digite o nome do jogador que irá ser o novo dono</msg>
+                    <msg id="space-in-name">Isto irá transferir esta cidade para um outro jogador, digite o nome do jogador que será o novo dono, nomes de jogadores não possuem espaços...</msg>
                     <msg id="not-found">The player ${name} was not found</msg>
                 </player>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                <msg id="already-owner">The city ${name} is already owned by ${owner}</msg>
-                <msg id="adm-permission">Only the server admins can transfer the city ${name}</msg>
-                <msg id="no-permission">Only ${owner} can transfer the city ${name}</msg>
-                <msg id="success">The city ${name} is now owned by ${owner}</msg>
+                <msg id="already-owner">A cidade ${name} já é de ${owner}</msg>
+                <msg id="adm-permission">Apenas os administradores do servidor podem transferir a cidade ${name}</msg>
+                <msg id="no-permission">Apenas ${owner} pode transferir a cidade ${name}</msg>
+                <msg id="success">A cidade ${name} agora é de ${owner}</msg>
             </transfer>
             <setspawn>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                <msg id="no-permission">You are not allowed to change the ${name}'s spawn</msg>
-                <msg id="already">The spawn is already set to that position</msg>
-                <msg id="success">The ${name}'s spawn was changed successfully</msg>
+                <msg id="no-permission">Você não possui permissão para alterar o ponto de entrada de ${name}</msg>
+                <msg id="already">Esta posição já é o ponto de entrada da cidade</msg>
+                <msg id="success">O ponto de entrada de ${name} foi alterado com sucess</msg>
             </setspawn>
             <map>
                 <arg>
-                    <msg id="big">big</msg>
-                    <msg id="big.option.big">big</msg>
+                    <msg id="big">grande</msg>
+                    <msg id="big.option.big">grande</msg>
                 </arg>
-                <msg id="header"><darkgray>---------------<gray>-=[Map]=-</gray>--------------¬-<gray>-=[City Names]=-</gray></darkgray></msg>
+                <msg id="header"><darkgray>---------------<gray>-=[Mapa]=-</gray>-------------¬-<gray>-=[Cidades]=----</gray></darkgray></msg>
                 <you>
                     <city>
-                        <msg id="no-plot"><red>That's you inside ${city}</red></msg>
-                        <msg id="one-plot"><red>That's you inside ${city}</red><br/><br/>You are near ${plot}</msg>
-                        <msg id="reserved"><red>That's you!</red><br/><br/><i>This chunk is reserved to ${city}</i></msg>
-                        <msg id="nature"><red>That's you!</red></msg>
-                        <msg id="many-plots"><red>That's you inside ${city}</red><br/><br/>You are near:<br/> - ${plots}</msg>
+                        <msg id="no-plot"><red>Isto é você dentro de ${city}</red></msg>
+                        <msg id="one-plot"><red>Isto é você dentro de ${city}</red><br/><br/>Você está perto de ${plot}</msg>
+                        <msg id="reserved"><red>Isto é você!</red><br/><br/><i>Este chunk está reservado para ${city}</i></msg>
+                        <msg id="nature"><red>Isto é você!</red></msg>
+                        <msg id="many-plots"><red>Isto é você dentro de ${city}</red><br/><br/>Você está perto de:<br/> - ${plots}</msg>
                         <msg id="many-plots-join"><br/><![CDATA[ - ]]></msg>
                     </city>
                 </you>
             </map>
             <deny>
                 <all>
-                    <msg id="enter.arg.reason">reason</msg>
-                    <msg id="click.arg.reason">reason</msg>
-                    <msg id="pickup.arg.reason">reason</msg>
-                    <msg id="open.arg.reason">reason</msg>
-                    <msg id="pvp.arg.reason">reason</msg>
-                    <msg id="pvc.arg.reason">reason</msg>
+                    <msg id="enter.arg.reason">motivo</msg>
+                    <msg id="click.arg.reason">motivo</msg>
+                    <msg id="pickup.arg.reason">motivo</msg>
+                    <msg id="open.arg.reason">motivo</msg>
+                    <msg id="pvp.arg.reason">motivo</msg>
+                    <msg id="pvc.arg.reason">motivo</msg>
                 </all>
                 <enter>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
-                        <msg id="reason">reason</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
                     </arg>
                 </enter>
-                <msg id="click.arg.player-or-city">player or city</msg>
-                <msg id="click.arg.group-name">group name</msg>
-                <msg id="click.arg.reason">reason</msg>
+                <msg id="click.arg.player-or-city">jogador ou cidade</msg>
+                <msg id="click.arg.group-name">grupo</msg>
+                <msg id="click.arg.reason">motivo</msg>
                 <pickup>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
-                        <msg id="reason">reason</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
                     </arg>
                 </pickup>
-                <msg id="open.arg.player-or-city">player or city</msg>
-                <msg id="open.arg.group-name">group name</msg>
-                <msg id="open.arg.reason">reason</msg>
+                <msg id="open.arg.player-or-city">jogador ou cidade</msg>
+                <msg id="open.arg.group-name">grupo</msg>
+                <msg id="open.arg.reason">motivo</msg>
                 <pvp>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
-                        <msg id="reason">reason</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
                     </arg>
                 </pvp>
                 <pvc>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
-                        <msg id="reason">reason</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
                     </arg>
                 </pvc>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                <msg id="no-permission">You are not allowed to change the ${city}'s permissions</msg>
-                <msg id="got-city-expected-player">You've typed a city name, type a player name instead to allow a specific player or type a group name after the city name to prohibit that specific group. Do not use spaces in the names.</msg>
-                <msg id="player-not-found">No player was found with name ${name}</msg>
-                <msg id="group-not-found">The city ${city} does not have a group named ${group}</msg>
-                <msg id="city-not-found">No city was found with name ${name}</msg>
-                <msg id="success.player">The player ${player} was prohibited successfully</msg>
-                <msg id="success.group">The permission was granted to the group ${group} from ${home} successfully</msg>
-                <msg id="success">The permission was denied by default successfully</msg>
+                <msg id="no-permission">Você não está autorizado a mudar a permissões de ${city}</msg>
+                <msg id="got-city-expected-player">Você digitou um nome de cidade, digite um nome de jogador ao invés disso para proibir um jogador específico ou digite o nome de um grupo após o nome da cidade para proibir o grupo diretamente. <b>Não use espaços nos nomes.</b></msg>
+                <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
+                <msg id="group-not-found">A cidade ${city} não tem um grupo chamado ${group}</msg>
+                <msg id="city-not-found">Nenhuma cidade foi encontrada com o nome ${name}</msg>
+                <msg id="success.player">O jogador ${player} foi proibido com sucesso</msg>
+                <msg id="success.group">O grupo ${group} de ${home} foi proibido com sucesso</msg>
+                <msg id="success">A permissão foi negada por padrão com sucesso</msg>
             </deny>
             <allow>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                <msg id="no-permission">You are not allowed to change the ${city}'s permissions</msg>
-                <msg id="got-city-expected-player">You've typed a city name, type a player name instead to allow a specific player or type a group name after the city name to allow that specific group. <b>Do not use spaces in the names.</b></msg>
-                <msg id="player-not-found">No player was found with name ${name}</msg>
-                <msg id="too-many-args">You've typed too many arguments, you can't give reason messages when allowing somebody.</msg>
-                <msg id="group-not-found">The city ${city} does not have a group named ${group}</msg>
-                <msg id="city-not-found">No city was found with name ${name}</msg>
-                <msg id="success">The permission was granted by default successfully</msg>
-                <msg id="success.player">The permission was granted to ${player} successfully</msg>
-                <msg id="success.group">The permission was granted to the group ${group} from ${home} successfully</msg>
-                <msg id="all.args.count">This command does not expect extra arguments, are you sure that you want to allow everybody?</msg>
+                <msg id="no-permission">Você não está autoriazado a mudar as permissões de ${city}</msg>
+                <msg id="got-city-expected-player">Você digitou um nome de cidade, digite um nome de jogador ao invpes disso para permitir um jogador específico ou digite um nome de grupo após o nome da cidade para permitir o grupo diretamente. <b>Não use espaço nos nomes.</b></msg>
+                <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
+                <msg id="too-many-args">Você digitou argumentos demais, você não pode especificar uma razão ao permitir alguém.</msg>
+                <msg id="group-not-found">A cidade ${city} não tem um grupo chamado ${group}</msg>
+                <msg id="city-not-found">Nenhuma cidade foi encontrada com o nome ${name}</msg>
+                <msg id="success">A permissão foi concedida por padrão com sucesso</msg>
+                <msg id="success.player">A permissão foi concedida para ${player} com sucesso</msg>
+                <msg id="success.group">A permissão foi concedida para o grupo ${group} de ${home} com sucesso</msg>
+                <msg id="all.args.count">Este comeando não aceita argumentos extras, você tem certeza que quer dar permissão para todos?</msg>
                 <enter>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
                     </arg>
                 </enter>
-                <msg id="click.arg.player-or-city">player or city</msg>
-                <msg id="click.arg.group-name">group name</msg>
+                <msg id="click.arg.player-or-city">jogador ou cidade</msg>
+                <msg id="click.arg.group-name">grupo</msg>
                 <pickup>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
                     </arg>
                 </pickup>
-                <msg id="open.arg.player-or-city">player or city</msg>
-                <msg id="open.arg.group-name">group name</msg>
+                <msg id="open.arg.player-or-city">jogador ou cidade</msg>
+                <msg id="open.arg.group-name">grupo</msg>
                 <pvp>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
                     </arg>
                 </pvp>
                 <pvc>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
                     </arg>
                 </pvc>
             </allow>
         </city>
         <group>
             <create>
-                <msg id="arg.group-name">group-name</msg>
-                <msg id="empty">You need to type a name</msg>
-                <msg id="invalid">The name ${name} is invalid, try a bigger name</msg>
+                <msg id="arg.group-name">grupo</msg>
+                <msg id="empty">Você precisa digitar um nome</msg>
+                <msg id="invalid">O nome ${name} é inválido, tente um nome maior</msg>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                <msg id="no-permission">You don't have permission to create groups in name of ${city}</msg>
-                <msg id="conflict">The name ${name} conflicts with ${conflict}</msg>
-                <msg id="success">The group ${group} were created successfully</msg>
+                <msg id="no-permission">Você não tem permissão para criar grupos na cidade ${city}</msg>
+                <msg id="conflict">O nome ${name} conflita com ${conflict}</msg>
+                <msg id="success">O grupo ${group} foi criado com sucesso</msg>
             </create>
             <add>
                 <arg>
-                    <msg id="player">player</msg>
-                    <msg id="group">group</msg>
+                    <msg id="player">jogador</msg>
+                    <msg id="group">grupo</msg>
                 </arg>
-                <msg id="empty.player">Type a player name</msg>
-                <msg id="empty.group">Type a group name</msg>
+                <msg id="empty.player">Digite um nome de jogador</msg>
+                <msg id="empty.group">Digite um nome de grupo</msg>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                <msg id="no-permission">You don't have permission to add players to groups from ${city}</msg>
-                <msg id="group-not-found">The group ${group} was not found in ${city}</msg>
-                <msg id="player-not-found">No player was found with name ${name}</msg>
-                <msg id="already-member">The player ${name} is already part of the group ${group}</msg>
-                <msg id="success">The player ${player} is now part of the group ${group}</msg>
+                <msg id="no-permission">Você não tem permissão para adicionar jogadores em grupos de ${city}</msg>
+                <msg id="group-not-found">O grupo ${group} não foi encontrado na cidade ${city}</msg>
+                <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
+                <msg id="already-member">O jogador ${name} já faz parte do grupo ${group}</msg>
+                <msg id="success">O jogador ${player} agora faz parte do grupo ${group}</msg>
                 <manager>
                     <arg>
-                        <msg id="player">player</msg>
-                        <msg id="group">group</msg>
+                        <msg id="player">jogador</msg>
+                        <msg id="group">grupo</msg>
                     </arg>
-                    <msg id="empty.player">Type a player name</msg>
-                    <msg id="empty.group">Type a group name</msg>
+                    <msg id="empty.player">Digite o nome do jogador</msg>
+                    <msg id="empty.group">Digite o nome do grupo</msg>
                     <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                    <msg id="group-not-found">The group ${group} was not found in ${city}</msg>
-                    <msg id="no-permission">You don't have permission to add managers to groups from ${city}</msg>
-                    <msg id="player-not-found">No player was found with name ${name}</msg>
-                    <msg id="already-manager">The player ${name} is already a manager of the group ${group}</msg>
-                    <msg id="success">The player ${player} is now a manager of the group ${group}</msg>
+                    <msg id="group-not-found">O grupo ${group} não foi encontrado na cidade ${city}</msg>
+                    <msg id="no-permission">Você não tem permissão para adicionar gerentes em grupos de ${city}</msg>
+                    <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
+                    <msg id="already-manager">O jogador ${name} já é um gerente do grupo ${group}</msg>
+                    <msg id="success">O jogador ${player} agora é um gerente do grupo ${group}</msg>
                 </manager>
             </add>
             <remove>
                 <arg>
-                    <msg id="player">player</msg>
-                    <msg id="group">group</msg>
+                    <msg id="player">jogador</msg>
+                    <msg id="group">grupo</msg>
                 </arg>
-                <msg id="empty.player">Type a player name</msg>
-                <msg id="empty.group">Type a group name</msg>
+                <msg id="empty.player">Digite um nome de jogador</msg>
+                <msg id="empty.group">Digite um nome de grupo</msg>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                <msg id="no-permission">You don't have permission to remove players from groups from ${city}</msg>
-                <msg id="group-not-found">The group ${group} was not found in ${city}</msg>
-                <msg id="player-not-found">No player was found with name ${name}</msg>
-                <msg id="not-member">The player ${name} is not a member of the group ${group}</msg>
-                <msg id="success">The player ${player} is no longer part of the group ${group}</msg>
+                <msg id="no-permission">Você não tem permissão para remover jogadores de grupos de ${city}</msg>
+                <msg id="group-not-found">O grupo ${group} não foi encontrado em ${city}</msg>
+                <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
+                <msg id="not-member">O jogador ${name} não é um membro do grupo ${group}</msg>
+                <msg id="success">O jogador ${player} não faz mais parte do grupo ${group}</msg>
                 <manager>
                     <arg>
-                        <msg id="player">player</msg>
-                        <msg id="group">group</msg>
+                        <msg id="player">jogador</msg>
+                        <msg id="group">grupo</msg>
                     </arg>
-                    <msg id="empty.player">Type a player name</msg>
-                    <msg id="empty.group">Type a group name</msg>
+                    <msg id="empty.player">Digite um nome de jogador</msg>
+                    <msg id="empty.group">Digite um nome de grupo</msg>
                     <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                    <msg id="group-not-found">The group ${group} was not found in ${city}</msg>
-                    <msg id="no-permission">You don't have permission to demote players from groups from ${city}</msg>
-                    <msg id="player-not-found">No player was found with name ${name}</msg>
-                    <msg id="not-manager">The player ${name} is not a manager of the group ${group}</msg>
-                    <msg id="success">The player ${player} is no longer a manager of the group ${group}</msg>
+                    <msg id="group-not-found">O grupo ${group} não foi encontrado em ${city}</msg>
+                    <msg id="no-permission">Você não tem permissão para rebaixar jogadores em grupos de ${city}</msg>
+                    <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
+                    <msg id="not-manager">O jogador ${name} não é um gerente do grupo ${group}</msg>
+                    <msg id="success">O jogador ${player} não é mais um gerente do grupo ${group}</msg>
                 </manager>
             </remove>
             <list>
-                <msg id="arg.city-name">city</msg>
-                <msg id="city-not-found">The city ${city} was not found</msg>
+                <msg id="arg.city-name">cidade</msg>
+                <msg id="city-not-found">A cidade ${city} não foi encontrada</msg>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                <msg id="success">The city ${city} contains ${count} groups: ${groups}</msg>
+                <msg id="success">A cidade ${city} contém ${count} grupos: ${groups}</msg>
                 <msg id="group.join"><![CDATA[, ]]></msg>
                 <msg id="group"><hover>
                     <tooltip>${name}<br/>${members}</tooltip>
                     <click>
-                        <run cmd="/group info ${home.compact} ${name}"/>
+                        <run cmd="/grupo info ${home.compact} ${name}"/>
                         <reset>
-                            ${name} (${size} members)
+                            ${name} (${size} membros)
                         </reset>
                     </click>
                 </hover></msg>
                 <msg id="player"><click>
-                    <run cmd="city player ${name}" />
+                    <run cmd="/cidade jogador ${name}" />
                     <reset>
                         ${name}
                     </reset>
@@ -332,21 +328,21 @@
                 <msg id="entity"><i>${name}</i></msg>
                 <msg id="member"><i>${name}</i></msg>
                 <msg id="member.join"><![CDATA[, ]]></msg>
-                <msg id="empty"><gray><i>This group is empty</i></gray></msg>
-                <msg id="no-groups">The city ${city} does not have groups</msg>
+                <msg id="empty"><gray><i>Este grupo está vazio</i></gray></msg>
+                <msg id="no-groups">A cidade ${city} não possui grupos</msg>
             </list>
             <info>
                 <arg>
-                    <msg id="city">city</msg>
-                    <msg id="group-name">group-name</msg>
+                    <msg id="city">cidade</msg>
+                    <msg id="group-name">grupo</msg>
                 </arg>
-                <msg id="city-not-found">The city ${city} was not found</msg>
+                <msg id="city-not-found">A cidade ${city} não foi encontrada</msg>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                <msg id="no-group">Type a group name</msg>
-                <msg id="group-not-found">The city ${city} does not contains a group called ${group}</msg>
-                <msg id="success">Managers: ${managers}<br/><br/>Members: ${members}</msg>
+                <msg id="no-group">Digite o nome de um grupo</msg>
+                <msg id="group-not-found">A cidade ${city} não contém um grupo chamado ${group}</msg>
+                <msg id="success">Gerentes: ${managers}<br/><br/>Membros: ${members}</msg>
                 <msg id="player"><click>
-                    <run cmd="city player ${name}" />
+                    <run cmd="/cidade jogador ${name}" />
                     <reset>
                         ${name}
                     </reset>
@@ -354,12 +350,12 @@
                 <msg id="entity"><i>${name}</i></msg>
                 <msg id="member"><i>${name}</i></msg>
                 <msg id="join"><![CDATA[, ]]></msg>
-                <msg id="empty"><i>This group is empty</i></msg>
+                <msg id="empty"><i>Este grupo está vazio</i></msg>
                 <managers>
-                    <msg id="mayor">This group is managed by the mayor ${mayor}</msg>
-                    <msg id="empty">This group is managed by the server administrators</msg>
+                    <msg id="mayor">Este grupo é gerenciado pelo prefeito ${mayor}</msg>
+                    <msg id="empty">Este grupo é gerenciado pelos administradores do servidor</msg>
                     <msg id="player"><click>
-                        <run cmd="city player ${name}" />
+                        <run cmd="/cidade jogador ${name}" />
                         <reset>
                             ${name}
                         </reset>
@@ -369,64 +365,64 @@
             </info>
             <delete>
                 <arg>
-                    <msg id="city">city</msg>
-                    <msg id="group-name">group-name</msg>
+                    <msg id="city">cidade</msg>
+                    <msg id="group-name">grupo</msg>
                 </arg>
-                <msg id="city-not-found">The city ${city} was not found</msg>
+                <msg id="city-not-found">A cidade ${city} não foi encontrada</msg>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                <msg id="no-group">Type a group name</msg>
-                <msg id="group-not-found">The city ${city} does not contains a group called ${group}</msg>
-                <msg id="no-permission">You don't have permission to delete groups from ${city}</msg>
+                <msg id="no-group">Digite o nome de um grupo</msg>
+                <msg id="group-not-found">A cidade ${city} não possui grupo chamado ${group}</msg>
+                <msg id="no-permission">Você não tem permissão para excluir grupos de ${city}</msg>
                 <msg id="confirm">
-                    Are you sure that you want to delete the group ${group} from city ${city}? It contains ${count} members: ${members}<br/><br/>
-                    If you are sure, type /group confirm ${confirm}
+                    Você tem certeza que você quer excluir o grupo ${group} da cidade ${city}? Ele possui ${count} membros: ${members}<br/><br/>
+                    Se você tiver certeza, digite /grupo confirmar ${confirm}
                 </msg>
-                <msg id="success">The group ${group} from ${city} was deleted successfully</msg>
+                <msg id="success">O grupo ${group} de ${city} foi exluído com sucesso</msg>
             </delete>
         </group>
         <confirm>
-            <msg id="arg.confirmation-code">confirmation-code</msg>
-            <msg id="args">Type the confirmation code to confirm the action or just ignore it if you don't want to continue.</msg>
-            <msg id="invalid">You've typed an incorrect code, if you want to abort the operation just don't type the /confirm command.</msg>
-            <msg id="expired"><darkred>MineCity> </darkred><red>The action were not confirmed and the confirmation code has expired.</red></msg>
-            <msg id="not-pending">You don't have any pending confirmation</msg>
+            <msg id="arg.confirmation-code">código-de-confirmação</msg>
+            <msg id="args">Digite o código de confirmação para confirmar a ação ou apenas ignore se você não quiser mais continuar.</msg>
+            <msg id="invalid">Você digitou um código incorreto, se você quiser abortar a operção basta não digitar o comando de confirmação.</msg>
+            <msg id="expired"><darkred>MineCity> </darkred><red>A ação não foi confirmada a tempo e o código de confirmação expirou.</red></msg>
+            <msg id="not-pending">Você não tem nenhum código de confirmação pendente</msg>
         </confirm>
         <plot>
             <list>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                <msg id="not-found">No city were found named ${name}</msg>
-                <msg id="no-plots">The city ${city} does not have plots.</msg>
-                <msg id="header"><green>---<yellow>-=[Plots at ${city}]=-</yellow>---</green></msg>
+                <msg id="not-found">Nenhuma cidade foi encontrada com o nome ${name}</msg>
+                <msg id="no-plots">A cidade ${city} não possui lotes.</msg>
+                <msg id="header"><green>---<yellow>-=[Lotes em ${city}]=-</yellow>---</green></msg>
                 <msg id="plot"><darkgray><![CDATA[ * ]]></darkgray><white>${plot}</white> <gray>${size-x}x${size-z}x${size-y} ~${owner}</gray></msg>
                 <footer>
                     <msg id="one-page">
-                        <green>Page <gold>1</gold>/<gold>1</gold>
+                        <green>Página <gold>1</gold>/<gold>1</gold>
                             <darkgreen>---</darkgreen>
-                            Tip: Type <click>
-                                <suggest cmd='/city go '/>
+                            Dica: Digite <click>
+                                <suggest cmd='/cidade ir '/>
                                 <hover>
-                                    <tooltip><gold>/city go</gold></tooltip>
-                                    <gold>/city go</gold>
+                                    <tooltip><gold>/cidade ir</gold></tooltip>
+                                    <gold>/cidade ir</gold>
                                 </hover>
-                            </click> to go to the city
+                            </click> para ir para a cidade
                         </green>
                     </msg>
                     <msg id="last-page">
-                        <green>Page <gold>${page}</gold>/<gold>${page}</gold>
+                        <green>Página <gold>${page}</gold>/<gold>${page}</gold>
                             <darkgreen>---</darkgreen>
-                            Tip: Type <click>
-                            <suggest cmd='/city go '/>
+                            Dica: Digite <click>
+                            <suggest cmd='/cidade ir '/>
                             <hover>
-                                <tooltip><gold>/city go</gold></tooltip>
-                                <gold>/city go</gold>
+                                <tooltip><gold>/cidade ir</gold></tooltip>
+                                <gold>/cidade ir</gold>
                             </hover>
-                        </click> to go to the city
+                        </click> para ir para uma cidade
                         </green>
                     </msg>
                     <msg id="more-pages">
-                        <green>Page <gold>${page}</gold>/<gold>${total}</gold>
+                        <green>Página <gold>${page}</gold>/<gold>${total}</gold>
                             <darkgreen>---</darkgreen>
-                            Next page: <hover>
+                            Próxima página: <hover>
                             <tooltip><gold>${next-page}</gold></tooltip>
                             <click>
                                 <suggest cmd="${next-page}"/>
@@ -437,181 +433,189 @@
                 </footer>
             </list>
             <create>
-                <msg id="arg.plot-name">plot-name</msg>
-                <msg id="no-selection">Select the plot area and then execute this command again.</msg>
-                <msg id="name-too-short">Please type a bigger name</msg>
+                <msg id="arg.plot-name">nome-do-lote</msg>
+                <msg id="no-selection">Selecione a área do lote e execute este comando novamente.</msg>
+                <msg id="name-too-short">Por favor digite um nome maior</msg>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                <msg id="no-permission">You don't have permission to create plots inside ${city}</msg>
-                <msg id="outside">Stand inside the plot and execute this command again.</msg>
-                <msg id="conflict">The name ${name} conflicts with ${conflict}</msg>
+                <msg id="no-permission">Você não possui permissão para criar lotes em ${city}</msg>
+                <msg id="outside">Fique dentro do lote e execute este comando novamente.</msg>
+                <msg id="conflict">O nome ${name} conflita com ${conflict}</msg>
                 <overlaps>
-                    <msg id="unclaimed">The selected area overlaps an unclaimed chunk located at: X: ${x} and Z: ${z}</msg>
-                    <msg id="plots">The selected area overlaps ${count} plots: ${plots}</msg>
-                    <msg id="plot">The selected area overlaps the plot ${name}</msg>
+                    <msg id="unclaimed">A área selecionada sobrepõe um chunk não reinvindicado em: X: ${x} e Z: ${z}</msg>
+                    <msg id="plots">A área selecionada sobrepõe ${count} lotes: ${plots}</msg>
+                    <msg id="plot">A área selecionada sobrepõe o lote ${name}</msg>
                 </overlaps>
-                <msg id="success">The plot ${name} was created successfully</msg>
+                <msg id="success">O lote ${name} foi criado com sucesso</msg>
             </create>
             <rename>
-                <msg id="arg.new-name">new-name</msg>
-                <msg id="not-claimed">You are not inside a plot</msg>
-                <msg id="no-permission">You don't have permission to rename the plot ${plot}</msg>
-                <msg id="name-too-short">Please type a bigger name</msg>
-                <msg id="already-named">The plot is already named ${name}</msg>
-                <msg id="conflict">The name ${name} conflicts with ${conflict}</msg>
-                <msg id="success">The plot ${old} is now named ${name}</msg>
+                <msg id="arg.new-name">novo-nome</msg>
+                <msg id="not-claimed">Você não está dentro de um lote</msg>
+                <msg id="no-permission">Você não tem permissão para renomear o lote ${plot}</msg>
+                <msg id="name-too-short">Por favor digite um nome maior</msg>
+                <msg id="already-named">O lote já se chama ${name}</msg>
+                <msg id="conflict">O nome ${name} conflita com ${conflict}</msg>
+                <msg id="success">O lote ${old} agora se chama ${name}</msg>
             </rename>
             <return>
-                <msg id="not-claimed">You are not inside a plot</msg>
-                <msg id="no-permission">You don't have permission to return the ownership of ${plot} to the city ${city}</msg>
-                <msg id="already">The plot ${plot} is already owned by the mayor of the city ${city}</msg>
-                <msg id="success">The plot ${plot} has returned to the city ${city}</msg>
+                <msg id="not-claimed">Você não está dentro de um lote</msg>
+                <msg id="no-permission">Você não tem permissão para devolver a posse de ${plot} para a cidade ${city}</msg>
+                <msg id="already">O lote ${plot} já é do prefeito da cidade ${city}</msg>
+                <msg id="success">O lote ${plot} foi devolvido para a cidade ${city}</msg>
                 <msg id="confirm">
-                    You are about to return the plot ${plot} and everything that is in it to the city ${city}, all permissions will be reset
-                    and you'll no longer be able to control the plot unless you have the appropriate city city's permission or the mayor grants them later,
-                    <b>you'll not be refunded by this action</b>. If you are sure about this, type /plot confirm ${code}
+                    Você está prestes a devolver o lote ${plot} com tudo que estiver dentro dele para a cidade ${city}, todas as permissões serão redefinidas
+                    e você não irá mais poder controlar o lote. <b>Você não receberá nada em troca por esta ação</b>.
+                    Se você tiver certeza disso, digite /lote confirmar ${code}
                 </msg>
             </return>
             <transfer>
-                <msg id="arg.player-name">player-name</msg>
-                <msg id="not-claimed">You are not inside a plot</msg>
-                <msg id="no-permission">You don't have permission to transfer the plot ${plot}</msg>
-                <msg id="too-many-args">Player names does not have spaces</msg>
+                <msg id="arg.player-name">jogador</msg>
+                <msg id="not-claimed">Você não está dentro de um lote</msg>
+                <msg id="no-permission">Você não possui permissão para transferir o lote ${plot}</msg>
+                <msg id="too-many-args">Nomes de jogadores não possuem espaços</msg>
                 <player>
-                    <msg id="empty">Type a player name</msg>
-                    <msg id="not-found">No player was found with name ${name}</msg>
-                    <msg id="success">The plot ${plot} is now owned by ${target}</msg>
+                    <msg id="empty">Digite um nome de jogador</msg>
+                    <msg id="not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
+                    <msg id="success">O lote ${plot} agora é de ${target}</msg>
                     <msg id="confirm">
-                        You are about to transfer the plot ${plot} and everything that is in it to ${target}.
-                        You'll not be refunded and <b>you'll not be able to  undo this action</b>.
-                        If you are sure about it type /plot confirm ${code}
+                        Você está prestes de transferir o lote ${lote} com tudo que estiver nele para ${target}.
+                        Você não receberá nada em troca e <b>você não será capaz de desfazer esta ação</b>.
+                        Se você estiver certo disso, digite /lote confirmar ${code}
                     </msg>
                 </player>
                 <self>
-                    <msg id="already">You already own the plot ${plot}</msg>
-                    <msg id="success">The plot ${plot} is now your personal plot</msg>
+                    <msg id="already">Você já é o dono do lote ${plot}</msg>
+                    <msg id="success">O lote ${plot} agora é seu lote pessoal</msg>
                 </self>
                 <mayor>
-                    <msg id="success">The plot ${plot} is now a ${target}'s personal plot.</msg>
+                    <msg id="success">O lote ${plot} agora é o lote pessoal de ${target}.</msg>
                     <msg id="confirm">
-                        You are about to transfer the plot ${plot} and everything that is in it to ${target}, the plot
-                        <b>will not be returned to the city</b>
-                        and will become a ${target}'s personal plot. You'll not be refunded and you'll not be able to
-                        undo this action. If you are sure about it type /plot confirm ${code}
+                        Você está prestes de transferir o lote ${plot} com tudo que estiver nele para ${target}, o lote
+                        <b>não será devolvido para a cidade</b>
+                        e irá ser tornar o lote pessoal de ${target}. Você não receberá nada em troca e você não será capaz de
+                        desfazer esta ação. Se você estiver certo disso, digite /lote confirmar ${code}
                     </msg>
                 </mayor>
             </transfer>
             <delete>
-                <msg id="not-claimed">You are not inside a plot</msg>
-                <msg id="not-mayor">Only the mayor of ${city} can delete plots, you can return this plot to the city using /plot return</msg>
-                <msg id="no-permission">You don't have permission to delete the plot ${plot} because it's owned by ${owner}</msg>
-                <msg id="success">The plot ${plot} was deleted successfully</msg>
-                <msg id="confirm">You are about to delete the plot ${plot} from the city ${city}, if you are sure about it type /plot confirm ${code}</msg>
+                <msg id="not-claimed">Você não está dentro de um lote</msg>
+                <msg id="not-mayor">Apenas o prefeito de ${city} pode excluir lotes, você pode devolver este lote para a cidade usando /lote devolver</msg>
+                <msg id="no-permission">Você não tem permissão para excluir o lote ${plot} porque ele é propriedade de ${owner}</msg>
+                <msg id="success">O lote ${plot} foi excluído com sucesso</msg>
+                <msg id="confirm">Você está prestes a excluir o lote ${plot} da cidade ${city}, se você tiver certeza disso digite /lote confirmar ${code}</msg>
             </delete>
             <deny>
                 <all>
-                    <msg id="enter.arg.reason">reason</msg>
-                    <msg id="click.arg.reason">reason</msg>
-                    <msg id="pickup.arg.reason">reason</msg>
-                    <msg id="open.arg.reason">reason</msg>
-                    <msg id="pvp.arg.reason">reason</msg>
-                    <msg id="pvc.arg.reason">reason</msg>
+                    <msg id="enter.arg.reason">motivo</msg>
+                    <msg id="click.arg.reason">motivo</msg>
+                    <msg id="pickup.arg.reason">motivo</msg>
+                    <msg id="open.arg.reason">motivo</msg>
+                    <msg id="pvp.arg.reason">motivo</msg>
+                    <msg id="pvc.arg.reason">motivo</msg>
                 </all>
                 <enter>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
-                        <msg id="reason">reason</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
                     </arg>
                 </enter>
-                <msg id="click.arg.player-or-city">player or city</msg>
-                <msg id="click.arg.group-name">group name</msg>
-                <msg id="click.arg.reason">reason</msg>
+                <msg id="click.arg.player-or-city">jogador ou cidade</msg>
+                <msg id="click.arg.group-name">grupo</msg>
+                <msg id="click.arg.reason">motivo</msg>
                 <pickup>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
-                        <msg id="reason">reason</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
                     </arg>
                 </pickup>
-                <msg id="open.arg.player-or-city">player or city</msg>
-                <msg id="open.arg.group-name">group name</msg>
-                <msg id="open.arg.reason">reason</msg>
+                <msg id="open.arg.player-or-city">jogador ou cidade</msg>
+                <msg id="open.arg.group-name">grupo</msg>
+                <msg id="open.arg.reason">motivo</msg>
                 <pvp>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
-                        <msg id="reason">reason</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
                     </arg>
                 </pvp>
                 <pvc>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
-                        <msg id="reason">reason</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
                     </arg>
                 </pvc>
-                <msg id="not-claimed">You are not inside a plot</msg>
-                <msg id="no-permission">You are not allowed to change the ${plot}'s permissions</msg>
-                <msg id="got-city-expected-player">You've typed a city name, type a player name instead to allow a specific player or type a group name after the city name to prohibit that specific group. Do not use spaces in the names.</msg>
-                <msg id="player-not-found">No player was found with name ${name}</msg>
-                <msg id="group-not-found">The city ${city} does not have a group named ${group}</msg>
-                <msg id="city-not-found">No city was found with name ${name}</msg>
-                <msg id="success.player">The player ${player} was prohibited successfully</msg>
-                <msg id="success.group">The permission was granted to the group ${group} from ${home} successfully</msg>
-                <msg id="success">The permission was denied by default successfully</msg>
+                <msg id="not-claimed">Você não está dentro de um lote</msg>
+                <msg id="no-permission">Você não está autorizado a alterar as permissões de ${plot}</msg>
+                <msg id="got-city-expected-player">Você digitou um nome de cidade,
+                    digite um nome de jogador ao invés disso proibir um jogador específico
+                    ou digite um nome de grupo após o nome da cidade para proibir um grupo.
+                    <b>Não use espaços nos nomes</b>.
+                </msg>
+                <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
+                <msg id="group-not-found">A cidade ${city} não possui um grupo chamado ${group}</msg>
+                <msg id="city-not-found">Nenhuma cidade foi encontrada com o nome ${name}</msg>
+                <msg id="success.player">O jogador ${player} foi proibido com sucesso</msg>
+                <msg id="success.group">O grupo ${group} de ${home} foi proibido com sucesso</msg>
+                <msg id="success">A permissão foi negada por padrão com sucesso</msg>
             </deny>
             <allow>
-                <msg id="not-claimed">You are not inside a plot</msg>
-                <msg id="no-permission">You are not allowed to change the ${plot}'s permissions</msg>
-                <msg id="got-city-expected-player">You've typed a city name, type a player name instead to allow a specific player or type a group name after the city name to allow that specific group. <b>Do not use spaces in the names.</b></msg>
-                <msg id="player-not-found">No player was found with name ${name}</msg>
-                <msg id="too-many-args">You've typed too many arguments, you can't give reason messages when allowing somebody.</msg>
-                <msg id="group-not-found">The city ${city} does not have a group named ${group}</msg>
-                <msg id="city-not-found">No city was found with name ${name}</msg>
-                <msg id="success">The permission was granted by default successfully</msg>
-                <msg id="success.player">The permission was granted to ${player} successfully</msg>
-                <msg id="success.group">The permission was granted to the group ${group} from ${home} successfully</msg>
-                <msg id="all.args.count">This command does not expect extra arguments, are you sure that you want to allow everybody?</msg>
+                <msg id="not-claimed">Você não está dentro de um lote</msg>
+                <msg id="no-permission">Você não está autorizado a mudar as permissões do lote ${plot}</msg>
+                <msg id="got-city-expected-player">Você digitou um nome de cidade,
+                    digite um nome de jogador ao invés disso para permitir um jogador específico
+                    ou digite um nome de grupo após o nome da cidade para permitir um grupo específico.
+                    <b>Não use espaços nos nomes</b>.
+                </msg>
+                <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
+                <msg id="too-many-args">Você digitou argumentos demais, Você não pode especificar o motivo ao permitir alguém.</msg>
+                <msg id="group-not-found">A cidade ${city} não possui um grupo chamado ${group}</msg>
+                <msg id="city-not-found">Nenhuma cidade foi encontrada com o nome ${name}</msg>
+                <msg id="success">A permissão foi concedida por padrão com sucesso</msg>
+                <msg id="success.player">A permissão foi concedida para ${player} com sucesso</msg>
+                <msg id="success.group">A permissão foi concedida para o grupo ${group} de ${home} com sucesso</msg>
+                <msg id="all.args.count">Este comando não aceita argumentos, você tem certeza de que quer dar permissões para todos?</msg>
                 <enter>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
                     </arg>
                 </enter>
-                <msg id="click.arg.player-or-city">player or city</msg>
-                <msg id="click.arg.group-name">group name</msg>
+                <msg id="click.arg.player-or-city">jogador ou cidade</msg>
+                <msg id="click.arg.group-name">grupo</msg>
                 <pickup>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
                     </arg>
                 </pickup>
-                <msg id="open.arg.player-or-city">player or city</msg>
-                <msg id="open.arg.group-name">group name</msg>
+                <msg id="open.arg.player-or-city">jogador ou cidade</msg>
+                <msg id="open.arg.group-name">grupo</msg>
                 <pvp>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
                     </arg>
                 </pvp>
                 <pvc>
                     <arg>
-                        <msg id="player-or-city">player or city</msg>
-                        <msg id="group-name">group name</msg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
                     </arg>
                 </pvc>
             </allow>
         </plot>
         <help>
             <arg>
-                <msg id="command">command</msg>
-                <msg id="page">page</msg>
+                <msg id="command">comando</msg>
+                <msg id="page">página</msg>
             </arg>
             <info>
                 <args>
                     <msg id="no-args">
                         <gray>Args:</gray><br/>
-                        <darkgray><![CDATA[  None]]></darkgray>
+                        <darkgray><![CDATA[  Nenhum]]></darkgray>
                         <br/>
                     </msg>
                     <msg id="body"><darkgray><![CDATA[ * ]]></darkgray>${args}<br/></msg>
@@ -621,33 +625,33 @@
                         </darkgray><gray>${optional} ${type}. ${sticky}</gray>
                         </msg>
                         <type>
-                            <msg id="undefined">Anything</msg>
-                            <msg id="player">A player name</msg>
-                            <msg id="city">A city name</msg>
-                            <msg id="group">A group name</msg>
-                            <msg id="group-or-city">A city name or a group name from the city you that are now</msg>
-                            <msg id="player-or-city">A city or player name</msg>
-                            <msg id="help">A command name or page number</msg>
-                            <msg id="predefined">A predefined value</msg>
-                            <msg id="single-predefinition">Can only be "${val}"</msg>
-                            <msg id="multiple-predefinitions">Can be: ${val}</msg>
-                            <msg id="number">A number</msg>
+                            <msg id="undefined">Qualquer coisa</msg>
+                            <msg id="player">Um nome de jogador</msg>
+                            <msg id="city">Um nome de cidade</msg>
+                            <msg id="group">Um nome de grupo</msg>
+                            <msg id="group-or-city">Um nome de cidade ou um grupo da cidade em que você está agora</msg>
+                            <msg id="player-or-city">Um nome de jogador ou de cidade</msg>
+                            <msg id="help">Um comando ou número de página</msg>
+                            <msg id="predefined">Um valor pré-definido</msg>
+                            <msg id="single-predefinition">Só pode ser "${val}"</msg>
+                            <msg id="multiple-predefinitions">Pode ser: ${val}</msg>
+                            <msg id="number">Um número</msg>
                         </type>
                         <props>
-                            <msg id="optional">Optional.</msg>
-                            <msg id="sticky">Can use spaces.</msg>
-                            <msg id="required"><red>Required!</red></msg>
-                            <msg id="not-sticky"><white>Without spaces!</white></msg>
+                            <msg id="optional">Opcional.</msg>
+                            <msg id="sticky">Pode ter espaços.</msg>
+                            <msg id="required"><red>Requerido!</red></msg>
+                            <msg id="not-sticky"><white>Sem espaços!</white></msg>
                         </props>
                     </details>
                 </args>
-                <msg id="body"><darkgray>---<gray>-=[MineCity Help]=-</gray>--------------------</darkgray><br/><br/>
+                <msg id="body"><darkgray>---<gray>-=[Ajuda do MineCity]=-</gray>---------------</darkgray><br/><br/>
                     <aqua>${full-command}</aqua> <yellow>${full-args}</yellow><br/>
                     ${args-info}<br/><![CDATA[ ]]>
                     ${description}<br/>
                     <green>
                         <br/><darkgray>---</darkgray>
-                        More commands: <hover>
+                        Mais comandos: <hover>
                         <tooltip><gold>${more-commands}</gold></tooltip>
                         <click>
                             <suggest cmd="${more-commands}"/>
@@ -657,27 +661,27 @@
                 </msg>
             </info>
             <group>
-                <msg id="header"><darkgreen>---<yellow>-=[MineCity Help]=-</yellow>----- <green>Click the items for info</green> -----</darkgreen></msg>
+                <msg id="header"><darkgreen>---<yellow>-=[Ajuda do MineCity]=-</yellow>- <green>Clique para mais informações</green> -</darkgreen></msg>
                 <footer>
                     <msg id="one-page">
                         <green>
-                            Page <gold>1</gold>/<gold>1</gold>
+                            Página <gold>1</gold>/<gold>1</gold>
                             <darkgreen>---</darkgreen>
-                            Tip: Click on the commands for more info
+                            Dica: Clique nos comandos para mais informações
                         </green>
                     </msg>
                     <msg id="last-page">
                         <green>
-                            Page <gold>${page}</gold>/<gold>${total}</gold>
+                            Página <gold>${page}</gold>/<gold>${total}</gold>
                             <darkgreen>---</darkgreen>
-                            Tip: Click on the commands for more info
+                            Dica: Clique nos comandos para mais informações
                         </green>
                     </msg>
                     <msg id="more-pages">
                         <green>
-                            Page <gold>${page}</gold>/<gold>${total}</gold>
+                            Página <gold>${page}</gold>/<gold>${total}</gold>
                             <darkgreen>---</darkgreen>
-                            Next page: <hover>
+                            Prósima página: <hover>
                             <tooltip><gold>${next-page}</gold></tooltip>
                             <click>
                                 <suggest cmd="${next-page}"/>
@@ -718,23 +722,21 @@
         </help>
     </cmd>
     <action>
-        <msg id="denied">You don't have permission to perform this action.</msg>
-        <msg id="group-loading">You can't perform this action yet, your permission groups are still loading.</msg>
-        <msg id="chunk.inconsistent">This chunk is inconsistent.</msg>
+        <msg id="denied">Você não tem permissão para executar esta ação.</msg>
+        <msg id="group-loading">Você não pode executar esta ação ainda porque seus grupos de permissões ainda estão carregando.</msg>
+        <msg id="chunk.inconsistent">Este chunk está inconsistente.</msg>
         <teleport>
-            <msg id="unsupported">Unsupported operation</msg>
-            <msg id="cancelled">The teleport were cancelled</msg>
-            <msg id="world-not-found">The destiny world ${name} was not found or is not loaded</msg>
+            <msg id="unsupported">Operação não suportada</msg>
+            <msg id="cancelled">O teleporte foi cancelado</msg>
+            <msg id="world-not-found">O mundo de destino ${name} não foi encontrado ou não está carregado</msg>
         </teleport>
-        <msg id="give.tool.inventory-full">You haven't received the tool because your inventory is full.</msg>
+        <msg id="give.tool.inventory-full">Você não recebeu a ferramenta porque seu inventário está cheio.</msg>
     </action>
     <tool>
         <selection>
-            <msg id="title"><aqua>Selection Tool</aqua></msg>
-            <msg id="lore">Right click two blocks in the world<br/>to mark a cuboid selection.</msg>
+            <msg id="title"><aqua>Ferramenta de Seleção</aqua></msg>
+            <msg id="lore">Clique com o botão direto em dois blocos no mundo<br/>para marcar uma seleção em cubo.</msg>
         </selection>
     </tool>
-    <msg id="task.player.load.groups.failed">
-        Oops, an error occurred while loading your groups: ${error}
-    </msg>
+    <msg id="task.player.load.groups.failed">Oops, ocorreu um erro ao carregar os seus grupos: ${error}</msg>
 </minecity-messages>
