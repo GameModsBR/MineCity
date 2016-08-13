@@ -4,14 +4,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.Format;
 import java.text.NumberFormat;
@@ -124,7 +125,7 @@ public class MessageTransformer
         if(message.startsWith("<msg>"))
             try
             {
-                Document doc = documentBuilder.parse(new ByteArrayInputStream(message.getBytes()));
+                Document doc = documentBuilder.parse(new InputSource(new StringReader(message)));
                 return parse(doc.getDocumentElement());
             }
             catch(IOException e)
