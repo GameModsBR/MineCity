@@ -2,9 +2,8 @@
 <!ELEMENT groups (group+)>
 <!ELEMENT group (desc)>
 <!ELEMENT commands (command+)>
-<!ELEMENT command ((syntax,desc)|(desc,syntax)|desc|syntax)>
+<!ELEMENT command (desc)>
 <!ELEMENT desc (#PCDATA)>
-<!ELEMENT syntax (#PCDATA)>
 
 <!ATTLIST minecity-commands
         modified (true|false) "true"
