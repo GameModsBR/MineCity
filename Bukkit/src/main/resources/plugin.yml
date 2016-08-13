@@ -4,12 +4,27 @@ main: br.com.gamemods.minecity.bukkit.MineCityPlugin
 author: joserobjr
 
 commands:
+  minecity:
+    description: All MineCity commands
+    aliases: [mc]
   city:
     description: All city related commands
     aliases: [town,c,t]
     permission: minecity.cmd.city
+  group:
+    description: All group related commands
+    permission: minecity.cmd.group
+  plot:
+    description: All plot related commands
+    permission: minecity.cmd.plot
 
 permissions:
   minecity.cmd.city:
     description: Gives access to the /city command
     default: true
+  minecity.cmd.group:
+      description: Gives access to the /group command
+      default: true
+  minecity.cmd.plot:
+      description: Gives access to the /plot command
+      default: true

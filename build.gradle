@@ -35,9 +35,23 @@ subprojects {
 }
 
 project(':Bukkit') {
+
+    configurations {
+        shade
+        compile.extendsFrom shade
+    }
+
     dependencies {
-        compile project(':Core')
+        shade project(':Core')
         compile "org.spigotmc:spigot-api:1.10.2-R0.1-SNAPSHOT"
+    }
+
+    jar {
+        configurations.shade.each { dep ->
+            from(project.zipTree(dep)){
+                include 'br/**', '*.yml', '*.info', 'assets/minecity/**'
+            }
+        }
     }
 }
 

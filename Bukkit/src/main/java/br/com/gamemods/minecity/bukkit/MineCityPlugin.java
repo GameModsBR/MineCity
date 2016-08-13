@@ -3,15 +3,14 @@ package br.com.gamemods.minecity.bukkit;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.Slow;
-import br.com.gamemods.minecity.api.command.LegacyFormat;
-import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.command.MessageTransformer;
+import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -107,6 +106,42 @@ public class MineCityPlugin extends JavaPlugin
             instance.mineCity.dataSource.initDB();
             instance.mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands-en.xml"));
 
+            instance.mineCity.commands.getRootCommands().stream().forEachOrdered(name ->
+                    {
+                        CommandInfo<?> info = instance.mineCity.commands.get(name).get().command;
+                        PluginCommand cmd = getCommand(info.getName());
+                        if(cmd == null)
+                            getLogger().severe("Unable to register the command /"+info.getName()+" because it's not declared in plugin.yml!");
+                        else
+                        {
+                            cmd.setDescription(info.description);
+                            if(info.args != null && info.args.length > 0)
+                            {
+                                StringBuilder sb = new StringBuilder();
+                                for(Arg arg : info.args)
+                                {
+                                    if(arg.optional())
+                                        sb.append('[');
+                                    else
+                                        sb.append('<');
+                                    sb.append(transformer.toSimpleText(new Message(
+                                            "cmd."+info.commandId+".arg."+arg.name().toLowerCase().replaceAll("\\s+","-"),
+                                            arg.name()
+                                    )));
+                                    if(arg.sticky())
+                                        sb.append("...");
+                                    if(arg.optional())
+                                        sb.append(']');
+                                    else
+                                        sb.append('>');
+                                    sb.append(' ');
+                                }
+                                cmd.setUsage(sb.toString());
+                            }
+                        }
+                    }
+            );
+
             reloadTask = getScheduler().runTaskTimer(this, instance.mineCity::reloadQueuedChunk, 1, 1);
         }
         catch(Exception e)
@@ -128,7 +163,8 @@ public class MineCityPlugin extends JavaPlugin
         {
             e.printStackTrace();
         }
-        reloadTask.cancel();
+        if(reloadTask != null)
+            reloadTask.cancel();
     }
 
     @Override
