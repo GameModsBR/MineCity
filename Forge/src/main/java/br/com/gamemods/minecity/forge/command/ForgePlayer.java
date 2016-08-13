@@ -57,6 +57,9 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
         lastX = (int) player.posX;
         lastY = (int) player.posY;
         lastZ = (int) player.posZ;
+        Optional<ClaimedChunk> chunk = mod.mineCity.getChunk(lastChunk);
+        lastCity = chunk.flatMap(ClaimedChunk::getCity).orElse(null);
+        lastPlot = chunk.flatMap(c-> c.getPlotAt(lastX, lastY, lastZ)).orElse(null);
         mod.runAsynchronously(() ->
         {
             try

@@ -50,6 +50,9 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
         lastY = location.getBlockY();
         lastZ = location.getBlockZ();
         lastChunk = new ChunkPos(plugin.world(location.getWorld()), lastX >> 4, lastZ >> 4);
+        Optional<ClaimedChunk> chunk = plugin.mineCity.getChunk(lastChunk);
+        lastCity = chunk.flatMap(ClaimedChunk::getCity).orElse(null);
+        lastPlot = chunk.flatMap(c-> c.getPlotAt(lastX, lastY, lastZ)).orElse(null);
         plugin.runAsynchronously(() ->
         {
             try
