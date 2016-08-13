@@ -7,10 +7,7 @@ import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.command.MessageTransformer;
-import br.com.gamemods.minecity.api.world.BlockPos;
-import br.com.gamemods.minecity.api.world.ChunkPos;
-import br.com.gamemods.minecity.api.world.EntityPos;
-import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.bukkit.command.BukkitCommandSender;
 import br.com.gamemods.minecity.bukkit.command.BukkitLocatableSender;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
@@ -28,6 +25,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -47,6 +45,7 @@ public class MineCityBukkit implements Server, Listener
     public final MineCityPlugin plugin;
     public final Logger logger;
     public final Map<Player, BukkitPlayer> playerMap = new HashMap<>();
+    public final Map<PlayerID, BukkitPlayer> playerIdMap = new HashMap<>();
     public final Map<World, WorldDim> worldMap = new HashMap<>();
     private String selectionToolTitle;
     private List<String> selectionToolLore;
@@ -70,9 +69,17 @@ public class MineCityBukkit implements Server, Listener
     }
 
     @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event)
+    {
+        player(event.getPlayer());
+    }
+
+    @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event)
     {
-        playerMap.remove(event.getPlayer());
+        BukkitPlayer removed = playerMap.remove(event.getPlayer());
+        if(removed != null)
+            playerIdMap.remove(removed.getPlayerId());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -109,6 +116,29 @@ public class MineCityBukkit implements Server, Listener
             runAsynchronously(()->selection.select(block));
     }
 
+    public void updateGroups()
+    {
+        Queue<EntityUpdate> entityUpdates = mineCity.entityUpdates;
+        EntityUpdate update = entityUpdates.peek();
+        if(update == null)
+            return;
+
+        update.ticks--;
+        if(update.ticks <= 0)
+        {
+            entityUpdates.poll();
+            return;
+        }
+
+        //noinspection SuspiciousMethodCalls
+        BukkitPlayer bukkitPlayer = playerIdMap.get(update.identity);
+        if(bukkitPlayer == null)
+            return;
+
+        if(bukkitPlayer.updateGroups(update))
+            entityUpdates.poll();
+    }
+
     @Override
     public MineCity getMineCity()
     {
@@ -126,7 +156,11 @@ public class MineCityBukkit implements Server, Listener
 
     public BukkitPlayer player(Player player)
     {
-        return playerMap.computeIfAbsent(player, p -> new BukkitPlayer(this, p));
+        return playerMap.computeIfAbsent(player, p -> {
+            BukkitPlayer bukkitPlayer = new BukkitPlayer(this, p);
+            playerIdMap.put(bukkitPlayer.getPlayerId(), bukkitPlayer);
+            return bukkitPlayer;
+        });
     }
 
     private br.com.gamemods.minecity.api.command.CommandSender sender(CommandSender sender)

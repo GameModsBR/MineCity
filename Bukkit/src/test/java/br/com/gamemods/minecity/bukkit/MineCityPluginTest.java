@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.junit.Before;
 import org.junit.Test;
 import org.powermock.api.mockito.PowerMockito;
@@ -33,7 +34,10 @@ public class MineCityPluginTest
     @Before
     public void setUp() throws Exception
     {
+        BukkitScheduler scheduler = mock(BukkitScheduler.class);
+
         when(plugin.getPluginManager()).thenReturn(pluginManager);
+        when(plugin.getScheduler()).thenReturn(scheduler);
 
         when(world.getEnvironment()).thenReturn(World.Environment.NORMAL);
         when(world.getName()).thenReturn("world");

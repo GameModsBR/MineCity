@@ -6,6 +6,7 @@ import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.ChunkPos;
+import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
 import org.bukkit.Bukkit;
@@ -30,6 +31,7 @@ public class MineCityPlugin extends JavaPlugin
 {
     private MineCityBukkit instance;
     private BukkitTask reloadTask;
+    private BukkitTask playerTick;
 
     @Slow
     @Override
@@ -149,7 +151,11 @@ public class MineCityPlugin extends JavaPlugin
             getServer().getWorlds().stream().map(World::getLoadedChunks).flatMap(Arrays::stream).map(instance::chunk)
                     .forEachOrdered((DBConsumer< ChunkPos>) instance.mineCity::loadChunk);
 
-            reloadTask = getScheduler().runTaskTimer(this, instance.mineCity::reloadQueuedChunk, 1, 1);
+            getServer().getOnlinePlayers().forEach(instance::player);
+
+            reloadTask = getScheduler().runTaskTimerAsynchronously(this, instance.mineCity::reloadQueuedChunk, 1, 1);
+            playerTick = getScheduler().runTaskTimer(this, ()-> instance.playerMap.values().forEach(BukkitPlayer::tick), 1, 1);
+            getScheduler().runTaskTimerAsynchronously(this, instance::updateGroups, 1, 1);
         }
         catch(Exception e)
         {
@@ -172,6 +178,9 @@ public class MineCityPlugin extends JavaPlugin
         }
         if(reloadTask != null)
             reloadTask.cancel();
+
+        if(playerTick != null)
+            playerTick.cancel();
     }
 
     @Override
