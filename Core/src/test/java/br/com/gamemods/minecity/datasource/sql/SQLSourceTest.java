@@ -485,7 +485,7 @@ public class SQLSourceTest
         // Check persistence
         reload();
         city = mineCity.dataSource.getCityByName("Perm").get();
-        assertEquals(new Message("","Test"), city.getDefaultMessage());
+        assertEquals("Test", city.getDefaultMessage().toString());
 
         city.setDefaultMessage(FlagHolder.DEFAULT_DENIAL_MESSAGE);
         assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.getDefaultMessage());
@@ -562,7 +562,7 @@ public class SQLSourceTest
         assertFalse(city.can(playerJose, PermissionFlag.ENTER).isPresent());
         assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(playerRandom, PermissionFlag.ENTER).get());
         assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(groupB.getIdentity(), PermissionFlag.ENTER).get());
-        assertEquals(new Message("", "Group A is out!"), city.can(groupA.getIdentity(), PermissionFlag.ENTER).get());
+        assertEquals("Group A is out!", city.can(groupA.getIdentity(), PermissionFlag.ENTER).get().toString());
 
         city.reset(PermissionFlag.ENTER, groupA.getIdentity());
         assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(groupA.getIdentity(), PermissionFlag.ENTER).get());
@@ -575,8 +575,8 @@ public class SQLSourceTest
         assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(groupA.getIdentity(), PermissionFlag.ENTER).get());
 
         city.setDefaultMessage(new Message("", "New Message"));
-        assertEquals(new Message("", "New Message"), city.can(groupA.getIdentity(), PermissionFlag.ENTER).get());
-        assertEquals(new Message("", "New Message"), city.can(groupB.getIdentity(), PermissionFlag.ENTER).get());
+        assertEquals("New Message", city.can(groupA.getIdentity(), PermissionFlag.ENTER).get().toString());
+        assertEquals("New Message", city.can(groupB.getIdentity(), PermissionFlag.ENTER).get().toString());
 
         city.allow(PermissionFlag.ENTER, random);
         assertFalse(city.can(random, PermissionFlag.ENTER).isPresent());
@@ -587,10 +587,10 @@ public class SQLSourceTest
         assertNotNull(groupA);
         assertNotNull(groupB);
         assertFalse(city.can(random, PermissionFlag.ENTER).isPresent());
-        assertEquals(new Message("", "New Message"), city.can(groupA.getIdentity(), PermissionFlag.ENTER).get());
+        assertEquals("New Message", city.can(groupA.getIdentity(), PermissionFlag.ENTER).get().toString());
 
         city.resetAll(random);
-        assertEquals(new Message("", "New Message"), city.can(random, PermissionFlag.ENTER).get());
+        assertEquals("New Message", city.can(random, PermissionFlag.ENTER).get().toString());
         reload();
         city = mineCity.dataSource.getCityByName("Perm").get();
         groupA = city.getGroup("a");
@@ -598,7 +598,7 @@ public class SQLSourceTest
         assertNotNull(groupA);
         assertNotNull(groupB);
 
-        assertEquals(new Message("", "New Message"), city.can(random, PermissionFlag.ENTER).get());
+        assertEquals("New Message", city.can(random, PermissionFlag.ENTER).get().toString());
 
         city.allow(PermissionFlag.ENTER);
         assertFalse(city.can(groupA.getIdentity(), PermissionFlag.ENTER).isPresent());
@@ -616,7 +616,7 @@ public class SQLSourceTest
 
         EntityID entity = new EntityID(MinecraftEntity.Type.STORAGE, UUID.randomUUID(), "ArmorStand");
         city.deny(PermissionFlag.ENTER, entity, new Message("", "No Armor stands!"));
-        assertEquals(new Message("", "No Armor stands!"), city.can(entity, PermissionFlag.ENTER).get());
+        assertEquals("No Armor stands!", city.can(entity, PermissionFlag.ENTER).get().toString());
         city.setDefaultMessage(FlagHolder.DEFAULT_DENIAL_MESSAGE);
         reload();
         entity = new EntityID(MinecraftEntity.Type.STORAGE, entity.uniqueId, "ArmorStand");
@@ -625,7 +625,7 @@ public class SQLSourceTest
         groupB = city.getGroup("b");
         assertNotNull(groupA);
         assertNotNull(groupB);
-        assertEquals(new Message("", "No Armor stands!"), city.can(entity, PermissionFlag.ENTER).get());
+        assertEquals("No Armor stands!", city.can(entity, PermissionFlag.ENTER).get().toString());
         city.reset(PermissionFlag.ENTER, entity);
 
         assertFalse(city.can(entity, PermissionFlag.ENTER).isPresent());
