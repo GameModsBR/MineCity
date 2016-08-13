@@ -283,8 +283,28 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
 
         if(movMessageWait > 0)
             movMessageWait--;
-        else if((lastX != posX || lastZ != posZ || lastY < posY) && sender.getWorld().getBlockAt(posX, posY-1, posZ).getType().isSolid())
+        else if((lastX != posX || lastZ != posZ || lastY < posY))
         {
+            Material block = sender.getWorld().getBlockAt(posX, posY - 1, posZ).getType();
+            switch(block)
+            {
+                case WATER:
+                case STATIONARY_WATER:
+                case LAVA:
+                case STATIONARY_LAVA:
+                    break;
+                default:
+                    if(block.isSolid())
+                        break;
+                    else
+                    {
+                        ItemStack chestplate = sender.getInventory().getChestplate();
+                        if(chestplate == null)
+                            return;
+                        if(!chestplate.getType().name().equals("ELYTRA"))
+                            return;
+                    }
+            }
             lastX = posX;
             lastY = posY;
             lastZ = posZ;

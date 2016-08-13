@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.forge.MineCityForgeMod;
 import br.com.gamemods.minecity.structure.*;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -26,6 +27,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.IFluidBlock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -319,8 +321,15 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
 
         if(movMessageWait > 0)
             movMessageWait--;
-        else if((lastX != posX || lastZ != posZ || lastY < posY) && sender.worldObj.isSideSolid(posX, posY-1, posZ, ForgeDirection.UP))
+        else if((lastX != posX || lastZ != posZ || lastY < posY))
         {
+            if(!sender.worldObj.isSideSolid(posX, posY-1, posZ, ForgeDirection.UP))
+            {
+                Block block = sender.worldObj.getBlock(posX, posY - 1, posZ);
+                if(!(block instanceof BlockLiquid || block instanceof IFluidBlock))
+                    return;
+            }
+
             lastX = posX;
             lastY = posY;
             lastZ = posZ;
