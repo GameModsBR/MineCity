@@ -5,22 +5,192 @@ import br.com.gamemods.minecity.api.Async;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.*;
-import br.com.gamemods.minecity.api.permission.Group;
-import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.permission.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Plot;
 
+import java.util.EnumSet;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class PermissionCommands
 {
+    private static final EnumSet<PermissionFlag> CITY_FLAGS = EnumSet.of(
+            PermissionFlag.ENTER, PermissionFlag.CLICK, PermissionFlag.PICKUP, PermissionFlag.OPEN,
+            PermissionFlag.PVP, PermissionFlag.PVC, PermissionFlag.MODIFY
+    );
+    private static final EnumSet<PermissionFlag> PLOT_FLAGS = EnumSet.copyOf(CITY_FLAGS);
+
     private final MineCity mineCity;
 
     public PermissionCommands(MineCity mineCity)
     {
         this.mineCity = mineCity;
+    }
+
+    private Message[] list(ExceptFlagHolder holder, Set<PermissionFlag> filter, String prefix, String name)
+    {
+        Message[] lines = new Message[2 + filter.size()];
+        lines[0] = new Message(prefix+".header", "<msg><darkgreen>----[${name}'s Permissions]---------------------</darkgreen></msg>",
+                new Object[]{"name", name}
+        );
+
+        int i = 1;
+        for(PermissionFlag flag: filter)
+        {
+            Optional<Message> def = holder.can(flag);
+            Map<Identity<?>, Message> exceptions = holder.getDirectPermissions(flag);
+            String key = flag.name().toLowerCase().replace('_', '-');
+            Message permName = new Message(prefix+".perm."+key+".name", key.toLowerCase().replace('_',' '));
+            lines[i++] = new Message("",
+                    "${perm}${exceptions} ${description}",
+                    new Object[][]{
+                            {
+                                    "perm",
+                                    def.isPresent()?
+                                            new Message(prefix + ".perm.denied",
+                                                    "<msg><hover><tooltip>That message will be shown when this happens:<br/>" +
+                                                            "<red>${reason}</red></tooltip><red>${perm}</red></hover></msg>",
+                                                    new Object[][]{
+                                                            {"perm", permName},
+                                                            {"reason", def.get()}
+                                                    }
+                                            )
+                                            :
+                                            new Message(prefix + ".allowed", "<msg><green>${perm}</green></msg>", new Object[]{
+                                                    "perm", permName
+                                            })
+                            },
+                            {"description", new Message(prefix+".perm."+key+".info", "")},
+                            {"exceptions", exceptions.isEmpty()? "":
+                                    new Message(
+                                            prefix+".exceptions.short",
+                                            "<msg><hover><tooltip>${exceptions}</tooltip><yellow>${count} exceptions</yellow></hover></msg>",
+                                            new Object[][]{
+                                                    {"count", exceptions.size()},
+                                                    {"exceptions", Message.list(
+                                                            exceptions.entrySet().stream().map(e->
+                                                                    new Message(
+                                                                            prefix+".exceptions."+
+                                                                                    e.getKey().getType().name()
+                                                                                        .toLowerCase().replace('_','-') +
+                                                                                    (e.getValue() == null?
+                                                                                            ".allow" :
+                                                                                            ".deny"
+                                                                                    )
+                                                                            ,
+                                                                            e.getValue() == null?
+                                                                                    "<msg><green><b>${name}</b> - Is allowed</green></msg>" :
+                                                                                    "<msg><red><b>${name}</b> - Is denied with: ${msg}</red></msg>",
+                                                                            new Object[][]{
+                                                                                {"msg", e.getValue()},
+                                                                                {"name",
+                                                                                e.getKey().getType() != Identity.Type.GROUP?
+                                                                                        e.getKey().getName() :
+                                                                                        new Message(
+                                                                                                prefix+".exceptions.group.name",
+                                                                                                "${group} from ${city}",
+                                                                                                new Object[][]{
+                                                                                                        {"group", e.getKey().getName()},
+                                                                                                        {"city", ((GroupID)e.getKey()).home}
+                                                                                                }
+                                                                                        )
+                                                                            }}
+                                                                    )).toArray(Message[]::new)
+                                                            ,
+                                                            new Message("", "\n")
+                                                    )}
+                                            }
+                                    )
+                            }
+                    }
+            );
+        }
+
+        lines[lines.length - 1] = new Message(
+                prefix+".footer",
+                "<msg><darkgreen>--------------------------------------------------</darkgreen></msg>"
+        );
+
+        return lines;
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.perms", args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
+    public CommandResult<?> list(CommandEvent cmd) throws DataSourceException
+    {
+        City city;
+        if(cmd.args.isEmpty())
+        {
+            city = cmd.getChunk().getCity().orElse(null);
+            if(city == null)
+                return new CommandResult<>(new Message("cmd.city.perms.not-claimed", "You are not inside a city"));
+        }
+        else
+        {
+            String name = String.join(" ", cmd.args);
+            city = mineCity.dataSource.getCityByName(name).orElse(null);
+            if(city == null)
+                return new CommandResult<>(new Message(
+                        "cmd.city.perms.not-found",
+                        "No city were found with name ${name}",
+                        new Object[]{"name", name}
+                ));
+        }
+
+        cmd.sender.send(list(city, CITY_FLAGS, "cmd.city.perms", city.getName()));
+        return CommandResult.success();
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.perms", args = {
+        @Arg(name = "city-or-plot", optional = true, type = Arg.Type.PLOT_OR_CITY),
+        @Arg(name = "plot", sticky = true, optional = true, type = Arg.Type.PLOT)
+    })
+    public CommandResult<?> listPlot(CommandEvent cmd) throws DataSourceException
+    {
+        Plot plot;
+        if(cmd.args.isEmpty())
+        {
+            if(cmd.position == null)
+                return new CommandResult<>(new Message(
+                        "cmd.plot.perms.type-city",
+                        "Type a city name"
+                ));
+
+            plot = cmd.getChunk().getPlotAt(cmd.position.getBlock()).orElse(null);
+            if(plot == null)
+                return new CommandResult<>(new Message(
+                        "cmd.plot.perms.not-claimed",
+                        "You are not inside a plot"
+                ));
+        }
+        else
+        {
+            plot = cmd.getChunk().getCity().flatMap(c-> c.getPlot(String.join(" ", cmd.args))).orElse(null);
+            if(plot == null && cmd.args.size() > 1)
+            {
+                plot = mineCity.dataSource.getCityByName(cmd.args.get(0))
+                        .flatMap(c-> c.getPlot(String.join(" ", cmd.args.subList(1, cmd.args.size()))))
+                        .orElse(null)
+                        ;
+            }
+
+            if(plot == null)
+                return new CommandResult<>(new Message(
+                        "cmd.plot.perms.not-found",
+                        "No plot was found with ${search}",
+                        new Object[]{"search", String.join(" ", cmd.args)}
+                ));
+        }
+
+        cmd.sender.send(list(plot, PLOT_FLAGS, "cmd.plot.perms", plot.getName()));
+        return CommandResult.success();
     }
 
     @Slow
@@ -44,7 +214,7 @@ public class PermissionCommands
 
             return new CommandResult<>(new Message("cmd.city.deny.success",
                     "The permission was denied by default successfully"
-            ), true, false);
+            ), false, true);
         }
         else if(cmd.args.size() == 1)
         {
@@ -226,7 +396,7 @@ public class PermissionCommands
         }
 
         return new CommandResult<>(new Message("cmd.city.deny.success",
-                "The permission was revoked successfully"), true, false);
+                "The permission was revoked successfully"), false, true);
     }
 
     @Slow
@@ -275,7 +445,7 @@ public class PermissionCommands
 
             return new CommandResult<>(new Message("cmd.plot.deny.success",
                     "The permission was denied by default successfully"
-            ), true, false);
+            ), false, true);
         }
         else if(cmd.args.size() == 1)
         {
@@ -457,7 +627,7 @@ public class PermissionCommands
         }
 
         return new CommandResult<>(new Message("cmd.plot.deny.success",
-                "The permission was revoked successfully"), true, false);
+                "The permission was revoked successfully"), false, true);
     }
 
     @Slow

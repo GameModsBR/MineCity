@@ -134,6 +134,9 @@
 
         <!-- ========== Permissões de Cidades ========== -->
         <!-- Permissões padrões -->
+        <command id="city.perms" parent="city" cmd="perms,permissões">
+            <desc>Exibe todas as permissões da cidade</desc>
+        </command>
         <command id="city.allow.enter" parent="city.allow" cmd="entrar">
             <desc>Permite que jogaores entrem na cidade</desc>
         </command>
@@ -211,6 +214,9 @@
 
         <!-- ========== Permissões de lotes ========== -->
         <!-- Permissões padrões -->
+        <command id="plot.perms" parent="plot" cmd="perms,permissões">
+            <desc>Exibe todas as permissões do lote</desc>
+        </command>
         <command id="plot.allow.enter" parent="plot.allow" cmd="entrar">
             <desc>Permite que jogadores entrem no lote.</desc>
         </command>

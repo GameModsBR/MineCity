@@ -5,10 +5,7 @@ import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Collections.emptyMap;
 
@@ -44,6 +41,17 @@ public class ExceptFlagHolder extends SimpleFlagHolder
     protected Map<Identity<?>, Status> createMap(PermissionFlag flag)
     {
         return new HashMap<>(1);
+    }
+
+    public Map<Identity<?>, Message> getDirectPermissions(PermissionFlag flag)
+    {
+        Map<Identity<?>, Status> strict = strictPermission.get(flag);
+        if(strict == null || strict.isEmpty())
+            return Collections.emptyMap();
+
+        Map<Identity<?>, Message> result = new HashMap<>(strict.size());
+        strict.forEach((k,v)-> result.put(k, v.message));
+        return result;
     }
 
     @NotNull

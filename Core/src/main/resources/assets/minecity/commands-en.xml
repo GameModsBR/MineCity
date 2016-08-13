@@ -134,6 +134,9 @@
 
         <!-- ========== City Permissions ========== -->
         <!-- Default permissions -->
+        <command id="city.perms" parent="city" cmd="perms,permissions">
+            <desc>Displays all city permissions</desc>
+        </command>
         <command id="city.allow.enter" parent="city.allow" cmd="enter">
             <desc>Allows players to enter the city</desc>
         </command>
@@ -211,6 +214,9 @@
 
         <!-- ========== Plot Permissions ========== -->
         <!-- Default permissions -->
+        <command id="plot.perms" parent="plot" cmd="perms,permissions">
+            <desc>Displays all plot permissions</desc>
+        </command>
         <command id="plot.allow.enter" parent="plot.allow" cmd="enter">
             <desc>Allows players to enter the plot</desc>
         </command>

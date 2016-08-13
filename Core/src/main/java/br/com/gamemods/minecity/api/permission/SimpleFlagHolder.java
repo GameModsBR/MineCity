@@ -40,6 +40,16 @@ public class SimpleFlagHolder implements FlagHolder
                 .forEach(f-> generalPermissions.put(f, message));
     }
 
+    /**
+     * Checks if a flag is granted by default
+     * @param action The flag to be checked
+     * @return The denial message if it's not allowed by default
+     */
+    public Optional<Message> can(@NotNull PermissionFlag action)
+    {
+        return Optional.ofNullable(generalPermissions.get(action));
+    }
+
     @NotNull
     @Override
     public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)

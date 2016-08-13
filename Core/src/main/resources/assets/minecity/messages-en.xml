@@ -17,6 +17,78 @@
             -->
         </msg>
         <city>
+            <perms>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="not-found">No city were found with name ${name}</msg>
+                <msg id="header"><darkgreen>----[ ${name}'s Permissions ]--------</darkgreen></msg>
+                <msg id="footer"><darkgreen>--------------------------------------------------</darkgreen></msg>
+                <exceptions>
+                    <msg id="short">
+                        <hover>
+                            <tooltip>${exceptions}</tooltip>
+                            <yellow>${count} exceptions</yellow>
+                        </hover>
+                    </msg>
+                    <player>
+                        <msg id="allow">
+                            <green><b>${name}</b> - Is allowed</green>
+                        </msg>
+                        <msg id="deny">
+                            <red><b>${name}</b> - Is denied with: ${msg}</red>
+                        </msg>
+                    </player>
+                    <msg id="entity.allow">
+                        <green><b>${name}</b> - Is allowed</green>
+                    </msg>
+                    <msg id="entity.deny">
+                        <red><b>${name}</b> - Is denied with: ${msg}</red>
+                    </msg>
+                    <group>
+                        <msg id="name">${group} from ${city}</msg>
+                        <msg id="allow">
+                            <green><b>${name}</b> - Is allowed</green>
+                        </msg>
+                        <msg id="deny">
+                            <red><b>${name}</b> - Is denied with: ${msg}</red>
+                        </msg>
+                    </group>
+                </exceptions>
+                <perm>
+                    <msg id="allowed">
+                        <green>${perm}</green>
+                    </msg>
+                    <msg id="denied"><hover>
+                        <tooltip>That message will be shown when this happens:
+                            <br/><red>${reason}</red>
+                        </tooltip>
+                        <red>${perm}</red>
+                    </hover></msg>
+                    <enter>
+                        <msg id="name">ENTER</msg>
+                        <msg id="info">Enter the city</msg>
+                    </enter>
+                    <msg id="click.name">CLICK</msg>
+                    <msg id="click.info">Click on clickable blocks like buttons</msg>
+                    <pickup>
+                        <msg id="name">PICKUP</msg>
+                        <msg id="info">Collect dropped items</msg>
+                    </pickup>
+                    <msg id="open.name">OPEN</msg>
+                    <msg id="open.info">Open containers like chests and frame</msg>
+                    <pvp>
+                        <msg id="name">PVP</msg>
+                        <msg id="info">Attack other players</msg>
+                    </pvp>
+                    <pvc>
+                        <msg id="name">PVC</msg>
+                        <msg id="info">Attack creatures</msg>
+                    </pvc>
+                    <modify>
+                        <msg id="name">MODIFY</msg>
+                        <msg id="info">Do structural modifications</msg>
+                    </modify>
+                </perm>
+            </perms>
             <list>
                 <msg id="arg.page">page</msg>
                 <msg id="header"><green>---<yellow>-=[Cities]=-</yellow>--------------------</green></msg>
@@ -412,6 +484,79 @@
             <msg id="not-pending">You don't have any pending confirmation</msg>
         </confirm>
         <plot>
+            <perms>
+                <msg id="type-city">Type a city name</msg>
+                <msg id="not-claimed">You are not inside a plot</msg>
+                <msg id="not-found">No plot was found with ${search}</msg>
+                <msg id="header"><darkgreen>----[ ${name}'s Permissions ]--------</darkgreen></msg>
+                <msg id="footer"><darkgreen>--------------------------------------------------</darkgreen></msg>
+                <exceptions>
+                    <msg id="short">
+                        <hover>
+                            <tooltip>${exceptions}</tooltip>
+                            <yellow>${count} exceptions</yellow>
+                        </hover>
+                    </msg>
+                    <player>
+                        <msg id="allow">
+                            <green><b>${name}</b> - Is allowed</green>
+                        </msg>
+                        <msg id="deny">
+                            <red><b>${name}</b> - Is denied with: ${msg}</red>
+                        </msg>
+                    </player>
+                    <msg id="entity.allow">
+                        <green><b>${name}</b> - Is allowed</green>
+                    </msg>
+                    <msg id="entity.deny">
+                        <red><b>${name}</b> - Is denied with: ${msg}</red>
+                    </msg>
+                    <group>
+                        <msg id="name">${group} from ${city}</msg>
+                        <msg id="allow">
+                            <green><b>${name}</b> - Is allowed</green>
+                        </msg>
+                        <msg id="deny">
+                            <red><b>${name}</b> - Is denied with: ${msg}</red>
+                        </msg>
+                    </group>
+                </exceptions>
+                <perm>
+                    <msg id="allowed">
+                        <green>${perm}</green>
+                    </msg>
+                    <msg id="denied"><hover>
+                        <tooltip>That message will be shown when this happens:
+                            <br/><red>${reason}</red>
+                        </tooltip>
+                        <red>${perm}</red>
+                    </hover></msg>
+                    <enter>
+                        <msg id="name">ENTER</msg>
+                        <msg id="info">Enter the city</msg>
+                    </enter>
+                    <msg id="click.name">CLICK</msg>
+                    <msg id="click.info">Click on clickable blocks like buttons</msg>
+                    <pickup>
+                        <msg id="name">PICKUP</msg>
+                        <msg id="info">Collect dropped items</msg>
+                    </pickup>
+                    <msg id="open.name">OPEN</msg>
+                    <msg id="open.info">Open containers like chests and frames</msg>
+                    <pvp>
+                        <msg id="name">PVP</msg>
+                        <msg id="info">Attack other players</msg>
+                    </pvp>
+                    <pvc>
+                        <msg id="name">PVC</msg>
+                        <msg id="info">Attack creatures</msg>
+                    </pvc>
+                    <modify>
+                        <msg id="name">MODIFY</msg>
+                        <msg id="info">Do structural modifications</msg>
+                    </modify>
+                </perm>
+            </perms>
             <list>
                 <msg id="not-claimed">You are not inside a city</msg>
                 <msg id="not-found">No city were found named ${name}</msg>
