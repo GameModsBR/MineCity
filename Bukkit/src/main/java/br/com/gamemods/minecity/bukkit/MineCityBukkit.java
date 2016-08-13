@@ -4,6 +4,8 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
+import br.com.gamemods.minecity.api.command.LegacyFormat;
+import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
@@ -14,29 +16,40 @@ import br.com.gamemods.minecity.bukkit.command.BukkitLocatableSender;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-public class MineCityBukkit implements Server
+public class MineCityBukkit implements Server, Listener
 {
     public final MineCity mineCity;
     public final BukkitScheduler scheduler;
     public final MineCityPlugin plugin;
     public final Logger logger;
+    public final Map<Player, BukkitPlayer> playerMap = new HashMap<>();
+    public final Map<World, WorldDim> worldMap = new HashMap<>();
+    private String selectionToolTitle;
+    private List<String> selectionToolLore;
 
     public MineCityBukkit(MineCityPlugin plugin, MineCityConfig config, MessageTransformer transformer)
     {
@@ -47,6 +60,53 @@ public class MineCityBukkit implements Server
         mineCity = new MineCity(this, config, transformer);
         PluginManager pluginManager = plugin.getPluginManager();
         pluginManager.registerEvents(new WorldListener(this), plugin);
+        pluginManager.registerEvents(this, plugin);
+        selectionToolTitle = transformer.toLegacy(new Message("tool.selection.title", LegacyFormat.AQUA+"Selection Tool"));
+        selectionToolLore = Arrays.asList(transformer.toMultilineLegacy(
+                new Message("","<white>${lore}</white>", new Object[]
+                        {"lore", new Message("tool.selection.lore","Selects an area in the world")}
+                ))
+        );
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event)
+    {
+        playerMap.remove(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerInteract(PlayerInteractEvent event)
+    {
+        Action action = event.getAction();
+        if(action != Action.RIGHT_CLICK_BLOCK && action != Action.LEFT_CLICK_BLOCK)
+            return;
+
+        ItemStack item = event.getItem();
+        if(item == null || item.getType() != Material.WOOD_HOE)
+            return;
+
+        ItemMeta meta = item.getItemMeta();
+        if(!meta.hasDisplayName() || !meta.hasLore() || !meta.getDisplayName().equals(selectionToolTitle) || !meta.getLore().equals(selectionToolLore))
+            return;
+
+        event.setCancelled(true);
+        BlockPos block = blockPos(event.getClickedBlock());
+        Player player = event.getPlayer();
+        BukkitPlayer.BukkitSelection selection = player(player).getSelection(block.world);
+
+        if(player.isSneaking())
+        {
+            if(action == Action.LEFT_CLICK_BLOCK)
+                selection.b = block;
+            else
+                selection.a = block;
+
+            selection.normalize();
+            runAsynchronously(selection::updateDisplay);
+        }
+        else
+            runAsynchronously(()->selection.select(block));
     }
 
     @Override
@@ -64,10 +124,15 @@ public class MineCityBukkit implements Server
         return true;
     }
 
+    public BukkitPlayer player(Player player)
+    {
+        return playerMap.computeIfAbsent(player, p -> new BukkitPlayer(this, p));
+    }
+
     private br.com.gamemods.minecity.api.command.CommandSender sender(CommandSender sender)
     {
         if(sender instanceof Player)
-            return new BukkitPlayer(this, (Player) sender);
+            return player((Player) sender);
         if(sender instanceof Entity || sender instanceof BlockCommandSender)
             return new BukkitLocatableSender<>(this, sender);
         return new BukkitCommandSender<>(this, sender);
@@ -76,17 +141,26 @@ public class MineCityBukkit implements Server
     public WorldDim world(World world)
     {
         //noinspection deprecation
-        return new WorldDim(world.getEnvironment().getId(), world.getName());
+        return worldMap.computeIfAbsent(world, w-> new WorldDim(w, w.getEnvironment().getId(), w.getName()));
     }
 
     public Optional<World> world(WorldDim world)
     {
-        return Optional.ofNullable(plugin.getServer().getWorld(world.dir));
+        World other = plugin.getServer().getWorld(world.dir);
+        world.instance = other;
+        return Optional.ofNullable(other);
     }
 
     public ChunkPos chunk(Chunk chunk)
     {
-        return new ChunkPos(world(chunk.getWorld()), chunk.getX(), chunk.getZ());
+        ChunkPos pos = new ChunkPos(world(chunk.getWorld()), chunk.getX(), chunk.getZ());
+        pos.instance = chunk;
+        return pos;
+    }
+
+    public BlockPos blockPos(Block block)
+    {
+        return new BlockPos(world(block.getWorld()), block.getX(), block.getY(), block.getZ());
     }
 
     public BlockPos blockPos(Location location)

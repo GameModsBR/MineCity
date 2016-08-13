@@ -26,19 +26,26 @@ public final class WorldDim implements Serializable
     public final int dim;
 
     @Nullable
-    public Object instance;
+    public transient Object instance;
 
     @Nullable
-    public WorldProvider provider;
+    public transient WorldProvider provider;
 
     @Nullable
-    public Nature nature;
+    public transient Nature nature;
 
     /**
      * The name displayed to the players
      */
     @Nullable
     public String name;
+
+    public WorldDim(@Nullable Object instance, int dim, @NotNull String dir)
+    {
+        this.dim = dim;
+        this.dir = dir;
+        this.instance = instance;
+    }
 
     public WorldDim(int dim, @NotNull String dir)
     {

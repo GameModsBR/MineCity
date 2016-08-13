@@ -3,12 +3,15 @@ package br.com.gamemods.minecity.api.world;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.BiFunction;
 
-public final class RegionPos
+public final class RegionPos implements Serializable
 {
+    private static final long serialVersionUID = -8229201365624526742L;
+
     @NotNull
     private final WorldDim world;
     private final int x, z;

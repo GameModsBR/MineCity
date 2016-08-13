@@ -1,7 +1,6 @@
 package br.com.gamemods.minecity.forge.command;
 
 import br.com.gamemods.minecity.MineCity;
-import br.com.gamemods.minecity.api.Async;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.GroupID;
@@ -11,8 +10,8 @@ import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
+import br.com.gamemods.minecity.structure.DisplayedSelection;
 import br.com.gamemods.minecity.structure.Inconsistency;
-import br.com.gamemods.minecity.structure.Selection;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -218,7 +217,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
 
     @NotNull
     @Override
-    public ForgeSelection getSelection(WorldDim world)
+    public ForgeSelection getSelection(@NotNull WorldDim world)
     {
         if(selection == null || !selection.world.equals(world))
             selection = new ForgeSelection(world);
@@ -290,7 +289,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
     }
 
     @Override
-    public String confirm(UFunction<CommandSender, CommandResult<?>> onConfirm)
+    public String confirm(@NotNull UFunction<CommandSender, CommandResult<?>> onConfirm)
     {
         confirmExpires = 20*30;
         confirmCode = new BigInteger(28, MineCity.RANDOM).toString(32).toUpperCase();
@@ -390,210 +389,23 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
         }
     }
 
-    public class ForgeSelection extends Selection
+    public class ForgeSelection extends DisplayedSelection<Block>
     {
-        private Map<BlockPos, Block> display = new HashMap<>();
-
         private ForgeSelection(@NotNull WorldDim world)
         {
             super(world);
+            cornerA = Blocks.glowstone;
+            cornerB = Blocks.lit_redstone_lamp;
+            corners = Blocks.lit_furnace;
+            linesA = Blocks.gold_block;
+            linesB = Blocks.lapis_block;
+            lines = Blocks.glass;
+            extension = Blocks.glowstone;
         }
 
         @Override
-        public void select(BlockPos point)
+        protected void send(Map<BlockPos, Block> last)
         {
-            super.select(point);
-            updateDisplay();
-        }
-
-        @Async
-        public void updateDisplay()
-        {
-            Map<BlockPos, Block> last = display;
-            Map<BlockPos, Block> display = new HashMap<>(last.size());
-
-            if(a != null)
-            {
-                if(b == null)
-                {
-                    display.put(a, Blocks.glowstone);
-                    for(Direction direction: Direction.cardinal)
-                        display.put(a.add(direction), Blocks.gold_block);
-                }
-                else
-                {
-                    //TODO: Simplify
-
-                    int range = 5;
-                    int dx = b.x - a.x;
-                    int dy = b.y - a.y;
-                    int dz = b.z - a.z;
-                    BlockPos c;
-
-                    // Min corner
-                    // x
-                    for(int ix = 1; ix < range && a.x+ix < b.x; ix++)
-                        display.put(a.add(dx-ix, 0, 0), Blocks.glass);
-
-                    c = a.add(0, dy, 0);
-                    for(int ix = 1; ix < range && a.x+ix < b.x; ix++)
-                        display.put(c.add(ix, 0, 0), Blocks.glass);
-
-                    c = a.add(0, 0, dz);
-                    for(int ix = 1; ix < range && a.x+ix < b.x; ix++)
-                        display.put(c.add(ix, 0, 0), Blocks.glass);
-
-                    // y
-                    for(int iy = 1; iy < range && a.y+iy < b.y; iy++)
-                        display.put(a.add(0, dy-iy, 0), Blocks.glass);
-
-                    c = a.add(dx, 0, 0);
-                    for(int iy = 1; iy < range && a.y+iy < b.y; iy++)
-                        display.put(c.add(0, iy, 0), Blocks.glass);
-
-                    c = a.add(0, 0, dz);
-                    for(int iy = 1; iy < range && a.y+iy < b.y; iy++)
-                        display.put(c.add(0, iy, 0), Blocks.glass);
-
-                    // z
-                    for(int iz = 1; iz < range && a.z+iz < b.z; iz++)
-                        display.put(a.add(0, 0, dz-iz), Blocks.glass);
-
-                    c = a.add(dx, 0, 0);
-                    for(int iz = 1; iz < range && a.z+iz < b.z; iz++)
-                        display.put(c.add(0, 0, iz), Blocks.glass);
-
-                    c = a.add(0, dy, 0);
-                    for(int iz = 1; iz < range && a.z+iz < b.z; iz++)
-                        display.put(c.add(0, 0, iz), Blocks.glass);
-
-                    // Max corner
-                    // x
-                    for(int ix = 1; ix < range && b.x-ix > a.x; ix++)
-                        display.put(b.subtract(dx-ix, 0, 0), Blocks.glass);
-
-                    c = b.subtract(0, dy, 0);
-                    for(int ix = 1; ix < range && b.x-ix > a.x; ix++)
-                        display.put(c.subtract(ix, 0, 0), Blocks.glass);
-
-                    c = b.subtract(0, 0, dz);
-                    for(int ix = 1; ix < range && b.x-ix > a.x; ix++)
-                        display.put(c.subtract(ix, 0, 0), Blocks.glass);
-
-                    // y
-                    for(int iy = 1; iy < range && b.y-iy > a.y; iy++)
-                        display.put(b.subtract(0, dy-iy, 0), Blocks.glass);
-
-                    c = b.subtract(dx, 0, 0);
-                    for(int iy = 1; iy < range && b.y-iy > a.y; iy++)
-                        display.put(c.subtract(0, iy, 0), Blocks.glass);
-
-                    c = b.subtract(0, 0, dz);
-                    for(int iy = 1; iy < range && b.y-iy > a.y; iy++)
-                        display.put(c.subtract(0, iy, 0), Blocks.glass);
-
-                    // z
-                    for(int iz = 1; iz < range && b.z-iz > a.z; iz++)
-                        display.put(b.subtract(0, 0, dz-iz), Blocks.glass);
-
-                    c = b.subtract(dx, 0, 0);
-                    for(int iz = 1; iz < range && b.z-iz > a.z; iz++)
-                        display.put(c.subtract(0, 0, iz), Blocks.glass);
-
-                    c = b.subtract(0, dy, 0);
-                    for(int iz = 1; iz < range && b.z-iz > a.z; iz++)
-                        display.put(c.subtract(0, 0, iz), Blocks.glass);
-
-                    // Selected corners
-                    for(int ix = 1; ix < range && a.x+ix < b.x; ix++)
-                        display.put(a.add(ix, 0, 0), Blocks.gold_block);
-
-                    for(int iy = 1; iy < range && a.y+iy < b.y; iy++)
-                        display.put(a.add(0, iy, 0), Blocks.gold_block);
-
-                    for(int iz = 1; iz < range && a.z+iz < b.z; iz++)
-                        display.put(a.add(0, 0, iz), Blocks.gold_block);
-
-                    for(int ix = 1; ix < range && b.x-ix > a.x; ix++)
-                        display.put(b.subtract(ix, 0, 0), Blocks.lapis_block);
-
-                    for(int iy = 1; iy < range && b.y-iy > a.y; iy++)
-                        display.put(b.subtract(0, iy, 0), Blocks.lapis_block);
-
-                    for(int iz = 1; iz < range && b.z-iz > a.z; iz++)
-                        display.put(b.subtract(0, 0, iz), Blocks.lapis_block);
-
-                    // Extension
-                    for(int ix = range; a.x+ix < b.x-range; ix += 5)
-                        display.put(a.add(ix, 0, 0), Blocks.glowstone);
-
-                    c = a.add(0, dy, 0);
-                    for(int ix = range; a.x+ix < b.x-range; ix += 5)
-                        display.put(c.add(ix, 0, 0), Blocks.glowstone);
-
-                    c = c.add(0, 0, dz);
-                    for(int ix = range; a.x+ix < b.x-range; ix += 5)
-                        display.put(c.add(ix, 0, 0), Blocks.glowstone);
-
-                    c = a.add(0, 0, dz);
-                    for(int ix = range; a.x+ix < b.x-range; ix += 5)
-                        display.put(c.add(ix, 0, 0), Blocks.glowstone);
-
-                    for(int iy = range; a.y+iy < b.y-range; iy += 5)
-                        display.put(a.add(0, iy, 0), Blocks.glowstone);
-
-                    c = a.add(0, 0, dz);
-                    for(int iy = range; a.y+iy < b.y-range; iy += 5)
-                        display.put(c.add(0, iy, 0), Blocks.glowstone);
-
-                    c = a.add(dx, 0, 0);
-                    for(int iy = range; a.y+iy < b.y-range; iy += 5)
-                        display.put(c.add(0, iy, 0), Blocks.glowstone);
-
-                    c = c.add(0, 0, dz);
-                    for(int iy = range; a.y+iy < b.y-range; iy += 5)
-                        display.put(c.add(0, iy, 0), Blocks.glowstone);
-
-                    for(int iz = range; a.z+iz < b.z-range; iz += 5)
-                        display.put(a.add(0, 0, iz), Blocks.glowstone);
-
-                    c = a.add(0, dy, 0);
-                    for(int iz = range; a.z+iz < b.z-range; iz += 5)
-                        display.put(c.add(0, 0, iz), Blocks.glowstone);
-
-                    c = c.add(dx, 0, 0);
-                    for(int iz = range; a.z+iz < b.z-range; iz += 5)
-                        display.put(c.add(0, 0, iz), Blocks.glowstone);
-
-                    c = a.add(dx, 0, 0);
-                    for(int iz = range; a.z+iz < b.z-range; iz += 5)
-                        display.put(c.add(0, 0, iz), Blocks.glowstone);
-
-                    // Corners
-                    display.put(a.add(dx, 0, 0), Blocks.lit_furnace);
-                    display.put(a.add(0, dy, 0), Blocks.lit_furnace);
-                    display.put(a.add(0, 0, dz), Blocks.lit_furnace);
-
-                    display.put(b.subtract(dx, 0, 0), Blocks.lit_furnace);
-                    display.put(b.subtract(0, dy, 0), Blocks.lit_furnace);
-                    display.put(b.subtract(0, 0, dz), Blocks.lit_furnace);
-
-                    display.put(a, Blocks.glowstone);
-                    display.put(b, Blocks.lit_redstone_lamp);
-                }
-            }
-            else if(b != null)
-            {
-                display.put(b, Blocks.lit_redstone_lamp);
-                for(Direction direction: Direction.cardinal)
-                    display.put(b.add(direction), Blocks.lapis_block);
-            }
-
-            if(last.equals(display))
-                return;
-
-            this.display = new HashMap<>(display);
-
             mod.callSyncMethod(()->{
                 World worldObj = sender.worldObj;
                 if(!mod.world(worldObj).equals(world))

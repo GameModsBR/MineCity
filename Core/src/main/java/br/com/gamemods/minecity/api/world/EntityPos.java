@@ -3,16 +3,19 @@ package br.com.gamemods.minecity.api.world;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
 import java.util.function.BiFunction;
 
-public final class EntityPos
+public final class EntityPos implements Serializable
 {
+    private static final long serialVersionUID = -2727591696451881914L;
+
     @NotNull
     public final WorldDim world;
     public final double x, y, z;
     public final float pitch, yaw;
 
-    BlockPos block;
+    transient BlockPos block;
 
     public EntityPos(@NotNull WorldDim world, double x, double y, double z)
     {

@@ -26,13 +26,13 @@ public interface CommandSender
         return false;
     }
 
-    default String confirm(UFunction<CommandSender, CommandResult<?>> onConfirm)
+    default String confirm(@NotNull UFunction<CommandSender, CommandResult<?>> onConfirm)
     {
         throw new UnsupportedOperationException();
     }
 
     @NotNull
-    default Selection getSelection(WorldDim world)
+    default Selection getSelection(@NotNull WorldDim world)
     {
         throw new UnsupportedOperationException();
     }
