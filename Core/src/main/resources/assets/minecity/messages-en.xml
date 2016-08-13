@@ -71,7 +71,7 @@
                 <chunk>
                     <msg id="not-loaded">The chunk that you are standing is not loaded properly</msg>
                     <msg id="claimed">The chunk that you are is already claimed to ${city}</msg>
-                    <msg id="reserved">The chunk that you are is reserved to ${city}</msg>
+                    <msg id="reserved">The chunk that you are is reserved for ${city}</msg>
                 </chunk>
                 <msg id="success">
                     The city ${name} was created successfully, if you get lost you can teleport back with /city spawn ${identity}
@@ -80,7 +80,7 @@
             <claim>
                 <msg id="arg.city">city</msg>
                 <msg id="already-claimed">This chunk is already claimed in name of ${city}</msg>
-                <msg id="reserved">This chunk is reserved to ${name}</msg>
+                <msg id="reserved">This chunk is reserved for ${name}</msg>
                 <msg id="ambiguous">Both cities ${1} and ${2} are touching this chunk, repeat the command specifying the city name.</msg>
                 <msg id="not-nearby">
                     There're no cities touching this chunk, get closer to your city and try again. If you want to create an island then specify the city name, if you want to create a new city then type ${create}
@@ -152,7 +152,7 @@
                     <city>
                         <msg id="no-plot"><red>That's you inside ${city}</red></msg>
                         <msg id="one-plot"><red>That's you inside ${city}</red><br/><br/>You are near ${plot}</msg>
-                        <msg id="reserved"><red>That's you!</red><br/><br/><i>This chunk is reserved to ${city}</i></msg>
+                        <msg id="reserved"><red>That's you!</red><br/><br/><i>This chunk is reserved for ${city}</i></msg>
                         <msg id="nature"><red>That's you!</red></msg>
                         <msg id="many-plots"><red>That's you inside ${city}</red><br/><br/>You are near:<br/> - ${plots}</msg>
                         <msg id="many-plots-join"><br/><![CDATA[ - ]]></msg>
@@ -204,18 +204,26 @@
                 </pvc>
                 <msg id="not-claimed">You are not inside a city</msg>
                 <msg id="no-permission">You are not allowed to change the ${city}'s permissions</msg>
-                <msg id="got-city-expected-player">You've typed a city name, type a player name instead to allow a specific player or type a group name after the city name to prohibit that specific group. Do not use spaces in the names.</msg>
+                <msg id="got-city-expected-player">You've typed a city name,
+                    type a player name instead to prohibit a specific player
+                    or type a group name after the city name to prohibit that specific group.
+                    <b>Do not use spaces in the names.</b>
+                </msg>
                 <msg id="player-not-found">No player was found with name ${name}</msg>
                 <msg id="group-not-found">The city ${city} does not have a group named ${group}</msg>
                 <msg id="city-not-found">No city was found with name ${name}</msg>
                 <msg id="success.player">The player ${player} was prohibited successfully</msg>
-                <msg id="success.group">The permission was granted to the group ${group} from ${home} successfully</msg>
+                <msg id="success.group">The group ${group} from ${home} was prohibited successfully</msg>
                 <msg id="success">The permission was denied by default successfully</msg>
             </deny>
             <allow>
                 <msg id="not-claimed">You are not inside a city</msg>
                 <msg id="no-permission">You are not allowed to change the ${city}'s permissions</msg>
-                <msg id="got-city-expected-player">You've typed a city name, type a player name instead to allow a specific player or type a group name after the city name to allow that specific group. <b>Do not use spaces in the names.</b></msg>
+                <msg id="got-city-expected-player">You've typed a city name,
+                    type a player name instead to allow a specific player
+                    or type a group name after the city name to allow that specific group.
+                    <b>Do not use spaces in the names.</b>
+                </msg>
                 <msg id="player-not-found">No player was found with name ${name}</msg>
                 <msg id="too-many-args">You've typed too many arguments, you can't give reason messages when allowing somebody.</msg>
                 <msg id="group-not-found">The city ${city} does not have a group named ${group}</msg>
