@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -248,12 +249,35 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
 
         if(message.isPresent())
         {
+            if(movMessageWait > 0 && movMessageWait % 5 == 0)
+                sender.damage(2);
+
             if(movMessageWait == 0)
             {
                 send(new Message("","<msg><red>${msg}</red></msg>", new Object[]{"msg", message.get()}));
                 movMessageWait = (byte) 20*3;
             }
-            teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
+
+
+            Entity vehicle = sender.getVehicle();
+            if(vehicle == null)
+                teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
+            else
+            {
+                Location vLoc = vehicle.getLocation();
+                Optional<World> world = plugin.world(lastChunk.world);
+                if(!world.isPresent())
+                    teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
+                else
+                    if(!vehicle.teleport(new Location(world.get(), lastX+0.5, lastY+0.5, lastZ+0.5, vLoc.getYaw(), vLoc.getPitch())))
+                    {
+                        Entity passenger = vehicle.getPassenger();
+                        vehicle.eject();
+                        teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
+                        if(vehicle.teleport(new Location(world.get(), lastX+0.5, lastY+0.5, lastZ+0.5, vLoc.getYaw(), vLoc.getPitch())))
+                            getServer().callSyncMethod(()-> vehicle.setPassenger(passenger));
+                    }
+            }
             return;
         }
 

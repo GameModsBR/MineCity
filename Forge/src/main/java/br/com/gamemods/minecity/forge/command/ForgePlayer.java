@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.forge.MineCityForgeMod;
 import br.com.gamemods.minecity.structure.*;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -19,6 +20,7 @@ import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.S23PacketBlockChange;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -294,12 +296,24 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
 
         if(message.isPresent())
         {
+            if(movMessageWait > 0 && movMessageWait % 5 == 0)
+                sender.attackEntityFrom(new DamageSource("sufocation"), 2);
+
             if(movMessageWait == 0)
             {
                 send(new Message("","<msg><red>${msg}</red></msg>", new Object[]{"msg", message.get()}));
                 movMessageWait = (byte) 20*3;
             }
-            teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
+            Entity vehicle = sender.ridingEntity;
+            if(vehicle == null)
+                teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
+            else
+            {
+                if(lastChunk.world.dim == vehicle.worldObj.provider.dimensionId)
+                    vehicle.setPosition(lastX+0.5, lastY+0.5, lastZ+0.5);
+                else
+                    teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
+            }
             return;
         }
 
