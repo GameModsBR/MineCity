@@ -37,8 +37,16 @@ public final class ClaimedChunk
 
     public Optional<Plot> getPlotAt(BlockPos pos)
     {
+        if(!pos.world.equals(chunk.world))
+            return Optional.empty();
+
+        return getPlotAt(pos.x, pos.y, pos.z);
+    }
+
+    public Optional<Plot> getPlotAt(int x, int y, int z)
+    {
         for(Plot plot : getPlots())
-            if(plot.getShape().contains(pos.x, pos.y, pos.z))
+            if(plot.getShape().contains(x, y, z))
                 return Optional.of(plot);
 
         return Optional.empty();

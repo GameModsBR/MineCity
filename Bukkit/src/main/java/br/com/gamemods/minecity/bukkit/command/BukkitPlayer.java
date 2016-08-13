@@ -8,10 +8,7 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.unchecked.UFunction;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
-import br.com.gamemods.minecity.structure.City;
-import br.com.gamemods.minecity.structure.ClaimedChunk;
-import br.com.gamemods.minecity.structure.DisplayedSelection;
-import br.com.gamemods.minecity.structure.Inconsistency;
+import br.com.gamemods.minecity.structure.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -41,6 +38,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     @Nullable
     private Set<GroupID> groups;
     private City lastCity;
+    private Plot lastPlot;
     private byte movMessageWait = 0;
 
     public BukkitPlayer(MineCityBukkit plugin, Player player)
@@ -71,18 +69,18 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
 
     public void tick()
     {
-        checkStepOnFakeBlock();
-        checkPosition();
+        Location location = sender.getLocation();
+        checkStepOnFakeBlock(location);
+        checkPosition(location);
     }
 
-    public void checkStepOnFakeBlock()
+    public void checkStepOnFakeBlock(Location location)
     {
         Player sender = this.sender;
         if(selection == null || selection.a == null || selection.display.isEmpty()
                 || !selection.world.equals(plugin.world(sender.getWorld())))
             return;
 
-        Location location = sender.getLocation();
         int x = location.getBlockX();
         int y = location.getBlockY();
         int z = location.getBlockZ();
@@ -109,9 +107,8 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
         }
     }
 
-    public void checkPosition()
+    public void checkPosition(Location location)
     {
-        Location location = sender.getLocation();
         int posX = location.getBlockX();
         int posY = location.getBlockY();
         int posZ = location.getBlockZ();
@@ -119,45 +116,159 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
         int chunkZ = posZ >> 4;
         World worldObj = location.getWorld();
         WorldDim worldDim = plugin.world(worldObj);
+        Optional<Message> message;
         if(lastChunk.x != chunkX || lastChunk.z != chunkZ || !lastChunk.world.equals(worldDim))
         {
             ChunkPos chunk = new ChunkPos(worldDim, chunkX, chunkZ);
             ClaimedChunk claim = plugin.mineCity.getChunk(chunk).orElseGet(()-> Inconsistency.claim(chunk));
             City city = claim.getCity().orElse(null);
-            if(city != null && city != lastCity)
+            Plot plot = null;
+            if(city != null)
             {
-                Optional<Message> message = optionalStream(
-                        can(this, PermissionFlag.ENTER, city),
-                        can(this, PermissionFlag.LEAVE, lastCity),
-                        can(this, PermissionFlag.LEAVE, plugin.mineCity.nature(lastChunk.world))
-                )
-                        .findFirst()
-                        ;
-
-                if(message.isPresent())
+                plot = claim.getPlotAt(posX, posY, posZ).orElse(null);
+                if(city != lastCity)
                 {
-                    if(movMessageWait == 0)
+                    message = optionalStream(
+                            can(this, PermissionFlag.ENTER, plot),
+                            can(this, PermissionFlag.ENTER, city),
+                            can(this, PermissionFlag.LEAVE, lastPlot),
+                            can(this, PermissionFlag.LEAVE, lastCity),
+                            can(this, PermissionFlag.LEAVE,
+                                    lastCity == null? plugin.mineCity.nature(lastChunk.world) : null
+                            )
+                    ).findFirst();
+
+                    if(!message.isPresent())
                     {
-                        send(message.get());
-                        movMessageWait = (byte) 20*3;
+                        Message title = new Message("", "${name}", new Object[]{"name", city.getName()});
+                        Message subtitle;
+                        if(plot != null)
+                            subtitle = new Message("","${name}", new Object[]{"name", plot.getName()});
+                        else
+                            subtitle = null;
+
+                        sendTitle(title, subtitle);
                     }
-                    teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
-                    return;
+                }
+                else if(plot != lastPlot)
+                {
+                    message = optionalStream(
+                            can(this, PermissionFlag.ENTER, plot),
+                            can(this, PermissionFlag.LEAVE, lastPlot)
+                    ).findFirst();
+
+                    if(!message.isPresent())
+                    {
+                        Message subtitle = new Message("","${name}", new Object[]{"name", plot == null? city.getName() : plot.getName()});
+                        sendTitle(null, subtitle);
+                    }
+                }
+                else
+                    message = Optional.empty();
+            }
+            else if(lastCity != null)
+            {
+                message = optionalStream(
+                        can(this, PermissionFlag.ENTER, plugin.mineCity.nature(chunk.world)),
+                        can(this, PermissionFlag.LEAVE, lastPlot),
+                        can(this, PermissionFlag.LEAVE, lastCity)
+                ).findFirst();
+
+                if(!message.isPresent())
+                {
+                    Message title = new Message("enter.nature", LegacyFormat.GREEN+"Nature");
+                    Message subtitle = new Message("","${name}", new Object[]{"name", chunk.world.name()});
+                    sendTitle(title, subtitle);
                 }
             }
+            else if(!lastChunk.world.equals(chunk.world))
+            {
+                message = optionalStream(
+                        can(this, PermissionFlag.ENTER, plugin.mineCity.nature(chunk.world)),
+                        can(this, PermissionFlag.LEAVE, plugin.mineCity.nature(lastChunk.world))
+                ).findFirst();
 
-            lastCity = city;
-            lastChunk = chunk;
+                if(!message.isPresent())
+                {
+                    Message title = new Message("enter.nature", LegacyFormat.GREEN+"Nature");
+                    Message subtitle = new Message("","${name}", new Object[]{"name", chunk.world.name()});
+                    sendTitle(title, subtitle);
+                }
+            }
+            else
+                message = Optional.empty();
+
+            if(!message.isPresent())
+            {
+                lastCity = city;
+                lastChunk = chunk;
+                lastPlot = plot;
+            }
+        }
+        else if(posX != lastX || posY != lastY || posZ != lastZ)
+        {
+            if(lastCity != null)
+            {
+                Plot plot = plugin.mineCity.getChunk(new ChunkPos(worldDim, chunkX, chunkZ))
+                        .flatMap(chunk -> chunk.getPlotAt(posX, posY, posZ))
+                        .orElse(null);
+
+                if(plot != lastPlot)
+                {
+                    message = optionalStream(
+                            can(this, PermissionFlag.ENTER, plot),
+                            can(this, PermissionFlag.LEAVE, lastPlot)
+                    ).findFirst();
+
+                    if(!message.isPresent())
+                    {
+                        lastPlot = plot;
+
+                        Message title = new Message("", "${name}", new Object[]{"name", lastCity.getName()});
+                        Message subtitle;
+                        if(plot != null)
+                            subtitle = new Message("","${name}", new Object[]{"name", plot.getName()});
+                        else
+                            subtitle = null;
+
+                        sendTitle(title, subtitle);
+                    }
+                }
+                else
+                    message = Optional.empty();
+            }
+            else
+                message = Optional.empty();
+        }
+        else
+            message = Optional.empty();
+
+        if(message.isPresent())
+        {
+            if(movMessageWait == 0)
+            {
+                send(new Message("","<msg><red>${msg}</red></msg>", new Object[]{"msg", message.get()}));
+                movMessageWait = (byte) 20*3;
+            }
+            teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
+            return;
         }
 
         if(movMessageWait > 0)
             movMessageWait--;
-        else
+        else if((lastX != posX || lastZ != posZ || lastY < posY) && sender.getWorld().getBlockAt(posX, posY-1, posZ).getType().isSolid())
         {
             lastX = posX;
             lastY = posY;
             lastZ = posZ;
         }
+    }
+
+    public void sendTitle(Message title, Message subtitle)
+    {
+        MessageTransformer trans = plugin.mineCity.messageTransformer;
+        sender.resetTitle();
+        sender.sendTitle(title == null? "" : trans.toLegacy(title), subtitle == null? "" : trans.toLegacy(subtitle));
     }
 
     @Override

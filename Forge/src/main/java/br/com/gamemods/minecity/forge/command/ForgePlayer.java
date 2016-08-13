@@ -8,10 +8,7 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.unchecked.UFunction;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
-import br.com.gamemods.minecity.structure.City;
-import br.com.gamemods.minecity.structure.ClaimedChunk;
-import br.com.gamemods.minecity.structure.DisplayedSelection;
-import br.com.gamemods.minecity.structure.Inconsistency;
+import br.com.gamemods.minecity.structure.*;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -26,6 +23,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.util.ForgeDirection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,6 +41,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
     private int lastX, lastY, lastZ;
     private byte movMessageWait = 0;
     private City lastCity;
+    private Plot lastPlot;
     @Nullable
     private Set<GroupID> groups;
     private UFunction<CommandSender, CommandResult<?>> confirmAction;
@@ -160,45 +159,166 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
 
     public void checkPosition()
     {
+        Optional<Message> message;
+        int posY = (int) sender.posY;
+        int posZ = (int) sender.posZ;
+        int posX = (int) sender.posX;
         if(lastChunk.x != sender.chunkCoordX || lastChunk.z != sender.chunkCoordZ || lastChunk.world.dim != sender.worldObj.provider.dimensionId)
         {
             ChunkPos chunk = new ChunkPos(mod.world(sender.worldObj), sender.chunkCoordX, sender.chunkCoordZ);
             ClaimedChunk claim = mod.mineCity.getChunk(chunk).orElseGet(()->Inconsistency.claim(chunk));
             City city = claim.getCity().orElse(null);
-            if(city != null && city != lastCity)
+            Plot plot = null;
+            if(city != null)
             {
-                Optional<Message> message = optionalStream(
-                        can(this, PermissionFlag.ENTER, city),
-                        can(this, PermissionFlag.LEAVE, lastCity),
-                        can(this, PermissionFlag.LEAVE, mod.mineCity.nature(lastChunk.world))
-                        )
-                        .findFirst()
-                        ;
-
-                if(message.isPresent())
+                plot = claim.getPlotAt(posX, posY, posZ).orElse(null);
+                if(city != lastCity)
                 {
-                    if(movMessageWait == 0)
+                    message = optionalStream(
+                            can(this, PermissionFlag.ENTER, plot),
+                            can(this, PermissionFlag.ENTER, city),
+                            can(this, PermissionFlag.LEAVE, lastPlot),
+                            can(this, PermissionFlag.LEAVE, lastCity),
+                            can(this, PermissionFlag.LEAVE,
+                                    lastCity == null? mod.mineCity.nature(lastChunk.world) : null
+                            )
+                    ).findFirst();
+
+                    if(!message.isPresent())
                     {
-                        send(message.get());
-                        movMessageWait = (byte) 20*3;
+                        Message title = new Message("", "${name}", new Object[]{"name", city.getName()});
+                        Message subtitle;
+                        if(plot != null)
+                            subtitle = new Message("","${name}", new Object[]{"name", plot.getName()});
+                        else
+                            subtitle = null;
+
+                        sendTitle(title, subtitle);
                     }
-                    teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
-                    return;
+                }
+                else if(plot != lastPlot)
+                {
+                    message = optionalStream(
+                            can(this, PermissionFlag.ENTER, plot),
+                            can(this, PermissionFlag.LEAVE, lastPlot)
+                    ).findFirst();
+
+                    if(!message.isPresent())
+                    {
+                        Message subtitle = new Message("","${name}", new Object[]{"name", plot == null? city.getName() : plot.getName()});
+                        sendTitle(null, subtitle);
+                    }
+                }
+                else
+                    message = Optional.empty();
+            }
+            else if(lastCity != null)
+            {
+                message = optionalStream(
+                        can(this, PermissionFlag.ENTER, mod.mineCity.nature(chunk.world)),
+                        can(this, PermissionFlag.LEAVE, lastPlot),
+                        can(this, PermissionFlag.LEAVE, lastCity)
+                ).findFirst();
+
+                if(!message.isPresent())
+                {
+                    Message title = new Message("enter.nature", LegacyFormat.GREEN+"Nature");
+                    Message subtitle = new Message("","${name}", new Object[]{"name", chunk.world.name()});
+                    sendTitle(title, subtitle);
                 }
             }
+            else if(lastChunk.world.dim != chunk.world.dim)
+            {
+                message = optionalStream(
+                        can(this, PermissionFlag.ENTER, mod.mineCity.nature(chunk.world)),
+                        can(this, PermissionFlag.LEAVE, mod.mineCity.nature(lastChunk.world))
+                ).findFirst();
 
-            lastCity = city;
-            lastChunk = chunk;
+                if(!message.isPresent())
+                {
+                    Message title = new Message("enter.nature", LegacyFormat.GREEN+"Nature");
+                    Message subtitle = new Message("","${name}", new Object[]{"name", chunk.world.name()});
+                    sendTitle(title, subtitle);
+                }
+            }
+            else
+                message = Optional.empty();
+
+            if(!message.isPresent())
+            {
+                lastCity = city;
+                lastChunk = chunk;
+                lastPlot = plot;
+            }
+        }
+        else if(posX != lastX || posY != lastY || posZ != lastZ)
+        {
+            if(lastCity != null)
+            {
+                Plot plot = mod.mineCity.getChunk(new ChunkPos(mod.world(sender.worldObj), sender.chunkCoordX, sender.chunkCoordZ))
+                        .flatMap(chunk -> chunk.getPlotAt(posX, posY, posZ))
+                        .orElse(null);
+
+                if(plot != lastPlot)
+                {
+                    message = optionalStream(
+                            can(this, PermissionFlag.ENTER, plot),
+                            can(this, PermissionFlag.LEAVE, lastPlot)
+                    ).findFirst();
+
+                    if(!message.isPresent())
+                    {
+                        lastPlot = plot;
+
+                        Message title = new Message("", "${name}", new Object[]{"name", lastCity.getName()});
+                        Message subtitle;
+                        if(plot != null)
+                            subtitle = new Message("","${name}", new Object[]{"name", plot.getName()});
+                        else
+                            subtitle = null;
+
+                        sendTitle(title, subtitle);
+                    }
+                }
+                else
+                    message = Optional.empty();
+            }
+            else
+                message = Optional.empty();
+        }
+        else
+            message = Optional.empty();
+
+        if(message.isPresent())
+        {
+            if(movMessageWait == 0)
+            {
+                send(new Message("","<msg><red>${msg}</red></msg>", new Object[]{"msg", message.get()}));
+                movMessageWait = (byte) 20*3;
+            }
+            teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
+            return;
         }
 
         if(movMessageWait > 0)
             movMessageWait--;
-        else
+        else if((lastX != posX || lastZ != posZ || lastY < posY) && sender.worldObj.isSideSolid(posX, posY-1, posZ, ForgeDirection.UP))
         {
-            lastX = (int) sender.posX;
-            lastY = (int) sender.posY;
-            lastZ = (int) sender.posZ;
+            lastX = posX;
+            lastY = posY;
+            lastZ = posZ;
         }
+    }
+
+    public void sendTitle(Message title, Message subtitle)
+    {
+        if(subtitle == null)
+            send(new Message("",LegacyFormat.DARK_GRAY+" ~ "+LegacyFormat.GRAY+"${name}", new Object[]{"name", title}));
+        else
+            send(new Message("",LegacyFormat.DARK_GRAY+" ~ ${title} :"+LegacyFormat.GRAY+" ${sub}", new Object[][]{
+                    {"sub", subtitle},
+                    {"title", title}
+            }));
     }
 
     @Override
