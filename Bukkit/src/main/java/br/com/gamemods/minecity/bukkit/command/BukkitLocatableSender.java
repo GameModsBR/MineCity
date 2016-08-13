@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.bukkit.command;
 
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
@@ -52,6 +53,19 @@ public class BukkitLocatableSender<S extends CommandSender> extends BukkitComman
                 return null;
 
             return new Message("action.teleport.cancelled", "The teleport were cancelled");
+        }
+
+        return super.teleport(pos);
+    }
+
+    @Nullable
+    @Override
+    public Message teleport(@NotNull BlockPos pos)
+    {
+        if(sender instanceof Entity)
+        {
+            Location current = ((Entity) sender).getLocation();
+            return teleport(pos.toEntity(current.getPitch(), current.getYaw()));
         }
 
         return super.teleport(pos);
