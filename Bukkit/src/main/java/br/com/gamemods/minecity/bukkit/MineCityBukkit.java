@@ -59,7 +59,7 @@ public class MineCityBukkit implements Server, Listener
         mineCity = new MineCity(this, config, transformer);
         PluginManager pluginManager = plugin.getPluginManager();
         pluginManager.registerEvents(new WorldListener(this), plugin);
-        pluginManager.registerEvents(new VanillaProtections(this), plugin);
+        pluginManager.registerEvents(new EntityProtections(this), plugin);
         pluginManager.registerEvents(this, plugin);
         selectionToolTitle = transformer.toLegacy(new Message("tool.selection.title", LegacyFormat.AQUA+"Selection Tool"));
         selectionToolLore = Arrays.asList(transformer.toMultilineLegacy(

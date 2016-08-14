@@ -42,12 +42,12 @@ import java.util.Set;
 import static br.com.gamemods.minecity.api.permission.PermissionFlag.*;
 import static br.com.gamemods.minecity.bukkit.BukkitUtil.optional;
 
-public class VanillaProtections extends AbstractProtection
+public class EntityProtections extends AbstractProtection
 {
     private Set<Egg> eggs = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
     private Set<EnderPearl> pearls = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
 
-    public VanillaProtections(@NotNull MineCityBukkit plugin)
+    public EntityProtections(@NotNull MineCityBukkit plugin)
     {
         super(plugin);
     }
