@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.bukkit;
+package br.com.gamemods.minecity.bukkit.protection;
 
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
@@ -6,7 +6,8 @@ import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
-import br.com.gamemods.minecity.bukkit.protection.AbstractProtection;
+import br.com.gamemods.minecity.bukkit.BukkitUtil19;
+import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Island;

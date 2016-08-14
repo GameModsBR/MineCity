@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.bukkit.command.BukkitCommandSender;
 import br.com.gamemods.minecity.bukkit.command.BukkitLocatableSender;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
+import br.com.gamemods.minecity.bukkit.protection.EntityProtections;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
