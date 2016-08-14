@@ -6,7 +6,7 @@ import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
-import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
+import br.com.gamemods.minecity.bukkit.protection.AbstractProtection;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Island;
@@ -22,7 +22,6 @@ import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -35,75 +34,22 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.BlockProjectileSource;
 import org.bukkit.projectiles.ProjectileSource;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 
-import static br.com.gamemods.minecity.api.CollectionUtil.optionalStream;
-import static br.com.gamemods.minecity.api.permission.FlagHolder.can;
-import static br.com.gamemods.minecity.api.permission.FlagHolder.wrapDeny;
 import static br.com.gamemods.minecity.api.permission.PermissionFlag.*;
 import static br.com.gamemods.minecity.bukkit.BukkitUtil.optional;
 
-public class VanillaProtections implements Listener
+public class VanillaProtections extends AbstractProtection
 {
     private Set<Egg> eggs = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
     private Set<EnderPearl> pearls = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
 
-    @NotNull
-    private final MineCityBukkit plugin;
-
     public VanillaProtections(@NotNull MineCityBukkit plugin)
     {
-        this.plugin = plugin;
-    }
-
-    private boolean check(Location location, Player player, PermissionFlag... flags)
-    {
-        BlockPos blockPos = plugin.blockPos(location);
-        ClaimedChunk chunk = plugin.mineCity.provideChunk(blockPos.getChunk());
-        FlagHolder holder = chunk.getFlagHolder(blockPos);
-
-        BukkitPlayer user = plugin.player(player);
-        Optional<Message> denial;
-        if(flags.length == 1)
-            denial = holder.can(user, flags[0]);
-        else
-        {
-            //noinspection unchecked
-            Supplier<Optional<Message>>[] array = Arrays.stream(flags).map(flag -> can(user, flag, holder)).toArray(Supplier[]::new);
-            denial = optionalStream(array).findFirst();
-        }
-
-        if(denial.isPresent())
-        {
-            user.send(wrapDeny(denial.get()));
-            return true;
-        }
-
-        return false;
-    }
-
-    @Nullable
-    private <E extends Entity> E getNearest(@NotNull Set<E> set, @NotNull Location loc)
-    {
-        double best = Double.MAX_VALUE;
-        E nearest = null;
-        for(E entity : set)
-        {
-            double dist = loc.distanceSquared(entity.getLocation());
-            if(dist < best)
-            {
-                best = dist;
-                nearest = entity;
-            }
-        }
-
-        return nearest;
+        super(plugin);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
