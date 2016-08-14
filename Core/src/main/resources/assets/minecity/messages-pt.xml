@@ -555,101 +555,101 @@
             <msg id="not-pending">Você não tem nenhum código de confirmação pendente</msg>
         </confirm>
         <plot>
-            <nobody>
-                <enter>
-                    <msg id="no-exception"><red><b>Ninguém</b></red> pode entrar em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
-                    <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode entrar em ${name}, isto será mostrado quando alguém tentar:
-                        <br/><red>${msg}</red><br/><br/>
-                        <yellow>Excessões:</yellow><br/>${exceptions}
-                    </msg>
-                </enter>
-                <pickup>
-                    <msg id="no-exception"><red><b>Ninguém</b></red> pode coletar itens em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
-                    <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode coletar itens em ${name}, isto será mostrado quando alguém tentar:
-                        <br/><red>${msg}</red><br/><br/>
-                        <yellow>Excessões:</yellow><br/>${exceptions}
-                    </msg>
-                </pickup>
-                <pvp>
-                    <msg id="no-exception"><red><b>Ninguém</b></red> pode atacar jogadores em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
-                    <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode atacar jogadores em ${name}, isto será mostrado quando alguém tentar:
-                        <br/><red>${msg}</red><br/><br/>
-                        <yellow>Excessões:</yellow><br/>${exceptions}
-                    </msg>
-                </pvp>
-                <pvc>
-                    <msg id="no-exception"><red><b>Ninguém</b></red> pode atacar criaturas em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
-                    <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode atacar criaturas em ${name}, isto será mostrado quando alguém tentar:
-                        <br/><red>${msg}</red><br/><br/>
-                        <yellow>Excessões:</yellow><br/>${exceptions}
-                    </msg>
-                </pvc>
-                <modify>
-                    <msg id="no-exception"><red><b>Ninguém</b></red> pode modificar ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
-                    <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode modificar ${name}, isto será mostrado quando alguém tentar:
-                        <br/><red>${msg}</red><br/><br/>
-                        <yellow>Excessões:</yellow><br/>${exceptions}
-                    </msg>
-                </modify>
-                <msg id="click.no-exception"><red><b>Ninguém</b></red> pode clicar em coisas em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
-                <msg id="click.except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode clicar em coisas em ${name}, isto será mostrado quando alguém tentar:
-                    <br/><red>${msg}</red><br/><br/>
-                    <yellow>Excessões:</yellow><br/>${exceptions}
-                </msg>
-                <msg id="open.no-exception"><red><b>Ninguém</b></red> pode abrir contêiners em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
-                <msg id="open.except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode abrir contêiners em ${name}, isto será mostrado quando alguém tentar:
-                    <br/><red>${msg}</red><br/><br/>
-                    <yellow>Excessões:</yellow><br/>${exceptions}
-                </msg>
-            </nobody>
-            <everybody>
-                <enter>
-                    <msg id="no-exception"><green><b>Todos</b></green> podem entrar em ${name}</msg>
-                    <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem entrar em ${name}
-                        <br/><br/>
-                        <yellow>Excessões:</yellow><br/>${exceptions}
-                    </msg>
-                </enter>
-                <pickup>
-                    <msg id="no-exception"><green><b>Todos</b></green> pode coletar itens em ${name}</msg>
-                    <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode coletar itens em ${name}
-                        <br/><br/>
-                        <yellow>Excessões:</yellow><br/>${exceptions}
-                    </msg>
-                </pickup>
-                <pvp>
-                    <msg id="no-exception"><green><b>Todos</b></green> pode atacar jogadores em ${name}</msg>
-                    <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode atacar jogadores em ${name}
-                        <br/><br/>
-                        <yellow>Excessões:</yellow><br/>${exceptions}
-                    </msg>
-                </pvp>
-                <pvc>
-                    <msg id="no-exception"><green><b>Todos</b></green> pode atacar criaturas em ${name}</msg>
-                    <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode atacar criaturas em ${name}
-                        <br/><br/>
-                        <yellow>Excessões:</yellow><br/>${exceptions}
-                    </msg>
-                </pvc>
-                <modify>
-                    <msg id="no-exception"><green><b>Todos</b></green> pode modificar ${name}</msg>
-                    <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode modificar ${name}
-                        <br/><br/>
-                        <yellow>Excessões:</yellow><br/>${exceptions}
-                    </msg>
-                </modify>
-                <msg id="click.no-exception"><green><b>Todos</b></green> pode clicar em coisas em ${name}</msg>
-                <msg id="click.except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode clicar em coisas em ${name}
-                    <br/><br/>
-                    <yellow>Excessões:</yellow><br/>${exceptions}
-                </msg>
-                <msg id="open.no-exception"><green><b>Todos</b></green> pode abrir contêiners em ${name}</msg>
-                <msg id="open.except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode abrir contêiners em ${name}
-                    <br/><br/>
-                    <yellow>Excessões:</yellow><br/>${exceptions}
-                </msg>
-            </everybody>
             <perms>
+                <nobody>
+                    <enter>
+                        <msg id="no-exception"><red><b>Ninguém</b></red> pode entrar em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode entrar em ${name}, isto será mostrado quando alguém tentar:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </enter>
+                    <pickup>
+                        <msg id="no-exception"><red><b>Ninguém</b></red> pode coletar itens em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode coletar itens em ${name}, isto será mostrado quando alguém tentar:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </pickup>
+                    <pvp>
+                        <msg id="no-exception"><red><b>Ninguém</b></red> pode atacar jogadores em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode atacar jogadores em ${name}, isto será mostrado quando alguém tentar:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </pvp>
+                    <pvc>
+                        <msg id="no-exception"><red><b>Ninguém</b></red> pode atacar criaturas em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode atacar criaturas em ${name}, isto será mostrado quando alguém tentar:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </pvc>
+                    <modify>
+                        <msg id="no-exception"><red><b>Ninguém</b></red> pode modificar ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode modificar ${name}, isto será mostrado quando alguém tentar:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </modify>
+                    <msg id="click.no-exception"><red><b>Ninguém</b></red> pode clicar em coisas em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                    <msg id="click.except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode clicar em coisas em ${name}, isto será mostrado quando alguém tentar:
+                        <br/><red>${msg}</red><br/><br/>
+                        <yellow>Excessões:</yellow><br/>${exceptions}
+                    </msg>
+                    <msg id="open.no-exception"><red><b>Ninguém</b></red> pode abrir contêiners em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                    <msg id="open.except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode abrir contêiners em ${name}, isto será mostrado quando alguém tentar:
+                        <br/><red>${msg}</red><br/><br/>
+                        <yellow>Excessões:</yellow><br/>${exceptions}
+                    </msg>
+                </nobody>
+                <everybody>
+                    <enter>
+                        <msg id="no-exception"><green><b>Todos</b></green> podem entrar em ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem entrar em ${name}
+                            <br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </enter>
+                    <pickup>
+                        <msg id="no-exception"><green><b>Todos</b></green> pode coletar itens em ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode coletar itens em ${name}
+                            <br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </pickup>
+                    <pvp>
+                        <msg id="no-exception"><green><b>Todos</b></green> pode atacar jogadores em ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode atacar jogadores em ${name}
+                            <br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </pvp>
+                    <pvc>
+                        <msg id="no-exception"><green><b>Todos</b></green> pode atacar criaturas em ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode atacar criaturas em ${name}
+                            <br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </pvc>
+                    <modify>
+                        <msg id="no-exception"><green><b>Todos</b></green> pode modificar ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode modificar ${name}
+                            <br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </modify>
+                    <msg id="click.no-exception"><green><b>Todos</b></green> pode clicar em coisas em ${name}</msg>
+                    <msg id="click.except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode clicar em coisas em ${name}
+                        <br/><br/>
+                        <yellow>Excessões:</yellow><br/>${exceptions}
+                    </msg>
+                    <msg id="open.no-exception"><green><b>Todos</b></green> pode abrir contêiners em ${name}</msg>
+                    <msg id="open.except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode abrir contêiners em ${name}
+                        <br/><br/>
+                        <yellow>Excessões:</yellow><br/>${exceptions}
+                    </msg>
+                </everybody>
                 <msg id="type-city">Digite um nome de cidade</msg>
                 <msg id="not-claimed">Você não está dentro de um lote</msg>
                 <msg id="not-found">Nenhum lote foi encontrado com ${search}</msg>
