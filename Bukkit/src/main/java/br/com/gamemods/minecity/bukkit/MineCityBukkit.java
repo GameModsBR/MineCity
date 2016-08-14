@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.bukkit.command.BukkitCommandSender;
 import br.com.gamemods.minecity.bukkit.command.BukkitLocatableSender;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
+import br.com.gamemods.minecity.bukkit.protection.BlockProtections;
 import br.com.gamemods.minecity.bukkit.protection.EntityProtections;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -61,6 +62,7 @@ public class MineCityBukkit implements Server, Listener
         PluginManager pluginManager = plugin.getPluginManager();
         pluginManager.registerEvents(new WorldListener(this), plugin);
         pluginManager.registerEvents(new EntityProtections(this), plugin);
+        pluginManager.registerEvents(new BlockProtections(this), plugin);
         pluginManager.registerEvents(this, plugin);
         selectionToolTitle = transformer.toLegacy(new Message("tool.selection.title", LegacyFormat.AQUA+"Selection Tool"));
         selectionToolLore = Arrays.asList(transformer.toMultilineLegacy(
