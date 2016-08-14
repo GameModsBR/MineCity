@@ -23,6 +23,7 @@ import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.powermock.api.mockito.PowerMockito;
@@ -135,6 +136,7 @@ public class MineCityForgeModTest
     }
 
     @Test
+    @Ignore
     public void testCommandSending() throws Exception
     {
         String xml =
