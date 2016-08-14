@@ -18,6 +18,11 @@ public enum PermissionFlag
     PICKUP(true, true, false),
 
     /**
+     * Allows to harvest crops, milk and wool. The crops will auto-replant.
+     */
+    HARVEST(true, true, false),
+
+    /**
      * Allows to open containers, like chests and furnaces
      */
     OPEN(true, false, false),

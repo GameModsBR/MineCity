@@ -82,6 +82,11 @@ public final class ClaimedChunk
         return getIsland().<FlagHolder>map(Island::getCity).orElse(chunk.world.nature);
     }
 
+    public FlagHolder getFlagHolder(BlockPos pos)
+    {
+        return getFlagHolder(pos.x, pos.y, pos.z);
+    }
+
     @NotNull
     public Optional<City> getCity()
     {
