@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.structure;
 
+import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import org.jetbrains.annotations.NotNull;
@@ -65,6 +66,20 @@ public final class ClaimedChunk
         if(owner instanceof Island) return Optional.of((Island) owner);
         if(owner instanceof Inconsistency) return Optional.of(Inconsistency.getInconsistentIsland());
         return Optional.empty();
+    }
+
+
+
+    public FlagHolder getFlagHolder(int blockX, int blockY, int blockZ)
+    {
+        if(reserve)
+            return chunk.world.nature;
+
+        Optional<Plot> plot = getPlotAt(blockX, blockY, blockZ);
+        if(plot.isPresent())
+            return plot.get();
+
+        return getIsland().<FlagHolder>map(Island::getCity).orElse(chunk.world.nature);
     }
 
     @NotNull

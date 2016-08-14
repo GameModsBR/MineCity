@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.api.permission;
 
+import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import org.jetbrains.annotations.NotNull;
@@ -34,5 +35,10 @@ public interface FlagHolder
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 ;
+    }
+
+    static Message wrapDeny(Message message)
+    {
+        return new Message("", LegacyFormat.RED+"${msg}", new Object[]{"msg", message});
     }
 }

@@ -135,6 +135,12 @@ public class MineCity
     }
 
     @NotNull
+    public ClaimedChunk provideChunk(@NotNull ChunkPos pos)
+    {
+        return getChunk(pos).orElseGet(()-> Inconsistency.claim(pos));
+    }
+
+    @NotNull
     public ChunkPos provideChunk(@NotNull WorldDim world, int x, int z)
     {
         return getChunkProvider().map(p-> p.getChunk(world, x, z)).orElseGet(()-> new ChunkPos(world, x, z));

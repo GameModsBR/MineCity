@@ -121,11 +121,12 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
         World worldObj = location.getWorld();
         WorldDim worldDim = plugin.world(worldObj);
         Optional<Message> message;
+        Entity vehicle = sender.getVehicle();
         if(lastChunk.x != chunkX || lastChunk.z != chunkZ || !lastChunk.world.equals(worldDim))
         {
             ChunkPos chunk = new ChunkPos(worldDim, chunkX, chunkZ);
             ClaimedChunk claim = plugin.mineCity.getChunk(chunk).orElseGet(()-> Inconsistency.claim(chunk));
-            City city = claim.getCity().orElse(null);
+            City city = claim.reserve? null : claim.getCity().orElse(null);
             Plot plot = null;
             if(city != null)
             {
@@ -135,6 +136,8 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
                     message = optionalStream(
                             can(this, PermissionFlag.ENTER, plot),
                             can(this, PermissionFlag.ENTER, city),
+                            can(this, PermissionFlag.RIDE, vehicle == null? null : plot),
+                            can(this, PermissionFlag.RIDE, vehicle == null? null : city),
                             can(this, PermissionFlag.LEAVE, lastPlot),
                             can(this, PermissionFlag.LEAVE, lastCity),
                             can(this, PermissionFlag.LEAVE,
@@ -158,6 +161,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
                 {
                     message = optionalStream(
                             can(this, PermissionFlag.ENTER, plot),
+                            can(this, PermissionFlag.RIDE, vehicle == null? null : plot),
                             can(this, PermissionFlag.LEAVE, lastPlot)
                     ).findFirst();
 
@@ -172,8 +176,10 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
             }
             else if(lastCity != null)
             {
+                Nature nature = plugin.mineCity.nature(chunk.world);
                 message = optionalStream(
-                        can(this, PermissionFlag.ENTER, plugin.mineCity.nature(chunk.world)),
+                        can(this, PermissionFlag.ENTER, nature),
+                        can(this, PermissionFlag.RIDE, vehicle == null? null : nature),
                         can(this, PermissionFlag.LEAVE, lastPlot),
                         can(this, PermissionFlag.LEAVE, lastCity)
                 ).findFirst();
@@ -187,8 +193,10 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
             }
             else if(!lastChunk.world.equals(chunk.world))
             {
+                Nature nature = plugin.mineCity.nature(chunk.world);
                 message = optionalStream(
-                        can(this, PermissionFlag.ENTER, plugin.mineCity.nature(chunk.world)),
+                        can(this, PermissionFlag.ENTER, nature),
+                        can(this, PermissionFlag.RIDE, vehicle == null? null : nature),
                         can(this, PermissionFlag.LEAVE, plugin.mineCity.nature(lastChunk.world))
                 ).findFirst();
 
@@ -221,6 +229,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
                 {
                     message = optionalStream(
                             can(this, PermissionFlag.ENTER, plot),
+                            can(this, PermissionFlag.RIDE, vehicle == null? null : plot),
                             can(this, PermissionFlag.LEAVE, lastPlot)
                     ).findFirst();
 
@@ -259,7 +268,6 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
             }
 
 
-            Entity vehicle = sender.getVehicle();
             if(vehicle == null)
                 teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
             else

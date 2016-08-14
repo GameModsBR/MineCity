@@ -59,6 +59,7 @@ public class MineCityBukkit implements Server, Listener
         mineCity = new MineCity(this, config, transformer);
         PluginManager pluginManager = plugin.getPluginManager();
         pluginManager.registerEvents(new WorldListener(this), plugin);
+        pluginManager.registerEvents(new VanillaProtections(this), plugin);
         pluginManager.registerEvents(this, plugin);
         selectionToolTitle = transformer.toLegacy(new Message("tool.selection.title", LegacyFormat.AQUA+"Selection Tool"));
         selectionToolLore = Arrays.asList(transformer.toMultilineLegacy(
@@ -183,6 +184,11 @@ public class MineCityBukkit implements Server, Listener
         World other = plugin.getServer().getWorld(world.dir);
         world.instance = other;
         return Optional.ofNullable(other);
+    }
+
+    public ChunkPos chunk(Location loc)
+    {
+        return new ChunkPos(world(loc.getWorld()), loc.getBlockX()>>4, loc.getBlockZ()>>4);
     }
 
     public ChunkPos chunk(Chunk chunk)
