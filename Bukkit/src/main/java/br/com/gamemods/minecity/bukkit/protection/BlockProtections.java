@@ -16,10 +16,13 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.CocoaPlant;
 import org.jetbrains.annotations.NotNull;
 
@@ -245,6 +248,105 @@ public class BlockProtections extends AbstractProtection
         {
             event.setCancelled(true);
             plugin.plugin.getScheduler().runTaskLater(plugin.plugin, player::updateInventory, 5);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerInteract(PlayerInteractEvent event)
+    {
+        Action action = event.getAction();
+        if(action == Action.PHYSICAL)
+        {
+            Block block = event.getClickedBlock();
+            switch(block.getType())
+            {
+                case CARROT:
+                case CROPS:
+                case BEETROOT_BLOCK:
+                case PUMPKIN_STEM:
+                case MELON_STEM:
+                case POTATO:
+                    if(check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                        event.setCancelled(true);
+            }
+        }
+        else if(action == Action.RIGHT_CLICK_BLOCK)
+        {
+            Block block = event.getClickedBlock();
+            switch(block.getType())
+            {
+                case CHEST:
+                case TRAPPED_CHEST:
+                case FURNACE:
+                case HOPPER:
+                case ANVIL:
+                case DROPPER:
+                case DISPENSER:
+                case BEACON:
+                case BREWING_STAND:
+                    if(check(block.getLocation(), event.getPlayer(), PermissionFlag.OPEN))
+                        event.setCancelled(true);
+                    return;
+
+                case STONE_BUTTON:
+                case WOOD_BUTTON:
+                case LEVER:
+                case DARK_OAK_DOOR:
+                case ACACIA_DOOR:
+                case BIRCH_DOOR:
+                case JUNGLE_DOOR:
+                case SPRUCE_DOOR:
+                case TRAP_DOOR:
+                case WOODEN_DOOR:
+                    if(check(block.getLocation(), event.getPlayer(), PermissionFlag.CLICK))
+                        event.setCancelled(true);
+                    return;
+
+                case GRASS:
+                    switch(event.getMaterial())
+                    {
+                        case DIAMOND_SPADE:
+                        case IRON_SPADE:
+                        case STONE_SPADE:
+                        case WOOD_SPADE:
+                        case GOLD_SPADE:
+                        case IRON_HOE:
+                        case STONE_HOE:
+                        case WOOD_HOE:
+                        case DIAMOND_HOE:
+                            if(check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                                event.setCancelled(true);
+
+                    }
+                    // fall to check the bone meal usage
+
+                case CARROT:
+                case CROPS:
+                case BEETROOT_BLOCK:
+                case PUMPKIN_STEM:
+                case MELON_STEM:
+                case POTATO:
+                case COCOA:
+                    if(event.hasItem())
+                    {
+                        ItemStack item = event.getItem();
+                        if(item.getType() == Material.INK_SACK && item.getDurability() == 15)
+                        {
+                            if(check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                            {
+                                event.setCancelled(true);
+                                return;
+                            }
+
+                            //TODO Check around
+                        }
+                    }
+                    break;
+
+                case TNT:
+                    if(event.getMaterial() == Material.FLINT_AND_STEEL && check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                        event.setCancelled(true);
+            }
         }
     }
 }
