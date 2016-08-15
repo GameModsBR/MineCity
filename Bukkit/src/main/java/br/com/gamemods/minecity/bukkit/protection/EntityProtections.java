@@ -1,19 +1,25 @@
 package br.com.gamemods.minecity.bukkit.protection;
 
+import br.com.gamemods.minecity.MineCity;
+import br.com.gamemods.minecity.api.Lazy;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
+import br.com.gamemods.minecity.bukkit.BukkitUtil;
 import br.com.gamemods.minecity.bukkit.BukkitUtil19;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
+import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import com.google.common.collect.MapMaker;
+import org.bukkit.Art;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
 import org.bukkit.entity.minecart.ExplosiveMinecart;
 import org.bukkit.entity.minecart.PoweredMinecart;
@@ -442,14 +448,50 @@ public class EntityProtections extends AbstractProtection
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onHangingPlace(HangingPlaceEvent event)
     {
-        if(check(event.getBlock().getLocation(), event.getPlayer(), MODIFY))
+        Block block = event.getBlock();
+        BlockFace placeFace = event.getBlockFace();
+        Location location = block.getLocation().add(placeFace.getModX(), placeFace.getModY(), placeFace.getModZ());
+        if(check(location, event.getPlayer(), MODIFY))
             event.setCancelled(true);
+        else
+        {
+            Lazy<ClaimedChunk> lowestClaim = new Lazy<>(()-> plugin.mineCity.provideChunk(plugin.chunk(location)));
+            plugin.plugin.getScheduler().runTask(plugin.plugin, ()->{
+                location.add(0.5, 0.5, 0.5);
+                location.getWorld().getNearbyEntities(location, 1, 1, 1).stream()
+                        .filter(e-> e.getType() == EntityType.PAINTING).map(e-> (Painting) e)
+                        .filter(p-> {
+                            Art art = p.getArt();
+                            return art.getBlockWidth() > 1 || art.getBlockHeight() > 1;
+                        })
+                        .filter(p->{
+                            Art art = p.getArt();
+                            BlockFace face = BukkitUtil.right(p.getAttachedFace());
+
+                            ClaimedChunk ac = lowestClaim.get();
+                            BlockPos a = plugin.blockPos(p.getLocation());
+
+                            int width = art.getBlockWidth() -1;
+                            BlockPos b = a.add(face.getModX() * width, art.getBlockHeight() -1, face.getModZ() * width);
+                            ClaimedChunk bc = plugin.mineCity.provideChunk(b.getChunk(), ac);
+
+                            return !ac.getFlagHolder(a).equals(bc.getFlagHolder(b));
+                        })
+                        .forEachOrdered(p->{
+                            p.getWorld().dropItemNaturally(
+                                    location,
+                                    new ItemStack(Material.PAINTING));
+                            p.remove();
+                        });
+            });
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onHangingBreakByEntity(HangingBreakByEntityEvent event)
     {
         Entity remover = event.getRemover();
+        Hanging entity = event.getEntity();
         if(remover instanceof Projectile)
         {
             Object shooter = getShooter(((Projectile) remover).getShooter(), true);
@@ -457,13 +499,57 @@ public class EntityProtections extends AbstractProtection
                 remover = (Entity) shooter;
             else if(shooter instanceof PlayerID)
             {
-                if(check(event.getEntity().getLocation(), (PlayerID) shooter, MODIFY).isPresent())
+                if(check(entity.getLocation(), (PlayerID) shooter, MODIFY).isPresent())
                     event.setCancelled(true);
                 return;
             }
         }
 
-        if(remover instanceof Player && check(event.getEntity().getLocation(), (Player) remover, MODIFY))
+        // TODO Skeleton shooting, creeper, tnt, crystal explosions...
+        if(!(remover instanceof Player))
+        {
+            event.setCancelled(true);
+            return;
+        }
+
+        if(entity instanceof Painting)
+        {
+            Painting painting = (Painting) entity;
+            Art art = painting.getArt();
+            int width = art.getBlockWidth();
+            int height = art.getBlockHeight();
+            if(width > 1 || height > 1)
+            {
+                BlockFace face = BukkitUtil.right(painting.getAttachedFace());
+                BlockPos a = plugin.blockPos(painting.getLocation());
+                width -= 1;
+                BlockPos b = a.add(face.getModX() * width, height -1, face.getModZ() * width);
+
+                ClaimedChunk ac = plugin.mineCity.provideChunk(a.getChunk());
+                ClaimedChunk bc = plugin.mineCity.provideChunk(b.getChunk(), ac);
+
+                FlagHolder ah = ac.getFlagHolder(a);
+                FlagHolder bh = bc.getFlagHolder(b);
+
+                BukkitPlayer player = plugin.player((Player) remover);
+                Optional<Message> ad = ah.can(player, MODIFY);
+                if(ad.isPresent())
+                {
+                    Optional<Message> bd = bh.can(player, MODIFY);
+                    if(bd.isPresent())
+                    {
+                        event.setCancelled(true);
+                        Message denial = MineCity.RANDOM.nextBoolean()? bd.get() : ad.get();
+                        player.send(denial);
+                        return;
+                    }
+                }
+
+                return;
+            }
+        }
+
+        if(check(entity.getLocation(), (Player) remover, MODIFY))
             event.setCancelled(true);
     }
 }
