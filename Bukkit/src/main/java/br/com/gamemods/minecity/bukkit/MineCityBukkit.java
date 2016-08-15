@@ -206,6 +206,14 @@ public class MineCityBukkit implements Server, Listener
         return new BlockPos(world(block.getWorld()), block.getX(), block.getY(), block.getZ());
     }
 
+    public BlockPos blockPos(BlockPos base, Block block)
+    {
+        return block.getWorld().equals(base.world.instance)?
+                new BlockPos(base, block.getX(), block.getY(), block.getZ())
+                : blockPos(block)
+                ;
+    }
+
     public BlockPos blockPos(Location location)
     {
         return new BlockPos(world(location.getWorld()), location.getBlockX(), location.getBlockY(), location.getBlockZ());

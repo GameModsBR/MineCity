@@ -135,6 +135,15 @@ public class MineCity
     }
 
     @NotNull
+    public ClaimedChunk provideChunk(@NotNull ChunkPos pos, @Nullable ClaimedChunk cache)
+    {
+        if(cache != null && pos.equals(cache.chunk))
+            return cache;
+
+        return provideChunk(pos);
+    }
+
+    @NotNull
     public ClaimedChunk provideChunk(@NotNull ChunkPos pos)
     {
         return getChunk(pos).orElseGet(()-> Inconsistency.claim(pos));

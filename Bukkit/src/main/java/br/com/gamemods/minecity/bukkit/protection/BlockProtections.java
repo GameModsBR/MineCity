@@ -15,6 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -451,5 +452,37 @@ public class BlockProtections extends AbstractProtection
         }
 
         event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onBlockForm(EntityBlockFormEvent event)
+    {
+        BlockState newState = event.getNewState();
+        if(newState.getType() == Material.FROSTED_ICE)
+        {
+            Block block = event.getBlock();
+            Entity entity = event.getEntity();
+            if(entity instanceof Player)
+            {
+                if(silentCheck(block.getLocation(), (Player) entity, PermissionFlag.MODIFY).isPresent())
+                    event.setCancelled(true);
+            }
+            else
+            {
+                BlockPos entityPos = plugin.blockPos(entity.getLocation());
+                BlockPos blockPos = plugin.blockPos(entityPos, block);
+                ClaimedChunk entityClaim = plugin.mineCity.provideChunk(entityPos.getChunk());
+                ClaimedChunk blockClaim = plugin.mineCity.provideChunk(entityClaim.getChunk(), entityClaim);
+
+                FlagHolder entityHolder = entityClaim.getFlagHolder(entityPos);
+                FlagHolder blockHolder = blockClaim.getFlagHolder(blockPos);
+                if(!entityHolder.equals(blockHolder))
+                {
+                    PlayerID owner = entityHolder.owner();
+                    if(owner == null || blockHolder.can(owner, PermissionFlag.MODIFY).isPresent())
+                        event.setCancelled(true);
+                }
+            }
+        }
     }
 }

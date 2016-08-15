@@ -68,20 +68,8 @@ public abstract class AbstractProtection implements Listener
 
     protected boolean check(@NotNull Location location, @NotNull Player player, @NotNull PermissionFlag... flags)
     {
-        BlockPos blockPos = plugin.blockPos(location);
-        ClaimedChunk chunk = plugin.mineCity.provideChunk(blockPos.getChunk());
-        FlagHolder holder = chunk.getFlagHolder(blockPos);
-
         BukkitPlayer user = plugin.player(player);
-        Optional<Message> denial;
-        if(flags.length == 1)
-            denial = holder.can(user, flags[0]);
-        else
-        {
-            //noinspection unchecked
-            Supplier<Optional<Message>>[] array = Arrays.stream(flags).map(flag -> can(user, flag, holder)).toArray(Supplier[]::new);
-            denial = optionalStream(array).findFirst();
-        }
+        Optional<Message> denial = silentCheck(location, user, flags);
 
         if(denial.isPresent())
         {
@@ -90,6 +78,28 @@ public abstract class AbstractProtection implements Listener
         }
 
         return false;
+    }
+
+    protected Optional<Message> silentCheck(@NotNull Location location, @NotNull Player player, @NotNull PermissionFlag... flags)
+    {
+        return silentCheck(location, plugin.player(player), flags);
+    }
+
+    protected Optional<Message> silentCheck(@NotNull Location location, @NotNull BukkitPlayer user, @NotNull PermissionFlag... flags)
+    {
+        BlockPos blockPos = plugin.blockPos(location);
+        ClaimedChunk chunk = plugin.mineCity.provideChunk(blockPos.getChunk());
+        FlagHolder holder = chunk.getFlagHolder(blockPos);
+
+        Optional<Message> denial;
+        if(flags.length == 1)
+            return holder.can(user, flags[0]);
+        else
+        {
+            //noinspection unchecked
+            Supplier<Optional<Message>>[] array = Arrays.stream(flags).map(flag -> can(user, flag, holder)).toArray(Supplier[]::new);
+            return optionalStream(array).findFirst();
+        }
     }
 
     protected Optional<Message> check(@NotNull Location location, @NotNull Identity<?> identity, @NotNull PermissionFlag... flags)
