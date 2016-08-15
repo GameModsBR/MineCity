@@ -26,10 +26,7 @@ import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.*;
@@ -42,10 +39,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static br.com.gamemods.minecity.api.permission.PermissionFlag.*;
 import static br.com.gamemods.minecity.bukkit.BukkitUtil.optional;
@@ -54,7 +48,7 @@ public class EntityProtections extends AbstractProtection
 {
     private Set<Egg> eggs = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
     private Set<EnderPearl> pearls = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
-    private Map<Item, Player> drops = new MapMaker().weakKeys().weakValues().makeMap();
+    private Map<UUID, Player> drops = new MapMaker().weakKeys().weakValues().makeMap();
 
     public EntityProtections(@NotNull MineCityBukkit plugin)
     {
@@ -595,7 +589,7 @@ public class EntityProtections extends AbstractProtection
     {
         Item item = event.getItemDrop();
         BukkitPlayer player = plugin.player(event.getPlayer());
-        Optional<Message> denial = canCollect(player, item);
+        Optional<Message> denial = canCollect(player, isHarvest(item.getItemStack()), item);
         if(denial.isPresent())
         {
             event.setCancelled(true);
@@ -603,7 +597,7 @@ public class EntityProtections extends AbstractProtection
         }
         else
         {
-            drops.put(item, player.sender);
+            drops.put(item.getUniqueId(), player.sender);
             new BukkitRunnable()
             {
                 @Override
@@ -611,12 +605,21 @@ public class EntityProtections extends AbstractProtection
                 {
                     if(item.isDead())
                     {
-                        drops.remove(item);
+                        drops.remove(item.getUniqueId());
                         cancel();
                     }
                 }
             }.runTaskTimer(plugin.plugin, 10*20, 5*20);
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onItemMerge(ItemMergeEvent event)
+    {
+        Player a = drops.get(event.getEntity().getUniqueId());
+        Player b = drops.get(event.getTarget().getUniqueId());
+        if(!Objects.equals(a, b))
+            event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -629,35 +632,47 @@ public class EntityProtections extends AbstractProtection
         }
 
         Item item = event.getItem();
-        Player dropper = drops.get(item);
+        Player dropper = drops.get(item.getUniqueId());
         Player entityPlayer = event.getPlayer();
         if(dropper != null && dropper.equals(entityPlayer))
             return;
 
         BukkitPlayer player = plugin.player(entityPlayer);
-        if(player.pickupDelay > 0)
+        boolean harvest = isHarvest(item.getItemStack());
+        if(harvest)
         {
-            player.pickupDelay--;
-            event.setCancelled(true);
-            return;
+            if(player.pickupHarvestDelay > 0)
+            {
+                player.pickupHarvestDelay--;
+                event.setCancelled(true);
+                return;
+            }
+        }
+        else
+        {
+            if(player.pickupRandomDelay > 0)
+            {
+                player.pickupRandomDelay--;
+                event.setCancelled(true);
+                return;
+            }
         }
 
-        Optional<Message> denial = canCollect(player, item);
+        Optional<Message> denial = canCollect(player, harvest, item);
         if(denial.isPresent())
         {
             event.setCancelled(true);
             player.send(FlagHolder.wrapDeny(denial.get()));
-            player.pickupDelay = 40;
+            if(harvest)
+                player.pickupHarvestDelay = 40 ;
+            else
+                player.pickupRandomDelay = 40;
         }
     }
 
-    public Optional<Message> canCollect(BukkitPlayer player, Item item)
+    public static boolean isHarvest(@NotNull ItemStack item)
     {
-        FlagHolder holder = plugin.getFlagHolder(item.getLocation());
-
-        Optional<Message> denial;
-        ItemStack stack = item.getItemStack();
-        switch(stack.getType())
+        switch(item.getType())
         {
             case EGG:
             case BEETROOT:
@@ -674,12 +689,26 @@ public class EntityProtections extends AbstractProtection
             case COCOA:
             case SUGAR_CANE:
             case CACTUS:
-                denial = holder.can(player, HARVEST);
-                if(!denial.isPresent())
-                    return denial;
-                break;
-            default:
-                denial = Optional.empty();
+                return true;
+        }
+
+        return false;
+    }
+
+    public Optional<Message> canCollect(BukkitPlayer player, boolean harvest, Item item)
+    {
+        FlagHolder holder = plugin.getFlagHolder(item.getLocation());
+
+        Optional<Message> denial;
+        if(harvest)
+        {
+            denial = holder.can(player, HARVEST);
+            if(!denial.isPresent())
+                return denial;
+        }
+        else
+        {
+            denial = Optional.empty();
         }
 
         Optional<Message> pickup = holder.can(player, PICKUP);

@@ -41,7 +41,8 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     private City lastCity;
     private Plot lastPlot;
     private byte movMessageWait = 0;
-    public byte pickupDelay;
+    public byte pickupRandomDelay;
+    public byte pickupHarvestDelay;
 
     public BukkitPlayer(MineCityBukkit plugin, Player player)
     {
