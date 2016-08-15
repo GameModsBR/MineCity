@@ -318,7 +318,8 @@ public final class City extends ExceptStoredHolder
     }
 
     @Nullable
-    public PlayerID getOwner()
+    @Override
+    public PlayerID owner()
     {
         if(invalid)
             return null;

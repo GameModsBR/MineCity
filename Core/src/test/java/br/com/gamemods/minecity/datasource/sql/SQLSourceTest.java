@@ -197,7 +197,7 @@ public class SQLSourceTest
         assertEquals("testcity", city.getIdentityName());
         assertEquals("Test City", city.getName());
         assertEquals(spawn, city.getSpawn());
-        assertEquals(joserobjr, city.getOwner());
+        assertEquals(joserobjr, city.owner());
         assertEquals(1, city.getChunkCount());
         assertEquals(1, city.getSizeX());
         assertEquals(1, city.getSizeZ());
@@ -347,7 +347,7 @@ public class SQLSourceTest
         claim = mineCity.loadChunk(chunk);
         city = claim.getCity().get();
         assertNotNull(city);
-        assertEquals(random, city.getOwner());
+        assertEquals(random, city.owner());
 
         BlockPos pos = new BlockPos(overworld, spawn.x, spawn.y, spawn.z).getChunk().add(Direction.NORTH, 2).getMaxBlock();
         city.setSpawn(pos);
@@ -357,7 +357,7 @@ public class SQLSourceTest
         claim = mineCity.loadChunk(chunk);
         city = claim.getCity().get();
         assertNotNull(city);
-        assertEquals(random, city.getOwner());
+        assertEquals(random, city.owner());
         assertEquals(pos, city.getSpawn());
     }
 

@@ -78,7 +78,7 @@ public class SQLCityStorage implements ICityStorage
     @Override
     public void setOwner(@NotNull City city, @Nullable PlayerID owner) throws DataSourceException, IllegalStateException
     {
-        if(Objects.equals(city.getOwner(), owner))
+        if(Objects.equals(city.owner(), owner))
             return;
 
         int cityId = city.getId();
@@ -96,7 +96,7 @@ public class SQLCityStorage implements ICityStorage
                 source.setNullableInt(pst, 1, ownerId);
                 pst.setInt(2, cityId);
                 if(pst.executeUpdate() <= 0)
-                    throw new DataSourceException("Tried to change the owner of "+ cityId+" from "+city.getOwner()+" to "+owner+" but nothing changed");
+                    throw new DataSourceException("Tried to change the owner of "+ cityId+" from "+city.owner()+" to "+owner+" but nothing changed");
             }
         }
         catch(SQLException e)

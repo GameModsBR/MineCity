@@ -71,7 +71,7 @@ public class GroupCommand
                             {"city", city.getName()}, {"group", groupName}
                     }));
 
-        if(!cmd.sender.getPlayerId().equals(group.home.getOwner()))
+        if(!cmd.sender.getPlayerId().equals(group.home.owner()))
             return new CommandResult<>(new Message("cmd.group.delete.no-permission",
                     "You don't have permission to delete groups from ${city}",
                     new Object[]{"city",city.getName()}
@@ -153,9 +153,10 @@ public class GroupCommand
         Set<PlayerID> managers = g.getManagers();
         if(managers.isEmpty())
         {
-            if(g.home.getOwner() != null)
+            PlayerID owner = g.home.owner();
+            if(owner != null)
                 return new Message(prefix+".mayor", "This group is managed by the mayor ${mayor}",
-                        new Object[]{"mayor", g.home.getOwner().getName()}
+                        new Object[]{"mayor", owner.getName()}
                 );
 
             return new Message(prefix+".empty", "This group is managed by the server administrators");
@@ -257,7 +258,7 @@ public class GroupCommand
         if(city == null)
             return new CommandResult<>(new Message("cmd.group.create.not-claimed", "You are not inside a city"));
 
-        if(!cmd.sender.getPlayerId().equals(city.getOwner()))
+        if(!cmd.sender.getPlayerId().equals(city.owner()))
             return new CommandResult<>(new Message("cmd.group.create.no-permission",
                     "You don't have permission to create groups in name of ${city}",
                     new Object[]{"city", city.getName()}
@@ -304,7 +305,7 @@ public class GroupCommand
             }));
 
         PlayerID player = cmd.sender.getPlayerId();
-        if(!player.equals(city.getOwner()))
+        if(!player.equals(city.owner()))
             return new CommandResult<>(new Message("cmd.group.add.manager.no-permission",
                     "You don't have permission to add managers to groups from ${city}",
                     new Object[]{"city", city.getName()}
@@ -357,7 +358,7 @@ public class GroupCommand
             }));
 
         PlayerID player = cmd.sender.getPlayerId();
-        if(!player.equals(city.getOwner()))
+        if(!player.equals(city.owner()))
             return new CommandResult<>(new Message("cmd.group.remove.manager.no-permission",
                     "You don't have permission to demote players from groups from ${city}",
                     new Object[]{"city", city.getName()}
@@ -410,7 +411,7 @@ public class GroupCommand
             }));
 
         PlayerID player = cmd.sender.getPlayerId();
-        if(!player.equals(city.getOwner()) && !group.isManager(player))
+        if(!player.equals(city.owner()) && !group.isManager(player))
             return new CommandResult<>(new Message("cmd.group.add.no-permission",
                     "You don't have permission to add players to groups from ${city}",
                     new Object[]{"city", city.getName()}
@@ -463,7 +464,7 @@ public class GroupCommand
             }));
 
         PlayerID player = cmd.sender.getPlayerId();
-        if(!player.equals(city.getOwner()) && !group.isManager(player))
+        if(!player.equals(city.owner()) && !group.isManager(player))
             return new CommandResult<>(new Message("cmd.group.remove.no-permission",
                     "You don't have permission to remove players from groups from ${city}",
                     new Object[]{"city", city.getName()}

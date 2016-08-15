@@ -394,7 +394,7 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
     {
         for(City city : cities.values())
         {
-            PlayerID owner = city.getOwner();
+            PlayerID owner = city.owner();
             if(owner != null && owner.name.equals(name))
                 return Optional.of(owner);
         }

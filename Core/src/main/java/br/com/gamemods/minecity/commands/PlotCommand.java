@@ -43,7 +43,7 @@ public class PlotCommand
         if(island == null)
             return new CommandResult<>(new Message("cmd.plot.create.not-claimed", "You are not inside a city"));
 
-        if(!cmd.sender.getPlayerId().equals(island.getCity().getOwner()))
+        if(!cmd.sender.getPlayerId().equals(island.getCity().owner()))
             return new CommandResult<>(new Message("cmd.plot.create.no-permission",
                     "You don't have permission to create plots inside ${city}",
                     new Object[]{"city", island.getCity().getName()}
@@ -359,7 +359,7 @@ public class PlotCommand
             ), senderId);
         }
 
-        if(target.equals(plot.getCity().getOwner()))
+        if(target.equals(plot.getCity().owner()))
         {
             String code = cmd.sender.confirm(sender -> {
                 plot.setOwner(target);
@@ -418,7 +418,7 @@ public class PlotCommand
             return new CommandResult<>(new Message("cmd.plot.delete.not-claimed", "You are not inside a plot"));
 
         PlayerID senderId = cmd.sender.getPlayerId();
-        if(!senderId.equals(plot.getCity().getOwner()))
+        if(!senderId.equals(plot.getCity().owner()))
             return new CommandResult<>(new Message("cmd.plot.delete.not-mayor",
                     "Only the mayor of ${city} can delete plots, you can return this plot to the city using /plot return",
                     new Object[]{"city", plot.getCity().getName()}

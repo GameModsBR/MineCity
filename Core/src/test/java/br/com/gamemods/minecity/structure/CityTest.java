@@ -155,7 +155,7 @@ public class CityTest
 
         City city = new City(test.mineCity, "Test City", test.joserobjr, spawn);
         assertTrue(city.getId() > 0);
-        assertEquals(test.joserobjr, city.getOwner());
+        assertEquals(test.joserobjr, city.owner());
         assertEquals(spawn, city.getSpawn());
         assertEquals(1, city.getSizeX());
         assertEquals(1, city.getSizeZ());
@@ -244,10 +244,10 @@ public class CityTest
     {
         City owned = new City(test.mineCity, "Owned", test.joserobjr, new BlockPos(test.overWorld, 456484878, 32, 445454));
 
-        assertEquals(test.joserobjr, owned.getOwner());
+        assertEquals(test.joserobjr, owned.owner());
         PlayerID newOwner = new PlayerID(UUID.randomUUID(), "Randy");
         owned.setOwner(newOwner);
-        assertEquals(newOwner, owned.getOwner());
+        assertEquals(newOwner, owned.owner());
     }
 
     @Test

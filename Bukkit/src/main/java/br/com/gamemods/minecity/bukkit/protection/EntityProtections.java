@@ -139,7 +139,7 @@ public class EntityProtections extends AbstractProtection
                 ChunkPos chunkPos = plugin.chunk(loc);
                 ClaimedChunk chunk = plugin.mineCity.provideChunk(chunkPos);
                 PlayerID owner = chunk.getPlotAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).map(Plot::owner)
-                        .orElseGet(()-> chunk.getIsland().map(Island::getCity).map(City::getOwner).orElse(null));
+                        .orElseGet(()-> chunk.getIsland().map(Island::getCity).map(City::owner).orElse(null));
 
                 if(owner == null)
                     return;
@@ -202,7 +202,7 @@ public class EntityProtections extends AbstractProtection
                 ChunkPos chunkPos = plugin.chunk(loc);
                 ClaimedChunk chunk = plugin.mineCity.provideChunk(chunkPos);
                 PlayerID owner = chunk.getPlotAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).map(Plot::owner)
-                        .orElseGet(()-> chunk.getIsland().map(Island::getCity).map(City::getOwner).orElse(null));
+                        .orElseGet(()-> chunk.getIsland().map(Island::getCity).map(City::owner).orElse(null));
 
                 if(owner == null)
                     return;

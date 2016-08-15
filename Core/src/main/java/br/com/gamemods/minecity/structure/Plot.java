@@ -117,7 +117,7 @@ public final class Plot extends ExceptStoredHolder
             return super.can(identity, action);
         }
 
-        if(identity.equals(island.getCity().getOwner()))
+        if(identity.equals(island.getCity().owner()))
             return Optional.empty();
 
         Status status = strictPermission.getOrDefault(action, emptyMap()).get(identity);
@@ -153,7 +153,7 @@ public final class Plot extends ExceptStoredHolder
             return super.can(entity, action);
         }
 
-        if(identity.equals(island.getCity().getOwner()))
+        if(identity.equals(island.getCity().owner()))
             return Optional.empty();
 
         Status status = getDirectPermission(entity, action);
@@ -290,10 +290,11 @@ public final class Plot extends ExceptStoredHolder
      * The actual owner of the plot
      * @return {@code null} if the plot is owned by the server administrators
      */
+    @Override
     @Nullable
     public PlayerID owner()
     {
-        return owner != null? owner : island.getCity().getOwner();
+        return owner != null? owner : island.getCity().owner();
     }
 
     @NotNull

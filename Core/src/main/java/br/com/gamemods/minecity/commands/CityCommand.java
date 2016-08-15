@@ -93,7 +93,7 @@ public class CityCommand
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.delete.not-claimed", "You are not inside a city"));
 
-        if(!cmd.sender.getPlayerId().equals(city.getOwner()))
+        if(!cmd.sender.getPlayerId().equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.delete.no-permission",
                     "You don't have permission to delete the city ${city}",
                     new Object[]{"city", city.getName()}
@@ -146,7 +146,7 @@ public class CityCommand
                 if(city2 == null || city2.equals(city))
                     continue;
 
-                PlayerID owner = city2.getOwner();
+                PlayerID owner = city2.owner();
                 if(owner == null)
                     continue;
 
@@ -158,7 +158,7 @@ public class CityCommand
                         continue;
                     }
 
-                    if(!playerId.equals(city.getOwner()))
+                    if(!playerId.equals(city.owner()))
                         city = city2;
                     else
                         return new CommandResult<>(new Message("cmd.city.claim.ambiguous",
@@ -193,7 +193,7 @@ public class CityCommand
                     new Object[]{"name",claimOpt.get().getCity().get().getName()}
             ));
 
-        if(!playerId.equals(city.getOwner()))
+        if(!playerId.equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.claim.no-permission",
                     "You are not allowed to claim chunks in name of ${city}",
                     new Object[]{"city", city.getName()}
@@ -226,7 +226,7 @@ public class CityCommand
                     "Cannot disclaim this chunk because it contains plots."
             ));
 
-        if(!cmd.sender.getPlayerId().equals(city.getOwner()))
+        if(!cmd.sender.getPlayerId().equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.disclaim.no-permission",
                     "You are not allowed to disclaim a chunk owned by ${city}",
                     new Object[]{"city",city.getName()}
@@ -310,7 +310,7 @@ public class CityCommand
             return new CommandResult<>(new Message("cmd.city.rename.not-claimed", "You are not inside a city"));
 
         String old = city.getName();
-        if(!cmd.sender.getPlayerId().equals(city.getOwner()))
+        if(!cmd.sender.getPlayerId().equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.rename.no-permission",
                     "You don't have permission to rename the city ${name}",
                     new Object[]{"name", old}
@@ -355,7 +355,7 @@ public class CityCommand
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.transfer.not-claimed", "You are not inside a city"));
 
-        PlayerID cityOwner = city.getOwner();
+        PlayerID cityOwner = city.owner();
         if(target.equals(cityOwner))
             return new CommandResult<>(new Message("cmd.city.transfer.already-owner",
                     "The city ${name} is already owned by ${owner}",
@@ -393,7 +393,7 @@ public class CityCommand
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.setspawn.not-claimed", "You are not inside a city"));
 
-        if(!cmd.sender.getPlayerId().equals(city.getOwner()))
+        if(!cmd.sender.getPlayerId().equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.setspawn.no-permission",
                     "You are not allowed to change the ${name}'s spawn",
                     new Object[]{"name",city.getName()}

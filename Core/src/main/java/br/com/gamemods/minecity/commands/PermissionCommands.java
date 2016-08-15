@@ -349,7 +349,7 @@ public class PermissionCommands
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.deny.not-claimed", "You are not inside a city"));
 
-        if(!cmd.sender.getPlayerId().equals(city.getOwner()))
+        if(!cmd.sender.getPlayerId().equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.deny.no-permission",
                     "You are not allowed to change the ${city}'s permissions",
                     new Object[]{"city",city.getName()}
@@ -446,7 +446,7 @@ public class PermissionCommands
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.allow.not-claimed", "You are not inside a city"));
 
-        if(!cmd.sender.getPlayerId().equals(city.getOwner()))
+        if(!cmd.sender.getPlayerId().equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.allow.no-permission",
                     "You are not allowed to change the ${city}'s permissions",
                     new Object[]{"city",city.getName()}
@@ -528,7 +528,7 @@ public class PermissionCommands
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.deny.not-claimed", "You are not inside a city"));
 
-        if(!cmd.sender.getPlayerId().equals(city.getOwner()))
+        if(!cmd.sender.getPlayerId().equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.deny.no-permission",
                     "You are not allowed to change the ${city}'s permissions",
                     new Object[]{"city",city.getName()}
@@ -554,7 +554,7 @@ public class PermissionCommands
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.allow.not-claimed", "You are not inside a city"));
 
-        if(!cmd.sender.getPlayerId().equals(city.getOwner()))
+        if(!cmd.sender.getPlayerId().equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.allow.no-permission",
                     "You are not allowed to change the ${city}'s permissions",
                     new Object[]{"city",city.getName()}

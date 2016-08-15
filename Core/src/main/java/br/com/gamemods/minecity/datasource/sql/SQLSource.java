@@ -494,7 +494,7 @@ public class SQLSource implements IDataSource
                     ))
                     {
                         pst.setString(1, city.getIdentityName());
-                        setNullableInt(pst, 2, playerId(connection, city.getOwner()));
+                        setNullableInt(pst, 2, playerId(connection, city.owner()));
                         pst.setInt(3, worldId);
                         pst.setInt(4, spawn.x);
                         //noinspection SuspiciousNameCombination
