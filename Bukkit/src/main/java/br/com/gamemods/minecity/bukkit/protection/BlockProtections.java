@@ -327,17 +327,8 @@ public class BlockProtections extends AbstractProtection
         if(action == Action.PHYSICAL)
         {
             Block block = event.getClickedBlock();
-            switch(block.getType())
-            {
-                case CARROT:
-                case CROPS:
-                case BEETROOT_BLOCK:
-                case PUMPKIN_STEM:
-                case MELON_STEM:
-                case POTATO:
-                    if(check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
-                        event.setCancelled(true);
-            }
+            if(block.getType() == Material.SOIL && check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                event.setCancelled(true);
         }
         else if(action == Action.RIGHT_CLICK_BLOCK)
         {
