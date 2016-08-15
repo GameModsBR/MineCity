@@ -47,6 +47,27 @@ public class BlockProtections extends AbstractProtection
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onBlockMultiPlace(BlockMultiPlaceEvent event)
+    {
+        BukkitPlayer player = plugin.player(event.getPlayer());
+        BlockPos blockPos = plugin.blockPos(event.getBlock());
+        ClaimedChunk chunk = null;
+        for(BlockState state : event.getReplacedBlockStates())
+        {
+            blockPos = plugin.blockPos(blockPos, state.getBlock());
+            chunk = plugin.mineCity.provideChunk(blockPos.getChunk(), chunk);
+            FlagHolder holder = chunk.getFlagHolder(blockPos);
+            Optional<Message> denial = holder.can(player, PermissionFlag.MODIFY);
+            if(denial.isPresent())
+            {
+                event.setCancelled(true);
+                player.send(FlagHolder.wrapDeny(denial.get()));
+                return;
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event)
     {
         Block block = event.getBlock();
