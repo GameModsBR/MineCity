@@ -27,10 +27,28 @@ public interface FlagHolder
         return ()-> holder.can(entity, flag);
     }
 
+    static Supplier<Optional<Message>> can(Identity<?> identity, PermissionFlag flag, FlagHolder holder)
+    {
+        if(holder == null)
+            return Optional::empty;
+
+        return ()-> holder.can(identity, flag);
+    }
+
     static Stream<Message> can(MinecraftEntity entity, PermissionFlag flag, FlagHolder... holders)
     {
         return Stream.of(holders)
                 .map(h-> can(entity, flag, h))
+                .map(Supplier::get)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                ;
+    }
+
+    static Stream<Message> can(Identity<?> identity, PermissionFlag flag, FlagHolder... holders)
+    {
+        return Stream.of(holders)
+                .map(h-> can(identity, flag, h))
                 .map(Supplier::get)
                 .filter(Optional::isPresent)
                 .map(Optional::get)

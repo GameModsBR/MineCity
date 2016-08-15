@@ -3,15 +3,13 @@ package br.com.gamemods.minecity.bukkit.protection;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
+import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.Cuboid;
 import br.com.gamemods.minecity.api.world.BlockPos;
-import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
-import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
-import br.com.gamemods.minecity.structure.Island;
 import br.com.gamemods.minecity.structure.Plot;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,14 +23,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.CocoaPlant;
-import org.bukkit.projectiles.BlockProjectileSource;
-import org.bukkit.projectiles.ProjectileSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -261,6 +258,33 @@ public class BlockProtections extends AbstractProtection
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onEntityChangeBlock(EntityChangeBlockEvent event)
+    {
+        Entity entity = event.getEntity();
+        if(entity instanceof Arrow)
+        {
+            Arrow arrow = (Arrow) entity;
+            Block block = event.getBlock();
+            if(block.getType() == Material.TNT)
+            {
+                Object shooter = getShooter(arrow.getShooter(), true);
+                if(shooter instanceof Player)
+                {
+                    if(check(block.getLocation(), (Player) shooter, PermissionFlag.MODIFY))
+                        event.setCancelled(true);
+                }
+                else if(shooter instanceof PlayerID)
+                {
+                    if(check(block.getLocation(), (PlayerID) shooter, PermissionFlag.MODIFY).isPresent())
+                        event.setCancelled(true);
+                }
+                else
+                    event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onEntityInteract(EntityInteractEvent event)
     {
         Entity entity = event.getEntity();
@@ -270,6 +294,7 @@ public class BlockProtections extends AbstractProtection
             case TIPPED_ARROW:
             case SPECTRAL_ARROW:
             {
+                Arrow arrow = (Arrow) entity;
                 Block block = event.getBlock();
                 switch(block.getType())
                 {
@@ -278,32 +303,15 @@ public class BlockProtections extends AbstractProtection
                     case GOLD_PLATE:
                     case IRON_PLATE:
                     {
-                        ProjectileSource shooter = ((Arrow) entity).getShooter();
+                        Object shooter = getShooter(arrow.getShooter(), true);
                         if(shooter instanceof Player)
                         {
                             if(check(block.getLocation(), (Player) shooter, PermissionFlag.CLICK))
                                 event.setCancelled(true);
                         }
-                        else if(shooter instanceof BlockProjectileSource)
+                        else if(shooter instanceof Identity)
                         {
-                            Location loc = block.getLocation();
-                            ChunkPos chunkPos = plugin.chunk(loc);
-                            ClaimedChunk chunk = plugin.mineCity.provideChunk(chunkPos);
-                            PlayerID owner = chunk.getPlotAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).map(Plot::owner)
-                                    .orElseGet(()-> chunk.getIsland().map(Island::getCity).map(City::getOwner).orElse(null));
-
-                            if(owner == null)
-                                return;
-
-                            BlockPos blockPos = plugin.blockPos(block.getLocation());
-                            FlagHolder holder;
-                            if(blockPos.getChunk().equals(chunkPos))
-                                holder = chunk.getFlagHolder(blockPos);
-                            else
-                                holder = plugin.mineCity.provideChunk(blockPos.getChunk()).getFlagHolder(blockPos);
-
-                            Optional<Message> denial = holder.can(owner, PermissionFlag.CLICK);
-                            if(denial.isPresent())
+                            if(check(block.getLocation(), (Identity) shooter, PermissionFlag.CLICK).isPresent())
                                 event.setCancelled(true);
                         }
                     }
