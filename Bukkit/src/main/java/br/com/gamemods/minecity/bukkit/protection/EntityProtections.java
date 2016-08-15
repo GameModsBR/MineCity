@@ -28,6 +28,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
@@ -556,6 +557,40 @@ public class EntityProtections extends AbstractProtection
 
         if(check(entity.getLocation(), (Player) remover, MODIFY))
             event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onEntityTargetEvent(EntityTargetEvent event)
+    {
+        Entity entity = event.getEntity();
+        Entity target = event.getTarget();
+        if(entity instanceof ExperienceOrb)
+        {
+            if(target instanceof Player)
+            {
+                BukkitPlayer player = plugin.player((Player) target);
+                BlockPos orbPos = plugin.blockPos(entity.getLocation());
+                ClaimedChunk orbChunk = plugin.mineCity.provideChunk(orbPos.getChunk());
+                FlagHolder holder = orbChunk.getFlagHolder(orbPos);
+                Optional<Message> denial = holder.can(player, PICKUP);
+                if(!denial.isPresent())
+                {
+                    BlockPos playerPos = plugin.blockPos(orbPos, player.sender.getLocation());
+                    ClaimedChunk playerChunk = plugin.mineCity.provideChunk(playerPos.getChunk(), orbChunk);
+                    FlagHolder playerHolder = playerChunk.getFlagHolder(playerPos);
+                    if(!playerHolder.equals(holder))
+                    {
+                        denial = playerHolder.can(player, PICKUP);
+                    }
+                }
+
+                if(denial.isPresent())
+                {
+                    event.setCancelled(true);
+                    player.send(FlagHolder.wrapDeny(denial.get()));
+                }
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
