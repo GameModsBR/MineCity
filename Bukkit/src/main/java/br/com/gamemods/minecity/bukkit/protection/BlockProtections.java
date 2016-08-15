@@ -420,6 +420,34 @@ public class BlockProtections extends AbstractProtection
                         event.setCancelled(true);
                     return;
 
+                case LONG_GRASS:
+                case BROWN_MUSHROOM:
+                case RED_MUSHROOM:
+                case SAPLING:
+                {
+                    ItemStack item = event.getItem();
+                    if(item != null && item.getType() == Material.INK_SACK && item.getDurability() == 15)
+                    {
+                        if(check(block.getLocation().add(0,1,0), event.getPlayer(), PermissionFlag.MODIFY))
+                            event.setCancelled(true);
+                    }
+                    break;
+                }
+
+                case DIRT:
+                    switch(event.getMaterial())
+                    {
+                        case DIAMOND_SPADE:
+                        case IRON_SPADE:
+                        case STONE_SPADE:
+                        case WOOD_SPADE:
+                        case GOLD_SPADE:
+                            if(check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                                event.setCancelled(true);
+                            return;
+                    }
+                    break;
+
                 case GRASS:
                     switch(event.getMaterial())
                     {
@@ -445,6 +473,7 @@ public class BlockProtections extends AbstractProtection
                             }
                     }
                     break;
+
                 case CARROT:
                 case CROPS:
                 case BEETROOT_BLOCK:
