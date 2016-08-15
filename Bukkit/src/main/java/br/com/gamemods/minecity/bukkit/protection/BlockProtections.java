@@ -18,6 +18,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.material.CocoaPlant;
 import org.jetbrains.annotations.NotNull;
 
@@ -201,5 +203,48 @@ public class BlockProtections extends AbstractProtection
         Block above = block.getRelative(BlockFace.UP);
         if(above.getType().hasGravity() && checkFall(claim, block, player, l, blockPos))
             event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onEmptyBucket(PlayerBucketEmptyEvent event)
+    {
+        Block target = event.getBlockClicked();
+        if(!target.getType().isSolid())
+            target = target.getRelative(event.getBlockFace());
+
+        Location l = target.getLocation();
+        BukkitPlayer player = plugin.player(event.getPlayer());
+
+        BlockPos blockPos = plugin.blockPos(l);
+        ClaimedChunk claim = plugin.mineCity.provideChunk(blockPos.getChunk());
+        FlagHolder holder = claim.getFlagHolder(blockPos);
+
+        Optional<Message> denial = holder.can(player, PermissionFlag.MODIFY);
+        if(denial.isPresent())
+        {
+            player.send(FlagHolder.wrapDeny(denial.get()));
+            plugin.plugin.getScheduler().runTaskLater(plugin.plugin, player.sender::updateInventory, 5);
+            event.setCancelled(true);
+            return;
+        }
+
+        Block above = target.getRelative(BlockFace.UP);
+        if(above.getType().hasGravity() && checkFall(claim, target, player, l, blockPos))
+        {
+
+            plugin.plugin.getScheduler().runTaskLater(plugin.plugin, player.sender::updateInventory, 5);
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onFillBucket(PlayerBucketFillEvent event)
+    {
+        Player player = event.getPlayer();
+        if(check(event.getBlockClicked().getLocation(), player, PermissionFlag.MODIFY))
+        {
+            event.setCancelled(true);
+            plugin.plugin.getScheduler().runTaskLater(plugin.plugin, player::updateInventory, 5);
+        }
     }
 }
