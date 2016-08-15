@@ -40,9 +40,10 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     private Set<GroupID> groups;
     private City lastCity;
     private Plot lastPlot;
-    private byte movMessageWait = 0;
+    private byte movMessageWait;
     public byte pickupRandomDelay;
     public byte pickupHarvestDelay;
+    public byte lureDelay;
 
     public BukkitPlayer(MineCityBukkit plugin, Player player)
     {

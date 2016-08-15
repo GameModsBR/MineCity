@@ -550,34 +550,52 @@ public class EntityProtections extends AbstractProtection
             event.setCancelled(true);
     }
 
+    public Optional<Message> lure(BukkitPlayer player, Entity entity)
+    {
+        BlockPos orbPos = plugin.blockPos(entity.getLocation());
+        ClaimedChunk orbChunk = plugin.mineCity.provideChunk(orbPos.getChunk());
+        FlagHolder holder = orbChunk.getFlagHolder(orbPos);
+        Optional<Message> denial = holder.can(player, PICKUP);
+        if(!denial.isPresent())
+        {
+            BlockPos playerPos = plugin.blockPos(orbPos, player.sender.getLocation());
+            ClaimedChunk playerChunk = plugin.mineCity.provideChunk(playerPos.getChunk(), orbChunk);
+            FlagHolder playerHolder = playerChunk.getFlagHolder(playerPos);
+            if(!playerHolder.equals(holder))
+            {
+                denial = playerHolder.can(player, PICKUP);
+            }
+        }
+
+        return denial;
+    }
+
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onEntityTargetEvent(EntityTargetEvent event)
     {
         Entity entity = event.getEntity();
         Entity target = event.getTarget();
-        if(entity instanceof ExperienceOrb)
+        if(target instanceof Player)
         {
-            if(target instanceof Player)
+            BukkitPlayer player = plugin.player((Player) target);
+            if(entity instanceof Animals || entity.getCustomName() != null)
             {
-                BukkitPlayer player = plugin.player((Player) target);
-                BlockPos orbPos = plugin.blockPos(entity.getLocation());
-                ClaimedChunk orbChunk = plugin.mineCity.provideChunk(orbPos.getChunk());
-                FlagHolder holder = orbChunk.getFlagHolder(orbPos);
-                Optional<Message> denial = holder.can(player, PICKUP);
-                if(!denial.isPresent())
+                if(player.lureDelay > 0)
                 {
-                    BlockPos playerPos = plugin.blockPos(orbPos, player.sender.getLocation());
-                    ClaimedChunk playerChunk = plugin.mineCity.provideChunk(playerPos.getChunk(), orbChunk);
-                    FlagHolder playerHolder = playerChunk.getFlagHolder(playerPos);
-                    if(!playerHolder.equals(holder))
-                    {
-                        denial = playerHolder.can(player, PICKUP);
-                    }
+                    player.lureDelay--;
+                    event.setCancelled(true);
+                    return;
                 }
 
+                Optional<Message> denial = lure(player, entity);
                 if(denial.isPresent())
                 {
                     event.setCancelled(true);
+                    player.lureDelay = 40;
+
+                    if(entity instanceof ExperienceOrb)
+                        event.setTarget(null);
+
                     player.send(FlagHolder.wrapDeny(denial.get()));
                 }
             }
