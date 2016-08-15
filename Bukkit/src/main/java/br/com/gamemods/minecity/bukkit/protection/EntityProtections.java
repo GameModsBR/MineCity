@@ -31,17 +31,21 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.BlockProjectileSource;
 import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -52,6 +56,7 @@ public class EntityProtections extends AbstractProtection
 {
     private Set<Egg> eggs = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
     private Set<EnderPearl> pearls = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
+    private Map<Item, Player> drops = new MapMaker().weakKeys().weakValues().makeMap();
 
     public EntityProtections(@NotNull MineCityBukkit plugin)
     {
@@ -551,5 +556,90 @@ public class EntityProtections extends AbstractProtection
 
         if(check(entity.getLocation(), (Player) remover, MODIFY))
             event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerDropItem(PlayerDropItemEvent event)
+    {
+        Item item = event.getItemDrop();
+        BukkitPlayer player = plugin.player(event.getPlayer());
+        Optional<Message> denial = canCollect(player, item);
+        if(denial.isPresent())
+        {
+            event.setCancelled(true);
+            player.send(FlagHolder.wrapDeny(denial.get()));
+        }
+        else
+        {
+            drops.put(item, player.sender);
+            new BukkitRunnable()
+            {
+                @Override
+                public void run()
+                {
+                    if(item.isDead())
+                    {
+                        drops.remove(item);
+                        cancel();
+                    }
+                }
+            }.runTaskTimer(plugin.plugin, 10*20, 5*20);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerPickupItem(PlayerPickupItemEvent event)
+    {
+        Item item = event.getItem();
+        Player dropper = drops.get(item);
+        Player entityPlayer = event.getPlayer();
+        if(dropper != null && dropper.equals(entityPlayer))
+            return;
+
+        BukkitPlayer player = plugin.player(entityPlayer);
+        Optional<Message> denial = canCollect(player, item);
+        if(denial.isPresent())
+        {
+            event.setCancelled(true);
+            player.send(FlagHolder.wrapDeny(denial.get()));
+        }
+    }
+
+    public Optional<Message> canCollect(BukkitPlayer player, Item item)
+    {
+        FlagHolder holder = plugin.getFlagHolder(item.getLocation());
+
+        Optional<Message> denial;
+        ItemStack stack = item.getItemStack();
+        switch(stack.getType())
+        {
+            case EGG:
+            case BEETROOT:
+            case POTATO_ITEM:
+            case POISONOUS_POTATO:
+            case WHEAT:
+            case CARROT_ITEM:
+            case PUMPKIN:
+            case MELON_BLOCK:
+            case MELON:
+            case SEEDS:
+            case BEETROOT_SEEDS:
+            case APPLE:
+            case COCOA:
+            case SUGAR_CANE:
+            case CACTUS:
+                denial = holder.can(player, HARVEST);
+                if(!denial.isPresent())
+                    return denial;
+                break;
+            default:
+                denial = Optional.empty();
+        }
+
+        Optional<Message> pickup = holder.can(player, PICKUP);
+        if(pickup.isPresent())
+            return denial.isPresent()? denial : pickup;
+
+        return pickup;
     }
 }

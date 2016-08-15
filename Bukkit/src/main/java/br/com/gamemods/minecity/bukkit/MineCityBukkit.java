@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.command.MessageTransformer;
+import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.bukkit.command.BukkitCommandSender;
 import br.com.gamemods.minecity.bukkit.command.BukkitLocatableSender;
@@ -33,6 +34,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -237,6 +239,12 @@ public class MineCityBukkit implements Server, Listener
     public Optional<Location> location(EntityPos pos)
     {
         return world(pos.world).map(world -> new Location(world, pos.x, pos.y, pos.z, pos.yaw, pos.pitch));
+    }
+
+    @NotNull
+    public FlagHolder getFlagHolder(@NotNull Location loc)
+    {
+        return mineCity.provideChunk(chunk(loc)).getFlagHolder(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     }
 
     @Override

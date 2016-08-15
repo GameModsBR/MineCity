@@ -50,9 +50,22 @@ public class BlockProtections extends AbstractProtection
     public void onBlockPlace(BlockPlaceEvent event)
     {
         Block block = event.getBlock();
-        Location l = block.getLocation();
         Player player = event.getPlayer();
+        ItemStack hand = event.getItemInHand();
+        if(hand != null && hand.getType() == Material.INK_SACK && hand.getDurability() == 15)
+            switch(block.getType())
+            {
+                case CROPS:
+                case BEETROOT_BLOCK:
+                case CARROT:
+                case POTATO:
+                case MELON_STEM:
+                case PUMPKIN_STEM:
+                case COCOA:
+                    return;
+            }
 
+        Location l = block.getLocation();
         BlockPos blockPos = plugin.blockPos(l);
         ClaimedChunk chunk = plugin.mineCity.provideChunk(blockPos.getChunk());
         FlagHolder holder = chunk.getFlagHolder(blockPos);
