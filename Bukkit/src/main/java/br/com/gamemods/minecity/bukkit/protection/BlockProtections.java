@@ -12,6 +12,7 @@ import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
+import br.com.gamemods.minecity.structure.Nature;
 import br.com.gamemods.minecity.structure.Plot;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,6 +31,7 @@ import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.CocoaPlant;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class BlockProtections extends AbstractProtection
@@ -648,6 +651,51 @@ public class BlockProtections extends AbstractProtection
                 }
 
                 event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onStructureGrow(StructureGrowEvent event)
+    {
+        Function<FlagHolder, Optional<Message>> check;
+        Player player = event.getPlayer();
+        BlockPos pos = plugin.blockPos(event.getLocation());
+        ClaimedChunk claim = plugin.mineCity.provideChunk(pos.getChunk());
+        FlagHolder fromHolder = claim.getFlagHolder(pos);
+        BukkitPlayer bukkitPlayer;
+        if(player != null)
+        {
+            bukkitPlayer = plugin.player(player);
+            check = fh -> fh.can(bukkitPlayer, PermissionFlag.MODIFY);
+        }
+        else
+        {
+            bukkitPlayer = null;
+            PlayerID owner = fromHolder.owner();
+            if(owner != null)
+                check = fh -> fh.can(owner, PermissionFlag.MODIFY);
+            else if(fromHolder instanceof Nature)
+                check = fh -> fh instanceof Nature? Optional.empty() : Optional.of(new Message("Growing from the nature"));
+            else
+                check = fh -> Optional.of(new Message("Growing from an admin zone to somewhere"));
+        }
+
+        for(BlockState state : event.getBlocks())
+        {
+            BlockPos blockPos = plugin.blockPos(pos, state.getBlock());
+            ClaimedChunk chunk = plugin.mineCity.provideChunk(blockPos.getChunk(), claim);
+            FlagHolder flagHolder = chunk.getFlagHolder(blockPos);
+            if(!flagHolder.equals(fromHolder))
+            {
+                Optional<Message> denial = check.apply(flagHolder);
+                if(denial.isPresent())
+                {
+                    event.setCancelled(true);
+                    if(bukkitPlayer != null)
+                        bukkitPlayer.send(FlagHolder.wrapDeny(denial.get()));
+                    return;
+                }
             }
         }
     }
