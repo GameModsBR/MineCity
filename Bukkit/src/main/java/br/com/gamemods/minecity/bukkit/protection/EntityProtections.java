@@ -249,8 +249,14 @@ public class EntityProtections extends AbstractProtection
         if(attacker instanceof Player)
         {
             Entity victim = event.getEntity();
-            if(check(victim.getLocation(), (Player)attacker, victim instanceof Player? PVP : victim instanceof Monster? PVM : PVC))
+            if(check(victim.getLocation(), (Player)attacker,
+                    victim instanceof Player? PVP :
+                    victim instanceof Monster? PVM :
+                    victim instanceof EnderCrystal? MODIFY : PVC
+            ))
+            {
                 event.setCancelled(true);
+            }
         }
     }
 

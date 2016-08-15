@@ -368,6 +368,18 @@ public class BlockProtections extends AbstractProtection
                         event.setCancelled(true);
                     return;
 
+                case OBSIDIAN:
+                    if(event.getMaterial() == Material.FLINT_AND_STEEL && check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                    {
+                        event.setCancelled(true);
+                        return;
+                    }
+                    // Fall to check the end crystal
+                case BEDROCK:
+                    if(event.getMaterial() == Material.END_CRYSTAL && check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                        event.setCancelled(true);
+                    return;
+
                 case GRASS:
                     switch(event.getMaterial())
                     {
@@ -381,11 +393,12 @@ public class BlockProtections extends AbstractProtection
                         case WOOD_HOE:
                         case DIAMOND_HOE:
                             if(check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                            {
                                 event.setCancelled(true);
-
+                                return;
+                            }
                     }
                     // fall to check the bone meal usage
-
                 case CARROT:
                 case CROPS:
                 case BEETROOT_BLOCK:
