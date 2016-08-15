@@ -540,7 +540,7 @@ public class EntityProtections extends AbstractProtection
                     {
                         event.setCancelled(true);
                         Message denial = MineCity.RANDOM.nextBoolean()? bd.get() : ad.get();
-                        player.send(denial);
+                        player.send(FlagHolder.wrapDeny(denial));
                         return;
                     }
                 }
