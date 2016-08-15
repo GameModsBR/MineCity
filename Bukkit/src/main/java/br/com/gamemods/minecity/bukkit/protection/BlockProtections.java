@@ -1,29 +1,38 @@
 package br.com.gamemods.minecity.bukkit.protection;
 
+import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.Cuboid;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
+import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
+import br.com.gamemods.minecity.structure.Island;
 import br.com.gamemods.minecity.structure.Plot;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.CocoaPlant;
+import org.bukkit.projectiles.BlockProjectileSource;
+import org.bukkit.projectiles.ProjectileSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -248,6 +257,58 @@ public class BlockProtections extends AbstractProtection
         {
             event.setCancelled(true);
             plugin.plugin.getScheduler().runTaskLater(plugin.plugin, player::updateInventory, 5);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onEntityInteract(EntityInteractEvent event)
+    {
+        Entity entity = event.getEntity();
+        switch(entity.getType())
+        {
+            case ARROW:
+            case TIPPED_ARROW:
+            case SPECTRAL_ARROW:
+            {
+                Block block = event.getBlock();
+                switch(block.getType())
+                {
+                    case WOOD_BUTTON:
+                    case WOOD_PLATE:
+                    case GOLD_PLATE:
+                    case IRON_PLATE:
+                    {
+                        ProjectileSource shooter = ((Arrow) entity).getShooter();
+                        if(shooter instanceof Player)
+                        {
+                            if(check(block.getLocation(), (Player) shooter, PermissionFlag.CLICK))
+                                event.setCancelled(true);
+                        }
+                        else if(shooter instanceof BlockProjectileSource)
+                        {
+                            Location loc = block.getLocation();
+                            ChunkPos chunkPos = plugin.chunk(loc);
+                            ClaimedChunk chunk = plugin.mineCity.provideChunk(chunkPos);
+                            PlayerID owner = chunk.getPlotAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).map(Plot::owner)
+                                    .orElseGet(()-> chunk.getIsland().map(Island::getCity).map(City::getOwner).orElse(null));
+
+                            if(owner == null)
+                                return;
+
+                            BlockPos blockPos = plugin.blockPos(block.getLocation());
+                            FlagHolder holder;
+                            if(blockPos.getChunk().equals(chunkPos))
+                                holder = chunk.getFlagHolder(blockPos);
+                            else
+                                holder = plugin.mineCity.provideChunk(blockPos.getChunk()).getFlagHolder(blockPos);
+
+                            Optional<Message> denial = holder.can(owner, PermissionFlag.CLICK);
+                            if(denial.isPresent())
+                                event.setCancelled(true);
+                        }
+                    }
+                }
+            }
         }
     }
 
