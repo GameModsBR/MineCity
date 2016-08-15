@@ -64,7 +64,7 @@ public class BlockProtections extends AbstractProtection
             return;
         }
 
-        if(!block.getType().hasGravity())
+        if(!block.getType().hasGravity() && block.getType() != Material.DRAGON_EGG)
             return;
 
         switch(block.getRelative(BlockFace.DOWN).getType())
@@ -363,6 +363,11 @@ public class BlockProtections extends AbstractProtection
                         event.setCancelled(true);
                     return;
 
+                case DRAGON_EGG:
+                    if(check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                        event.setCancelled(true);
+                    return;
+
                 case GRASS:
                     switch(event.getMaterial())
                     {
@@ -484,5 +489,12 @@ public class BlockProtections extends AbstractProtection
                 }
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onBlockFromTo(BlockFromToEvent event)
+    {
+        if(checkFromTo(event.getBlock(), event.getToBlock()))
+            event.setCancelled(true);
     }
 }
