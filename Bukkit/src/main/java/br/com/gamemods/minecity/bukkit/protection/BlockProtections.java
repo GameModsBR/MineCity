@@ -298,6 +298,8 @@ public class BlockProtections extends AbstractProtection
                 case SPRUCE_DOOR:
                 case TRAP_DOOR:
                 case WOODEN_DOOR:
+                case WORKBENCH:
+                case ENCHANTMENT_TABLE:
                     if(check(block.getLocation(), event.getPlayer(), PermissionFlag.CLICK))
                         event.setCancelled(true);
                     return;
