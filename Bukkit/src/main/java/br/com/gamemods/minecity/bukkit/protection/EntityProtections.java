@@ -32,10 +32,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -625,6 +622,12 @@ public class EntityProtections extends AbstractProtection
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerPickupItem(PlayerPickupItemEvent event)
     {
+        if(event instanceof PlayerPickupArrowEvent)
+        {
+            if(((PlayerPickupArrowEvent) event).getArrow().getShooter() == event.getPlayer())
+                return;
+        }
+
         Item item = event.getItem();
         Player dropper = drops.get(item);
         Player entityPlayer = event.getPlayer();
