@@ -635,11 +635,19 @@ public class EntityProtections extends AbstractProtection
             return;
 
         BukkitPlayer player = plugin.player(entityPlayer);
+        if(player.pickupDelay > 0)
+        {
+            player.pickupDelay--;
+            event.setCancelled(true);
+            return;
+        }
+
         Optional<Message> denial = canCollect(player, item);
         if(denial.isPresent())
         {
             event.setCancelled(true);
             player.send(FlagHolder.wrapDeny(denial.get()));
+            player.pickupDelay = 40;
         }
     }
 
