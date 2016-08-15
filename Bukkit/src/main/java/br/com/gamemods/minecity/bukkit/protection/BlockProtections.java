@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.Cuboid;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
@@ -509,5 +510,41 @@ public class BlockProtections extends AbstractProtection
     {
         if(checkFromTo(event.getBlock(), event.getToBlock()))
             event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onBlockGrowth(BlockGrowEvent event)
+    {
+        Material type = event.getNewState().getType();
+        switch(type)
+        {
+            case MELON_BLOCK:
+            case PUMPKIN:
+            {
+                Block toBlock = event.getBlock();
+                BlockPos toPos = plugin.blockPos(toBlock);
+                ClaimedChunk toClaim = plugin.mineCity.provideChunk(toPos.getChunk());
+                FlagHolder to = toClaim.getFlagHolder(toPos);
+                type = type == Material.MELON_BLOCK? Material.MELON_STEM : Material.PUMPKIN_STEM;
+
+                for(Direction dir: Direction.cardinal)
+                {
+                    Block fromBlock = toBlock.getRelative(dir.x, dir.y, dir.z);
+                    if(fromBlock.getType() == type)
+                    {
+                        BlockPos fromPos = plugin.blockPos(toPos, fromBlock);
+                        ClaimedChunk fromClaim = plugin.mineCity.provideChunk(fromPos.getChunk(), toClaim);
+                        FlagHolder from = fromClaim.getFlagHolder(fromPos);
+                        PlayerID owner = from.owner();
+                        if(from.equals(to) || (owner != null && !to.can(owner, PermissionFlag.MODIFY).isPresent()))
+                        {
+                            return;
+                        }
+                    }
+                }
+
+                event.setCancelled(true);
+            }
+        }
     }
 }
