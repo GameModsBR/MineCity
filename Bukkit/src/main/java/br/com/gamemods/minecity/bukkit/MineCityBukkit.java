@@ -194,6 +194,11 @@ public class MineCityBukkit implements Server, Listener
         return new ChunkPos(world(loc.getWorld()), loc.getBlockX()>>4, loc.getBlockZ()>>4);
     }
 
+    public ChunkPos chunk(Block loc)
+    {
+        return new ChunkPos(world(loc.getWorld()), loc.getX()>>4, loc.getZ()>>4);
+    }
+
     public ChunkPos chunk(Chunk chunk)
     {
         ChunkPos pos = new ChunkPos(world(chunk.getWorld()), chunk.getX(), chunk.getZ());

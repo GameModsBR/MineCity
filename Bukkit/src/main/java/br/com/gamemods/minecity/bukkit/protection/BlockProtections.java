@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.bukkit.protection;
 
+import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
@@ -330,11 +331,34 @@ public class BlockProtections extends AbstractProtection
             Block block = event.getClickedBlock();
             if(block.getType() == Material.SOIL && check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
                 event.setCancelled(true);
+
+            return;
         }
-        else if(action == Action.RIGHT_CLICK_BLOCK)
+
+        if(action == Action.RIGHT_CLICK_BLOCK)
         {
             Block block = event.getClickedBlock();
-            switch(block.getType())
+            Material type = block.getType();
+            if(event.hasItem())
+            {
+                switch(event.getMaterial())
+                {
+                    case ARMOR_STAND:
+                    case MONSTER_EGG:
+                    case MONSTER_EGGS:
+                        if(check(block.getRelative(event.getBlockFace()).getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                            event.setUseItemInHand(Event.Result.DENY);
+                        break;
+
+                    case END_CRYSTAL:
+                        if(type == Material.OBSIDIAN || type == Material.BEDROCK)
+                            if(check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                                event.setUseItemInHand(Event.Result.DENY);
+                        break;
+                }
+            }
+
+            switch(type)
             {
                 case CHEST:
                 case TRAPPED_CHEST:
@@ -396,12 +420,18 @@ public class BlockProtections extends AbstractProtection
                         case WOOD_HOE:
                         case DIAMOND_HOE:
                             if(check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
-                            {
                                 event.setCancelled(true);
+                            return;
+                        case INK_SACK:
+                            if(event.getItem().getDurability() == 15)
+                            {
+                                if(check(block.getRelative(BlockFace.UP).getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                                    event.setCancelled(true);
+                                //TODO Check around
                                 return;
                             }
                     }
-                    // fall to check the bone meal usage
+                    break;
                 case CARROT:
                 case CROPS:
                 case BEETROOT_BLOCK:
@@ -414,13 +444,21 @@ public class BlockProtections extends AbstractProtection
                         ItemStack item = event.getItem();
                         if(item.getType() == Material.INK_SACK && item.getDurability() == 15)
                         {
-                            if(check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
-                            {
-                                event.setCancelled(true);
-                                return;
-                            }
+                            BukkitPlayer player = plugin.player(event.getPlayer());
+                            FlagHolder holder = plugin.mineCity.provideChunk(plugin.chunk(block))
+                                    .getFlagHolder(block.getX(), block.getY(), block.getZ());
 
-                            //TODO Check around
+                            Optional<Message> modify = holder.can(player, PermissionFlag.MODIFY);
+                            if(modify.isPresent())
+                            {
+                                Optional<Message> harvest = holder.can(player, PermissionFlag.HARVEST);
+                                if(harvest.isPresent())
+                                {
+                                    event.setCancelled(true);
+                                    player.send(FlagHolder.wrapDeny(MineCity.RANDOM.nextBoolean()? modify.get() : harvest.get()));
+                                }
+                            }
+                            return;
                         }
                     }
                     break;
