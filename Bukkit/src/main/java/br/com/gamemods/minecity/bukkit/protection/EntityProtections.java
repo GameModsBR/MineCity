@@ -23,6 +23,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
@@ -125,7 +127,7 @@ public class EntityProtections extends AbstractProtection
 
         if(attacker instanceof Projectile)
         {
-            ProjectileSource shooter = ((Projectile)attacker).getShooter();
+            ProjectileSource shooter = ((Projectile) attacker).getShooter();
 
             if(shooter instanceof Entity)
                 attacker = (Entity) shooter;
@@ -158,7 +160,7 @@ public class EntityProtections extends AbstractProtection
 
         if(attacker instanceof Player)
         {
-            if(check(vehicle.getLocation(), (Player)attacker, PermissionFlag.MODIFY))
+            if(check(vehicle.getLocation(), (Player) attacker, PermissionFlag.MODIFY))
                 event.setCancelled(true);
         }
     }
@@ -187,7 +189,7 @@ public class EntityProtections extends AbstractProtection
 
         if(attacker instanceof Projectile)
         {
-            ProjectileSource shooter = ((Projectile)attacker).getShooter();
+            ProjectileSource shooter = ((Projectile) attacker).getShooter();
 
             if(shooter instanceof Entity)
                 attacker = (Entity) shooter;
@@ -249,10 +251,10 @@ public class EntityProtections extends AbstractProtection
         if(attacker instanceof Player)
         {
             Entity victim = event.getEntity();
-            if(check(victim.getLocation(), (Player)attacker,
+            if(check(victim.getLocation(), (Player) attacker,
                     victim instanceof Player? PVP :
-                    victim instanceof Monster? PVM :
-                    victim instanceof EnderCrystal? MODIFY : PVC
+                            victim instanceof Monster? PVM :
+                                    victim instanceof EnderCrystal? MODIFY : PVC
             ))
             {
                 event.setCancelled(true);
@@ -360,7 +362,8 @@ public class EntityProtections extends AbstractProtection
             {
                 Material item = hand.get().getType();
                 EntityType type = entity.getType();
-                if(item == Material.BUCKET && type == EntityType.COW || item == Material.BOWL && type == EntityType.MUSHROOM_COW)
+                if(item == Material.BUCKET && type == EntityType.COW ||
+                        item == Material.BOWL && type == EntityType.MUSHROOM_COW)
                 {
                     if(check(entity.getLocation(), player, PermissionFlag.HARVEST))
                         event.setCancelled(true);
@@ -405,7 +408,8 @@ public class EntityProtections extends AbstractProtection
         else if(entity.getType() == EntityType.ZOMBIE)
         {
             Zombie zombie = (Zombie) entity;
-            if(hand.map(ItemStack::getType).filter(Material.GOLDEN_APPLE::equals).isPresent() && zombie.hasPotionEffect(PotionEffectType.WEAKNESS))
+            if(hand.map(ItemStack::getType).filter(Material.GOLDEN_APPLE::equals).isPresent() &&
+                    zombie.hasPotionEffect(PotionEffectType.WEAKNESS))
             {
                 if(check(zombie.getLocation(), player, PermissionFlag.MODIFY))
                     event.setCancelled(true);
@@ -433,5 +437,33 @@ public class EntityProtections extends AbstractProtection
                     event.setCancelled(true);
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onHangingPlace(HangingPlaceEvent event)
+    {
+        if(check(event.getBlock().getLocation(), event.getPlayer(), MODIFY))
+            event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onHangingBreakByEntity(HangingBreakByEntityEvent event)
+    {
+        Entity remover = event.getRemover();
+        if(remover instanceof Projectile)
+        {
+            Object shooter = getShooter(((Projectile) remover).getShooter(), true);
+            if(shooter instanceof Player)
+                remover = (Entity) shooter;
+            else if(shooter instanceof PlayerID)
+            {
+                if(check(event.getEntity().getLocation(), (PlayerID) shooter, MODIFY).isPresent())
+                    event.setCancelled(true);
+                return;
+            }
+        }
+
+        if(remover instanceof Player && check(event.getEntity().getLocation(), (Player) remover, MODIFY))
+            event.setCancelled(true);
     }
 }
