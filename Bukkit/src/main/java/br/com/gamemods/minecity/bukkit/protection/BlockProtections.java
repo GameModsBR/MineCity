@@ -361,6 +361,7 @@ public class BlockProtections extends AbstractProtection
                 case WOODEN_DOOR:
                 case WORKBENCH:
                 case ENCHANTMENT_TABLE:
+                case ENDER_CHEST:
                     if(check(block.getLocation(), event.getPlayer(), PermissionFlag.CLICK))
                         event.setUseInteractedBlock(Event.Result.DENY);
                     return;
