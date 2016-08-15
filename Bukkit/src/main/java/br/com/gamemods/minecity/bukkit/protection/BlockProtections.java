@@ -20,6 +20,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.*;
@@ -345,7 +346,7 @@ public class BlockProtections extends AbstractProtection
                 case BEACON:
                 case BREWING_STAND:
                     if(check(block.getLocation(), event.getPlayer(), PermissionFlag.OPEN))
-                        event.setCancelled(true);
+                        event.setUseInteractedBlock(Event.Result.DENY);
                     return;
 
                 case STONE_BUTTON:
@@ -361,12 +362,12 @@ public class BlockProtections extends AbstractProtection
                 case WORKBENCH:
                 case ENCHANTMENT_TABLE:
                     if(check(block.getLocation(), event.getPlayer(), PermissionFlag.CLICK))
-                        event.setCancelled(true);
+                        event.setUseInteractedBlock(Event.Result.DENY);
                     return;
 
                 case DRAGON_EGG:
                     if(check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
-                        event.setCancelled(true);
+                        event.setUseInteractedBlock(Event.Result.DENY);
                     return;
 
                 case OBSIDIAN:
