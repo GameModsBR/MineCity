@@ -20,9 +20,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
@@ -410,5 +408,48 @@ public class BlockProtections extends AbstractProtection
                         event.setCancelled(true);
             }
         }
+    }
+
+    public boolean checkFromTo(Block fromBlock, Block toBlock)
+    {
+        BlockPos fromPos = plugin.blockPos(fromBlock);
+        BlockPos toPos = new BlockPos(fromPos, toBlock.getX(), toBlock.getY(), toBlock.getZ());
+        return checkFromTo(fromPos, toPos);
+    }
+
+    public boolean checkFromTo(BlockPos fromPos, BlockPos toPos)
+    {
+        ClaimedChunk fromClaim = plugin.mineCity.provideChunk(fromPos.getChunk());
+        FlagHolder from = fromClaim.getFlagHolder(fromPos);
+
+        ClaimedChunk toClaim = fromClaim.chunk.equals(toPos.getChunk())? fromClaim : plugin.mineCity.provideChunk(toPos.getChunk());
+        FlagHolder to = toClaim.getFlagHolder(toPos);
+
+        PlayerID owner = from.owner();
+        return !from.equals(to) && (owner == null || to.can(owner, PermissionFlag.MODIFY).isPresent());
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onBlockSpread(BlockSpreadEvent event)
+    {
+        if(checkFromTo(event.getSource(), event.getBlock()))
+            event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onBlockBurn(BlockBurnEvent event)
+    {
+        Block block = event.getBlock();
+        for(BlockFace face: new BlockFace[]{BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN})
+        {
+            Block fire = block.getRelative(face);
+            if(fire.getType() == Material.FIRE)
+            {
+                if(!checkFromTo(fire, block))
+                    return;
+            }
+        }
+
+        event.setCancelled(true);
     }
 }

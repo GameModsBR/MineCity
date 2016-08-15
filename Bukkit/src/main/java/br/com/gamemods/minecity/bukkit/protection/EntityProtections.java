@@ -8,10 +8,7 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.bukkit.BukkitUtil19;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
-import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
-import br.com.gamemods.minecity.structure.Island;
-import br.com.gamemods.minecity.structure.Plot;
 import com.google.common.collect.MapMaker;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -138,8 +135,7 @@ public class EntityProtections extends AbstractProtection
                 Location loc = block.getLocation();
                 ChunkPos chunkPos = plugin.chunk(loc);
                 ClaimedChunk chunk = plugin.mineCity.provideChunk(chunkPos);
-                PlayerID owner = chunk.getPlotAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).map(Plot::owner)
-                        .orElseGet(()-> chunk.getIsland().map(Island::getCity).map(City::owner).orElse(null));
+                PlayerID owner = chunk.getFlagHolder(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).owner();
 
                 if(owner == null)
                     return;
@@ -201,8 +197,7 @@ public class EntityProtections extends AbstractProtection
                 Location loc = block.getLocation();
                 ChunkPos chunkPos = plugin.chunk(loc);
                 ClaimedChunk chunk = plugin.mineCity.provideChunk(chunkPos);
-                PlayerID owner = chunk.getPlotAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).map(Plot::owner)
-                        .orElseGet(()-> chunk.getIsland().map(Island::getCity).map(City::owner).orElse(null));
+                PlayerID owner = chunk.getFlagHolder(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).owner();
 
                 if(owner == null)
                     return;

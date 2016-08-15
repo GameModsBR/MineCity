@@ -9,10 +9,7 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
-import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
-import br.com.gamemods.minecity.structure.Island;
-import br.com.gamemods.minecity.structure.Plot;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -56,9 +53,7 @@ public abstract class AbstractProtection implements Listener
                 Location loc = block.getLocation();
                 ChunkPos chunkPos = plugin.chunk(loc);
                 ClaimedChunk chunk = plugin.mineCity.provideChunk(chunkPos);
-                PlayerID owner = chunk.getPlotAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).map(
-                        Plot::owner)
-                        .orElseGet(() -> chunk.getIsland().map(Island::getCity).map(City::owner).orElse(null));
+                PlayerID owner = chunk.getFlagHolder(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).owner();
 
                 if(owner == null)
                     return block;
