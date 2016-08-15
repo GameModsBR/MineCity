@@ -437,11 +437,11 @@ public class BlockProtections extends AbstractProtection
                 case DIRT:
                     switch(event.getMaterial())
                     {
-                        case DIAMOND_SPADE:
-                        case IRON_SPADE:
-                        case STONE_SPADE:
-                        case WOOD_SPADE:
-                        case GOLD_SPADE:
+                        case IRON_HOE:
+                        case STONE_HOE:
+                        case WOOD_HOE:
+                        case DIAMOND_HOE:
+                        case GOLD_HOE:
                             if(check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
                                 event.setCancelled(true);
                             return;
@@ -460,6 +460,7 @@ public class BlockProtections extends AbstractProtection
                         case STONE_HOE:
                         case WOOD_HOE:
                         case DIAMOND_HOE:
+                        case GOLD_HOE:
                             if(check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
                                 event.setCancelled(true);
                             return;
