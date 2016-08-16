@@ -365,6 +365,15 @@ public class EntityProtections extends AbstractProtection
                 }
             }
         }
+        else if(entity instanceof Sheep)
+        {
+            Sheep sheep = (Sheep) entity;
+            if(!sheep.isSheared() && hand.map(ItemStack::getType).filter(Material.SHEARS::equals).isPresent())
+            {
+                if(check(entity.getLocation(), player, PermissionFlag.HARVEST))
+                    event.setCancelled(true);
+            }
+        }
         else if(entity instanceof Minecart)
         {
             if(entity instanceof RideableMinecart)
@@ -893,6 +902,7 @@ public class EntityProtections extends AbstractProtection
             case COCOA:
             case SUGAR_CANE:
             case CACTUS:
+            case WOOL:
                 return true;
         }
 
