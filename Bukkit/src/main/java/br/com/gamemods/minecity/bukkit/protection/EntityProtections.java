@@ -54,8 +54,8 @@ public class EntityProtections extends AbstractProtection
 {
     private Set<Egg> eggs = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
     private Set<EnderPearl> pearls = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
-    private Map<UUID, Player> drops = new MapMaker().weakKeys().weakValues().makeMap();
-    private Map<UUID, Player> attackers = new MapMaker().weakKeys().weakValues().makeMap();
+    private Map<UUID, Collection<UUID>> drops = new MapMaker().weakKeys().makeMap();
+    private Map<UUID, Player> attackers = new MapMaker().weakKeys().makeMap();
     private List<Function<Item, Boolean>> captureDrops = new ArrayList<>();
 
     public EntityProtections(@NotNull MineCityBukkit plugin)
@@ -728,6 +728,11 @@ public class EntityProtections extends AbstractProtection
         }
     }
 
+    public void allowToPickup(Item item, Player player)
+    {
+        drops.computeIfAbsent(item.getUniqueId(), id-> new ArrayList<>(1)).add(player.getUniqueId());
+    }
+
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent event)
     {
@@ -741,7 +746,7 @@ public class EntityProtections extends AbstractProtection
         }
         else
         {
-            drops.put(item.getUniqueId(), player.sender);
+            allowToPickup(item, player.sender);
             new BukkitRunnable()
             {
                 @Override
@@ -760,8 +765,8 @@ public class EntityProtections extends AbstractProtection
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onItemMerge(ItemMergeEvent event)
     {
-        Player a = drops.get(event.getEntity().getUniqueId());
-        Player b = drops.get(event.getTarget().getUniqueId());
+        Collection<UUID> a = drops.get(event.getEntity().getUniqueId());
+        Collection<UUID> b = drops.get(event.getTarget().getUniqueId());
         if(!Objects.equals(a, b))
             event.setCancelled(true);
     }
@@ -772,7 +777,7 @@ public class EntityProtections extends AbstractProtection
         switch(event.getState())
         {
             case CAUGHT_FISH:
-                drops.put(event.getCaught().getUniqueId(), event.getPlayer());
+                allowToPickup((Item) event.getCaught(), event.getPlayer());
                 return;
 
             case CAUGHT_ENTITY:
@@ -848,6 +853,12 @@ public class EntityProtections extends AbstractProtection
         }
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerPickupItemMonitor(PlayerPickupItemEvent event)
+    {
+        drops.remove(event.getItem().getUniqueId());
+    }
+
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerPickupItem(PlayerPickupItemEvent event)
     {
@@ -858,9 +869,9 @@ public class EntityProtections extends AbstractProtection
         }
 
         Item item = event.getItem();
-        Player dropper = drops.get(item.getUniqueId());
+        Collection<UUID> allowedPlayers = drops.get(item.getUniqueId());
         Player entityPlayer = event.getPlayer();
-        if(dropper != null && dropper.equals(entityPlayer))
+        if(allowedPlayers != null && allowedPlayers.contains(entityPlayer.getUniqueId()))
             return;
 
         BukkitPlayer player = plugin.player(entityPlayer);
@@ -1065,7 +1076,7 @@ public class EntityProtections extends AbstractProtection
         }.runTaskTimer(plugin.plugin, 7*20, 7*20);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityDeath(EntityDeathEvent event)
     {
         List<ItemStack> drops = event.getDrops();
@@ -1080,49 +1091,54 @@ public class EntityProtections extends AbstractProtection
         collectDrops(attacker, entity.getLocation(), drops, 2);
     }
 
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerDeath(PlayerDeathEvent event)
+    {
+        List<ItemStack> drops = event.getDrops();
+        if(drops.isEmpty())
+            return;
+
+        Player player = event.getEntity();
+        collectDrops(player, player.getLocation(), drops, 2);
+    }
+
     public void collectDrops(final Player player, final Location collectLoc, Collection<ItemStack> loot, int ticks)
     {
         final List<ItemStack> collectDrops = loot.stream().map(ItemStack::clone)
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        Function<Item, Boolean> capture = new Function<Item, Boolean>()
+        Function<Item, Boolean> capture = item ->
         {
-            @Override
-            public Boolean apply(Item item)
+            if(item.getWorld().equals(collectLoc.getWorld()) && item.getLocation().distance(collectLoc) <= 2)
             {
-                if(item.getWorld().equals(collectLoc.getWorld()) && item.getLocation().distance(collectLoc) <= 2)
+                ItemStack dropped = item.getItemStack();
+                int remaining = dropped.getAmount();
+                for(Iterator<ItemStack> iter = collectDrops.iterator(); iter.hasNext(); )
                 {
-                    ItemStack dropped = item.getItemStack();
-                    int remaining = dropped.getAmount();
-                    for(Iterator<ItemStack> iter = collectDrops.iterator(); iter.hasNext(); )
+                    ItemStack need = iter.next();
+                    if(dropped.isSimilar(need))
                     {
-                        ItemStack need = iter.next();
-                        if(dropped.isSimilar(need))
-                        {
-                            int needAmount = need.getAmount();
-                            int take = Math.min(remaining, needAmount);
-                            remaining -= take;
-                            needAmount -= take;
-                            need.setAmount(needAmount);
-                            if(needAmount <= 0)
-                                iter.remove();
+                        int needAmount = need.getAmount();
+                        int take = Math.min(remaining, needAmount);
+                        remaining -= take;
+                        needAmount -= take;
+                        need.setAmount(needAmount);
+                        if(needAmount <= 0)
+                            iter.remove();
 
-                            if(remaining == 0)
-                                break;
-                        }
-                    }
-
-                    if(collectDrops.isEmpty())
-                        captureDrops.remove(this);
-
-                    if(remaining != dropped.getAmount())
-                    {
-                        drops.put(item.getUniqueId(), player);
-                        return true;
+                        if(remaining == 0)
+                            break;
                     }
                 }
-                return false;
+
+                if(remaining != dropped.getAmount())
+                    allowToPickup(item, player);
+
+                if(collectDrops.isEmpty())
+                    return true;
             }
+
+            return false;
         };
 
         captureDrops.add(capture);
@@ -1133,8 +1149,8 @@ public class EntityProtections extends AbstractProtection
     public void onItemSpawnEvent(ItemSpawnEvent event)
     {
         Item item = event.getEntity();
-        for(Function<Item, Boolean> function : captureDrops)
-            if(function.apply(item))
-                return;
+        for(Iterator<Function<Item, Boolean>> iter = captureDrops.iterator(); iter.hasNext();)
+            if(iter.next().apply(item))
+                iter.remove();
     }
 }
