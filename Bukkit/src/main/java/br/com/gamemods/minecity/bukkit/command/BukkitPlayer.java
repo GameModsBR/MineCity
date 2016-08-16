@@ -314,14 +314,8 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
                 default:
                     if(block.isSolid())
                         break;
-                    else
-                    {
-                        ItemStack chestplate = sender.getInventory().getChestplate();
-                        if(chestplate == null)
-                            return;
-                        if(!chestplate.getType().name().equals("ELYTRA"))
-                            return;
-                    }
+                    else if(!sender.isGliding() && !sender.isFlying())
+                        return;
             }
             lastX = posX;
             lastY = posY;
