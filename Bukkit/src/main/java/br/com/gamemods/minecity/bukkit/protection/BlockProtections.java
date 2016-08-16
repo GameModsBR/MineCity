@@ -14,6 +14,7 @@ import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Nature;
 import br.com.gamemods.minecity.structure.Plot;
+import com.google.common.collect.MapMaker;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -31,19 +32,21 @@ import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.CocoaPlant;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class BlockProtections extends AbstractProtection
 {
+    private Map<Location, Player> portalCreator = new MapMaker().weakKeys().weakValues().makeMap();
+
     public BlockProtections(@NotNull MineCityBukkit plugin)
     {
         super(plugin);
@@ -433,9 +436,15 @@ public class BlockProtections extends AbstractProtection
                     return;
 
                 case OBSIDIAN:
-                    if(event.getMaterial() == Material.FLINT_AND_STEEL && check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                    if(event.getMaterial() == Material.FLINT_AND_STEEL)
                     {
-                        event.setCancelled(true);
+                        Player player = event.getPlayer();
+                        Location loc = block.getRelative(event.getBlockFace()).getLocation();
+                        portalCreator.put(loc, player);
+                        plugin.scheduler.runTaskLater(plugin.plugin, ()-> portalCreator.remove(loc, player), 2);
+
+                        if(check(loc, player, PermissionFlag.MODIFY))
+                            event.setCancelled(true);
                         return;
                     }
                     // Fall to check the end crystal
@@ -698,5 +707,100 @@ public class BlockProtections extends AbstractProtection
                 }
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPortalCreate(PortalCreateEvent event)
+    {
+        ArrayList<Block> blocks = event.getBlocks();
+
+        Player player;
+        int size = portalCreator.size();
+        if(size == 0)
+            player = null;
+        else if(size == 1)
+        {
+            Map.Entry<Location, Player> single = portalCreator.entrySet().iterator().next();
+            if(blocks.contains(single.getKey().getBlock()))
+                player = single.getValue();
+            else
+                player = null;
+        }
+        else if(size < blocks.size())
+        {
+            player = null;
+            for(Map.Entry<Location, Player> entry : portalCreator.entrySet())
+                if(blocks.contains(entry.getKey().getBlock()))
+                {
+                    player = entry.getValue();
+                    break;
+                }
+        }
+        else
+        {
+            player = null;
+            for(Block block: blocks)
+            {
+                player = portalCreator.get(block.getLocation());
+                if(player != null)
+                    break;
+            }
+        }
+
+        BukkitPlayer user = player == null? null : plugin.player(player);
+
+        BlockPos blockPos = plugin.blockPos(blocks.get(0));
+        blockPos.getChunk();
+        ClaimedChunk claim = null;
+        FlagHolder last = null;
+
+        for(Block block: blocks)
+        {
+            blockPos = plugin.blockPos(blockPos, block);
+            claim = plugin.mineCity.provideChunk(blockPos.getChunk(), claim);
+            FlagHolder holder = claim.getFlagHolder(blockPos);
+            if(holder == last)
+                continue;
+            last = holder;
+
+            if(user == null)
+            {
+                if(!(holder instanceof Nature))
+                {
+                    event.setCancelled(true);
+                    return;
+                }
+                continue;
+            }
+
+            Optional<Message> denial = holder.can(user, PermissionFlag.MODIFY);
+            if(denial.isPresent())
+            {
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerPortal(PlayerPortalEvent event)
+    {
+        final Player player = event.getPlayer();
+        event.setPortalTravelAgent(new WrappedTravelAgent(event.getPortalTravelAgent())
+        {
+            @Override
+            public boolean createPortal(Location location)
+            {
+                try
+                {
+                    portalCreator.put(location, player);
+                    return super.createPortal(location);
+                }
+                finally
+                {
+                    portalCreator.remove(location, player);
+                }
+            }
+        });
     }
 }
