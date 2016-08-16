@@ -1166,14 +1166,51 @@ public class EntityProtections extends AbstractProtection
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPotionSplash(PotionSplashEvent event)
     {
-        Collection<LivingEntity> entities = event.getAffectedEntities();
+        ThrownPotion potion = event.getPotion();
+
+        Collection<LivingEntity> affected = event.getAffectedEntities();
+        List<LivingEntity> negated = new ArrayList<>(affected.size());
+
+        if(checkPotionEffects(true, potion.getShooter(),
+                potion.getEffects().stream().map(PotionEffect::getType),
+                affected, negated))
+        {
+            event.setCancelled(true);
+        }
+
+        negated.forEach(e-> event.setIntensity(e, 0));
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void onAreaEffectCloudApply(AreaEffectCloudApplyEvent event)
+    {
+        AreaEffectCloud cloud = event.getEntity();
+        Stream<PotionEffectType> effects = Stream.of(cloud.getBasePotionData().getType().getEffectType());
+        if(cloud.hasCustomEffects())
+            effects = Stream.concat(effects, cloud.getCustomEffects().stream().map(PotionEffect::getType));
+
+        List<LivingEntity> affected = event.getAffectedEntities();
+        List<LivingEntity> negated = new ArrayList<>(affected.size());
+
+        if(checkPotionEffects(false, cloud.getSource(), effects, affected, negated))
+            affected.clear();
+        else
+            affected.removeAll(negated);
+    }
+
+    public boolean checkPotionEffects(boolean verbose,
+                                      ProjectileSource shooterEntity,
+                                      Stream<PotionEffectType> effects,
+                                      Collection<LivingEntity> entities,
+                                      Collection<LivingEntity> negatedEntities
+    )
+    {
         if(entities.isEmpty())
-            return;
+            return false;
 
-        boolean negative = event.getPotion().getEffects().stream().map(PotionEffect::getType).anyMatch(this::isNegative);
+        boolean negative = effects.anyMatch(this::isNegative);
 
-        ThrownPotion projectile = event.getEntity();
-        ProjectileSource shooterEntity = projectile.getShooter();
+        Optional<Message> result = Optional.empty();
         Object shooter = getShooter(shooterEntity, true);
         if(shooter instanceof Player)
         {
@@ -1184,7 +1221,6 @@ public class EntityProtections extends AbstractProtection
             FlagHolder playerHolder = playerChunk.getFlagHolder(playerPos);
 
             boolean allowedAnybody = false;
-            Optional<Message> result = Optional.empty();
             for(LivingEntity entity : entities)
             {
                 if(entity.equals(playerEntity))
@@ -1225,7 +1261,7 @@ public class EntityProtections extends AbstractProtection
                             if(denial.isPresent())
                             {
                                 result = denial;
-                                event.setIntensity(entity, 0);
+                                negatedEntities.add(entity);
                             }
                             else
                             {
@@ -1256,7 +1292,7 @@ public class EntityProtections extends AbstractProtection
                     if(denial.isPresent())
                     {
                         result = denial;
-                        event.setIntensity(entity, 0);
+                        negatedEntities.add(entity);
                     }
                     else
                     {
@@ -1276,7 +1312,7 @@ public class EntityProtections extends AbstractProtection
                     if(denial.isPresent())
                     {
                         result = denial;
-                        event.setIntensity(entity, 0);
+                        negatedEntities.add(entity);
                     }
                     else
                     {
@@ -1306,7 +1342,7 @@ public class EntityProtections extends AbstractProtection
                     if(denial.isPresent())
                     {
                         result = denial;
-                        event.setIntensity(entity, 0);
+                        negatedEntities.add(entity);
                     }
                     else
                     {
@@ -1321,7 +1357,7 @@ public class EntityProtections extends AbstractProtection
                 if(denial.isPresent())
                 {
                     result = denial;
-                    event.setIntensity(entity, 0);
+                    negatedEntities.add(entity);
                 }
                 else
                 {
@@ -1331,9 +1367,12 @@ public class EntityProtections extends AbstractProtection
 
             if(!allowedAnybody)
             {
-                player.send(FlagHolder.wrapDeny(result.orElse(FlagHolder.DEFAULT_DENIAL_MESSAGE)));
-                event.setCancelled(true);
+                if(verbose)
+                    player.send(FlagHolder.wrapDeny(result.orElse(FlagHolder.DEFAULT_DENIAL_MESSAGE)));
+                return true;
             }
+
+            return false;
         }
         else if(shooter instanceof PlayerID)
         {
@@ -1375,7 +1414,7 @@ public class EntityProtections extends AbstractProtection
                             ).findFirst();
 
                             if(denial.isPresent())
-                                event.setIntensity(entity, 0);
+                                negatedEntities.add(entity);
                             else
                                 allowedAnybody = true;
 
@@ -1401,7 +1440,7 @@ public class EntityProtections extends AbstractProtection
                         denial = entityHolder.can(player, PVC);
 
                     if(denial.isPresent())
-                        event.setIntensity(entity, 0);
+                        negatedEntities.add(entity);
                     else
                         allowedAnybody = true;
 
@@ -1415,7 +1454,7 @@ public class EntityProtections extends AbstractProtection
                     ).findFirst();
 
                     if(denial.isPresent())
-                        event.setIntensity(entity, 0);
+                        negatedEntities.add(entity);
                     else
                         allowedAnybody = true;
 
@@ -1438,7 +1477,7 @@ public class EntityProtections extends AbstractProtection
                     ).findFirst();
 
                     if(denial.isPresent())
-                        event.setIntensity(entity, 0);
+                        negatedEntities.add(entity);
                     else
                         allowedAnybody = true;
 
@@ -1448,13 +1487,12 @@ public class EntityProtections extends AbstractProtection
                 Optional<Message> denial = entityHolder.can(player, MODIFY);
 
                 if(denial.isPresent())
-                    event.setIntensity(entity, 0);
+                    negatedEntities.add(entity);
                 else
                     allowedAnybody = true;
             }
 
-            if(!allowedAnybody)
-                event.setCancelled(true);
+            return !allowedAnybody;
         }
         else if(shooter instanceof Entity)
         {
@@ -1488,7 +1526,7 @@ public class EntityProtections extends AbstractProtection
                         ).findFirst();
 
                         if(denial.isPresent())
-                            event.setIntensity(entity, 0);
+                            negatedEntities.add(entity);
                         else
                             allowedAnybody = true;
 
@@ -1516,7 +1554,7 @@ public class EntityProtections extends AbstractProtection
                     ).findFirst();
 
                     if(denial.isPresent())
-                        event.setIntensity(entity, 0);
+                        negatedEntities.add(entity);
                     else
                         allowedAnybody = true;
 
@@ -1526,12 +1564,11 @@ public class EntityProtections extends AbstractProtection
                 allowedAnybody = true;
             }
 
-            if(!allowedAnybody)
-                event.setCancelled(true);
+            return !allowedAnybody;
         }
         else
         {
-            event.setCancelled(true);
+            return true;
         }
     }
 }
