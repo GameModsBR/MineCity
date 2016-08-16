@@ -629,39 +629,6 @@ public class EntityProtections extends AbstractProtection
                     player.send(FlagHolder.wrapDeny(denial.get()));
                 }
             }
-            else if(entity instanceof ExperienceOrb)
-            {
-                if(player.lureDelay > 0)
-                {
-                    player.lureDelay--;
-                    event.setCancelled(true);
-                    return;
-                }
-
-                BlockPos orbPos = plugin.blockPos(entity.getLocation());
-                ClaimedChunk orbChunk = plugin.mineCity.provideChunk(orbPos.getChunk());
-                FlagHolder holder = orbChunk.getFlagHolder(orbPos);
-
-                Optional<Message> denial = holder.can(player, PICKUP);
-                if(!denial.isPresent())
-                {
-                    BlockPos playerPos = plugin.blockPos(orbPos, player.sender.getLocation());
-                    ClaimedChunk playerChunk = plugin.mineCity.provideChunk(playerPos.getChunk(), orbChunk);
-                    FlagHolder playerHolder = playerChunk.getFlagHolder(playerPos);
-
-                    if(!playerHolder.equals(holder))
-                        denial = playerHolder.can(player, PICKUP);
-                }
-
-                if(denial.isPresent())
-                {
-                    event.setCancelled(true);
-                    player.lureDelay = 40;
-
-                    event.setTarget(null);
-                    player.send(FlagHolder.wrapDeny(denial.get()));
-                }
-            }
             else if(entity instanceof Monster)
             {
                 if(player.lureDelay > 0 && entity.getCustomName() != null)
