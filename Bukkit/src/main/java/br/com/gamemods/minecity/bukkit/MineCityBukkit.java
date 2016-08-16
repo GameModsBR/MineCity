@@ -19,6 +19,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -164,7 +165,8 @@ public class MineCityBukkit implements Server, Listener
         return true;
     }
 
-    public BukkitPlayer player(Player player)
+    @NotNull
+    public BukkitPlayer player(@NotNull Player player)
     {
         return playerMap.computeIfAbsent(player, p -> {
             BukkitPlayer bukkitPlayer = new BukkitPlayer(this, p);
@@ -173,7 +175,8 @@ public class MineCityBukkit implements Server, Listener
         });
     }
 
-    private br.com.gamemods.minecity.api.command.CommandSender sender(CommandSender sender)
+    @NotNull
+    private br.com.gamemods.minecity.api.command.CommandSender sender(@NotNull CommandSender sender)
     {
         if(sender instanceof Player)
             return player((Player) sender);
@@ -182,42 +185,55 @@ public class MineCityBukkit implements Server, Listener
         return new BukkitCommandSender<>(this, sender);
     }
 
-    public WorldDim world(World world)
+    @NotNull
+    public WorldDim world(@NotNull World world)
     {
         //noinspection deprecation
         return worldMap.computeIfAbsent(world, w-> new WorldDim(w, w.getEnvironment().getId(), w.getName()));
     }
 
-    public Optional<World> world(WorldDim world)
+    @NotNull
+    public Optional<World> world(@NotNull WorldDim world)
     {
         World other = plugin.getServer().getWorld(world.dir);
         world.instance = other;
         return Optional.ofNullable(other);
     }
 
-    public ChunkPos chunk(Location loc)
+    @NotNull
+    public ChunkPos chunk(@NotNull Location loc)
     {
         return new ChunkPos(world(loc.getWorld()), loc.getBlockX()>>4, loc.getBlockZ()>>4);
     }
 
-    public ChunkPos chunk(Block loc)
+    @NotNull
+    public ChunkPos chunk(@NotNull Block loc)
     {
         return new ChunkPos(world(loc.getWorld()), loc.getX()>>4, loc.getZ()>>4);
     }
 
-    public ChunkPos chunk(Chunk chunk)
+    @NotNull
+    public ChunkPos chunk(@NotNull Chunk chunk)
     {
         ChunkPos pos = new ChunkPos(world(chunk.getWorld()), chunk.getX(), chunk.getZ());
         pos.instance = chunk;
         return pos;
     }
 
-    public BlockPos blockPos(Block block)
+    @NotNull
+    public BlockPos blockPos(@NotNull Block block)
     {
         return new BlockPos(world(block.getWorld()), block.getX(), block.getY(), block.getZ());
     }
 
-    public BlockPos blockPos(BlockPos base, Block block)
+    @NotNull
+    public BlockPos blockPos(@NotNull BlockState block)
+    {
+        return new BlockPos(world(block.getWorld()), block.getX(), block.getY(), block.getZ());
+    }
+
+    @NotNull
+    public BlockPos blockPos(@NotNull BlockPos base, @NotNull BlockState block)
     {
         return block.getWorld().equals(base.world.instance)?
                 new BlockPos(base, block.getX(), block.getY(), block.getZ())
@@ -225,7 +241,17 @@ public class MineCityBukkit implements Server, Listener
                 ;
     }
 
-    public BlockPos blockPos(BlockPos base, Location loc)
+    @NotNull
+    public BlockPos blockPos(@NotNull BlockPos base, @NotNull Block block)
+    {
+        return block.getWorld().equals(base.world.instance)?
+                new BlockPos(base, block.getX(), block.getY(), block.getZ())
+                : blockPos(block)
+                ;
+    }
+
+    @NotNull
+    public BlockPos blockPos(@NotNull BlockPos base, @NotNull Location loc)
     {
         return loc.getWorld().equals(base.world.instance)?
                 new BlockPos(base, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())
@@ -233,22 +259,26 @@ public class MineCityBukkit implements Server, Listener
                 ;
     }
 
-    public BlockPos blockPos(Location location)
+    @NotNull
+    public BlockPos blockPos(@NotNull Location location)
     {
         return new BlockPos(world(location.getWorld()), location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
-    public EntityPos entityPos(Location loc)
+    @NotNull
+    public EntityPos entityPos(@NotNull Location loc)
     {
         return new EntityPos(world(loc.getWorld()), loc.getX(), loc.getY(), loc.getZ(), loc.getPitch(), loc.getYaw());
     }
 
-    public Optional<Location> location(BlockPos pos)
+    @NotNull
+    public Optional<Location> location(@NotNull BlockPos pos)
     {
         return world(pos.world).map(world-> new Location(world, pos.x+0.5, pos.y+0.5, pos.z+0.5));
     }
 
-    public Optional<Location> location(EntityPos pos)
+    @NotNull
+    public Optional<Location> location(@NotNull EntityPos pos)
     {
         return world(pos.world).map(world -> new Location(world, pos.x, pos.y, pos.z, pos.yaw, pos.pitch));
     }
@@ -260,7 +290,7 @@ public class MineCityBukkit implements Server, Listener
     }
 
     @Override
-    public Optional<PlayerID> getPlayerId(String name)
+    public Optional<PlayerID> getPlayerId(@NotNull String name)
     {
         Player player = plugin.getServer().getPlayer(name);
         if(player == null)
@@ -281,13 +311,13 @@ public class MineCityBukkit implements Server, Listener
     }
 
     @Override
-    public <R> Future<R> callSyncMethod(Callable<R> callable)
+    public <R> Future<R> callSyncMethod(@NotNull Callable<R> callable)
     {
         return scheduler.callSyncMethod(plugin, callable);
     }
 
     @Override
-    public void runAsynchronously(Runnable runnable)
+    public void runAsynchronously(@NotNull Runnable runnable)
     {
         scheduler.runTaskAsynchronously(plugin, runnable);
     }

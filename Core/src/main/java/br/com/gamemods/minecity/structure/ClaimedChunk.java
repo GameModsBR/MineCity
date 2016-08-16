@@ -68,8 +68,16 @@ public final class ClaimedChunk
         return Optional.empty();
     }
 
+    @NotNull
+    public FlagHolder getFlagHolder()
+    {
+        if(reserve)
+            return chunk.world.nature;
 
+        return getIsland().<FlagHolder>map(Island::getCity).orElse(chunk.world.nature);
+    }
 
+    @NotNull
     public FlagHolder getFlagHolder(int blockX, int blockY, int blockZ)
     {
         if(reserve)

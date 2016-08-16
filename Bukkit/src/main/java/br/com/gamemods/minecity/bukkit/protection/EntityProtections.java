@@ -852,7 +852,7 @@ public class EntityProtections extends AbstractProtection
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void on(PlayerChangedWorldEvent event)
+    public void onPlayerChangeWorld(PlayerChangedWorldEvent event)
     {
         final Player player = event.getPlayer();
         final BukkitPlayer user = plugin.player(player);

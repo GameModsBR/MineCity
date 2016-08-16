@@ -1080,6 +1080,7 @@
             <msg id="world-not-found">The destiny world ${name} was not found or is not loaded</msg>
         </teleport>
         <msg id="give.tool.inventory-full">You haven't received the tool because your inventory is full.</msg>
+        <msg id="portal.create.failed">Unable to create a portal in the other dimension.</msg>
     </action>
     <tool>
         <selection>

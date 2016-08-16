@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.bukkit.protection;
 import org.bukkit.Location;
 import org.bukkit.TravelAgent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class WrappedTravelAgent implements TravelAgent
 {
@@ -14,10 +15,12 @@ public abstract class WrappedTravelAgent implements TravelAgent
         this.source = source;
     }
 
+    @NotNull
     @Override
     public TravelAgent setSearchRadius(int radius)
     {
-        return source.setSearchRadius(radius);
+        source.setSearchRadius(radius);
+        return this;
     }
 
     @Override
@@ -26,10 +29,12 @@ public abstract class WrappedTravelAgent implements TravelAgent
         return source.getSearchRadius();
     }
 
+    @NotNull
     @Override
     public TravelAgent setCreationRadius(int radius)
     {
-        return source.setCreationRadius(radius);
+        source.setCreationRadius(radius);
+        return this;
     }
 
     @Override
@@ -51,19 +56,27 @@ public abstract class WrappedTravelAgent implements TravelAgent
     }
 
     @Override
-    public Location findOrCreate(Location location)
+    public Location findOrCreate(@NotNull Location location)
     {
-        return source.findOrCreate(location);
+        Location portal = findPortal(location);
+        if(portal != null)
+            return portal;
+
+        if(getCanCreatePortal() && createPortal(location))
+            return findPortal(location);
+
+        return location;
     }
 
+    @Nullable
     @Override
-    public Location findPortal(Location location)
+    public Location findPortal(@NotNull Location location)
     {
         return source.findPortal(location);
     }
 
     @Override
-    public boolean createPortal(Location location)
+    public boolean createPortal(@NotNull Location location)
     {
         return source.createPortal(location);
     }

@@ -1,7 +1,11 @@
 package br.com.gamemods.minecity.api;
 
 import java.util.*;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -27,6 +31,25 @@ public class CollectionUtil
             .filter(Optional::isPresent)
             .map(Optional::get)
             ;
+    }
+
+    /**
+     * @see Collectors#throwingMerger()
+     */
+    public static <T> BinaryOperator<T> throwingMerger()
+    {
+        return (u,v) -> { throw new IllegalStateException(String.format("Duplicate key %s", u)); };
+    }
+
+    /**
+     * @see Collectors#toMap(Function, Function, BinaryOperator, Supplier)
+     */
+    public static <T, K, U, M extends Map<K, U>>
+    Collector<T, ?, M> toMap(Function<? super T, ? extends K> keyMapper,
+                                    Function<? super T, ? extends U> valueMapper,
+                                    Supplier<M> mapSupplier)
+    {
+        return Collectors.toMap(keyMapper, valueMapper, throwingMerger(), mapSupplier);
     }
 
     /**

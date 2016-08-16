@@ -22,13 +22,13 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.*;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.entity.EntityInteractEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -709,7 +709,7 @@ public class BlockProtections extends AbstractProtection
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW)
     public void onPortalCreate(PortalCreateEvent event)
     {
         ArrayList<Block> blocks = event.getBlocks();
@@ -747,60 +747,85 @@ public class BlockProtections extends AbstractProtection
             }
         }
 
-        BukkitPlayer user = player == null? null : plugin.player(player);
+        BlockPos cache = plugin.blockPos(blocks.get(0));
+        cache.getChunk();
+        Optional<Message> denial = onPortalCreation(blocks.stream().map(b-> plugin.blockPos(cache, b)), player);
+        if(denial.isPresent())
+            event.setCancelled(true);
+    }
 
-        BlockPos blockPos = plugin.blockPos(blocks.get(0));
-        blockPos.getChunk();
-        ClaimedChunk claim = null;
-        FlagHolder last = null;
-
-        for(Block block: blocks)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onEntityCreatePortal(EntityCreatePortalEvent event)
+    {
+        LivingEntity entity = event.getEntity();
+        List<BlockState> blocks = event.getBlocks();
+        BlockPos cache = plugin.blockPos(blocks.get(0));
+        cache.getChunk();
+        Optional<Message> message = onPortalCreation(blocks.stream().map(b-> plugin.blockPos(cache, b)), entity);
+        if(message.isPresent())
         {
-            blockPos = plugin.blockPos(blockPos, block);
-            claim = plugin.mineCity.provideChunk(blockPos.getChunk(), claim);
-            FlagHolder holder = claim.getFlagHolder(blockPos);
-            if(holder == last)
-                continue;
-            last = holder;
-
-            if(user == null)
+            event.setCancelled(true);
+            if(entity instanceof Player)
             {
-                if(!(holder instanceof Nature))
-                {
-                    event.setCancelled(true);
-                    return;
-                }
-                continue;
-            }
-
-            Optional<Message> denial = holder.can(user, PermissionFlag.MODIFY);
-            if(denial.isPresent())
-            {
-                event.setCancelled(true);
-                return;
+                BukkitPlayer player = plugin.player((Player) entity);
+                player.send(FlagHolder.wrapDeny(message.get()));
             }
         }
+    }
+
+    public Optional<Message> onPortalCreation(Stream<BlockPos> blocks, Entity creator)
+    {
+        BukkitPlayer user = creator instanceof Player? plugin.player((Player) creator) : null;
+
+        return blocks.map(new Function<BlockPos, Optional<Message>>()
+        {
+            ClaimedChunk claim = null;
+            FlagHolder last = null;
+
+            @Override
+            public Optional<Message> apply(BlockPos blockPos)
+            {
+                claim = plugin.mineCity.provideChunk(blockPos.getChunk(), claim);
+                FlagHolder holder = claim.getFlagHolder(blockPos);
+                if(holder == last)
+                    return Optional.empty();
+                last = holder;
+
+                if(user == null)
+                {
+                    if(!(holder instanceof Nature))
+                    {
+                        return Optional.of(new Message("From unknown to somewhere"));
+                    }
+                    return Optional.empty();
+                }
+
+                Optional<Message> denial = holder.can(user, PermissionFlag.MODIFY);
+                if(denial.isPresent())
+                {
+                    return denial;
+                }
+
+                return Optional.empty();
+            }
+        }).filter(Optional::isPresent).map(Optional::get).findFirst();
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerPortal(PlayerPortalEvent event)
     {
-        final Player player = event.getPlayer();
-        event.setPortalTravelAgent(new WrappedTravelAgent(event.getPortalTravelAgent())
-        {
-            @Override
-            public boolean createPortal(Location location)
-            {
-                try
-                {
-                    portalCreator.put(location, player);
-                    return super.createPortal(location);
-                }
-                finally
-                {
-                    portalCreator.remove(location, player);
-                }
-            }
-        });
+        event.setPortalTravelAgent(new SafeTravelAgent(plugin, event.getPortalTravelAgent(), event.getPlayer()));
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onEntityPortal(EntityPortalEvent event)
+    {
+        event.setPortalTravelAgent(new SafeTravelAgent(plugin, event.getPortalTravelAgent(), event.getEntity()));
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void on(EntityPortalExitEvent event)
+    {
+        plugin.logger.info(event.getEntity()+" portal exit");
     }
 }

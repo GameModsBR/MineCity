@@ -1066,6 +1066,7 @@
             <msg id="world-not-found">O mundo de destino ${name} não foi encontrado ou não está carregado</msg>
         </teleport>
         <msg id="give.tool.inventory-full">Você não recebeu a ferramenta porque seu inventário está cheio.</msg>
+        <msg id="portal.create.failed">Não foi possível criar um portal na outra dimensão.</msg>
     </action>
     <tool>
         <selection>
