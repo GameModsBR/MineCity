@@ -913,9 +913,13 @@ public class EntityProtections extends AbstractProtection
             case CACTUS:
             case WOOL:
                 return true;
-        }
 
-        return false;
+            case INK_SACK:
+                return item.getDurability() == 3;
+
+            default:
+                return false;
+        }
     }
 
     public Optional<Message> canCollect(BukkitPlayer player, boolean harvest, Item item)
@@ -1086,6 +1090,32 @@ public class EntityProtections extends AbstractProtection
 
         Player player = event.getEntity();
         collectDrops(player, player.getLocation(), drops, 2);
+    }
+
+    public void consumeDrop(Location location, Material type, int ticks)
+    {
+        Function<Item, Boolean> capture = item ->
+        {
+            if(item.getWorld().equals(location.getWorld()) && item.getLocation().distance(location) <= 2)
+            {
+                ItemStack stack = item.getItemStack();
+                int amount = stack.getAmount();
+                if(stack.getType() == type && amount > 0)
+                {
+                    stack.setAmount(amount -1);
+                    item.setItemStack(stack);
+
+                    if(stack.getAmount() == 0)
+                        item.remove();
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
+        captureDrops.add(capture);
+        plugin.scheduler.runTaskLater(plugin.plugin, ()-> captureDrops.remove(capture), ticks);
     }
 
     public void collectDrops(final Player player, final Location collectLoc, Collection<ItemStack> loot, int ticks)

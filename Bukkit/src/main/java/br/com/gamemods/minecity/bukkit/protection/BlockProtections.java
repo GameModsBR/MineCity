@@ -15,6 +15,7 @@ import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Nature;
 import br.com.gamemods.minecity.structure.Plot;
 import com.google.common.collect.MapMaker;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -49,6 +50,7 @@ import java.util.stream.Stream;
 public class BlockProtections extends AbstractProtection
 {
     private Map<Location, Player> portalCreator = new MapMaker().weakKeys().weakValues().makeMap();
+    private boolean harvesting;
 
     public BlockProtections(@NotNull MineCityBukkit plugin)
     {
@@ -184,6 +186,7 @@ public class BlockProtections extends AbstractProtection
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event)
     {
+        harvesting = false;
         Block block = event.getBlock();
         Location l = block.getLocation();
         BukkitPlayer player = plugin.player(event.getPlayer());
@@ -193,10 +196,11 @@ public class BlockProtections extends AbstractProtection
 
         FlagHolder holder = claim.getFlagHolder(blockPos);
         Optional<Message> denial = holder.can(player, PermissionFlag.MODIFY);
-        if(denial.isPresent())
+
+        boolean harvest = false;
+        if(denial.isPresent() && player.sender.getGameMode() != GameMode.CREATIVE)
         {
             Material type = block.getType();
-            boolean harvest = false;
             switch(type)
             {
                 case PUMPKIN:
@@ -207,7 +211,7 @@ public class BlockProtections extends AbstractProtection
                         Block blockRelative = block.getRelative(dir);
                         Material relative = blockRelative.getType();
                         harvest = relative == Material.PUMPKIN_STEM && type == Material.PUMPKIN
-                                || relative == Material.MELON_STEM && type == Material.MELON;
+                                || relative == Material.MELON_STEM && type == Material.MELON_BLOCK;
 
                         if(harvest)
                         {
@@ -257,6 +261,71 @@ public class BlockProtections extends AbstractProtection
         Block above = block.getRelative(BlockFace.UP);
         if(above.getType().hasGravity() && checkFall(claim, block, player, l, blockPos))
             event.setCancelled(true);
+        else
+            harvesting = harvest;
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockBreakMonitor(BlockBreakEvent event)
+    {
+        if(!harvesting)
+            return;
+
+        harvesting = false;
+
+        Block block = event.getBlock();
+        final Material type = block.getType();
+        final Material seeds;
+        switch(type)
+        {
+            case CROPS:
+                seeds = Material.SEEDS;
+                break;
+
+            case POTATO:
+                seeds = Material.POTATO_ITEM;
+                break;
+
+            case CARROT:
+                seeds = Material.CARROT_ITEM;
+                break;
+
+            case BEETROOT_BLOCK:
+                seeds = Material.BEETROOT_SEEDS;
+                break;
+
+            case NETHER_WART_BLOCK:
+                seeds = Material.NETHER_WARTS;
+                break;
+
+            case COCOA:
+                seeds = Material.INK_SACK;
+                break;
+
+            default:
+                return;
+        }
+
+        switch(type)
+        {
+            case CROPS:
+            case POTATO:
+            case CARROT:
+            case BEETROOT_BLOCK:
+            case NETHER_WART_BLOCK:
+                plugin.scheduler.runTask(plugin.plugin, ()-> block.setType(type));
+                plugin.entityProtections.consumeDrop(block.getLocation(), seeds, 2);
+                break;
+
+            case COCOA:
+                final BlockState cocoa = block.getState();
+                CocoaPlant data = (CocoaPlant) cocoa.getData();
+                data.setSize(CocoaPlant.CocoaPlantSize.SMALL);
+                cocoa.setData(data);
+                plugin.scheduler.runTask(plugin.plugin, ()-> cocoa.update(true));
+                plugin.entityProtections.consumeDrop(block.getLocation(), seeds, 2);
+                break;
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)

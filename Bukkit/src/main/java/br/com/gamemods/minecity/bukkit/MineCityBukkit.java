@@ -55,6 +55,7 @@ public class MineCityBukkit implements Server, Listener
     public final Map<Player, BukkitPlayer> playerMap = new HashMap<>();
     public final Map<PlayerID, BukkitPlayer> playerIdMap = new HashMap<>();
     public final Map<World, WorldDim> worldMap = new HashMap<>();
+    public final EntityProtections entityProtections;
     private String selectionToolTitle;
     private List<String> selectionToolLore;
 
@@ -68,7 +69,7 @@ public class MineCityBukkit implements Server, Listener
         mineCity = new MineCity(this, config, transformer);
         PluginManager pluginManager = plugin.getPluginManager();
         pluginManager.registerEvents(new WorldListener(this), plugin);
-        pluginManager.registerEvents(new EntityProtections(this), plugin);
+        pluginManager.registerEvents(entityProtections = new EntityProtections(this), plugin);
         pluginManager.registerEvents(new BlockProtections(this), plugin);
         pluginManager.registerEvents(this, plugin);
         selectionToolTitle = transformer.toLegacy(new Message("tool.selection.title", LegacyFormat.AQUA+"Selection Tool"));
