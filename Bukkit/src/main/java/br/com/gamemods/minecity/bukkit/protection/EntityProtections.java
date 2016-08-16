@@ -220,7 +220,8 @@ public class EntityProtections extends AbstractProtection
                     holder = plugin.mineCity.provideChunk(blockPos.getChunk()).getFlagHolder(blockPos);
 
                 Optional<Message> denial = holder.can(owner,
-                        victim instanceof Player? PVP : victim instanceof Monster? PVM : PVC
+                        victim instanceof Player? PVP : victim.getCustomName() != null? MODIFY :
+                                victim instanceof Monster? PVM : PVC
                 );
                 if(denial.isPresent())
                 {
@@ -245,11 +246,14 @@ public class EntityProtections extends AbstractProtection
                 FlagHolder holder = plugin.mineCity.provideChunk(blockPos.getChunk()).getFlagHolder(blockPos);
 
                 Optional<Message> denial = holder.can(owner,
-                        victim instanceof Player? PVP : victim instanceof Monster? PVM : PVC
+                        victim instanceof Player? PVP : victim.getCustomName() != null? MODIFY :
+                                victim instanceof Monster? PVM : PVC
                 );
                 if(denial.isPresent())
                 {
                     event.setCancelled(true);
+                    if(attacker instanceof Creature)
+                        ((Creature) attacker).setTarget(null);
                     return;
                 }
             }
@@ -265,6 +269,20 @@ public class EntityProtections extends AbstractProtection
             ))
             {
                 event.setCancelled(true);
+                return;
+            }
+        }
+
+        if(attacker instanceof Monster)
+        {
+            Entity victim = event.getEntity();
+            if(victim instanceof Player)
+            {
+                if(silentCheck(attacker.getLocation(), (Player) victim, attacker.getCustomName() != null? MODIFY : PVM).isPresent())
+                {
+                    event.setCancelled(true);
+                    ((Monster) attacker).setTarget(null);
+                }
             }
         }
     }
@@ -554,12 +572,12 @@ public class EntityProtections extends AbstractProtection
             event.setCancelled(true);
     }
 
-    public Optional<Message> lure(BukkitPlayer player, Entity entity)
+    public Optional<Message> checkLure(BukkitPlayer player, Entity entity, PermissionFlag flag)
     {
         BlockPos orbPos = plugin.blockPos(entity.getLocation());
         ClaimedChunk orbChunk = plugin.mineCity.provideChunk(orbPos.getChunk());
         FlagHolder holder = orbChunk.getFlagHolder(orbPos);
-        Optional<Message> denial = holder.can(player, PICKUP);
+        Optional<Message> denial = holder.can(player, flag);
         if(!denial.isPresent())
         {
             BlockPos playerPos = plugin.blockPos(orbPos, player.sender.getLocation());
@@ -567,7 +585,7 @@ public class EntityProtections extends AbstractProtection
             FlagHolder playerHolder = playerChunk.getFlagHolder(playerPos);
             if(!playerHolder.equals(holder))
             {
-                denial = playerHolder.can(player, PICKUP);
+                denial = playerHolder.can(player, flag);
             }
         }
 
@@ -582,7 +600,7 @@ public class EntityProtections extends AbstractProtection
         if(target instanceof Player)
         {
             BukkitPlayer player = plugin.player((Player) target);
-            if(entity instanceof Animals || entity.getCustomName() != null)
+            if(entity instanceof Animals)
             {
                 if(player.lureDelay > 0)
                 {
@@ -591,15 +609,129 @@ public class EntityProtections extends AbstractProtection
                     return;
                 }
 
-                Optional<Message> denial = lure(player, entity);
+                BlockPos entityPos = plugin.blockPos(entity.getLocation());
+                ClaimedChunk entityChunk = plugin.mineCity.provideChunk(entityPos.getChunk());
+                FlagHolder holder = entityChunk.getFlagHolder(entityPos);
+
+                boolean named = entity.getCustomName() != null;
+                Optional<Message> denial = holder.can(player, MODIFY);
+                if(!named && denial.isPresent())
+                    denial = holder.can(player, PVC);
+
+                if(!denial.isPresent())
+                {
+                    BlockPos playerPos = plugin.blockPos(entityPos, player.sender.getLocation());
+                    ClaimedChunk playerChunk = plugin.mineCity.provideChunk(playerPos.getChunk(), entityChunk);
+                    FlagHolder playerHolder = playerChunk.getFlagHolder(playerPos);
+
+                    if(!playerHolder.equals(holder))
+                    {
+                        denial = playerHolder.can(player, MODIFY);
+                        if(!named && denial.isPresent())
+                            denial = playerHolder.can(player, PVC);
+                    }
+                }
+
+                if(denial.isPresent())
+                {
+                    event.setCancelled(true);
+                    player.lureDelay = 40;
+                    player.send(FlagHolder.wrapDeny(denial.get()));
+                }
+            }
+            else if(entity instanceof ExperienceOrb)
+            {
+                if(player.lureDelay > 0)
+                {
+                    player.lureDelay--;
+                    event.setCancelled(true);
+                    return;
+                }
+
+                BlockPos orbPos = plugin.blockPos(entity.getLocation());
+                ClaimedChunk orbChunk = plugin.mineCity.provideChunk(orbPos.getChunk());
+                FlagHolder holder = orbChunk.getFlagHolder(orbPos);
+
+                Optional<Message> denial = holder.can(player, PICKUP);
+                if(!denial.isPresent())
+                {
+                    BlockPos playerPos = plugin.blockPos(orbPos, player.sender.getLocation());
+                    ClaimedChunk playerChunk = plugin.mineCity.provideChunk(playerPos.getChunk(), orbChunk);
+                    FlagHolder playerHolder = playerChunk.getFlagHolder(playerPos);
+
+                    if(!playerHolder.equals(holder))
+                        denial = playerHolder.can(player, PICKUP);
+                }
+
                 if(denial.isPresent())
                 {
                     event.setCancelled(true);
                     player.lureDelay = 40;
 
-                    if(entity instanceof ExperienceOrb)
-                        event.setTarget(null);
+                    event.setTarget(null);
+                    player.send(FlagHolder.wrapDeny(denial.get()));
+                }
+            }
+            else if(entity instanceof Monster)
+            {
+                if(player.lureDelay > 0 && entity.getCustomName() != null)
+                {
+                    player.lureDelay--;
+                    event.setCancelled(true);
+                    return;
+                }
 
+                BlockPos mobPos = plugin.blockPos(entity.getLocation());
+                ClaimedChunk mobChunk = plugin.mineCity.provideChunk(mobPos.getChunk());
+                FlagHolder holder = mobChunk.getFlagHolder(mobPos);
+
+                boolean named = entity.getCustomName() != null;
+                Optional<Message> denial = holder.can(player, named? MODIFY : PVM);
+                if(!denial.isPresent())
+                {
+                    BlockPos playerPos = plugin.blockPos(mobPos, player.sender.getLocation());
+                    ClaimedChunk playerChunk = plugin.mineCity.provideChunk(playerPos.getChunk(), mobChunk);
+                    FlagHolder playerHolder = playerChunk.getFlagHolder(playerPos);
+
+                    if(!playerHolder.equals(holder))
+                        denial = playerHolder.can(player, named? MODIFY : PVM);
+                }
+
+                if(denial.isPresent())
+                {
+                    event.setCancelled(true);
+                    if(named)
+                        player.lureDelay = 40;
+                }
+            }
+            else if(entity.getCustomName() != null)
+            {
+                if(player.lureDelay > 0)
+                {
+                    player.lureDelay--;
+                    event.setCancelled(true);
+                    return;
+                }
+
+                BlockPos entPos = plugin.blockPos(entity.getLocation());
+                ClaimedChunk entChunk = plugin.mineCity.provideChunk(entPos.getChunk());
+                FlagHolder holder = entChunk.getFlagHolder(entPos);
+
+                Optional<Message> denial = holder.can(player, MODIFY);
+                if(!denial.isPresent())
+                {
+                    BlockPos playerPos = plugin.blockPos(entPos, player.sender.getLocation());
+                    ClaimedChunk playerChunk = plugin.mineCity.provideChunk(playerPos.getChunk(), entChunk);
+                    FlagHolder playerHolder = playerChunk.getFlagHolder(playerPos);
+
+                    if(!playerHolder.equals(holder))
+                        denial = playerHolder.can(player, MODIFY);
+                }
+
+                if(denial.isPresent())
+                {
+                    event.setCancelled(true);
+                    player.lureDelay = 40;
                     player.send(FlagHolder.wrapDeny(denial.get()));
                 }
             }
