@@ -33,6 +33,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.BlockProjectileSource;
 import org.bukkit.projectiles.ProjectileSource;
@@ -198,12 +199,18 @@ public class EntityProtections extends AbstractProtection
         if(event.isCancelled())
             return;
 
-        if(attacker instanceof Projectile)
+        if(attacker instanceof Projectile || attacker instanceof AreaEffectCloud)
         {
-            ProjectileSource shooter = ((Projectile) attacker).getShooter();
+            ProjectileSource shooter;
+            if(attacker instanceof Projectile)
+                shooter = ((Projectile) attacker).getShooter();
+            else
+                shooter = ((AreaEffectCloud) attacker).getSource();
 
             if(shooter instanceof Entity)
+            {
                 attacker = (Entity) shooter;
+            }
             else if(shooter instanceof BlockProjectileSource)
             {
                 Block block = ((BlockProjectileSource) shooter).getBlock();
@@ -267,9 +274,12 @@ public class EntityProtections extends AbstractProtection
             }
         }
 
+        Entity victim = event.getEntity();
+        if(attacker.equals(victim))
+            return;
+
         if(attacker instanceof Player)
         {
-            Entity victim = event.getEntity();
             if(check(victim.getLocation(), (Player) attacker,
                     victim instanceof Player? PVP :
                             victim instanceof Monster? PVM :
@@ -285,7 +295,6 @@ public class EntityProtections extends AbstractProtection
 
         if(attacker instanceof Monster)
         {
-            Entity victim = event.getEntity();
             if(victim instanceof Player)
             {
                 if(silentCheck(attacker.getLocation(), (Player) victim, attacker.getCustomName() != null? MODIFY : PVM).isPresent())
@@ -1129,5 +1138,400 @@ public class EntityProtections extends AbstractProtection
         for(Iterator<Function<Item, Boolean>> iter = captureDrops.iterator(); iter.hasNext();)
             if(iter.next().apply(item))
                 iter.remove();
+    }
+
+    public boolean isNegative(PotionEffectType type)
+    {
+        switch(type.getId())
+        {
+            case 2: //slow
+            case 4: //slow digging
+            case 7: //harm
+            case 8: //jump -- sprint+jump is slower, allows creatures to jump fences and escape
+            case 9: //confusion
+            case 15: //blindness
+            case 17: //hunger
+            case 18: //weakness
+            case 19: //poison
+            case 20: //wither
+            case 24: //glowing
+            case 25: //levitation
+            case 27: //unlucky
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPotionSplash(PotionSplashEvent event)
+    {
+        Collection<LivingEntity> entities = event.getAffectedEntities();
+        if(entities.isEmpty())
+            return;
+
+        boolean negative = event.getPotion().getEffects().stream().map(PotionEffect::getType).anyMatch(this::isNegative);
+
+        ThrownPotion projectile = event.getEntity();
+        ProjectileSource shooterEntity = projectile.getShooter();
+        Object shooter = getShooter(shooterEntity, true);
+        if(shooter instanceof Player)
+        {
+            Player playerEntity = (Player) shooter;
+            BukkitPlayer player = plugin.player((Player)shooter);
+            BlockPos playerPos = plugin.blockPos(player.sender.getLocation());
+            ClaimedChunk playerChunk = plugin.mineCity.provideChunk(playerPos.getChunk());
+            FlagHolder playerHolder = playerChunk.getFlagHolder(playerPos);
+
+            boolean allowedAnybody = false;
+            Optional<Message> result = Optional.empty();
+            for(LivingEntity entity : entities)
+            {
+                if(entity.equals(playerEntity))
+                {
+                    allowedAnybody = true;
+                    continue;
+                }
+
+                if(entity instanceof Tameable)
+                {
+                    if(!negative)
+                    {
+                        allowedAnybody = true;
+                        continue;
+                    }
+
+                    AnimalTamer owner = ((Tameable) entity).getOwner();
+                    if(playerEntity.equals(owner))
+                        continue;
+
+                    if(entity instanceof Wolf)
+                    {
+                        if(owner instanceof Player)
+                        {
+                            Player playerOwner = (Player) owner;
+                            BlockPos ownerPos = plugin.blockPos(playerPos, playerOwner.getLocation());
+                            ClaimedChunk ownerChunk = plugin.mineCity.provideChunk(ownerPos.getChunk(), playerChunk);
+                            FlagHolder ownerHolder = ownerChunk.getFlagHolder(ownerPos);
+                            BukkitPlayer ownerUser = plugin.player(playerOwner);
+
+                            Optional<Message> denial = optionalStream(
+                                    can(player, PVP, ownerHolder),
+                                    can(player, PVP, playerHolder),
+                                    can(ownerUser, PVP, ownerHolder),
+                                    can(ownerUser, PVP, playerHolder)
+                            ).findFirst();
+
+                            if(denial.isPresent())
+                            {
+                                result = denial;
+                                event.setIntensity(entity, 0);
+                            }
+                            else
+                            {
+                                allowedAnybody = true;
+                            }
+
+                            continue;
+                        }
+                    }
+                }
+
+                BlockPos entityPos = plugin.blockPos(playerPos, entity.getLocation());
+                ClaimedChunk entityChunk = plugin.mineCity.provideChunk(entityPos.getChunk(), playerChunk);
+                FlagHolder entityHolder = entityChunk.getFlagHolder(entityPos);
+
+                if(entity instanceof Ageable || entity instanceof Golem)
+                {
+                    if(!negative)
+                    {
+                        allowedAnybody = true;
+                        continue;
+                    }
+
+                    Optional<Message> denial = entityHolder.can(player, MODIFY);
+                    if(denial.isPresent() && entity.getCustomName() != null)
+                        denial = entityHolder.can(player, PVC);
+
+                    if(denial.isPresent())
+                    {
+                        result = denial;
+                        event.setIntensity(entity, 0);
+                    }
+                    else
+                    {
+                        allowedAnybody = true;
+                    }
+
+                    continue;
+                }
+
+                if(entity instanceof Monster)
+                {
+                    Optional<Message> denial = optionalStream(
+                            can(player, PVM, entityHolder),
+                            can(player, PVM, playerHolder)
+                    ).findFirst();
+
+                    if(denial.isPresent())
+                    {
+                        result = denial;
+                        event.setIntensity(entity, 0);
+                    }
+                    else
+                    {
+                        allowedAnybody = true;
+                    }
+
+                    continue;
+                }
+
+                if(entity instanceof Player)
+                {
+                    if(!negative)
+                    {
+                        allowedAnybody = true;
+                        continue;
+                    }
+
+                    BukkitPlayer otherUser = plugin.player((Player) entity);
+
+                    Optional<Message> denial = optionalStream(
+                            can(player, PVP, entityHolder),
+                            can(player, PVP, playerHolder),
+                            can(otherUser, PVP, entityHolder),
+                            can(otherUser, PVP, playerHolder)
+                    ).findFirst();
+
+                    if(denial.isPresent())
+                    {
+                        result = denial;
+                        event.setIntensity(entity, 0);
+                    }
+                    else
+                    {
+                        allowedAnybody = true;
+                    }
+
+                    continue;
+                }
+
+                Optional<Message> denial = entityHolder.can(player, MODIFY);
+
+                if(denial.isPresent())
+                {
+                    result = denial;
+                    event.setIntensity(entity, 0);
+                }
+                else
+                {
+                    allowedAnybody = true;
+                }
+            }
+
+            if(!allowedAnybody)
+            {
+                player.send(FlagHolder.wrapDeny(result.orElse(FlagHolder.DEFAULT_DENIAL_MESSAGE)));
+                event.setCancelled(true);
+            }
+        }
+        else if(shooter instanceof PlayerID)
+        {
+            PlayerID player = (PlayerID) shooter;
+            BlockPos basePos = plugin.blockPos(entities.iterator().next().getLocation());
+            ClaimedChunk cache = plugin.mineCity.provideChunk(basePos.getChunk());
+
+            boolean allowedAnybody = false;
+            for(LivingEntity entity : entities)
+            {
+                if(entity instanceof Tameable)
+                {
+                    if(!negative)
+                    {
+                        allowedAnybody = true;
+                        continue;
+                    }
+
+                    AnimalTamer owner = ((Tameable) entity).getOwner();
+                    if(owner != null && owner.getUniqueId().equals(player.getUniqueId()))
+                    {
+                        allowedAnybody = true;
+                        continue;
+                    }
+
+                    if(entity instanceof Wolf)
+                    {
+                        if(owner instanceof Player)
+                        {
+                            Player playerOwner = (Player) owner;
+                            BlockPos ownerPos = plugin.blockPos(basePos, playerOwner.getLocation());
+                            ClaimedChunk ownerChunk = plugin.mineCity.provideChunk(ownerPos.getChunk(), cache);
+                            FlagHolder ownerHolder = ownerChunk.getFlagHolder(ownerPos);
+                            BukkitPlayer ownerUser = plugin.player(playerOwner);
+
+                            Optional<Message> denial = optionalStream(
+                                    can(player, PVP, ownerHolder),
+                                    can(ownerUser, PVP, ownerHolder)
+                            ).findFirst();
+
+                            if(denial.isPresent())
+                                event.setIntensity(entity, 0);
+                            else
+                                allowedAnybody = true;
+
+                            continue;
+                        }
+                    }
+                }
+
+                BlockPos entityPos = plugin.blockPos(basePos, entity.getLocation());
+                ClaimedChunk entityChunk = plugin.mineCity.provideChunk(entityPos.getChunk(), cache);
+                FlagHolder entityHolder = entityChunk.getFlagHolder(entityPos);
+
+                if(entity instanceof Ageable || entity instanceof Golem)
+                {
+                    if(!negative)
+                    {
+                        allowedAnybody = true;
+                        continue;
+                    }
+
+                    Optional<Message> denial = entityHolder.can(player, MODIFY);
+                    if(denial.isPresent() && entity.getCustomName() != null)
+                        denial = entityHolder.can(player, PVC);
+
+                    if(denial.isPresent())
+                        event.setIntensity(entity, 0);
+                    else
+                        allowedAnybody = true;
+
+                    continue;
+                }
+
+                if(entity instanceof Monster)
+                {
+                    Optional<Message> denial = optionalStream(
+                            can(player, PVM, entityHolder)
+                    ).findFirst();
+
+                    if(denial.isPresent())
+                        event.setIntensity(entity, 0);
+                    else
+                        allowedAnybody = true;
+
+                    continue;
+                }
+
+                if(entity instanceof Player)
+                {
+                    if(!negative)
+                    {
+                        allowedAnybody = true;
+                        continue;
+                    }
+
+                    BukkitPlayer otherUser = plugin.player((Player) entity);
+
+                    Optional<Message> denial = optionalStream(
+                            can(player, PVP, entityHolder),
+                            can(otherUser, PVP, entityHolder)
+                    ).findFirst();
+
+                    if(denial.isPresent())
+                        event.setIntensity(entity, 0);
+                    else
+                        allowedAnybody = true;
+
+                    continue;
+                }
+
+                Optional<Message> denial = entityHolder.can(player, MODIFY);
+
+                if(denial.isPresent())
+                    event.setIntensity(entity, 0);
+                else
+                    allowedAnybody = true;
+            }
+
+            if(!allowedAnybody)
+                event.setCancelled(true);
+        }
+        else if(shooter instanceof Entity)
+        {
+            BlockPos basePos = plugin.blockPos(((Entity) shooter).getLocation());
+            ClaimedChunk baseClaim = plugin.mineCity.provideChunk(basePos.getChunk());
+            FlagHolder baseHolder = baseClaim.getFlagHolder(basePos);
+            boolean allowedAnybody = false;
+            for(LivingEntity entity : entities)
+            {
+                if(entity instanceof Tameable)
+                {
+                    if(!negative)
+                    {
+                        allowedAnybody = true;
+                        continue;
+                    }
+
+                    AnimalTamer owner = ((Tameable) entity).getOwner();
+
+                    if(owner instanceof Player)
+                    {
+                        Player playerOwner = (Player) owner;
+                        BlockPos ownerPos = plugin.blockPos(basePos, playerOwner.getLocation());
+                        ClaimedChunk ownerChunk = plugin.mineCity.provideChunk(ownerPos.getChunk(), baseClaim);
+                        FlagHolder ownerHolder = ownerChunk.getFlagHolder(ownerPos);
+                        BukkitPlayer ownerUser = plugin.player(playerOwner);
+
+                        Optional<Message> denial = optionalStream(
+                                can(ownerUser, PVM, ownerHolder),
+                                can(ownerUser, PVM, baseHolder)
+                        ).findFirst();
+
+                        if(denial.isPresent())
+                            event.setIntensity(entity, 0);
+                        else
+                            allowedAnybody = true;
+
+                        continue;
+                    }
+                }
+
+                if(entity instanceof Player)
+                {
+                    if(!negative)
+                    {
+                        allowedAnybody = true;
+                        continue;
+                    }
+
+                    Player playerOwner = (Player) entity;
+                    BlockPos ownerPos = plugin.blockPos(basePos, playerOwner.getLocation());
+                    ClaimedChunk ownerChunk = plugin.mineCity.provideChunk(ownerPos.getChunk(), baseClaim);
+                    FlagHolder ownerHolder = ownerChunk.getFlagHolder(ownerPos);
+                    BukkitPlayer ownerUser = plugin.player(playerOwner);
+
+                    Optional<Message> denial = optionalStream(
+                            can(ownerUser, PVM, ownerHolder),
+                            can(ownerUser, PVM, baseHolder)
+                    ).findFirst();
+
+                    if(denial.isPresent())
+                        event.setIntensity(entity, 0);
+                    else
+                        allowedAnybody = true;
+
+                    continue;
+                }
+
+                allowedAnybody = true;
+            }
+
+            if(!allowedAnybody)
+                event.setCancelled(true);
+        }
+        else
+        {
+            event.setCancelled(true);
+        }
     }
 }
