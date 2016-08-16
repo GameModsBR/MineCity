@@ -1,6 +1,5 @@
 package br.com.gamemods.minecity.bukkit;
 
-import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import org.bukkit.Chunk;
 import org.bukkit.event.EventHandler;
@@ -22,23 +21,22 @@ public class WorldListener implements Listener
         this.bukkit = bukkit;
     }
 
-    @Slow
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     void on(WorldLoadEvent event) throws DataSourceException
     {
-        bukkit.mineCity.loadNature(bukkit.world(event.getWorld()));
+        bukkit.loadingTasks.submit(()-> bukkit.world(event.getWorld()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     void on(WorldUnloadEvent event)
     {
-        bukkit.scheduler.runTaskAsynchronously(bukkit.plugin, ()-> bukkit.mineCity.unloadNature(bukkit.world(event.getWorld())));
+        bukkit.loadingTasks.submit(()-> bukkit.mineCity.unloadNature(bukkit.world(event.getWorld())));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     void on(ChunkLoadEvent event)
     {
-        bukkit.scheduler.runTaskAsynchronously(bukkit.plugin, () -> {
+        bukkit.loadingTasks.submit(() -> {
             Chunk chunk = event.getChunk();
             try
             {
@@ -56,6 +54,6 @@ public class WorldListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     void on(ChunkUnloadEvent event)
     {
-        bukkit.scheduler.runTaskAsynchronously(bukkit.plugin, ()-> bukkit.mineCity.unloadChunk(bukkit.chunk(event.getChunk())));
+        bukkit.loadingTasks.submit(()->  bukkit.mineCity.unloadChunk(bukkit.chunk(event.getChunk())));
     }
 }

@@ -38,12 +38,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 public class MineCityBukkit implements Server, Listener
 {
+    public final ExecutorService loadingTasks;
     public final MineCity mineCity;
     public final BukkitScheduler scheduler;
     public final MineCityPlugin plugin;
@@ -60,6 +63,7 @@ public class MineCityBukkit implements Server, Listener
         logger = plugin.getLogger();
         scheduler = plugin.getScheduler();
 
+        loadingTasks = Executors.newSingleThreadExecutor();
         mineCity = new MineCity(this, config, transformer);
         PluginManager pluginManager = plugin.getPluginManager();
         pluginManager.registerEvents(new WorldListener(this), plugin);

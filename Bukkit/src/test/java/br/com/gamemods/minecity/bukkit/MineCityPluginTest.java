@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.powermock.api.mockito.PowerMockito;
@@ -17,6 +18,7 @@ import org.powermock.api.mockito.PowerMockito;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -48,6 +50,28 @@ public class MineCityPluginTest
 
         bukkit = new MineCityBukkit(plugin, new MineCityConfig(), new MessageTransformer());
         mineCity = bukkit.mineCity;
+    }
+
+    @After
+    public void tearDown() throws Exception
+    {
+        bukkit.loadingTasks.shutdown();
+        try
+        {
+            bukkit.loadingTasks.awaitTermination(5, TimeUnit.SECONDS);
+        }
+        catch(InterruptedException e)
+        {
+            e.printStackTrace();
+            try
+            {
+                bukkit.loadingTasks.shutdownNow();
+            }
+            catch(Exception e2)
+            {
+                e2.printStackTrace();
+            }
+        }
     }
 
     @Test

@@ -326,4 +326,15 @@ public final class Plot extends ExceptStoredHolder
     {
         return id;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Plot{" +
+                "id=" + id +
+                ", island=" + island +
+                ", name='" + name + '\'' +
+                ", owner=" + owner +
+                '}';
+    }
 }

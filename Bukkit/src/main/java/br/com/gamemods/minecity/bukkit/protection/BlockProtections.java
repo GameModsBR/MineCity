@@ -782,7 +782,7 @@ public class BlockProtections extends AbstractProtection
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerPortal(PlayerPortalEvent event)
     {
         final Player player = event.getPlayer();

@@ -44,6 +44,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     public byte pickupRandomDelay;
     public byte pickupHarvestDelay;
     public byte lureDelay;
+    public byte skipTick;
 
     public BukkitPlayer(MineCityBukkit plugin, Player player)
     {
@@ -77,6 +78,12 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     public void tick()
     {
         Location location = sender.getLocation();
+        if(skipTick > 0)
+        {
+            skipTick--;
+            return;
+        }
+
         checkStepOnFakeBlock(location);
         checkPosition(location);
     }

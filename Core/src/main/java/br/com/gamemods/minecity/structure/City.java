@@ -656,6 +656,6 @@ public final class City extends ExceptStoredHolder
         return "City{" +
                 "id=" + id +
                 ", identityName='" + identityName + '\'' +
-                "} " + super.toString();
+                "}";
     }
 }

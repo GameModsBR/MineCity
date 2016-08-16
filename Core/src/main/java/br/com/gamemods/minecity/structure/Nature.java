@@ -85,4 +85,12 @@ public final class Nature extends SimpleStorageHolder implements ChunkOwner
     {
         return valid;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Nature{" +
+                "world=" + world +
+                '}';
+    }
 }

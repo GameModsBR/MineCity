@@ -6,6 +6,7 @@ import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.ChunkPos;
+import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class MineCityPlugin extends JavaPlugin
@@ -148,7 +150,9 @@ public class MineCityPlugin extends JavaPlugin
                     }
             );
 
-            getServer().getWorlds().stream().map(World::getLoadedChunks).flatMap(Arrays::stream).map(instance::chunk)
+            List<World> worlds = getServer().getWorlds();
+            worlds.stream().map(instance::world).forEachOrdered((DBConsumer<WorldDim>) instance.mineCity::loadNature);
+            worlds.stream().map(World::getLoadedChunks).flatMap(Arrays::stream).map(instance::chunk)
                     .forEachOrdered((DBConsumer< ChunkPos>) instance.mineCity::loadChunk);
 
             getServer().getOnlinePlayers().forEach(instance::player);
@@ -168,6 +172,24 @@ public class MineCityPlugin extends JavaPlugin
     @Override
     public void onDisable()
     {
+        instance.loadingTasks.shutdown();
+        try
+        {
+            instance.loadingTasks.awaitTermination(5, TimeUnit.SECONDS);
+        }
+        catch(InterruptedException e)
+        {
+            e.printStackTrace();
+            try
+            {
+                instance.loadingTasks.shutdownNow();
+            }
+            catch(Exception e2)
+            {
+                e2.printStackTrace();
+            }
+        }
+
         try
         {
             instance.mineCity.dataSource.close();

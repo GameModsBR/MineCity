@@ -133,4 +133,14 @@ public abstract class Island implements ChunkOwner
     {
         return getCity().mineCity.dataSource.getArea(this);
     }
+
+    @Override
+    public String toString()
+    {
+        return "Island{" +
+                "id=" + id +
+                ", world=" + world +
+                ", city=" + getCity().getName() +
+                '}';
+    }
 }

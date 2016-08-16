@@ -44,6 +44,7 @@ import java.util.stream.Stream;
 
 import static br.com.gamemods.minecity.api.CollectionUtil.optionalStream;
 import static br.com.gamemods.minecity.api.permission.FlagHolder.can;
+import static br.com.gamemods.minecity.api.permission.FlagHolder.wrapDeny;
 import static br.com.gamemods.minecity.api.permission.PermissionFlag.*;
 import static br.com.gamemods.minecity.bukkit.BukkitUtil.optional;
 
@@ -819,5 +820,66 @@ public class EntityProtections extends AbstractProtection
             return denial.isPresent()? denial : pickup;
 
         return pickup;
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerTeleport(PlayerTeleportEvent event)
+    {
+        BlockPos from = plugin.blockPos(event.getFrom());
+        BlockPos to = plugin.blockPos(from, event.getTo());
+
+        ClaimedChunk fromChunk = plugin.mineCity.provideChunk(from.getChunk());
+        ClaimedChunk toChunk = plugin.mineCity.provideChunk(to.getChunk(), fromChunk);
+
+        FlagHolder fromHolder = fromChunk.getFlagHolder(from);
+        FlagHolder toHolder = toChunk.getFlagHolder(to);
+
+        if(fromHolder.equals(toHolder))
+            return;
+
+        BukkitPlayer player = plugin.player(event.getPlayer());
+
+        Optional<Message> denial = optionalStream(
+                can(player, ENTER, toHolder),
+                can(player, LEAVE, fromHolder)
+        ).findFirst();
+
+        if(denial.isPresent())
+        {
+            event.setCancelled(true);
+            player.send(wrapDeny(denial.get()));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void on(PlayerChangedWorldEvent event)
+    {
+        final Player player = event.getPlayer();
+        final BukkitPlayer user = plugin.player(player);
+        user.skipTick = 5;
+        new BukkitRunnable()
+        {
+            Location initial;
+            @Override
+            public void run()
+            {
+                if(initial == null)
+                {
+                    initial = player.getLocation();
+                    return;
+                }
+
+                if(!player.isOnline())
+                {
+                    cancel();
+                    return;
+                }
+
+                if(player.getLocation().equals(initial))
+                    user.skipTick = 5;
+                else
+                    cancel();
+            }
+        }.runTaskTimer(plugin.plugin, 1, 4);
     }
 }

@@ -390,4 +390,10 @@ public class Inconsistency implements ChunkOwner
             throw new DataSourceException("Inconsistent nature!");
         }
     }
+
+    @Override
+    public String toString()
+    {
+        return "#Inconsistency!";
+    }
 }
