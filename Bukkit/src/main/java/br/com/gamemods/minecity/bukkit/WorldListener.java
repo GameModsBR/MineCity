@@ -22,19 +22,19 @@ public class WorldListener implements Listener
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    void on(WorldLoadEvent event) throws DataSourceException
+    void onWorldLoad(WorldLoadEvent event) throws DataSourceException
     {
         bukkit.loadingTasks.submit(()-> bukkit.world(event.getWorld()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    void on(WorldUnloadEvent event)
+    void onWorldUnload(WorldUnloadEvent event)
     {
         bukkit.loadingTasks.submit(()-> bukkit.mineCity.unloadNature(bukkit.world(event.getWorld())));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    void on(ChunkLoadEvent event)
+    void onChunkLoad(ChunkLoadEvent event)
     {
         bukkit.loadingTasks.submit(() -> {
             Chunk chunk = event.getChunk();
@@ -52,7 +52,7 @@ public class WorldListener implements Listener
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    void on(ChunkUnloadEvent event)
+    void onChunkUnload(ChunkUnloadEvent event)
     {
         bukkit.loadingTasks.submit(()->  bukkit.mineCity.unloadChunk(bukkit.chunk(event.getChunk())));
     }

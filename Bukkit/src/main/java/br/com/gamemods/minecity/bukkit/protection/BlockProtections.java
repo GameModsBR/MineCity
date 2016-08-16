@@ -28,7 +28,10 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.*;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityCreatePortalEvent;
+import org.bukkit.event.entity.EntityInteractEvent;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -821,11 +824,5 @@ public class BlockProtections extends AbstractProtection
     public void onEntityPortal(EntityPortalEvent event)
     {
         event.setPortalTravelAgent(new SafeTravelAgent(plugin, event.getPortalTravelAgent(), event.getEntity()));
-    }
-
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void on(EntityPortalExitEvent event)
-    {
-        plugin.logger.info(event.getEntity()+" portal exit");
     }
 }

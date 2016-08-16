@@ -40,6 +40,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static br.com.gamemods.minecity.api.CollectionUtil.optionalStream;
@@ -53,6 +55,8 @@ public class EntityProtections extends AbstractProtection
     private Set<Egg> eggs = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
     private Set<EnderPearl> pearls = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
     private Map<UUID, Player> drops = new MapMaker().weakKeys().weakValues().makeMap();
+    private Map<UUID, Player> attackers = new MapMaker().weakKeys().weakValues().makeMap();
+    private List<Function<Item, Boolean>> captureDrops = new ArrayList<>();
 
     public EntityProtections(@NotNull MineCityBukkit plugin)
     {
@@ -999,5 +1003,138 @@ public class EntityProtections extends AbstractProtection
                     cancel();
             }
         }.runTaskTimer(plugin.plugin, 1, 4);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onEntityDamageByEntityMonitor(EntityDamageByEntityEvent event)
+    {
+        Entity entity = event.getEntity();
+        if(!(entity instanceof LivingEntity))
+            return;
+
+        Entity attacker = event.getDamager();
+        if(attacker instanceof Projectile)
+        {
+            ProjectileSource shooter = ((Projectile) attacker).getShooter();
+            if(!(shooter instanceof Entity))
+                return;
+            attacker = (Entity) shooter;
+        }
+
+        if(attacker instanceof Tameable)
+        {
+            AnimalTamer owner = ((Tameable) attacker).getOwner();
+            if(!(owner instanceof Entity))
+                return;
+            attacker = (Entity) owner;
+        }
+
+        if(attacker instanceof Player)
+            watchAttack((LivingEntity) entity, (Player) attacker);
+    }
+
+    public void watchAttack(LivingEntity entity, Player attacker)
+    {
+        attackers.put(entity.getUniqueId(), attacker);
+        new BukkitRunnable()
+        {
+            double lastHealth = entity.getHealth();
+            boolean remove = false;
+
+            @Override
+            public void run()
+            {
+                if(remove)
+                {
+                    cancel();
+                    attackers.remove(entity.getUniqueId(), attacker);
+                }
+
+                if(!entity.isValid())
+                {
+                    remove = true;
+                    return;
+                }
+
+                double health = entity.getHealth();
+                if(health < lastHealth)
+                    lastHealth = health;
+                else
+                    remove = true;
+            }
+        }.runTaskTimer(plugin.plugin, 7*20, 7*20);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onEntityDeath(EntityDeathEvent event)
+    {
+        List<ItemStack> drops = event.getDrops();
+        if(drops.isEmpty())
+            return;
+
+        LivingEntity entity = event.getEntity();
+        Player attacker = attackers.get(entity.getUniqueId());
+        if(attacker == null)
+            return;
+
+        collectDrops(attacker, entity.getLocation(), drops, 2);
+    }
+
+    public void collectDrops(final Player player, final Location collectLoc, Collection<ItemStack> loot, int ticks)
+    {
+        final List<ItemStack> collectDrops = loot.stream().map(ItemStack::clone)
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        Function<Item, Boolean> capture = new Function<Item, Boolean>()
+        {
+            @Override
+            public Boolean apply(Item item)
+            {
+                if(item.getWorld().equals(collectLoc.getWorld()) && item.getLocation().distance(collectLoc) <= 2)
+                {
+                    ItemStack dropped = item.getItemStack();
+                    int remaining = dropped.getAmount();
+                    for(Iterator<ItemStack> iter = collectDrops.iterator(); iter.hasNext(); )
+                    {
+                        ItemStack need = iter.next();
+                        if(dropped.isSimilar(need))
+                        {
+                            int needAmount = need.getAmount();
+                            int take = Math.min(remaining, needAmount);
+                            remaining -= take;
+                            needAmount -= take;
+                            need.setAmount(needAmount);
+                            if(needAmount <= 0)
+                                iter.remove();
+
+                            if(remaining == 0)
+                                break;
+                        }
+                    }
+
+                    if(collectDrops.isEmpty())
+                        captureDrops.remove(this);
+
+                    if(remaining != dropped.getAmount())
+                    {
+                        drops.put(item.getUniqueId(), player);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+
+        captureDrops.add(capture);
+        plugin.scheduler.runTaskLater(plugin.plugin, ()-> captureDrops.remove(capture), ticks);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onItemSpawnEvent(ItemSpawnEvent event)
+    {
+        Item item = event.getEntity();
+        for(Function<Item, Boolean> function : captureDrops)
+            if(function.apply(item))
+                return;
     }
 }
