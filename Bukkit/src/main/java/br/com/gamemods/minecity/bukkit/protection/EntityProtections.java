@@ -231,8 +231,12 @@ public class EntityProtections extends AbstractProtection
             }
         }
 
+        Creature tame = null;
         if(attacker instanceof Tameable)
         {
+            if(attacker instanceof Creature)
+                tame = (Creature) attacker;
+
             AnimalTamer tamer = ((Tameable) attacker).getOwner();
             if(tamer instanceof Entity)
                 attacker = (Entity) tamer;
@@ -252,8 +256,8 @@ public class EntityProtections extends AbstractProtection
                 if(denial.isPresent())
                 {
                     event.setCancelled(true);
-                    if(attacker instanceof Creature)
-                        ((Creature) attacker).setTarget(null);
+                    if(tame != null)
+                        tame.setTarget(null);
                     return;
                 }
             }
@@ -269,6 +273,8 @@ public class EntityProtections extends AbstractProtection
             ))
             {
                 event.setCancelled(true);
+                if(tame != null)
+                    tame.setTarget(null);
                 return;
             }
         }
@@ -570,26 +576,6 @@ public class EntityProtections extends AbstractProtection
 
         if(check(entity.getLocation(), (Player) remover, MODIFY))
             event.setCancelled(true);
-    }
-
-    public Optional<Message> checkLure(BukkitPlayer player, Entity entity, PermissionFlag flag)
-    {
-        BlockPos orbPos = plugin.blockPos(entity.getLocation());
-        ClaimedChunk orbChunk = plugin.mineCity.provideChunk(orbPos.getChunk());
-        FlagHolder holder = orbChunk.getFlagHolder(orbPos);
-        Optional<Message> denial = holder.can(player, flag);
-        if(!denial.isPresent())
-        {
-            BlockPos playerPos = plugin.blockPos(orbPos, player.sender.getLocation());
-            ClaimedChunk playerChunk = plugin.mineCity.provideChunk(playerPos.getChunk(), orbChunk);
-            FlagHolder playerHolder = playerChunk.getFlagHolder(playerPos);
-            if(!playerHolder.equals(holder))
-            {
-                denial = playerHolder.can(player, flag);
-            }
-        }
-
-        return denial;
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
