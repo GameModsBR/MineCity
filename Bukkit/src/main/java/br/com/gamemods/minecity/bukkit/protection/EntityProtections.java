@@ -40,7 +40,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Stream;
 
+import static br.com.gamemods.minecity.api.CollectionUtil.optionalStream;
+import static br.com.gamemods.minecity.api.permission.FlagHolder.can;
 import static br.com.gamemods.minecity.api.permission.PermissionFlag.*;
 import static br.com.gamemods.minecity.bukkit.BukkitUtil.optional;
 
@@ -638,6 +641,88 @@ public class EntityProtections extends AbstractProtection
         Player b = drops.get(event.getTarget().getUniqueId());
         if(!Objects.equals(a, b))
             event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerFish(PlayerFishEvent event)
+    {
+        switch(event.getState())
+        {
+            case CAUGHT_FISH:
+                drops.put(event.getCaught().getUniqueId(), event.getPlayer());
+                return;
+
+            case CAUGHT_ENTITY:
+            {
+                Entity caught = event.getCaught();
+                Player player = event.getPlayer();
+                if(caught instanceof Item && player.equals(drops.get(caught.getUniqueId())))
+                    return;
+
+                if(caught instanceof Tameable && player.equals(((Tameable) caught).getOwner()))
+                    return;
+
+                if(caught instanceof Player)
+                {
+                    if(caught.equals(player))
+                        return;
+
+                    BlockPos from = plugin.blockPos(player.getLocation());
+                    ClaimedChunk fromClaim = plugin.mineCity.provideChunk(from.getChunk());
+                    FlagHolder fromHolder = fromClaim.getFlagHolder(from);
+                    BukkitPlayer fromPlayer = plugin.player(player);
+
+                    BlockPos to = plugin.blockPos(from, caught.getLocation());
+                    ClaimedChunk toClaim = plugin.mineCity.provideChunk(to.getChunk(), fromClaim);
+                    FlagHolder toHolder = toClaim.getFlagHolder(to);
+                    BukkitPlayer toPlayer = plugin.player((Player) caught);
+
+                    Optional<Message> denial;
+                    if(toHolder.equals(fromHolder))
+                        denial = optionalStream(
+                                can(fromPlayer, PVP, fromHolder),
+                                can(toPlayer, PVP, fromHolder)
+                        ).findFirst();
+                    else
+                        denial = Stream.concat(
+                                can(fromPlayer, PVP, fromHolder, toHolder),
+                                can(toPlayer, PVP, fromHolder, toHolder)
+                        ).findFirst();
+
+                    if(denial.isPresent())
+                    {
+                        event.setCancelled(true);
+                        fromPlayer.send(FlagHolder.wrapDeny(denial.get()));
+                    }
+
+                    return;
+                }
+
+                if(caught.getCustomName() != null)
+                {
+                    if(check(caught.getLocation(), player, MODIFY))
+                        event.setCancelled(true);
+                    return;
+                }
+
+                if(caught instanceof Animals)
+                {
+                    if(check(caught.getLocation(), player, PVC))
+                        event.setCancelled(true);
+                    return;
+                }
+
+                if(caught instanceof Monster)
+                {
+                    if(check(caught.getLocation(), player, PVM))
+                        event.setCancelled(true);
+                    return;
+                }
+
+                if(check(caught.getLocation(), player, MODIFY))
+                    event.setCancelled(true);
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
