@@ -398,7 +398,7 @@ public class SQLSourceTest
 
         assertThrown(()-> cityA.claim(spawnA.add(Direction.NORTH, 3), false))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("The chunk ChunkPos{world=WorldDim{dim=-1, dir='DIM-1'}, x=400, z=403} is not touching an island owned by city")
+                .hasMessageContaining("The chunk ChunkPos{world=WorldDim{dim=-1, dir='DIM-1'}, x=400, z=397} is not touching an island owned by city")
                 ;
 
         cityA.claim(spawnA.add(Direction.NORTH, 2), false);

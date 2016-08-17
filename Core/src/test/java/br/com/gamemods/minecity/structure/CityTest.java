@@ -125,11 +125,12 @@ public class CityTest
          *   5|   YY    |
          *   6|   Y     |
          */
-        assertThrown(()-> city.disclaim(new ChunkPos(test.overWorld, 14, 1), false))
+        ChunkPos pos = chunk;
+        assertThrown(()-> city.disclaim(pos, false))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("required");
 
-        Collection<Island> islands = city.disclaim(new ChunkPos(test.overWorld, 14, 1), true);
+        Collection<Island> islands = city.disclaim(pos, true);
         assertEquals(2, islands.size());
         Island islandX = islands.stream().min((a,b)-> a.getChunkCount()-b.getChunkCount()).get();
         Island islandY = islands.stream().filter(i-> i != islandX).findAny().get();

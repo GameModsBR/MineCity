@@ -11,10 +11,10 @@ public enum Direction
     WEST(-1,0,0, 2),
     UP(0,1,0, 5),
     DOWN(0,-1,0, 4),
-    NORTH_EAST(1,0,1, 8),
-    SOUTH_EAST(1,0,-1, 9),
-    SOUTH_WEST(-1,0,-1, 6),
-    NORTH_WEST(-1,0,1, 7),
+    NORTH_EAST(1,0,-1, 8),
+    SOUTH_EAST(1,0,1, 9),
+    SOUTH_WEST(-1,0,1, 6),
+    NORTH_WEST(-1,0,-1, 7),
     ;
     public final int x, y, z;
     private final byte oppositeIndex;

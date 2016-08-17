@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import java.nio.file.Paths;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class RegionPosTest
 {
@@ -15,12 +15,12 @@ public class RegionPosTest
     @Test
     public void testAdd() throws Exception
     {
-        assertEquals(new RegionPos(world, 10, 11),   a.add(Direction.NORTH));
-        assertEquals(new RegionPos(world, 10, 9),    a.add(Direction.SOUTH));
+        assertEquals(new RegionPos(world, 10, 11),   a.add(Direction.SOUTH));
+        assertEquals(new RegionPos(world, 10, 9),    a.add(Direction.NORTH));
         assertEquals(new RegionPos(world, 11, 10),   a.add(Direction.EAST));
         assertEquals(new RegionPos(world, 9, 10),    a.add(Direction.WEST));
-        assertEquals(new RegionPos(world, 10, 12),   a.add(Direction.NORTH, 2));
-        assertEquals(new RegionPos(world, 10, 12),   a.add(Direction.NORTH, 2.8));
+        assertEquals(new RegionPos(world, 10, 12),   a.add(Direction.SOUTH, 2));
+        assertEquals(new RegionPos(world, 10, 12),   a.add(Direction.SOUTH, 2.8));
         assertEquals(new RegionPos(world, 12, 10),   a.add(Direction.EAST, 2));
         assertEquals(new RegionPos(world, 12, 10),   a.add(Direction.EAST, 2.8));
         assertEquals(new RegionPos(world, 12, 7),    a.add(2, -3));
@@ -29,12 +29,12 @@ public class RegionPosTest
     @Test
     public void testSubtract() throws Exception
     {
-        assertEquals(new RegionPos(world, 10, 9),   a.subtract(Direction.NORTH));
-        assertEquals(new RegionPos(world, 10, 11),  a.subtract(Direction.SOUTH));
+        assertEquals(new RegionPos(world, 10, 9),   a.subtract(Direction.SOUTH));
+        assertEquals(new RegionPos(world, 10, 11),  a.subtract(Direction.NORTH));
         assertEquals(new RegionPos(world, 9, 10),   a.subtract(Direction.EAST));
         assertEquals(new RegionPos(world, 11, 10),  a.subtract(Direction.WEST));
-        assertEquals(new RegionPos(world, 10, 8),   a.subtract(Direction.NORTH, 2));
-        assertEquals(new RegionPos(world, 10, 7),   a.subtract(Direction.NORTH, 2.8));
+        assertEquals(new RegionPos(world, 10, 8),   a.subtract(Direction.SOUTH, 2));
+        assertEquals(new RegionPos(world, 10, 7),   a.subtract(Direction.SOUTH, 2.8));
         assertEquals(new RegionPos(world, 8, 10),   a.subtract(Direction.EAST, 2));
         assertEquals(new RegionPos(world, 7, 10),   a.subtract(Direction.EAST, 2.8));
         assertEquals(new RegionPos(world, 8, 13),   a.subtract(2, -3));
@@ -55,8 +55,8 @@ public class RegionPosTest
     @Test
     public void testApply() throws Exception
     {
-        assertEquals(new RegionPos(world, 10, 33), a.apply(Direction.NORTH, 2.8, (a,b)-> b > 0? (int) Math.round(a*b +5) : a));
-        assertEquals(new RegionPos(world, 10, 25), a.apply(Direction.NORTH, 2, (a,b)-> b > 0? (int) Math.round(a*b +5) : a));
+        assertEquals(new RegionPos(world, 10, 33), a.apply(Direction.SOUTH, 2.8, (a,b)-> b > 0? (int) Math.round(a*b +5) : a));
+        assertEquals(new RegionPos(world, 10, 25), a.apply(Direction.SOUTH, 2, (a,b)-> b > 0? (int) Math.round(a*b +5) : a));
         assertEquals(new RegionPos(world, 12, 13), a.apply("1.55", "3", (a,b) -> Math.round(a+Float.valueOf(b))));
     }
 

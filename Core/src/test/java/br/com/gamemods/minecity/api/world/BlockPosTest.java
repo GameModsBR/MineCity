@@ -19,12 +19,12 @@ public class BlockPosTest
     @Test
     public void testAdd() throws Exception
     {
-        assertEquals(new BlockPos(world, 10, 10, 11),   a.add(Direction.NORTH));
-        assertEquals(new BlockPos(world, 10, 10, 9),    a.add(Direction.SOUTH));
+        assertEquals(new BlockPos(world, 10, 10, 11),   a.add(Direction.SOUTH));
+        assertEquals(new BlockPos(world, 10, 10, 9),    a.add(Direction.NORTH));
         assertEquals(new BlockPos(world, 11, 10, 10),   a.add(Direction.EAST));
         assertEquals(new BlockPos(world, 9, 10, 10),    a.add(Direction.WEST));
-        assertEquals(new BlockPos(world, 10, 10, 12),   a.add(Direction.NORTH, 2));
-        assertEquals(new BlockPos(world, 10, 10, 12),   a.add(Direction.NORTH, 2.8));
+        assertEquals(new BlockPos(world, 10, 10, 12),   a.add(Direction.SOUTH, 2));
+        assertEquals(new BlockPos(world, 10, 10, 12),   a.add(Direction.SOUTH, 2.8));
         assertEquals(new BlockPos(world, 12, 10, 10),   a.add(Direction.EAST, 2));
         assertEquals(new BlockPos(world, 12, 10, 10),   a.add(Direction.EAST, 2.8));
         assertEquals(new BlockPos(world, 10, 11, 10),   a.add(Direction.UP));
@@ -35,12 +35,12 @@ public class BlockPosTest
     @Test
     public void testSubtract() throws Exception
     {
-        assertEquals(new BlockPos(world, 10, 10, 9),   a.subtract(Direction.NORTH));
-        assertEquals(new BlockPos(world, 10, 10, 11),  a.subtract(Direction.SOUTH));
+        assertEquals(new BlockPos(world, 10, 10, 9),   a.subtract(Direction.SOUTH));
+        assertEquals(new BlockPos(world, 10, 10, 11),  a.subtract(Direction.NORTH));
         assertEquals(new BlockPos(world, 9, 10, 10),   a.subtract(Direction.EAST));
         assertEquals(new BlockPos(world, 11, 10, 10),  a.subtract(Direction.WEST));
-        assertEquals(new BlockPos(world, 10, 10, 8),   a.subtract(Direction.NORTH, 2));
-        assertEquals(new BlockPos(world, 10, 10, 7),   a.subtract(Direction.NORTH, 2.8));
+        assertEquals(new BlockPos(world, 10, 10, 8),   a.subtract(Direction.SOUTH, 2));
+        assertEquals(new BlockPos(world, 10, 10, 7),   a.subtract(Direction.SOUTH, 2.8));
         assertEquals(new BlockPos(world, 8, 10, 10),   a.subtract(Direction.EAST, 2));
         assertEquals(new BlockPos(world, 7, 10, 10),   a.subtract(Direction.EAST, 2.8));
         assertEquals(new BlockPos(world, 10, 9, 10),   a.subtract(Direction.UP));
