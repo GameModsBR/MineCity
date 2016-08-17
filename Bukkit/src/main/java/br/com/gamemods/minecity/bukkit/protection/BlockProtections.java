@@ -41,6 +41,8 @@ import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.CocoaPlant;
+import org.bukkit.util.BlockIterator;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -332,11 +334,12 @@ public class BlockProtections extends AbstractProtection
     public void onEmptyBucket(PlayerBucketEmptyEvent event)
     {
         Block target = event.getBlockClicked();
-        if(!target.getType().isSolid())
+        if(target.getType().isSolid())
             target = target.getRelative(event.getBlockFace());
 
         Location l = target.getLocation();
-        BukkitPlayer player = plugin.player(event.getPlayer());
+        Player entity = event.getPlayer();
+        BukkitPlayer player = plugin.player(entity);
 
         BlockPos blockPos = plugin.blockPos(l);
         ClaimedChunk claim = plugin.mineCity.provideChunk(blockPos.getChunk());
@@ -345,18 +348,17 @@ public class BlockProtections extends AbstractProtection
         Optional<Message> denial = holder.can(player, PermissionFlag.MODIFY);
         if(denial.isPresent())
         {
-            player.send(FlagHolder.wrapDeny(denial.get()));
-            plugin.plugin.getScheduler().runTaskLater(plugin.plugin, player.sender::updateInventory, 5);
             event.setCancelled(true);
+            player.send(FlagHolder.wrapDeny(denial.get()));
+            sendUpdates(player.sender, target, target.getLocation());
             return;
         }
 
         Block above = target.getRelative(BlockFace.UP);
         if(above.getType().hasGravity() && checkFall(claim, target, player, l, blockPos))
         {
-
-            plugin.plugin.getScheduler().runTaskLater(plugin.plugin, player.sender::updateInventory, 5);
             event.setCancelled(true);
+            sendUpdates(player.sender, target, target.getLocation());
         }
     }
 
@@ -364,11 +366,46 @@ public class BlockProtections extends AbstractProtection
     public void onFillBucket(PlayerBucketFillEvent event)
     {
         Player player = event.getPlayer();
-        if(check(event.getBlockClicked().getLocation(), player, PermissionFlag.MODIFY))
+        Block target = event.getBlockClicked();
+        if(!target.isLiquid())
+            target = target.getRelative(event.getBlockFace());
+
+        Location liquidLoc = target.getLocation();
+        if(check(liquidLoc, player, PermissionFlag.MODIFY))
         {
             event.setCancelled(true);
-            plugin.plugin.getScheduler().runTaskLater(plugin.plugin, player::updateInventory, 5);
+            sendUpdates(player, target, liquidLoc);
         }
+    }
+
+    private void sendUpdates(Player player, Block liquid, Location liquidLoc)
+    {
+        BlockIterator iter = new BlockIterator(player, (int)Math.ceil(liquidLoc.distance(player.getLocation())));
+        plugin.plugin.getScheduler().runTask(plugin.plugin, ()->{
+            player.updateInventory();
+            player.sendBlockChange(liquidLoc, liquid.getType(), liquid.getData());
+            HashSet<Vector> updates = new HashSet<>();
+            while(iter.hasNext())
+            {
+                Block next = iter.next();
+                Location blocLoc = next.getLocation();
+                for(int ix = -1; ix <= 1; ix++)
+                    for(int iz = -1; iz <= 1; iz++)
+                        for(int iy = -1; iy <= 1; iy++)
+                            updates.add(new Vector(
+                                    blocLoc.getBlockX()+ix,
+                                    blocLoc.getBlockY()+iy,
+                                    blocLoc.getBlockZ()+iz
+                            ));
+            }
+
+            for(Vector pos: updates)
+            {
+                Location loc = pos.toLocation(liquid.getWorld());
+                Block block = loc.getBlock();
+                player.sendBlockChange(loc, block.getType(), block.getData());
+            }
+        });
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
