@@ -358,6 +358,12 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
         return new CommandResult<>(null, action.apply(this), true);
     }
 
+    @Override
+    public boolean isConfirmPending()
+    {
+        return confirmCode != null;
+    }
+
     @NotNull
     @Override
     public BukkitSelection getSelection(@NotNull WorldDim world)
