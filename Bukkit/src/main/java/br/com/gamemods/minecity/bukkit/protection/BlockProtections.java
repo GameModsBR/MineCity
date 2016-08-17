@@ -237,15 +237,13 @@ public class BlockProtections extends AbstractProtection
 
         switch(block.getRelative(BlockFace.DOWN).getType())
         {
-            // Gravity blocks on falls on placement if the block bellow is one of those:
+            // Gravity blocks falls on placement only if the block bellow is one of those:
             case AIR:
             case FIRE:
             case WATER:
             case STATIONARY_WATER:
             case LAVA:
             case STATIONARY_LAVA:
-                break;
-            default:
                 if(checkFall(chunk, block, user, l, blockPos))
                     event.setCancelled(true);
         }
