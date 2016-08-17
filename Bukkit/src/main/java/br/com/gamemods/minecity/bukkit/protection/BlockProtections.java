@@ -18,9 +18,11 @@ import com.google.common.collect.MapMaker;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.SkullType;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -86,8 +88,9 @@ public class BlockProtections extends AbstractProtection
         Block block = event.getBlock();
         Player player = event.getPlayer();
         ItemStack hand = event.getItemInHand();
+        Material type = block.getType();
         if(hand != null && hand.getType() == Material.INK_SACK && hand.getDurability() == 15)
-            switch(block.getType())
+            switch(type)
             {
                 case CROPS:
                 case BEETROOT_BLOCK:
@@ -114,7 +117,122 @@ public class BlockProtections extends AbstractProtection
             return;
         }
 
-        if(!block.getType().hasGravity() && block.getType() != Material.DRAGON_EGG)
+        Set<Block> affected = Collections.emptySet();
+        switch(type)
+        {
+            case PUMPKIN:
+            {
+                affected = new HashSet<>(5);
+                BlockFace[] faces = {
+                        BlockFace.SOUTH, BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN
+                };
+
+                for(BlockFace face: faces)
+                {
+                    Block a = block.getRelative(face);
+                    if(a.getType() != Material.SNOW_BLOCK)
+                        continue;
+                    Block b = a.getRelative(face);
+                    if(b.getType() != Material.SNOW_BLOCK)
+                        continue;
+
+                    affected.add(a);
+                    affected.add(b);
+                    break;
+                }
+
+                if(affected.isEmpty())
+                    detectShapeT(block, Material.IRON_BLOCK, true, affected);
+                break;
+            }
+
+            case SKULL:
+            {
+                Skull skull = (Skull) block.getState();
+                if(skull.getSkullType() == SkullType.WITHER)
+                {
+                    affected = new HashSet<>(7);
+                    for(BlockFace face: new BlockFace[]{BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN})
+                    {
+                        Block b = block.getRelative(face);
+                        if(b.getType() != Material.SKULL)
+                            continue;
+
+                        skull = (Skull) b.getState();
+                        if(skull.getSkullType() != SkullType.WITHER)
+                            continue;
+
+                        Block c = block.getRelative(face, 2);
+                        if(c.getType() == Material.SKULL)
+                        {
+                            skull = (Skull) c.getState();
+                            if(skull.getSkullType() == SkullType.WITHER)
+                            {
+                                if(detectShapeT(b, Material.SOUL_SAND, false, affected))
+                                {
+                                    affected.add(b);
+                                    affected.add(c);
+                                }
+                            }
+
+                            continue;
+                        }
+
+                        c = block.getRelative(face.getOppositeFace());
+                        if(c.getType() != Material.SKULL)
+                            continue;
+
+                        skull = (Skull) c.getState();
+                        if(skull.getSkullType() != SkullType.WITHER)
+                            continue;
+
+                        if(detectShapeT(block, Material.SOUL_SAND, false, affected))
+                        {
+                            affected.add(b);
+                            affected.add(c);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        if(!affected.isEmpty())
+        {
+            HashSet<Block> gravity = new HashSet<>(3);
+            for(Block aff: affected)
+            {
+                Material affType = aff.getRelative(BlockFace.UP).getType();
+                if(affType.hasGravity() || affType == Material.ANVIL || affType == Material.DRAGON_EGG)
+                    gravity.add(aff);
+            }
+
+            affected.addAll(gravity);
+
+            for(Block aff: affected)
+            {
+                BlockPos affPos = plugin.blockPos(blockPos, aff);
+                ClaimedChunk affClaim = plugin.mineCity.provideChunk(affPos.getChunk(), chunk);
+                FlagHolder affHolder = affClaim.getFlagHolder(affPos);
+                if(!affHolder.equals(holder))
+                {
+                    Optional<Message> affDeny = affHolder.can(user, PermissionFlag.MODIFY);
+                    if(affDeny.isPresent())
+                    {
+                        event.setCancelled(true);
+                        user.send(FlagHolder.wrapDeny(affDeny.get()));
+                        return;
+                    }
+                }
+
+                Block above = aff.getRelative(BlockFace.UP);
+                Material aboveType = above.getType();
+                if(aboveType.hasGravity() || aboveType == Material.ANVIL || aboveType == Material.DRAGON_EGG)
+                    checkFall(affClaim, above, user, above.getLocation(), affPos.add(Direction.UP));
+            }
+        }
+
+        if(!type.hasGravity() && type != Material.DRAGON_EGG && type != Material.ANVIL)
             return;
 
         switch(block.getRelative(BlockFace.DOWN).getType())
@@ -131,6 +249,88 @@ public class BlockProtections extends AbstractProtection
                 if(checkFall(chunk, block, user, l, blockPos))
                     event.setCancelled(true);
         }
+    }
+
+    private boolean detectShapeT(final Block base, Material material, boolean checkAir, Collection<Block> found)
+    {
+        boolean addBase = false;
+        for(BlockFace face: new BlockFace[]{BlockFace.SOUTH, BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN})
+        {
+            Block a = base.getRelative(face);
+            if(a.getType() != material)
+                continue;
+
+            Block b = base.getRelative(face, 2);
+            if(b.getType() != material)
+                continue;
+
+            int[] coords = {face.getModX(), face.getModY(), face.getModZ()};
+            for(int i = 0; i < 3; i++)
+                if(coords[i] != 0)
+                    coords[i] = 2;
+
+            while(true)
+            {
+                boolean modified = false;
+                change:
+                for(int i = 0; i < 3; i++)
+                    switch(coords[i])
+                    {
+                        case 0:  coords[i] = -1; modified = true; break change;
+                        case -1: coords[i] = 2 ; break;
+                    }
+
+                if(!modified)
+                    break;
+
+                Block c = a.getRelative(
+                        coords[0] == 2? 0 : coords[0],
+                        coords[1] == 2? 0 : coords[1],
+                        coords[2] == 2? 0 : coords[2]
+                );
+
+                if(c.getType() != material)
+                    continue;
+
+                Block d = a.getRelative(
+                        coords[0] == 2? 0 : coords[0] * -1,
+                        coords[1] == 2? 0 : coords[1] * -1,
+                        coords[2] == 2? 0 : coords[2] * -1
+                );
+
+                if(d.getType() != material)
+                    continue;
+
+                if(checkAir)
+                {
+                    Block air = c.getRelative(
+                            coords[0] == 2? face.getModX() * -1 : 0,
+                            coords[1] == 2? face.getModY() * -1 : 0,
+                            coords[2] == 2? face.getModZ() * -1 : 0
+                    );
+
+                    if(air.getType() != Material.AIR)
+                        continue;
+
+                    air = d.getRelative(
+                            coords[0] == 2? face.getModX() * -1 : 0,
+                            coords[1] == 2? face.getModY() * -1 : 0,
+                            coords[2] == 2? face.getModZ() * -1 : 0
+                    );
+
+                    if(air.getType() != Material.AIR)
+                        continue;
+                }
+
+                found.add(a);
+                found.add(b);
+                found.add(c);
+                found.add(d);
+                addBase = true;
+            }
+        }
+
+        return addBase;
     }
 
     public boolean checkFall(ClaimedChunk claim, Block block, BukkitPlayer player, Location l, BlockPos blockPos)
