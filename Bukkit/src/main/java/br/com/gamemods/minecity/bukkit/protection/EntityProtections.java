@@ -29,9 +29,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -338,6 +342,7 @@ public class EntityProtections extends AbstractProtection
             {
                 Material m = hand.map(ItemStack::getType).orElse(Material.AIR);
                 boolean modifying;
+                boolean sendUpdate = false;
                 switch(m)
                 {
                     case SADDLE:
@@ -350,6 +355,20 @@ public class EntityProtections extends AbstractProtection
                         modifying = !optional(horse.getInventory().getArmor()).isPresent();
                         break;
 
+                    case CHEST:
+                        switch(horse.getVariant())
+                        {
+                            case MULE:
+                            case DONKEY:
+                                modifying = !horse.isCarryingChest();
+                                sendUpdate = true;
+                                break;
+
+                            default:
+                                modifying = false;
+                        }
+                        break;
+
                     default:
                         modifying = false;
                 }
@@ -359,7 +378,11 @@ public class EntityProtections extends AbstractProtection
                     if(!player.equals(horse.getOwner()))
                     {
                         if(check(horse.getLocation(), player, PermissionFlag.MODIFY))
+                        {
                             event.setCancelled(true);
+                            if(sendUpdate)
+                                plugin.scheduler.runTask(plugin.plugin, player::updateInventory);
+                        }
                     }
                 }
                 else
@@ -1600,5 +1623,79 @@ public class EntityProtections extends AbstractProtection
         {
             return true;
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onInventoryDrag(InventoryDragEvent event)
+    {
+        InventoryHolder inventoryHolder = event.getInventory().getHolder();
+        if(!(inventoryHolder instanceof Horse))
+            return;
+
+        HumanEntity human = event.getWhoClicked();
+        Horse horse = (Horse) inventoryHolder;
+        if(horse.equals(horse.getOwner()))
+            return;
+
+        Set<Integer> rawSlots = event.getRawSlots();
+        InventoryView view = event.getView();
+        int topSize = view.getTopInventory().getSize();
+        boolean affectTop = false;
+        for(int slot: rawSlots)
+        {
+            if(slot < topSize)
+            {
+                affectTop = true;
+                break;
+            }
+        }
+
+        if(!affectTop)
+            return;
+
+        if(human instanceof Player)
+        {
+            if(check(horse.getLocation(), (Player) human, MODIFY))
+                event.setCancelled(true);
+            return;
+        }
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onInventoryClick(InventoryClickEvent event)
+    {
+        InventoryHolder inventoryHolder = event.getInventory().getHolder();
+        if(!(inventoryHolder instanceof Horse))
+            return;
+
+        InventoryAction action = event.getAction();
+        switch(action)
+        {
+            case NOTHING:
+            case CLONE_STACK:
+                return;
+        }
+
+        HumanEntity human = event.getWhoClicked();
+        Horse horse = (Horse) inventoryHolder;
+        if(horse.equals(horse.getOwner()))
+            return;
+
+        if(action != InventoryAction.MOVE_TO_OTHER_INVENTORY && action != InventoryAction.COLLECT_TO_CURSOR
+                && event.getView().getBottomInventory().equals(event.getClickedInventory()))
+        {
+            return;
+        }
+
+        if(human instanceof Player)
+        {
+            if(check(horse.getLocation(), (Player) human, MODIFY))
+                event.setCancelled(true);
+            return;
+        }
+
+        event.setCancelled(true);
     }
 }
