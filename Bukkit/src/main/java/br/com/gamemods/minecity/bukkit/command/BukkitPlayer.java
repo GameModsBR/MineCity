@@ -343,7 +343,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
                 send(CONFIRM_EXPIRED);
             }
         }, 20*30);
-        return null;
+        return code;
     }
 
     @Override
