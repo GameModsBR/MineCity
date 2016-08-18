@@ -13,6 +13,7 @@ import br.com.gamemods.minecity.bukkit.BukkitUtil19;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
+import br.com.gamemods.minecity.structure.Nature;
 import com.google.common.collect.MapMaker;
 import org.bukkit.Art;
 import org.bukkit.Location;
@@ -26,6 +27,7 @@ import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
@@ -45,6 +47,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -55,6 +58,7 @@ import static br.com.gamemods.minecity.api.permission.FlagHolder.wrapDeny;
 import static br.com.gamemods.minecity.api.permission.PermissionFlag.*;
 import static br.com.gamemods.minecity.bukkit.BukkitUtil.optional;
 
+@SuppressWarnings("deprecation")
 public class EntityProtections extends AbstractProtection
 {
     private Set<Egg> eggs = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
@@ -62,6 +66,7 @@ public class EntityProtections extends AbstractProtection
     private Map<UUID, Collection<UUID>> drops = new MapMaker().weakKeys().makeMap();
     private Map<UUID, Player> attackers = new MapMaker().weakKeys().makeMap();
     private List<Function<Item, Boolean>> captureDrops = new ArrayList<>();
+    private Map<UUID, Object> explosionCreator = new MapMaker().weakKeys().makeMap();
 
     public EntityProtections(@NotNull MineCityBukkit plugin)
     {
@@ -203,6 +208,19 @@ public class EntityProtections extends AbstractProtection
         if(event.isCancelled())
             return;
 
+        if(attacker instanceof TNTPrimed)
+        {
+            TNTPrimed tnt = (TNTPrimed) attacker;
+            Entity source = tnt.getSource();
+            if(source != null)
+                attacker = source;
+            else
+            {
+                event.setCancelled(true);
+                return;
+            }
+        }
+
         if(attacker instanceof Projectile || attacker instanceof AreaEffectCloud)
         {
             ProjectileSource shooter;
@@ -224,7 +242,12 @@ public class EntityProtections extends AbstractProtection
                 PlayerID owner = chunk.getFlagHolder(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).owner();
 
                 if(owner == null)
+                {
+                    Entity victim = event.getEntity();
+                    if(victim instanceof EnderCrystal)
+                        explosionCreator.put(victim.getUniqueId(), shooter);
                     return;
+                }
 
                 Entity victim = event.getEntity();
                 BlockPos blockPos = plugin.blockPos(victim.getLocation());
@@ -236,13 +259,17 @@ public class EntityProtections extends AbstractProtection
 
                 Optional<Message> denial = holder.can(owner,
                         victim instanceof Player? PVP : victim.getCustomName() != null? MODIFY :
-                                victim instanceof Monster? PVM : PVC
+                                victim instanceof Monster? PVM : victim instanceof LivingEntity? PVC : MODIFY
                 );
                 if(denial.isPresent())
                 {
                     event.setCancelled(true);
                     return;
                 }
+
+                if(victim instanceof EnderCrystal)
+                    explosionCreator.put(victim.getUniqueId(), owner);
+                return;
             }
         }
 
@@ -266,7 +293,7 @@ public class EntityProtections extends AbstractProtection
 
                 Optional<Message> denial = holder.can(owner,
                         victim instanceof Player? PVP : victim.getCustomName() != null? MODIFY :
-                                victim instanceof Monster? PVM : PVC
+                                victim instanceof Monster? PVM : victim instanceof LivingEntity? PVC : MODIFY
                 );
                 if(denial.isPresent())
                 {
@@ -275,6 +302,10 @@ public class EntityProtections extends AbstractProtection
                         tame.setTarget(null);
                     return;
                 }
+
+                if(victim instanceof EnderCrystal)
+                    explosionCreator.put(victim.getUniqueId(), owner);
+                return;
             }
         }
 
@@ -287,7 +318,7 @@ public class EntityProtections extends AbstractProtection
             if(check(victim.getLocation(), (Player) attacker,
                     victim instanceof Player? PVP :
                             victim instanceof Monster? PVM :
-                                    victim instanceof EnderCrystal? MODIFY : PVC
+                                    victim instanceof LivingEntity? PVC : MODIFY
             ))
             {
                 event.setCancelled(true);
@@ -295,6 +326,9 @@ public class EntityProtections extends AbstractProtection
                     tame.setTarget(null);
                 return;
             }
+
+            if(victim instanceof EnderCrystal)
+                explosionCreator.put(victim.getUniqueId(), attacker);
         }
 
         if(attacker instanceof Monster)
@@ -305,8 +339,12 @@ public class EntityProtections extends AbstractProtection
                 {
                     event.setCancelled(true);
                     ((Monster) attacker).setTarget(null);
+                    return;
                 }
             }
+
+            if(victim instanceof EnderCrystal)
+                explosionCreator.put(victim.getUniqueId(), attacker);
         }
     }
 
@@ -511,6 +549,16 @@ public class EntityProtections extends AbstractProtection
             {
                 if(check(entity.getLocation(), player, PermissionFlag.CLICK))
                     event.setCancelled(true);
+            }
+        }
+        else if(entity instanceof Creeper)
+        {
+            if(hand.map(ItemStack::getType).filter(Material.FLINT_AND_STEEL::equals).isPresent())
+            {
+                if(check(entity.getLocation(), player, PVM))
+                    event.setCancelled(true);
+                else
+                    explosionCreator.putIfAbsent(entity.getUniqueId(), player);
             }
         }
     }
@@ -1697,5 +1745,144 @@ public class EntityProtections extends AbstractProtection
         }
 
         event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onEntityExplode(EntityExplodeEvent event)
+    {
+        List<Block> blocks = event.blockList();
+        if(blocks.isEmpty())
+            return;
+
+        Entity entity = event.getEntity();
+        Entity responsible = null;
+        Location responsibleLoc = null;
+        PlayerID responsibleId = null;
+        if(entity instanceof TNTPrimed)
+        {
+            responsible = ((TNTPrimed) entity).getSource();
+        }
+        else if(entity instanceof Fireball)
+        {
+            Fireball fireball = (Fireball) entity;
+            ProjectileSource shooter = fireball.getShooter();
+            if(shooter instanceof Entity)
+                responsible = (Entity) shooter;
+            else if(shooter instanceof BlockProjectileSource)
+                responsibleLoc = ((BlockProjectileSource) shooter).getBlock().getLocation();
+        }
+        else if(entity instanceof EnderCrystal || entity instanceof Creeper)
+        {
+            Object exploder = explosionCreator.remove(entity.getUniqueId());
+            if(exploder instanceof Entity)
+                responsible = (Entity) exploder;
+            else if(exploder instanceof BlockProjectileSource)
+                responsibleLoc = ((BlockProjectileSource) exploder).getBlock().getLocation();
+            else if(exploder instanceof PlayerID)
+                responsibleId = (PlayerID) exploder;
+        }
+
+        BlockPos entityPos = plugin.blockPos(entity.getLocation());
+        ClaimedChunk entityClaim = plugin.mineCity.provideChunk(entityPos.getChunk());
+
+        BiFunction<ClaimedChunk, BlockPos, Boolean> check = null;
+
+        // A location were determined as responsible of this explosion
+        if(responsibleLoc != null)
+        {
+            BlockPos responsiblePos = plugin.blockPos(responsibleLoc);
+            ClaimedChunk chunk = plugin.mineCity.provideChunk(responsiblePos.getChunk(), entityClaim);
+
+            // Natural explosions will be handled later
+            if(!chunk.reserve && !(chunk.owner instanceof Nature))
+            {
+                FlagHolder holder = chunk.getFlagHolder(responsiblePos);
+                PlayerID owner = holder.owner();
+                if(owner == null)
+                {
+                    // Zones without an owner can only change itself
+                    check = (claim, pos) -> claim.getFlagHolder(pos).equals(holder);
+                }
+                else
+                {
+                    // Zones with an owner, check the permission
+                    check = (claim, pos) -> !claim.getFlagHolder(pos).can(owner, MODIFY).isPresent();
+                }
+            }
+        }
+        // A player were indirectly responsible by this explosion
+        else if(responsibleId != null)
+        {
+            // Just check the permission
+            PlayerID player = responsibleId;
+            check = (claim, pos) -> !claim.getFlagHolder(pos).can(player, MODIFY).isPresent();
+        }
+        // An entity were responsible by this explosion,
+        // can be ghast shooting fireballs, lucky skeleton that shoots an ender crystal
+        // or a player who ignited a creeper or a tnt directly
+        else if(responsible != null)
+        {
+            // Players, just check the permission
+            if(responsible instanceof Player)
+            {
+                BukkitPlayer player = plugin.player((Player) responsible);
+                check = (claim, pos) -> !claim.getFlagHolder(pos).can(player, MODIFY).isPresent();
+            }
+            // Other cases, blame the nature
+        }
+
+        // No check were defined yet? So... Blame the nature
+        // Natural explosions can only change blocks in nature below height 40
+        // It can't change blocks in protected zones
+        if(check == null)
+            check = (claim, pos) -> claim.owner instanceof Nature && pos.y < 40;
+
+
+        for(Iterator<Block> iter = blocks.iterator(); iter.hasNext();)
+        {
+            Block block = iter.next();
+            BlockPos blockPos = plugin.blockPos(entityPos, block);
+            ClaimedChunk blockClaim = plugin.mineCity.provideChunk(blockPos.getChunk(), entityClaim);
+
+            if(!check.apply(blockClaim, blockPos))
+                iter.remove();
+        }
+    }
+
+    /**
+     * BlockExplodeEvent is fired when an explosion happens with an unknown case
+     */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onBlockExplode(BlockExplodeEvent event)
+    {
+        List<Block> blocks = event.blockList();
+        if(blocks.isEmpty())
+            return;
+
+        /// This position will be used mainly for cache, it will decrease the computation needed in the iteration
+        // because they will share the same ChunkPos instance when possible
+        BlockPos pos = plugin.blockPos(blocks.get(0));
+
+        // Also mainly used for cache, this will be reused when possible
+        ClaimedChunk chunk = plugin.mineCity.provideChunk(pos.getChunk());
+
+        for(Iterator<Block> iter = blocks.iterator(); iter.hasNext();)
+        {
+            Block block = iter.next();
+            BlockPos blockPos = plugin.blockPos(pos, block);
+            ClaimedChunk claim = plugin.mineCity.provideChunk(blockPos.getChunk(), chunk);
+
+            if(claim.reserve || claim.owner instanceof Nature)
+            {
+                // Natural explosions can only change blocks in nature below height 40
+                if(blockPos.y >= 40)
+                    iter.remove();
+            }
+            else
+            {
+                // Natural explosions can't change blocks in protected zones
+                iter.remove();
+            }
+        }
     }
 }
