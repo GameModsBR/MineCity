@@ -1156,4 +1156,32 @@ public class BlockProtections extends AbstractProtection
     {
         event.setPortalTravelAgent(new SafeTravelAgent(plugin, event.getPortalTravelAgent(), event.getEntity()));
     }
+
+    private boolean checkPistonEvent(Block piston, Collection<Block> movedBlocks)
+    {
+        BlockPos pistonPos = plugin.blockPos(piston);
+        ClaimedChunk pistonChunk = plugin.mineCity.provideChunk(pistonPos.getChunk());
+        FlagHolder pistonHolder = pistonChunk.getFlagHolder(pistonPos);
+        PlayerID owner = pistonHolder.owner();
+
+         return movedBlocks.stream()
+                .map(block -> plugin.blockPos(pistonPos, block))
+                .map(pos -> plugin.mineCity.provideChunk(pos.getChunk(), pistonChunk).getFlagHolder(pos))
+                .anyMatch(holder -> owner == null? !holder.equals(pistonHolder) : holder.can(owner, PermissionFlag.MODIFY).isPresent())
+        ;
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPistonExtend(BlockPistonExtendEvent event)
+    {
+        if(checkPistonEvent(event.getBlock(), event.getBlocks()))
+            event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPistonRetract(BlockPistonRetractEvent event)
+    {
+        if(checkPistonEvent(event.getBlock(), event.getBlocks()))
+            event.setCancelled(true);
+    }
 }
