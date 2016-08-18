@@ -313,24 +313,6 @@ public class EntityProtections extends AbstractProtection
         if(attacker.equals(victim))
             return;
 
-        if(attacker instanceof Player)
-        {
-            if(check(victim.getLocation(), (Player) attacker,
-                    victim instanceof Player? PVP :
-                            victim instanceof Monster? PVM :
-                                    victim instanceof LivingEntity? PVC : MODIFY
-            ))
-            {
-                event.setCancelled(true);
-                if(tame != null)
-                    tame.setTarget(null);
-                return;
-            }
-
-            if(victim instanceof EnderCrystal)
-                explosionCreator.put(victim.getUniqueId(), attacker);
-        }
-
         if(attacker instanceof Monster)
         {
             if(victim instanceof Player)
@@ -342,10 +324,67 @@ public class EntityProtections extends AbstractProtection
                     return;
                 }
             }
+            else
+            {
+                LivingEntity target = ((Monster) attacker).getTarget();
+                if(target instanceof Player)
+                {
+                    if(silentCheck(victim.getLocation(), (Player) target, playerAttackType(victim)).isPresent())
+                    {
+                        event.setCancelled(true);
+                        if(tame != null)
+                            tame.setTarget(null);
+                        return;
+                    }
+                    else if(victim instanceof Monster)
+                    {
+                        if(silentCheck(victim.getLocation(), (Player) target, playerAttackType(victim)).isPresent())
+                        {
+                            event.setCancelled(true);
+                            if(tame != null)
+                                tame.setTarget(null);
+                            return;
+                        }
+                    }
+                }
+
+                if(victim instanceof EnderCrystal)
+                    explosionCreator.put(victim.getUniqueId(), attacker);
+            }
+
+            return;
+        }
+
+        if(attacker instanceof Player)
+        {
+            if(check(victim.getLocation(), (Player) attacker, playerAttackType(victim)))
+            {
+                event.setCancelled(true);
+                if(tame != null)
+                    tame.setTarget(null);
+                return;
+            }
 
             if(victim instanceof EnderCrystal)
                 explosionCreator.put(victim.getUniqueId(), attacker);
         }
+    }
+
+    private PermissionFlag playerAttackType(Entity entity)
+    {
+        if(entity.getCustomName() != null)
+            return MODIFY;
+
+        if(entity instanceof Player)
+            return PVP;
+
+        if(entity instanceof Monster)
+            return PVM;
+
+        if(entity instanceof LivingEntity)
+            return PVC;
+
+        return MODIFY;
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
