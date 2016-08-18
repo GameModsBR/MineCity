@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.bukkit;
 
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import org.bukkit.Chunk;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -10,6 +11,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 
 public class WorldListener implements Listener
@@ -36,11 +38,16 @@ public class WorldListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     void onChunkLoad(ChunkLoadEvent event)
     {
+        Entity[] entities = event.getChunk().getEntities();
+        if(entities.length > 0)
+            bukkit.markSnowmen(Arrays.stream(entities));
+
         bukkit.loadingTasks.submit(() -> {
             Chunk chunk = event.getChunk();
             try
             {
                 bukkit.mineCity.loadChunk(bukkit.chunk(chunk));
+                bukkit.markSnowmen(Arrays.stream(entities));
             }
             catch(DataSourceException e)
             {

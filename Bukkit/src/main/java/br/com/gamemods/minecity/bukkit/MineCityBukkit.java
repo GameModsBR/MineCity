@@ -14,6 +14,8 @@ import br.com.gamemods.minecity.bukkit.command.BukkitLocatableSender;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
 import br.com.gamemods.minecity.bukkit.protection.BlockProtections;
 import br.com.gamemods.minecity.bukkit.protection.EntityProtections;
+import br.com.gamemods.minecity.bukkit.protection.SnowmanData;
+import br.com.gamemods.minecity.structure.ClaimedChunk;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,6 +25,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -33,6 +36,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +46,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -149,6 +154,37 @@ public class MineCityBukkit implements Server, Listener
 
         if(bukkitPlayer.updateGroups(update))
             entityUpdates.poll();
+    }
+
+    public void markSnowmen(Stream<Entity> stream)
+    {
+        AtomicReference<BlockPos> lastPos = new AtomicReference<>();
+        AtomicReference<ClaimedChunk> lastClaim = new AtomicReference<>();
+        stream.filter(entity -> entity.getType() == EntityType.SNOWMAN).forEach(entity ->
+            {
+                BlockPos pos = lastPos.get();
+                if(pos == null)
+                    lastPos.set(pos = blockPos(entity.getLocation()));
+                else
+                {
+                    Location loc = entity.getLocation();
+                    WorldDim world = world(loc.getWorld());
+                    if(world.equals(pos.world))
+                        lastPos.set(pos = blockPos(pos, loc));
+                    else
+                        lastPos.set(pos = blockPos(loc));
+                }
+
+                ClaimedChunk claim = lastClaim.get();
+                if(claim == null || !claim.chunk.equals(pos.getChunk()))
+                    lastClaim.set(claim = mineCity.provideChunk(pos.getChunk()));
+
+                entity.setMetadata(SnowmanData.KEY, new FixedMetadataValue(
+                        plugin,
+                        new SnowmanData(this, claim, pos)
+                ));
+            }
+        );
     }
 
     @Override

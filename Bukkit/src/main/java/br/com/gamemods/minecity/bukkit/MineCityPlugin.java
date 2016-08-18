@@ -157,6 +157,8 @@ public class MineCityPlugin extends JavaPlugin
 
             getServer().getOnlinePlayers().forEach(instance::player);
 
+            instance.markSnowmen(worlds.stream().map(World::getLivingEntities).flatMap(List::stream));
+
             reloadTask = getScheduler().runTaskTimerAsynchronously(this, instance.mineCity::reloadQueuedChunk, 1, 1);
             playerTick = getScheduler().runTaskTimer(this, ()-> instance.playerMap.values().forEach(BukkitPlayer::tick), 1, 1);
             getScheduler().runTaskTimerAsynchronously(this, instance::updateGroups, 1, 1);

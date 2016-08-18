@@ -39,6 +39,7 @@ import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.BlockProjectileSource;
@@ -100,6 +101,18 @@ public class EntityProtections extends AbstractProtection
                         return;
                     }
                 }
+            }
+            case BUILD_SNOWMAN:
+            {
+                BlockPos pos = plugin.blockPos(event.getLocation());
+                ClaimedChunk chunk = plugin.mineCity.provideChunk(pos.getChunk());
+                Snowman entity = (Snowman) event.getEntity();
+                plugin.scheduler.runTask(plugin.plugin, ()->
+                    entity.setMetadata(SnowmanData.KEY, new FixedMetadataValue(
+                            plugin.plugin,
+                            new SnowmanData(plugin, chunk, pos)
+                    ))
+                );
             }
             break;
         }

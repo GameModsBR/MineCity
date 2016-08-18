@@ -40,6 +40,7 @@ import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.CocoaPlant;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -634,6 +635,28 @@ public class BlockProtections extends AbstractProtection
             FlagHolder holder = plugin.getFlagHolder(block.getLocation());
             if(!(holder instanceof Nature) || block.getY() >= 40)
                 event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onEntityBlockForm(EntityBlockFormEvent event)
+    {
+        Entity entity = event.getEntity();
+        if(entity instanceof Snowman)
+        {
+            for(MetadataValue value : entity.getMetadata("SnowmanData"))
+            {
+                if(value.getOwningPlugin() == plugin.plugin)
+                {
+                    SnowmanData data = (SnowmanData) value.value();
+                    if(data.checkFormSnow((Snowman) entity, event.getBlock()))
+                        event.setCancelled(true);
+
+                    return;
+                }
+            }
+
+            event.setCancelled(true);
         }
     }
 
