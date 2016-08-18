@@ -23,10 +23,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -630,6 +627,13 @@ public class BlockProtections extends AbstractProtection
                 else
                     event.setCancelled(true);
             }
+        }
+        else if(entity instanceof Enderman)
+        {
+            Block block = event.getBlock();
+            FlagHolder holder = plugin.getFlagHolder(block.getLocation());
+            if(!(holder instanceof Nature) || block.getY() >= 40)
+                event.setCancelled(true);
         }
     }
 
