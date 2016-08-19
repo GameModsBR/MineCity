@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.Cuboid;
 import br.com.gamemods.minecity.api.world.BlockPos;
@@ -328,7 +329,16 @@ public class BlockProtections extends AbstractProtection
         return addBase;
     }
 
-    public boolean checkFall(ClaimedChunk claim, Block block, BukkitPlayer player, Location l, BlockPos blockPos)
+    /**
+     * Checks if a gravity block would fall into an unauthorized area
+     * @param claim The claim that the gravity block is located
+     * @param block The gravity block
+     * @param user Who caused this check
+     * @param l The block's location
+     * @param blockPos The block's position
+     * @return {@code true} if the action must be cancelled
+     */
+    public boolean checkFall(ClaimedChunk claim, Block block, Permissible user, Location l, BlockPos blockPos)
     {
         Collection<Plot> plots = claim.getPlots();
         if(plots.isEmpty())
@@ -369,12 +379,13 @@ public class BlockProtections extends AbstractProtection
 
             Optional<Message> denial = Arrays.stream(risk).filter(
                     plot -> plot.getShape().contains(l.getBlockX(), l.getBlockY(), l.getBlockZ()))
-                    .map(plot -> plot.can(player, PermissionFlag.MODIFY))
+                    .map(plot -> plot.can(user, PermissionFlag.MODIFY))
                     .filter(Optional::isPresent).map(Optional::get).findFirst();
 
             if(denial.isPresent())
             {
-                player.send(FlagHolder.wrapDeny(denial.get()));
+                if(user instanceof BukkitPlayer)
+                    user.send(FlagHolder.wrapDeny(denial.get()));
                 return true;
             }
         }

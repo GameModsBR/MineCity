@@ -34,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 import static br.com.gamemods.minecity.api.CollectionUtil.optionalStream;
 import static br.com.gamemods.minecity.api.permission.FlagHolder.can;
@@ -472,7 +473,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
     }
 
     @Override
-    public CommandResult<CommandResult<?>> confirm(String code)
+    public CommandResult<CommandResult<?>> confirm(String code) throws ExecutionException
     {
         if(confirmExpires == 0 || !confirmCode.equals(code.toUpperCase()))
             return CommandResult.failed();
@@ -481,7 +482,14 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
         confirmExpires = 0;
         confirmCode = null;
         confirmAction = null;
-        return new CommandResult<>(null, action.apply(this), true);
+        try
+        {
+            return new CommandResult<>(null, action.apply(this), true);
+        }
+        catch(Exception e)
+        {
+            throw new ExecutionException(e);
+        }
     }
 
     @NotNull

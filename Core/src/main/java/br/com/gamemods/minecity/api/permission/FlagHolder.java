@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.api.permission;
 
+import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
@@ -9,12 +10,15 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+/**
+ * Represents an object that can check permissions.
+ */
 public interface FlagHolder
 {
     Message DEFAULT_DENIAL_MESSAGE = new Message("action.denied", "You don't have permission to perform this action.");
 
     /**
-     * The actual owner of this holder
+     * The owner of this object
      */
     @NotNull
     default Identity<?> owner()
@@ -22,12 +26,46 @@ public interface FlagHolder
         return ServerAdmins.INSTANCE;
     }
 
+    /**
+     * Checks if an entity has a permission.
+     * @param entity The entity to be checked
+     * @param action The necessary permission
+     * @return Empty if the action is allowed or a informative message if it's not.
+     */
     @NotNull
     Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action);
 
+    /**
+     * Checks if an identity has a permission.
+     * @param identity The identity to be checked
+     * @param action The necessary permission
+     * @return Empty if the action is allowed or a informative message if it's not.
+     */
     @NotNull
     Optional<Message> can(@NotNull Identity<?> identity, @NotNull PermissionFlag action);
 
+    /**
+     * Checks if an object has a permission
+     * @param permissible The identity to be checked
+     * @param action The necessary permission
+     * @return Empty if the action is allowed or a informative message if it's not.
+     */
+    @NotNull
+    default Optional<Message> can(@NotNull Permissible permissible, @NotNull PermissionFlag action)
+    {
+        if(permissible instanceof MinecraftEntity)
+            return can((MinecraftEntity) permissible, action);
+        else
+            return can(permissible.identity(), action);
+    }
+
+    /**
+     * Utility method to be used with {@link CollectionUtil#optionalStream(Supplier[])} to simplify checks for multiple permissions.
+     * @param entity The entity to be checked
+     * @param flag The necessary permission
+     * @param holder A permission holder
+     * @return A supplier that will invoke {@link #can(MinecraftEntity, PermissionFlag)} when needed
+     */
     static Supplier<Optional<Message>> can(MinecraftEntity entity, PermissionFlag flag, FlagHolder holder)
     {
         if(holder == null)
@@ -36,6 +74,13 @@ public interface FlagHolder
         return ()-> holder.can(entity, flag);
     }
 
+    /**
+     * Utility method to be used with {@link CollectionUtil#optionalStream(Supplier[])} to simplify checks for multiple permissions.
+     * @param identity The identity to be checked
+     * @param flag The necessary permission
+     * @param holder A permission holder
+     * @return A supplier that will invoke {@link #can(Identity, PermissionFlag)} when needed
+     */
     static Supplier<Optional<Message>> can(Identity<?> identity, PermissionFlag flag, FlagHolder holder)
     {
         if(holder == null)
@@ -44,6 +89,13 @@ public interface FlagHolder
         return ()-> holder.can(identity, flag);
     }
 
+    /**
+     * Utility method to be used with {@link Stream#concat(Stream, Stream)} to simplify checks for a single permission in multiple holders.
+     * @param entity The entity to be checked
+     * @param flag The necessary permission in all holders
+     * @param holders The permission holders to be checked
+     * @return A stream that will invoke {@link #can(MinecraftEntity,PermissionFlag)} when needed
+     */
     static Stream<Message> can(MinecraftEntity entity, PermissionFlag flag, FlagHolder... holders)
     {
         return Stream.of(holders)
@@ -54,6 +106,13 @@ public interface FlagHolder
                 ;
     }
 
+    /**
+     * Utility method to be used with {@link Stream#concat(Stream, Stream)} to simplify checks for a single permission in multiple holders.
+     * @param identity The identity to be checked
+     * @param flag The necessary permission in all holders
+     * @param holders The permission holders to be checked
+     * @return A stream that will invoke {@link #can(Identity,PermissionFlag)} when needed
+     */
     static Stream<Message> can(Identity<?> identity, PermissionFlag flag, FlagHolder... holders)
     {
         return Stream.of(holders)
@@ -64,6 +123,11 @@ public interface FlagHolder
                 ;
     }
 
+    /**
+     * Wraps a denial message in a container to be displayed to a player.
+     * @param message The denial message
+     * @return A formatted message
+     */
     static Message wrapDeny(Message message)
     {
         return new Message("", LegacyFormat.RED+"${msg}", new Object[]{"msg", message});

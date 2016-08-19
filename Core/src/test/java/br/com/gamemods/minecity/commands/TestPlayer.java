@@ -6,6 +6,7 @@ import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -22,6 +23,7 @@ public class TestPlayer implements CommandSender
         this.position = position;
     }
 
+    @NotNull
     @Override
     public Server getServer()
     {

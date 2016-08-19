@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.IChatComponent;
+import org.jetbrains.annotations.NotNull;
 
 public class ForgeCommandSender<S extends ICommandSender> implements CommandSender
 {
@@ -21,6 +22,7 @@ public class ForgeCommandSender<S extends ICommandSender> implements CommandSend
         this.sender = sender;
     }
 
+    @NotNull
     @Override
     public Server getServer()
     {

@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 public class BukkitCommandSender<S extends CommandSender> implements br.com.gamemods.minecity.api.command.CommandSender
 {
@@ -43,6 +44,7 @@ public class BukkitCommandSender<S extends CommandSender> implements br.com.game
         return null;
     }
 
+    @NotNull
     @Override
     public Server getServer()
     {

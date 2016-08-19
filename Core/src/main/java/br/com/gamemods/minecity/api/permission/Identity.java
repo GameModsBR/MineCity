@@ -2,7 +2,7 @@ package br.com.gamemods.minecity.api.permission;
 
 import org.jetbrains.annotations.NotNull;
 
-public abstract class Identity<T> implements Comparable<Identity<?>>
+public abstract class Identity<T> implements Permissible, Comparable<Identity<?>>
 {
     private int dataSourceId;
     @NotNull
@@ -80,6 +80,13 @@ public abstract class Identity<T> implements Comparable<Identity<?>>
     public void setName(@NotNull String name)
     {
         this.name = name;
+    }
+
+    @NotNull
+    @Override
+    final public Identity<T> identity()
+    {
+        return this;
     }
 
     public enum Type

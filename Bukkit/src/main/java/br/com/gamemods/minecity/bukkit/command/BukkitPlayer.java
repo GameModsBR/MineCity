@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 import static br.com.gamemods.minecity.api.CollectionUtil.optionalStream;
@@ -347,7 +348,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     }
 
     @Override
-    public CommandResult<CommandResult<?>> confirm(String code) throws Exception
+    public CommandResult<CommandResult<?>> confirm(String code) throws ExecutionException
     {
         if(!confirmCode.equals(code.toUpperCase()))
             return CommandResult.failed();
@@ -355,7 +356,14 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
         UFunction<CommandSender, CommandResult<?>> action = this.confirmAction;
         confirmCode = null;
         confirmAction = null;
-        return new CommandResult<>(null, action.apply(this), true);
+        try
+        {
+            return new CommandResult<>(null, action.apply(this), true);
+        }
+        catch(Exception e)
+        {
+            throw new ExecutionException(e);
+        }
     }
 
     @Override
