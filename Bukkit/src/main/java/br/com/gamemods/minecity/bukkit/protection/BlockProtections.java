@@ -345,16 +345,9 @@ public class BlockProtections extends AbstractProtection
         if(plots.isEmpty())
             return false;
 
-        Optional<Plot> from = claim.getPlotAt(blockPos);
-
         BlockPos zero = new BlockPos(blockPos, block.getX(), 0, block.getZ());
         Cuboid fallArea = new Cuboid(blockPos, zero);
         Stream<Plot> stream = plots.stream();
-        if(from.isPresent())
-        {
-            Plot fromPlot = from.get();
-            stream = stream.filter(plot -> !plot.equals(fromPlot));
-        }
 
         Plot[] risk = stream.filter(plot -> plot.getShape().overlaps(fallArea)).toArray(Plot[]::new);
         City city = claim.getCity().get();
@@ -363,9 +356,9 @@ public class BlockProtections extends AbstractProtection
         down:
         while(true)
         {
-            Block below = block.getRelative(BlockFace.DOWN);
+            block = block.getRelative(BlockFace.DOWN);
             l.setY(l.getY()-1);
-            switch(below.getType())
+            switch(block.getType())
             {
                 case AIR:
                 case FIRE:
@@ -390,6 +383,7 @@ public class BlockProtections extends AbstractProtection
                     denial = plot.can(user, PermissionFlag.MODIFY);
                     if(denial.isPresent())
                         break;
+                    continue down;
                 }
             }
 
