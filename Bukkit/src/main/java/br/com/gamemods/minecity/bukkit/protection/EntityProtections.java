@@ -828,7 +828,7 @@ public class EntityProtections extends AbstractProtection
 
     public void allowToPickup(Item item, UUID playerId)
     {
-        drops.computeIfAbsent(item.getUniqueId(), id-> new ArrayList<>(1)).add(playerId);
+        drops.computeIfAbsent(item.getUniqueId(), id-> new HashSet<>(1)).add(playerId);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -1281,6 +1281,17 @@ public class EntityProtections extends AbstractProtection
         for(Iterator<Function<Item, Boolean>> iter = captureDrops.iterator(); iter.hasNext();)
             if(iter.next().apply(item))
                 iter.remove();
+
+        ItemStack stack = item.getItemStack();
+        if(stack.getType() == Material.AIR || stack.getAmount() <= 0)
+            event.setCancelled(true);
+        else
+        {
+            FlagHolder holder = plugin.getFlagHolder(item.getLocation());
+            Identity<?> owner = holder.owner();
+            if(owner.getType() == Identity.Type.PLAYER)
+                allowToPickup(item, (UUID) owner.uniqueId);
+        }
     }
 
     public boolean isNegative(PotionEffectType type)

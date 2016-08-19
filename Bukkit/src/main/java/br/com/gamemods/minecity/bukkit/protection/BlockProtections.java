@@ -688,7 +688,7 @@ public class BlockProtections extends AbstractProtection
                         );
 
                         if(owner.getType() == Identity.Type.PLAYER)
-                            plugin.entityProtections.allowToPickup(item, (UUID) owner.getUniqueId());
+                            plugin.entityProtections.allowToPickup(item, (UUID) owner.uniqueId);
                     }
                 }
                 else
