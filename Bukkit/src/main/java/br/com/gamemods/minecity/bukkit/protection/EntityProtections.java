@@ -826,9 +826,9 @@ public class EntityProtections extends AbstractProtection
         }
     }
 
-    public void allowToPickup(Item item, Player player)
+    public void allowToPickup(Item item, UUID playerId)
     {
-        drops.computeIfAbsent(item.getUniqueId(), id-> new ArrayList<>(1)).add(player.getUniqueId());
+        drops.computeIfAbsent(item.getUniqueId(), id-> new ArrayList<>(1)).add(playerId);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -844,7 +844,7 @@ public class EntityProtections extends AbstractProtection
         }
         else
         {
-            allowToPickup(item, player.sender);
+            allowToPickup(item, player.sender.getUniqueId());
             new BukkitRunnable()
             {
                 @Override
@@ -875,7 +875,7 @@ public class EntityProtections extends AbstractProtection
         switch(event.getState())
         {
             case CAUGHT_FISH:
-                allowToPickup((Item) event.getCaught(), event.getPlayer());
+                allowToPickup((Item) event.getCaught(), event.getPlayer().getUniqueId());
                 return;
 
             case CAUGHT_ENTITY:
@@ -1261,7 +1261,7 @@ public class EntityProtections extends AbstractProtection
                 }
 
                 if(remaining != dropped.getAmount())
-                    allowToPickup(item, player);
+                    allowToPickup(item, player.getUniqueId());
 
                 if(collectDrops.isEmpty())
                     return true;

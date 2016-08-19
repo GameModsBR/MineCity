@@ -41,6 +41,7 @@ import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.CocoaPlant;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
@@ -202,7 +203,7 @@ public class BlockProtections extends AbstractProtection
             for(Block aff: affected)
             {
                 Material affType = aff.getRelative(BlockFace.UP).getType();
-                if(affType.hasGravity() || affType == Material.ANVIL || affType == Material.DRAGON_EGG)
+                if(affType.hasGravity() || affType == Material.DRAGON_EGG)
                     gravity.add(aff);
             }
 
@@ -226,12 +227,12 @@ public class BlockProtections extends AbstractProtection
 
                 Block above = aff.getRelative(BlockFace.UP);
                 Material aboveType = above.getType();
-                if(aboveType.hasGravity() || aboveType == Material.ANVIL || aboveType == Material.DRAGON_EGG)
+                if(aboveType.hasGravity() || aboveType == Material.DRAGON_EGG)
                     checkFall(affClaim, above, user, above.getLocation(), affPos.add(Direction.UP));
             }
         }
 
-        if(!type.hasGravity() && type != Material.DRAGON_EGG && type != Material.ANVIL)
+        if(!type.hasGravity() && type != Material.DRAGON_EGG)
             return;
 
         switch(block.getRelative(BlockFace.DOWN).getType())
@@ -660,6 +661,42 @@ public class BlockProtections extends AbstractProtection
             FlagHolder holder = plugin.getFlagHolder(block.getLocation());
             if(!(holder instanceof Nature) || block.getY() >= 40)
                 event.setCancelled(true);
+        }
+        else if(entity instanceof FallingBlock)
+        {
+            Block block = event.getBlock();
+            Material type = block.getType();
+            Location location = entity.getLocation();
+            if(type.hasGravity() || type == Material.DRAGON_EGG)
+                entity.setMetadata(FallingBlockData.KEY, new FixedMetadataValue(
+                        plugin.plugin, new FallingBlockData(plugin.getFlagHolder(location))
+                ));
+            else
+            {
+                Optional<MetadataValue> metadata = entity.getMetadata(FallingBlockData.KEY).stream()
+                        .filter(val -> val.getOwningPlugin().equals(plugin.plugin)).findFirst();
+                FallingBlock falling = (FallingBlock) entity;
+                if(metadata.isPresent())
+                {
+                    FlagHolder holder = plugin.getFlagHolder(location);
+                    Identity<?> owner = ((FallingBlockData) metadata.get().value()).home.owner();
+                    if(holder.can(owner, PermissionFlag.MODIFY).isPresent())
+                    {
+                        event.setCancelled(true);
+                        Item item = entity.getWorld().dropItemNaturally(location,
+                                new ItemStack(falling.getMaterial(), 1, falling.getBlockData())
+                        );
+
+                        if(owner.getType() == Identity.Type.PLAYER)
+                            plugin.entityProtections.allowToPickup(item, (UUID) owner.getUniqueId());
+                    }
+                }
+                else
+                {
+                    event.setCancelled(true);
+                    entity.getWorld().dropItemNaturally(location, new ItemStack(falling.getMaterial(), 1, falling.getBlockData()));
+                }
+            }
         }
     }
 
