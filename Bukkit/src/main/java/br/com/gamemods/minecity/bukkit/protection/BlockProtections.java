@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
+import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Nature;
 import br.com.gamemods.minecity.structure.Plot;
@@ -356,10 +357,10 @@ public class BlockProtections extends AbstractProtection
         }
 
         Plot[] risk = stream.filter(plot -> plot.getShape().overlaps(fallArea)).toArray(Plot[]::new);
+        City city = claim.getCity().get();
 
-        if(risk.length == 0)
-            return false;
-
+        Plot last = null;
+        down:
         while(true)
         {
             Block below = block.getRelative(BlockFace.DOWN);
@@ -377,10 +378,23 @@ public class BlockProtections extends AbstractProtection
                     return false;
             }
 
-            Optional<Message> denial = Arrays.stream(risk).filter(
-                    plot -> plot.getShape().contains(l.getBlockX(), l.getBlockY(), l.getBlockZ()))
-                    .map(plot -> plot.can(user, PermissionFlag.MODIFY))
-                    .filter(Optional::isPresent).map(Optional::get).findFirst();
+            Optional<Message> denial = null;
+            for(Plot plot: risk)
+            {
+                if(plot.getShape().contains(l.getBlockX(), l.getBlockY(), l.getBlockZ()))
+                {
+                    if(plot.equals(last))
+                        continue down;
+                    last = plot;
+
+                    denial = plot.can(user, PermissionFlag.MODIFY);
+                    if(denial.isPresent())
+                        break;
+                }
+            }
+
+            if(denial == null)
+                denial = city.can(user, PermissionFlag.MODIFY);
 
             if(denial.isPresent())
             {
