@@ -727,9 +727,23 @@ public class BlockProtections extends AbstractProtection
                     case ARMOR_STAND:
                     case MONSTER_EGG:
                     case MONSTER_EGGS:
-                        if(check(block.getRelative(event.getBlockFace()).getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                    {
+                        Block relative = block.getRelative(event.getBlockFace());
+                        BlockPos pos = plugin.blockPos(relative);
+                        ClaimedChunk claimedChunk = plugin.mineCity.provideChunk(pos.getChunk());
+                        BukkitPlayer player = plugin.player(event.getPlayer());
+
+                        Optional<Message> denial = claimedChunk.getFlagHolder(pos).can(player, PermissionFlag.MODIFY);
+                        if(denial.isPresent())
+                        {
+                            event.setUseItemInHand(Event.Result.DENY);
+                            player.send(FlagHolder.wrapDeny(denial.get()));
+                            break;
+                        }
+                        else if(checkFall(claimedChunk, relative, player, relative.getLocation(), pos))
                             event.setUseItemInHand(Event.Result.DENY);
                         break;
+                    }
 
                     case END_CRYSTAL:
                         if(type == Material.OBSIDIAN || type == Material.BEDROCK)
