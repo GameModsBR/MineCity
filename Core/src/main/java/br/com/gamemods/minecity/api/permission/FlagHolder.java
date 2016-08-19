@@ -61,6 +61,14 @@ public interface FlagHolder
 
     /**
      * Utility method to be used with {@link CollectionUtil#optionalStream(Supplier[])} to simplify checks for multiple permissions.
+     * <p>Example:
+     * <pre>
+     *     Optional&lt;Message> denial = optionalStream(
+     *          can(entity, ENTER, plot),
+     *          can(entity, ENTER, city),
+     *          can(entity, LEAVE, nature)
+     *     ).findFirst();
+     * </pre>
      * @param entity The entity to be checked
      * @param flag The necessary permission
      * @param holder A permission holder
@@ -76,6 +84,14 @@ public interface FlagHolder
 
     /**
      * Utility method to be used with {@link CollectionUtil#optionalStream(Supplier[])} to simplify checks for multiple permissions.
+     * <p>Example:
+     * <pre>
+     *     Optional&lt;Message> denial = optionalStream(
+     *          can(identity, ENTER, plot),
+     *          can(identity, ENTER, city),
+     *          can(identity, LEAVE, nature)
+     *     ).findFirst();
+     * </pre>
      * @param identity The identity to be checked
      * @param flag The necessary permission
      * @param holder A permission holder
@@ -91,6 +107,19 @@ public interface FlagHolder
 
     /**
      * Utility method to be used with {@link Stream#concat(Stream, Stream)} to simplify checks for a single permission in multiple holders.
+     * <p>Example:
+     * <pre>
+     *     Optional&lt;Message> denial = Stream.concat(
+     *          can(entity, ENTER, plot, city),
+     *          can(entity, LEAVE, nature)
+     *     ).findFirst();
+     *
+     *     Optional&lt;Message> alternative = Stream.of(
+     *          can(entity, ENTER, plot, city),
+     *          can(entity, RIDE, plot, city),
+     *          can(entity, LEAVE, nature)
+     *     ).flatMap(Function.identity()).findFirst();
+     * </pre>
      * @param entity The entity to be checked
      * @param flag The necessary permission in all holders
      * @param holders The permission holders to be checked
@@ -108,6 +137,19 @@ public interface FlagHolder
 
     /**
      * Utility method to be used with {@link Stream#concat(Stream, Stream)} to simplify checks for a single permission in multiple holders.
+     * <p>Example:
+     * <pre>
+     *     Optional&lt;Message> denial = Stream.concat(
+     *          can(identity, ENTER, plot, city),
+     *          can(identity, LEAVE, nature)
+     *     ).findFirst();
+     *
+     *     Optional&lt;Message> alternative = Stream.of(
+     *          can(identity, ENTER, plot, city),
+     *          can(identity, RIDE, plot, city),
+     *          can(identity, LEAVE, nature)
+     *     ).flatMap(Function.identity()).findFirst();
+     * </pre>
      * @param identity The identity to be checked
      * @param flag The necessary permission in all holders
      * @param holders The permission holders to be checked
