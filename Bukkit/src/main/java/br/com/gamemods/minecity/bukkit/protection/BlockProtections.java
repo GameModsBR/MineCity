@@ -41,6 +41,8 @@ import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.CocoaPlant;
+import org.bukkit.material.PistonBaseMaterial;
+import org.bukkit.material.PistonExtensionMaterial;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.BlockIterator;
@@ -1225,31 +1227,49 @@ public class BlockProtections extends AbstractProtection
         event.setPortalTravelAgent(new SafeTravelAgent(plugin, event.getPortalTravelAgent(), event.getEntity()));
     }
 
-    private boolean checkPistonEvent(Block piston, Collection<Block> movedBlocks)
+    private boolean checkPistonEvent(Block piston, Collection<Block> movedBlocks, BlockFace movementDirection)
     {
         BlockPos pistonPos = plugin.blockPos(piston);
         ClaimedChunk pistonChunk = plugin.mineCity.provideChunk(pistonPos.getChunk());
         FlagHolder pistonHolder = pistonChunk.getFlagHolder(pistonPos);
         Identity<?> owner = pistonHolder.owner();
 
-         return movedBlocks.stream()
+         return Stream.concat(Stream.of(piston), movedBlocks.stream())
                 .map(block -> plugin.blockPos(pistonPos, block))
-                .map(pos -> plugin.mineCity.provideChunk(pos.getChunk(), pistonChunk).getFlagHolder(pos))
-                .anyMatch(holder -> holder.can(owner, PermissionFlag.MODIFY).isPresent())
+                .anyMatch(pos ->
+                {
+                    ClaimedChunk chunk = plugin.mineCity.provideChunk(pos.getChunk(), pistonChunk);
+                    FlagHolder holder = chunk.getFlagHolder(pos);
+                    if(holder.can(owner, PermissionFlag.MODIFY).isPresent())
+                        return true;
+
+                    BlockPos dir = pos.add(
+                            movementDirection.getModX(), movementDirection.getModY(),movementDirection.getModZ()
+                    );
+                    ClaimedChunk dirChunk = plugin.mineCity.provideChunk(dir.getChunk(), chunk);
+                    FlagHolder dirHolder = dirChunk.getFlagHolder(dir);
+                    return !holder.equals(dirHolder) && dirHolder.can(owner, PermissionFlag.MODIFY).isPresent();
+                })
         ;
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event)
     {
-        if(checkPistonEvent(event.getBlock(), event.getBlocks()))
+        PistonBaseMaterial piston = (PistonBaseMaterial) event.getBlock().getState().getData();
+        if(checkPistonEvent(event.getBlock(), event.getBlocks(), piston.getFacing()))
             event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event)
     {
-        if(checkPistonEvent(event.getBlock(), event.getBlocks()))
+        Block block = event.getBlock();
+        PistonExtensionMaterial piston = new PistonExtensionMaterial(block.getType(), block.getData());
+        if(!piston.isSticky())
+            return;
+
+        if(checkPistonEvent(block, event.getBlocks(), piston.getAttachedFace()))
             event.setCancelled(true);
     }
 }
