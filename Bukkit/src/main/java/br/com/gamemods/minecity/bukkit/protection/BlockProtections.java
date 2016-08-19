@@ -670,18 +670,18 @@ public class BlockProtections extends AbstractProtection
             Material type = block.getType();
             Location location = entity.getLocation();
             if(type.hasGravity() || type == Material.DRAGON_EGG)
-                entity.setMetadata(FallingBlockData.KEY, new FixedMetadataValue(
-                        plugin.plugin, new FallingBlockData(plugin.getFlagHolder(location))
+                entity.setMetadata(FlagHolderData.KEY, new FixedMetadataValue(
+                        plugin.plugin, new FlagHolderData(plugin.getFlagHolder(location))
                 ));
             else
             {
-                Optional<MetadataValue> metadata = entity.getMetadata(FallingBlockData.KEY).stream()
+                Optional<MetadataValue> metadata = entity.getMetadata(FlagHolderData.KEY).stream()
                         .filter(val -> val.getOwningPlugin().equals(plugin.plugin)).findFirst();
                 FallingBlock falling = (FallingBlock) entity;
                 if(metadata.isPresent())
                 {
                     FlagHolder holder = plugin.getFlagHolder(location);
-                    Identity<?> owner = ((FallingBlockData) metadata.get().value()).home.owner();
+                    Identity<?> owner = ((FlagHolderData) metadata.get().value()).home.owner();
                     if(holder.can(owner, PermissionFlag.MODIFY).isPresent())
                     {
                         event.setCancelled(true);

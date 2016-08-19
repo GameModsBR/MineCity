@@ -12,6 +12,7 @@ import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.bukkit.command.BukkitCommandSender;
 import br.com.gamemods.minecity.bukkit.command.BukkitLocatableSender;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
+import br.com.gamemods.minecity.bukkit.protection.ArmorStandData;
 import br.com.gamemods.minecity.bukkit.protection.BlockProtections;
 import br.com.gamemods.minecity.bukkit.protection.EntityProtections;
 import br.com.gamemods.minecity.bukkit.protection.SnowmanData;
@@ -24,6 +25,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -156,35 +158,55 @@ public class MineCityBukkit implements Server, Listener
             entityUpdates.poll();
     }
 
-    public void markSnowmen(Stream<Entity> stream)
+    public void lastTick(Stream<Entity> stream)
+    {
+        stream.filter(entity -> entity.getType() == EntityType.ARMOR_STAND)
+                .flatMap(entity -> entity.getMetadata(ArmorStandData.KEY).stream())
+                .filter(metadataValue -> plugin.equals(metadataValue.getOwningPlugin()))
+                .map(metadataValue -> (ArmorStandData) metadataValue.value())
+                .forEachOrdered(ArmorStandData::tick);
+    }
+
+    public void markEntities(Stream<Entity> stream)
     {
         AtomicReference<BlockPos> lastPos = new AtomicReference<>();
         AtomicReference<ClaimedChunk> lastClaim = new AtomicReference<>();
-        stream.filter(entity -> entity.getType() == EntityType.SNOWMAN).forEach(entity ->
+        stream.forEach(entity ->
+        {
+            switch(entity.getType())
             {
-                BlockPos pos = lastPos.get();
-                if(pos == null)
-                    lastPos.set(pos = blockPos(entity.getLocation()));
-                else
+                case SNOWMAN:
                 {
-                    Location loc = entity.getLocation();
-                    WorldDim world = world(loc.getWorld());
-                    if(world.equals(pos.world))
-                        lastPos.set(pos = blockPos(pos, loc));
+                    BlockPos pos = lastPos.get();
+                    if(pos == null)
+                        lastPos.set(pos = blockPos(entity.getLocation()));
                     else
-                        lastPos.set(pos = blockPos(loc));
+                    {
+                        Location loc = entity.getLocation();
+                        WorldDim world = world(loc.getWorld());
+                        if(world.equals(pos.world))
+                            lastPos.set(pos = blockPos(pos, loc));
+                        else
+                            lastPos.set(pos = blockPos(loc));
+                    }
+
+                    ClaimedChunk claim = lastClaim.get();
+                    if(claim == null || !claim.chunk.equals(pos.getChunk()))
+                        lastClaim.set(claim = mineCity.provideChunk(pos.getChunk()));
+
+                    entity.setMetadata(SnowmanData.KEY, new FixedMetadataValue(
+                            plugin,
+                            new SnowmanData(this, claim, pos)
+                    ));
                 }
-
-                ClaimedChunk claim = lastClaim.get();
-                if(claim == null || !claim.chunk.equals(pos.getChunk()))
-                    lastClaim.set(claim = mineCity.provideChunk(pos.getChunk()));
-
-                entity.setMetadata(SnowmanData.KEY, new FixedMetadataValue(
-                        plugin,
-                        new SnowmanData(this, claim, pos)
-                ));
+                break;
+                case ARMOR_STAND:
+                    entity.setMetadata(ArmorStandData.KEY, new FixedMetadataValue(
+                            plugin,
+                            new ArmorStandData(this, (ArmorStand) entity)
+                    ));
             }
-        );
+        });
     }
 
     @Override

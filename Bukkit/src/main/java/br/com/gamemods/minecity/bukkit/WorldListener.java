@@ -40,14 +40,14 @@ public class WorldListener implements Listener
     {
         Entity[] entities = event.getChunk().getEntities();
         if(entities.length > 0)
-            bukkit.markSnowmen(Arrays.stream(entities));
+            bukkit.markEntities(Arrays.stream(entities));
 
         bukkit.loadingTasks.submit(() -> {
             Chunk chunk = event.getChunk();
             try
             {
                 bukkit.mineCity.loadChunk(bukkit.chunk(chunk));
-                bukkit.markSnowmen(Arrays.stream(entities));
+                bukkit.markEntities(Arrays.stream(entities));
             }
             catch(DataSourceException e)
             {
@@ -61,6 +61,10 @@ public class WorldListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     void onChunkUnload(ChunkUnloadEvent event)
     {
-        bukkit.loadingTasks.submit(()->  bukkit.mineCity.unloadChunk(bukkit.chunk(event.getChunk())));
+        Entity[] entities = event.getChunk().getEntities();
+        if(entities.length > 0)
+            bukkit.lastTick(Arrays.stream(entities));
+
+        bukkit.loadingTasks.submit(() -> bukkit.mineCity.unloadChunk(bukkit.chunk(event.getChunk())));
     }
 }

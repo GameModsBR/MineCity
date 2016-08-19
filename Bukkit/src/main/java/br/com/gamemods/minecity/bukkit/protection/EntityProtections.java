@@ -108,7 +108,7 @@ public class EntityProtections extends AbstractProtection
                 BlockPos pos = plugin.blockPos(event.getLocation());
                 ClaimedChunk chunk = plugin.mineCity.provideChunk(pos.getChunk());
                 Snowman entity = (Snowman) event.getEntity();
-                plugin.scheduler.runTask(plugin.plugin, ()->
+                plugin.callSyncMethod(()->
                     entity.setMetadata(SnowmanData.KEY, new FixedMetadataValue(
                             plugin.plugin,
                             new SnowmanData(plugin, chunk, pos)
@@ -116,6 +116,19 @@ public class EntityProtections extends AbstractProtection
                 );
             }
             break;
+            case DEFAULT:
+            {
+                if(event.getEntityType() == EntityType.ARMOR_STAND)
+                {
+                    ArmorStand armorStand = (ArmorStand) event.getEntity();
+                    plugin.callSyncMethod(() ->
+                        armorStand.setMetadata(ArmorStandData.KEY, new FixedMetadataValue(
+                                plugin.plugin,
+                                new ArmorStandData(plugin, armorStand)
+                        ))
+                    );
+                }
+            }
         }
     }
 
