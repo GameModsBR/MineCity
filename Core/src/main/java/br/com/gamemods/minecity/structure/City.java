@@ -5,9 +5,7 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.permission.Group;
-import br.com.gamemods.minecity.api.permission.Identity;
-import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.permission.*;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
@@ -31,6 +29,7 @@ public final class City extends ExceptStoredHolder
 {
     @NotNull
     public final MineCity mineCity;
+
     @NotNull
     private ICityStorage storage;
 
@@ -38,19 +37,30 @@ public final class City extends ExceptStoredHolder
      * ID defined by the data source implementation, may be zero but cannot be negative
      */
     private int id;
+
     @NotNull
     private String name;
+
     @NotNull
     private String identityName;
-    private PlayerID owner;
+
+    @NotNull
+    private OptionalPlayer owner;
+
+    @NotNull
     private BlockPos spawn;
+
+    @NotNull
     private final Map<Integer, Island> islands;
+
+    @NotNull
     private final Map<String, Group> groups;
+
     private boolean invalid;
 
     /**
      * Create and save a city immediately
-     * @param owner The city's owner or {@code null} for none
+     * @param owner The city's owner
      * @param spawn The city's spawn, the chunk be claimed to this city immediately
      * @throws IllegalArgumentException If the spawn's chunk is already reserved or the city's name is invalid
      * @throws DataSourceException If a database error occurs
@@ -62,7 +72,7 @@ public final class City extends ExceptStoredHolder
         this.mineCity = mineCity;
         this.name = name;
         identityName = identity(name);
-        this.owner = owner;
+        this.owner = owner == null? new AdminCity(this) : owner;
         this.spawn = spawn;
         if(identityName.length() < 3)
             throw new IllegalArgumentException("Bad name");
@@ -116,7 +126,7 @@ public final class City extends ExceptStoredHolder
         this.mineCity = mineCity;
         this.name = name;
         this.identityName = identityName;
-        this.owner = owner;
+        this.owner = owner == null? new AdminCity(this) : owner;
         this.spawn = spawn;
         setId(id);
         this.storage = storage;
@@ -254,6 +264,9 @@ public final class City extends ExceptStoredHolder
         if(identity.equals(owner))
             return Optional.empty();
 
+        if(identity.getType() == Identity.Type.NATURE)
+            return Optional.of(new Message("Cities are protected from natural actions"));
+
         return super.can(identity, action);
     }
 
@@ -317,12 +330,12 @@ public final class City extends ExceptStoredHolder
         return Collections.unmodifiableCollection(islands.values());
     }
 
-    @Nullable
+    @NotNull
     @Override
-    public PlayerID owner()
+    public OptionalPlayer owner()
     {
         if(invalid)
-            return null;
+            return ServerAdmins.INSTANCE;
 
         return owner;
     }
@@ -357,6 +370,7 @@ public final class City extends ExceptStoredHolder
         return name;
     }
 
+    @NotNull
     public BlockPos getSpawn()
     {
         return spawn;
@@ -580,17 +594,17 @@ public final class City extends ExceptStoredHolder
 
     /**
      * Changes the owner of the city and saves it immediately
-     * @param owner The new owner or {@code null} for server admins
+     * @param owner The new owner
      * @throws DataSourceException If the city is registered and the change failed. The owner will not be set in this case.
      */
     @Slow
-    public void setOwner(@Nullable PlayerID owner) throws DataSourceException, IllegalStateException
+    public void setOwner(@NotNull OptionalPlayer owner) throws DataSourceException, IllegalStateException
     {
         if(invalid)
             throw new IllegalStateException();
 
         storage.setOwner(this, owner);
-        this.owner = owner;
+        this.owner = owner.getType() == Identity.Type.ADMINS? new AdminCity(this) : owner;
     }
 
     /**
@@ -639,7 +653,7 @@ public final class City extends ExceptStoredHolder
         if(name.charAt(0) == '#')
             return LegacyFormat.DARK_RED;
 
-        if(owner == null)
+        if(owner.getType() == Identity.Type.ADMINS)
             return LegacyFormat.RED;
 
         return LegacyFormat.CITY_COLORS[id%LegacyFormat.CITY_COLORS.length];

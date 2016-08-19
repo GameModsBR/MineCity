@@ -5,10 +5,7 @@ import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.permission.EntityID;
-import br.com.gamemods.minecity.api.permission.Group;
-import br.com.gamemods.minecity.api.permission.GroupID;
-import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.permission.*;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
@@ -262,9 +259,10 @@ public class SQLSource implements IDataSource
     }
 
     @Slow
-    int playerId(Connection connection, @Nullable PlayerID player) throws DataSourceException
+    int playerId(Connection connection, @Nullable OptionalPlayer player) throws DataSourceException
     {
-        if(player == null) return 0;
+        PlayerID playerId;
+        if(player == null || (playerId = player.player()) == null) return 0;
         int id = player.getDataSourceId();
         if(id > 0) return id;
 
@@ -274,12 +272,12 @@ public class SQLSource implements IDataSource
                     "SELECT `player_id` FROM `minecity_players` WHERE `player_uuid`=?"
             ))
             {
-                pst.setBytes(1, uuid(player.uniqueId));
+                pst.setBytes(1, uuid(playerId.uniqueId));
                 ResultSet result = pst.executeQuery();
                 if(result.next())
                 {
                     id = result.getInt(1);
-                    player.setDataSourceId(id);
+                    playerId.setDataSourceId(id);
                     return id;
                 }
             }
@@ -289,13 +287,13 @@ public class SQLSource implements IDataSource
                 , Statement.RETURN_GENERATED_KEYS
             ))
             {
-                pst.setBytes(1, uuid(player.uniqueId));
-                pst.setString(2, player.name);
+                pst.setBytes(1, uuid(playerId.uniqueId));
+                pst.setString(2, playerId.getName());
                 pst.executeUpdate();
                 ResultSet keys = pst.getGeneratedKeys();
                 keys.next();
                 id = keys.getInt(1);
-                player.setDataSourceId(id);
+                playerId.setDataSourceId(id);
                 return id;
             }
         }
@@ -334,7 +332,7 @@ public class SQLSource implements IDataSource
             ))
             {
                 pst.setBytes(1, uuid(entity.uniqueId));
-                pst.setString(2, entity.name);
+                pst.setString(2, entity.getName());
                 pst.setString(3, entity.getEntityType().name());
                 pst.executeUpdate();
                 ResultSet keys = pst.getGeneratedKeys();

@@ -1,7 +1,6 @@
 package br.com.gamemods.minecity.bukkit.protection;
 
 import br.com.gamemods.minecity.MineCity;
-import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.Identity;
@@ -627,9 +626,9 @@ public class BlockProtections extends AbstractProtection
                     if(check(block.getLocation(), (Player) shooter, PermissionFlag.MODIFY))
                         event.setCancelled(true);
                 }
-                else if(shooter instanceof PlayerID)
+                else if(shooter instanceof Identity)
                 {
-                    if(check(block.getLocation(), (PlayerID) shooter, PermissionFlag.MODIFY).isPresent())
+                    if(check(block.getLocation(), (Identity) shooter, PermissionFlag.MODIFY).isPresent())
                         event.setCancelled(true);
                 }
                 else
@@ -916,8 +915,7 @@ public class BlockProtections extends AbstractProtection
         ClaimedChunk toClaim = fromClaim.chunk.equals(toPos.getChunk())? fromClaim : plugin.mineCity.provideChunk(toPos.getChunk());
         FlagHolder to = toClaim.getFlagHolder(toPos);
 
-        PlayerID owner = from.owner();
-        return !from.equals(to) && (owner == null || to.can(owner, PermissionFlag.MODIFY).isPresent());
+        return !from.equals(to) && to.can(from.owner(), PermissionFlag.MODIFY).isPresent();
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -968,8 +966,7 @@ public class BlockProtections extends AbstractProtection
                 FlagHolder blockHolder = blockClaim.getFlagHolder(blockPos);
                 if(!entityHolder.equals(blockHolder))
                 {
-                    PlayerID owner = entityHolder.owner();
-                    if(owner == null || blockHolder.can(owner, PermissionFlag.MODIFY).isPresent())
+                    if(blockHolder.can(entityHolder.owner(), PermissionFlag.MODIFY).isPresent())
                         event.setCancelled(true);
                 }
             }
@@ -1006,8 +1003,7 @@ public class BlockProtections extends AbstractProtection
                         BlockPos fromPos = plugin.blockPos(toPos, fromBlock);
                         ClaimedChunk fromClaim = plugin.mineCity.provideChunk(fromPos.getChunk(), toClaim);
                         FlagHolder from = fromClaim.getFlagHolder(fromPos);
-                        PlayerID owner = from.owner();
-                        if(from.equals(to) || (owner != null && !to.can(owner, PermissionFlag.MODIFY).isPresent()))
+                        if(from.equals(to) || !to.can(from.owner(), PermissionFlag.MODIFY).isPresent())
                         {
                             return;
                         }
@@ -1036,13 +1032,8 @@ public class BlockProtections extends AbstractProtection
         else
         {
             bukkitPlayer = null;
-            PlayerID owner = fromHolder.owner();
-            if(owner != null)
-                check = fh -> fh.can(owner, PermissionFlag.MODIFY);
-            else if(fromHolder instanceof Nature)
-                check = fh -> fh instanceof Nature? Optional.empty() : Optional.of(new Message("Growing from the nature"));
-            else
-                check = fh -> Optional.of(new Message("Growing from an admin zone to somewhere"));
+            Identity<?> owner = fromHolder.owner();
+            check = fh -> fh.can(owner, PermissionFlag.MODIFY);
         }
 
         for(BlockState state : event.getBlocks())
@@ -1183,12 +1174,12 @@ public class BlockProtections extends AbstractProtection
         BlockPos pistonPos = plugin.blockPos(piston);
         ClaimedChunk pistonChunk = plugin.mineCity.provideChunk(pistonPos.getChunk());
         FlagHolder pistonHolder = pistonChunk.getFlagHolder(pistonPos);
-        PlayerID owner = pistonHolder.owner();
+        Identity<?> owner = pistonHolder.owner();
 
          return movedBlocks.stream()
                 .map(block -> plugin.blockPos(pistonPos, block))
                 .map(pos -> plugin.mineCity.provideChunk(pos.getChunk(), pistonChunk).getFlagHolder(pos))
-                .anyMatch(holder -> owner == null? !holder.equals(pistonHolder) : holder.can(owner, PermissionFlag.MODIFY).isPresent())
+                .anyMatch(holder -> holder.can(owner, PermissionFlag.MODIFY).isPresent())
         ;
     }
 

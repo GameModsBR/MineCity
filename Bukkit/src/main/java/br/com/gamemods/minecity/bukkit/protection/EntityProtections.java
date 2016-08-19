@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.api.Lazy;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
+import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
@@ -171,10 +172,7 @@ public class EntityProtections extends AbstractProtection
                 Location loc = block.getLocation();
                 ChunkPos chunkPos = plugin.chunk(loc);
                 ClaimedChunk chunk = plugin.mineCity.provideChunk(chunkPos);
-                PlayerID owner = chunk.getFlagHolder(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).owner();
-
-                if(owner == null)
-                    return;
+                Identity<?> owner = chunk.getFlagHolder(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).owner();
 
                 BlockPos blockPos = plugin.blockPos(vehicle.getLocation());
                 FlagHolder holder;
@@ -252,15 +250,7 @@ public class EntityProtections extends AbstractProtection
                 Location loc = block.getLocation();
                 ChunkPos chunkPos = plugin.chunk(loc);
                 ClaimedChunk chunk = plugin.mineCity.provideChunk(chunkPos);
-                PlayerID owner = chunk.getFlagHolder(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).owner();
-
-                if(owner == null)
-                {
-                    Entity victim = event.getEntity();
-                    if(victim instanceof EnderCrystal)
-                        explosionCreator.put(victim.getUniqueId(), shooter);
-                    return;
-                }
+                Identity<?> owner = chunk.getFlagHolder(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).owner();
 
                 Entity victim = event.getEntity();
                 BlockPos blockPos = plugin.blockPos(victim.getLocation());
@@ -667,9 +657,9 @@ public class EntityProtections extends AbstractProtection
             Object shooter = getShooter(((Projectile) remover).getShooter(), true);
             if(shooter instanceof Player)
                 remover = (Entity) shooter;
-            else if(shooter instanceof PlayerID)
+            else if(shooter instanceof Identity)
             {
-                if(check(entity.getLocation(), (PlayerID) shooter, MODIFY).isPresent())
+                if(check(entity.getLocation(), (Identity) shooter, MODIFY).isPresent())
                     event.setCancelled(true);
                 return;
             }
@@ -1527,9 +1517,9 @@ public class EntityProtections extends AbstractProtection
 
             return false;
         }
-        else if(shooter instanceof PlayerID)
+        else if(shooter instanceof Identity)
         {
-            PlayerID player = (PlayerID) shooter;
+            Identity player = (Identity) shooter;
             BlockPos basePos = plugin.blockPos(entities.iterator().next().getLocation());
             ClaimedChunk cache = plugin.mineCity.provideChunk(basePos.getChunk());
 
@@ -1849,17 +1839,8 @@ public class EntityProtections extends AbstractProtection
             if(!chunk.reserve && !(chunk.owner instanceof Nature))
             {
                 FlagHolder holder = chunk.getFlagHolder(responsiblePos);
-                PlayerID owner = holder.owner();
-                if(owner == null)
-                {
-                    // Zones without an owner can only change itself
-                    check = (claim, pos) -> claim.getFlagHolder(pos).equals(holder);
-                }
-                else
-                {
-                    // Zones with an owner, check the permission
-                    check = (claim, pos) -> !claim.getFlagHolder(pos).can(owner, MODIFY).isPresent();
-                }
+                Identity<?> owner = holder.owner();
+                check = (claim, pos) -> !claim.getFlagHolder(pos).can(owner, MODIFY).isPresent();
             }
         }
         // A player were indirectly responsible by this explosion

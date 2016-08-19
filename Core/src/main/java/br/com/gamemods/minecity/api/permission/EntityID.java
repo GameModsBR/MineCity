@@ -37,7 +37,7 @@ public class EntityID extends Identity<UUID>
     public String toString()
     {
         return "EntityID{" +
-                "name='" + name + '\'' +
+                "name='" + getName() + '\'' +
                 ", type='" + type + '\'' +
                 ", uniqueId=" + uniqueId +
                 '}';

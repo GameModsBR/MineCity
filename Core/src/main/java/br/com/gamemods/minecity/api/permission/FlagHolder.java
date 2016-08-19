@@ -1,11 +1,9 @@
 package br.com.gamemods.minecity.api.permission;
 
-import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -17,12 +15,11 @@ public interface FlagHolder
 
     /**
      * The actual owner of this holder
-     * @return {@code null} if the holder is owned by the server administrators
      */
-    @Nullable
-    default PlayerID owner()
+    @NotNull
+    default Identity<?> owner()
     {
-        return null;
+        return ServerAdmins.INSTANCE;
     }
 
     @NotNull

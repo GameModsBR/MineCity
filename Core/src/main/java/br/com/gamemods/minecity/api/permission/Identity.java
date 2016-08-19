@@ -9,7 +9,7 @@ public abstract class Identity<T> implements Comparable<Identity<?>>
     public final T uniqueId;
 
     @NotNull
-    public String name;
+    private String name;
 
     public Identity(@NotNull T id, @NotNull String name)
     {
@@ -48,7 +48,7 @@ public abstract class Identity<T> implements Comparable<Identity<?>>
     {
         int i = getType().compareTo(o.getType());
         if(i != 0) return i;
-        i = name.compareToIgnoreCase(o.name);
+        i = getName().compareToIgnoreCase(o.getName());
         return i != 0? i : uniqueId.toString().compareToIgnoreCase(o.uniqueId.toString());
     }
 
@@ -71,14 +71,19 @@ public abstract class Identity<T> implements Comparable<Identity<?>>
     @Override
     public String toString()
     {
-        return "Identity{" +
-                "name='" + name + '\'' +
+        return getClass().getSimpleName()+"{" +
+                "name='" + getName() + '\'' +
                 ", uniqueId=" + uniqueId +
                 '}';
     }
 
+    public void setName(@NotNull String name)
+    {
+        this.name = name;
+    }
+
     public enum Type
     {
-        PLAYER, GROUP, ENTITY
+        PLAYER, GROUP, ENTITY, NATURE, ADMINS
     }
 }

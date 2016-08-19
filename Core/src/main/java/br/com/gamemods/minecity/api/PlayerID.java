@@ -1,11 +1,11 @@
 package br.com.gamemods.minecity.api;
 
-import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.permission.OptionalPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public final class PlayerID extends Identity<UUID>
+public final class PlayerID extends OptionalPlayer<UUID>
 {
     public PlayerID(@NotNull UUID uniqueId, @NotNull String name)
     {
@@ -28,7 +28,7 @@ public final class PlayerID extends Identity<UUID>
     public String toString()
     {
         return "PlayerID{" +
-                "name='" + name + '\'' +
+                "name='" + getName() + '\'' +
                 ", uniqueId=" + uniqueId +
                 '}';
     }

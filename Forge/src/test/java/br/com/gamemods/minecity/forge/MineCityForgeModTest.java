@@ -163,7 +163,7 @@ public class MineCityForgeModTest
             assertEquals("[tcity, create]", cmd.path.toString());
             assertEquals(Arrays.asList("Test","City"), cmd.args);
             assertEquals(cmd.sender.getPlayerId().uniqueId, joserobjr.getUniqueID());
-            assertEquals(cmd.sender.getPlayerId().name, joserobjr.getCommandSenderName());
+            assertEquals(cmd.sender.getPlayerId().getName(), joserobjr.getCommandSenderName());
             return CommandResult.success();
         });
         assertEquals("[tcity, create]", mineCity.commands.get("tcity create a b").map(r-> r.path).map(Object::toString).orElse("null"));

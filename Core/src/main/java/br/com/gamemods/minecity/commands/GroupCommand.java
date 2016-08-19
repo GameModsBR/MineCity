@@ -153,7 +153,7 @@ public class GroupCommand
         Set<PlayerID> managers = g.getManagers();
         if(managers.isEmpty())
         {
-            PlayerID owner = g.home.owner();
+            PlayerID owner = g.home.owner().player();
             if(owner != null)
                 return new Message(prefix+".mayor", "This group is managed by the mayor ${mayor}",
                         new Object[]{"mayor", owner.getName()}

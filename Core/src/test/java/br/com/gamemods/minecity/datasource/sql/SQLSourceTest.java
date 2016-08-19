@@ -511,8 +511,8 @@ public class SQLSourceTest
         // Check group persistence
         reload();
         city = mineCity.dataSource.getCityByName("Perm").get();
-        playerA = mineCity.dataSource.getPlayer(playerA.name).get();
-        playerB = mineCity.dataSource.getPlayer(playerB.name).get();
+        playerA = mineCity.dataSource.getPlayer(playerA.getName()).get();
+        playerB = mineCity.dataSource.getPlayer(playerB.getName()).get();
         groupA = city.getGroup("a");
         groupB = city.getGroup("b");
 

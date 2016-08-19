@@ -125,7 +125,7 @@ public class Inconsistency implements ChunkOwner
     private static class VoidStorage implements ICityStorage, IExceptPermissionStorage, INatureStorage
     {
         @Override
-        public void setOwner(@NotNull City city, @Nullable PlayerID owner)
+        public void setOwner(@NotNull City city, @NotNull OptionalPlayer owner)
                 throws DataSourceException, IllegalStateException
         {
             throw new DataSourceException("Inconsistent city!");

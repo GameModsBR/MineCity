@@ -101,7 +101,7 @@ public class MineCityPluginTest
             assertEquals("[city, create]", cmd.path.toString());
             assertEquals(Arrays.asList("Test","City"), cmd.args);
             assertEquals(cmd.sender.getPlayerId().uniqueId, joserobjr.getUniqueId());
-            assertEquals(cmd.sender.getPlayerId().name, joserobjr.getName());
+            assertEquals(cmd.sender.getPlayerId().getName(), joserobjr.getName());
             return CommandResult.success();
         });
         assertEquals("[city, create]", mineCity.commands.get("city create a b").map(r-> r.path).map(Object::toString).orElse("null"));

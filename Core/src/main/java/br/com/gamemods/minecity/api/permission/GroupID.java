@@ -25,7 +25,7 @@ public class GroupID extends Identity<Integer>
     {
         return "GroupID{" +
                 "home='" + home + '\'' +
-                ", name='" + name + '\'' +
+                ", name='" + getName() + '\'' +
                 ", homeId=" + homeId + '\'' +
                 ", uniqueId=" + uniqueId +
                 '}';

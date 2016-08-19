@@ -157,7 +157,7 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
 
 
     @Override
-    public void setOwner(@NotNull City city, @Nullable PlayerID owner) throws DataSourceException, IllegalStateException
+    public void setOwner(@NotNull City city, @NotNull OptionalPlayer owner) throws DataSourceException, IllegalStateException
     {
         // Nothing needs to be done here
     }
@@ -394,8 +394,8 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
     {
         for(City city : cities.values())
         {
-            PlayerID owner = city.owner();
-            if(owner != null && owner.name.equals(name))
+            PlayerID owner = city.owner().player();
+            if(owner != null && owner.getName().equals(name))
                 return Optional.of(owner);
         }
 

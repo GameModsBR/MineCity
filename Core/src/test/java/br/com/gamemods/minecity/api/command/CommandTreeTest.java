@@ -22,7 +22,7 @@ public class CommandTreeTest
     public static CommandResult<String> echoCommand(CommandEvent cmd)
     {
         return new CommandResult<>(new Message("test","Path: ${path}", new Object[]{"path",cmd.path}),
-                cmd.sender.getPlayerId().name+": "+cmd.args
+                cmd.sender.getPlayerId().getName() +": "+cmd.args
         );
     }
 

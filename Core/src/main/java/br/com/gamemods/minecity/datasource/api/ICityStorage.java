@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.permission.Group;
 import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.permission.OptionalPlayer;
 import br.com.gamemods.minecity.api.shape.Shape;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
@@ -24,7 +25,7 @@ import java.util.Set;
 public interface ICityStorage
 {
     @Slow
-    void setOwner(@NotNull City city, @Nullable PlayerID owner)
+    void setOwner(@NotNull City city, @NotNull OptionalPlayer owner)
             throws DataSourceException, IllegalStateException;
 
     @Slow

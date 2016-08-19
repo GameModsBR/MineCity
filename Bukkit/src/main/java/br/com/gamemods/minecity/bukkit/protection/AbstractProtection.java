@@ -1,6 +1,5 @@
 package br.com.gamemods.minecity.bukkit.protection;
 
-import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.Identity;
@@ -53,12 +52,7 @@ public abstract class AbstractProtection implements Listener
                 Location loc = block.getLocation();
                 ChunkPos chunkPos = plugin.chunk(loc);
                 ClaimedChunk chunk = plugin.mineCity.provideChunk(chunkPos);
-                PlayerID owner = chunk.getFlagHolder(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).owner();
-
-                if(owner == null)
-                    return block;
-
-                return owner;
+                return chunk.getFlagHolder(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).owner();
             }
             return block;
         }

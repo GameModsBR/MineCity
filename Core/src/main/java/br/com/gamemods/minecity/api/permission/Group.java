@@ -147,7 +147,7 @@ public final class Group implements Identifiable<Integer>
 
         String oldName = this.identityName;
         identityName = id;
-        identity.name = name;
+        identity.setName(name);
         this.name = name;
         home.updateGroupName(this, oldName);
     }

@@ -5,7 +5,9 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.StringUtil;
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.AdminPlot;
 import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.permission.OptionalPlayer;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.Shape;
 import br.com.gamemods.minecity.api.world.BlockPos;
@@ -50,6 +52,8 @@ public final class Plot extends ExceptStoredHolder
     private Shape shape;
 
     private boolean invalid;
+
+    private AdminPlot adminOwner;
 
     public Plot(@NotNull ICityStorage storage, @NotNull IExceptPermissionStorage permissionStorage, int id,
                 @NotNull Island island, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
@@ -109,6 +113,9 @@ public final class Plot extends ExceptStoredHolder
         if(invalid)
             return Optional.of(Inconsistency.INCONSISTENT_CHUNK_MESSAGE);
 
+        if(identity.getType() == Identity.Type.NATURE)
+            return Optional.of(new Message("Plots are protected from natural actions"));
+
         if(owner != null)
         {
             if(identity.equals(owner))
@@ -117,7 +124,13 @@ public final class Plot extends ExceptStoredHolder
             return super.can(identity, action);
         }
 
-        if(identity.equals(island.getCity().owner()))
+        OptionalPlayer cityOwner = island.getCity().owner();
+        if(cityOwner.getType() == Identity.Type.ADMINS)
+        {
+            if(admin().equals(identity))
+                return Optional.empty();
+        }
+        else if(identity.equals(cityOwner))
             return Optional.empty();
 
         Status status = strictPermission.getOrDefault(action, emptyMap()).get(identity);
@@ -288,13 +301,27 @@ public final class Plot extends ExceptStoredHolder
 
     /**
      * The actual owner of the plot
-     * @return {@code null} if the plot is owned by the server administrators
      */
     @Override
-    @Nullable
-    public PlayerID owner()
+    @NotNull
+    public OptionalPlayer owner()
     {
-        return owner != null? owner : island.getCity().owner();
+        if(owner != null)
+            return owner;
+
+        OptionalPlayer cityOwner = island.getCity().owner();
+        if(cityOwner.getType() != Identity.Type.ADMINS)
+            return cityOwner;
+
+        return admin();
+    }
+
+    private AdminPlot admin()
+    {
+        if(adminOwner != null)
+            return adminOwner;
+
+        return adminOwner = new AdminPlot(this);
     }
 
     @NotNull

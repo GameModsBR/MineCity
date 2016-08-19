@@ -6,6 +6,7 @@ import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.permission.Group;
 import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.permission.OptionalPlayer;
 import br.com.gamemods.minecity.api.shape.Shape;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
@@ -76,9 +77,9 @@ public class SQLCityStorage implements ICityStorage
 
     @Slow
     @Override
-    public void setOwner(@NotNull City city, @Nullable PlayerID owner) throws DataSourceException, IllegalStateException
+    public void setOwner(@NotNull City city, @NotNull OptionalPlayer owner) throws DataSourceException, IllegalStateException
     {
-        if(Objects.equals(city.owner(), owner))
+        if(city.owner().equals(owner))
             return;
 
         int cityId = city.getId();

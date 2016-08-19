@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.structure;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.NatureID;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.INatureStorage;
@@ -22,6 +23,9 @@ public final class Nature extends SimpleStorageHolder implements ChunkOwner
     @NotNull
     public final WorldDim world;
 
+    @NotNull
+    private final NatureID id;
+
     private boolean valid = true;
     private boolean denyCityCreation;
 
@@ -32,6 +36,7 @@ public final class Nature extends SimpleStorageHolder implements ChunkOwner
         this.permissionStorage = permissionStorage;
         this.mineCity = mineCity;
         this.world = world;
+        this.id = new NatureID(world);
         denyAll(mineCity.defaultNatureFlags);
     }
 
@@ -45,6 +50,7 @@ public final class Nature extends SimpleStorageHolder implements ChunkOwner
         this.permissionStorage = permissionStorage;
         this.storage = storage;
         this.world = world;
+        this.id = new NatureID(world);
         this.denyCityCreation = denyCityCreation;
 
         loadPermissions();
@@ -84,6 +90,13 @@ public final class Nature extends SimpleStorageHolder implements ChunkOwner
     public boolean isValid()
     {
         return valid;
+    }
+
+    @NotNull
+    @Override
+    public NatureID owner()
+    {
+        return id;
     }
 
     @Override

@@ -146,11 +146,7 @@ public class CityCommand
                 if(city2 == null || city2.equals(city))
                     continue;
 
-                PlayerID owner = city2.owner();
-                if(owner == null)
-                    continue;
-
-                if(owner.equals(playerId))
+                if(city2.owner().equals(playerId))
                 {
                     if(city == null)
                     {
@@ -355,11 +351,11 @@ public class CityCommand
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.transfer.not-claimed", "You are not inside a city"));
 
-        PlayerID cityOwner = city.owner();
+        PlayerID cityOwner = city.owner().player();
         if(target.equals(cityOwner))
             return new CommandResult<>(new Message("cmd.city.transfer.already-owner",
                     "The city ${name} is already owned by ${owner}",
-                    new Object[][]{{"name",city.getName()},{"owner",target.name}}
+                    new Object[][]{{"name",city.getName()},{"owner", target.getName()}}
             ));
 
         if(cityOwner == null)
@@ -371,14 +367,14 @@ public class CityCommand
         if(!cmd.sender.getPlayerId().equals(cityOwner))
             return new CommandResult<>(new Message("cmd.city.transfer.no-permission",
                     "Only ${owner} can transfer the city ${name}",
-                    new Object[][]{{"owner", cityOwner.name}, {"name",city.getName()}}
+                    new Object[][]{{"owner", cityOwner.getName()}, {"name",city.getName()}}
             ));
 
         city.setOwner(target);
 
         return new CommandResult<>(new Message("cmd.city.transfer.success",
                 "The city ${name} is now owned by ${owner}",
-                new Object[][]{{"name",city.getName()},{"owner",target.name}}
+                new Object[][]{{"name",city.getName()},{"owner", target.getName()}}
         ), city);
     }
 
