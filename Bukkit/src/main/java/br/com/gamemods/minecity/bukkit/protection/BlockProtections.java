@@ -396,7 +396,7 @@ public class BlockProtections extends AbstractProtection
         Optional<Message> denial = holder.can(player, PermissionFlag.MODIFY);
 
         boolean harvest = false;
-        if(denial.isPresent() && player.sender.getGameMode() != GameMode.CREATIVE)
+        if(denial.isPresent())
         {
             Material type = block.getType();
             switch(type)
@@ -446,7 +446,14 @@ public class BlockProtections extends AbstractProtection
             }
 
             if(harvest)
+            {
                 denial = holder.can(player, PermissionFlag.HARVEST);
+                if(!denial.isPresent() && player.sender.getGameMode() == GameMode.CREATIVE)
+                    denial = Optional.of(new Message(
+                            "action.harvest-on-creative",
+                            "You can't harvest plants on creative mode, that would just reset the growth state without any drop."
+                    ));
+            }
         }
 
         if(denial.isPresent())

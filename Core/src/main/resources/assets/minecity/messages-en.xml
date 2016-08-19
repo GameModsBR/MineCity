@@ -1081,6 +1081,7 @@
         </teleport>
         <msg id="give.tool.inventory-full">You haven't received the tool because your inventory is full.</msg>
         <msg id="portal.create.failed">Unable to create a portal in the other dimension.</msg>
+        <msg id="harvest-on-creative">You can't harvest plants on creative mode, that would just reset the growth state without any drop.</msg>
     </action>
     <tool>
         <selection>
