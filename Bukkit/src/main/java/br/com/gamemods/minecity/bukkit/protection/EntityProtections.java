@@ -386,6 +386,40 @@ public class EntityProtections extends AbstractProtection
         }
     }
 
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onEntityDamage(EntityDamageEvent event)
+    {
+        Entity entity = event.getEntity();
+        if(entity instanceof Horse)
+        {
+            SafeHorseRideMonitor safe = BukkitUtil.getMeta(plugin.plugin, SafeHorseRideMonitor.KEY, entity);
+            if(safe != null && !safe.isCancelled())
+            {
+                event.setCancelled(true);
+                switch(event.getCause())
+                {
+                    case DROWNING:
+                        safe.teleportBack();
+                        return;
+
+                    default:
+                        if(safe.horse.getPassenger() == null)
+                            return;
+
+                        EntityDamageEvent customEvent = new EntityDamageEvent(
+                                safe.player.sender,
+                                event.getCause(),
+                                event.getFinalDamage()
+                        );
+                        plugin.plugin.getServer().getPluginManager().callEvent(customEvent);
+                        if(customEvent.isCancelled())
+                            return;
+                        safe.player.sender.damage(customEvent.getFinalDamage());
+                }
+            }
+        }
+    }
+
     private PermissionFlag playerAttackType(Entity entity)
     {
         if(entity.getCustomName() != null)
@@ -480,12 +514,21 @@ public class EntityProtections extends AbstractProtection
                 }
                 else
                 {
-                    if(check(entity.getLocation(), player, PermissionFlag.ENTER, PermissionFlag.RIDE))
+                    FlagHolder flagHolder = plugin.getFlagHolder(entity.getLocation());
+                    BukkitPlayer user = plugin.player(player);
+                    Optional<Message> denial = can(user, flagHolder, ENTER, RIDE).findFirst();
+                    if(denial.isPresent())
                     {
+                        user.send(FlagHolder.wrapDeny(denial.get()));
                         event.setCancelled(true);
 
                         if(player.equals(horse.getOwner()))
                             entity.teleport(player);
+                    }
+                    else if(!player.equals(horse.getOwner()) && flagHolder.can(user, MODIFY).isPresent())
+                    {
+                        new SafeHorseRideMonitor(plugin, plugin.player(player), horse)
+                                .runTaskTimer(plugin.plugin, 1, 1);
                     }
                 }
             }
@@ -1946,14 +1989,21 @@ public class EntityProtections extends AbstractProtection
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerLeashEntity(PlayerLeashEntityEvent event)
     {
-        BlockPos entityPos = plugin.blockPos(event.getEntity().getLocation());
+        Player eventPlayer = event.getPlayer();
+        Entity leashHolder = event.getLeashHolder();
+        Entity entity = event.getEntity();
+        if(leashHolder.equals(eventPlayer)
+                && entity instanceof Tameable
+                && eventPlayer.equals(((Tameable) entity).getOwner()))
+                return;
+
+        BlockPos entityPos = plugin.blockPos(entity.getLocation());
         ClaimedChunk entityChunk = plugin.mineCity.provideChunk(entityPos.getChunk());
         FlagHolder entityHolder = entityChunk.getFlagHolder(entityPos);
-        BukkitPlayer player = plugin.player(event.getPlayer());
+        BukkitPlayer player = plugin.player(eventPlayer);
         Optional<Message> denial = entityHolder.can(player, MODIFY);
         if(!denial.isPresent())
         {
-            Entity leashHolder = event.getLeashHolder();
             if(leashHolder instanceof LeashHitch)
             {
                 BlockPos hitchPos = plugin.blockPos(entityPos, leashHolder.getLocation());
@@ -1974,6 +2024,11 @@ public class EntityProtections extends AbstractProtection
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerUnleashEntity(PlayerUnleashEntityEvent event)
     {
+        Player eventPlayer = event.getPlayer();
+        Entity entity = event.getEntity();
+        if(entity instanceof Tameable && eventPlayer.equals(((Tameable) entity).getOwner()))
+            return;
+
         if(check(event.getEntity().getLocation(), event.getPlayer(), MODIFY))
             event.setCancelled(true);
     }

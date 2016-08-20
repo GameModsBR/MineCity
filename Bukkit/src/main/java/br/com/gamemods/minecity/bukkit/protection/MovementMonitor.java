@@ -2,13 +2,14 @@ package br.com.gamemods.minecity.bukkit.protection;
 
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import br.com.gamemods.minecity.structure.*;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,7 +18,7 @@ import java.util.Optional;
 public class MovementMonitor
 {
     public final MineCityBukkit plugin;
-    public final LivingEntity entity;
+    public final Entity entity;
     private final MovementListener listener;
     public ChunkPos lastChunk;
     public int lastX, lastY, lastZ;
@@ -25,7 +26,7 @@ public class MovementMonitor
     public Plot lastPlot;
     public byte messageWait;
 
-    public MovementMonitor(MineCityBukkit plugin, LivingEntity entity, MovementListener listener)
+    public MovementMonitor(MineCityBukkit plugin, Entity entity, MovementListener listener)
     {
         this.plugin = plugin;
         this.entity = entity;
@@ -143,5 +144,12 @@ public class MovementMonitor
         }
 
         return Optional.empty();
+    }
+
+    public Location lastLocation()
+    {
+        return plugin.location(new BlockPos(lastChunk.world, lastX, lastY, lastZ)).orElseGet(()->
+                new Location(entity.getWorld(), lastX+0.5, lastY+0.5, lastZ+0.5)
+        );
     }
 }

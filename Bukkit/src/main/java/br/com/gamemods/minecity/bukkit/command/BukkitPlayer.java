@@ -18,6 +18,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +27,6 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 
@@ -127,70 +127,148 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     public Optional<Message> onCityChange(@NotNull City city, Plot plot)
     {
         removeUnleashedEntities();
-        return Stream.of(
-                can(this, plot != null? plot : city,
-                        ENTER,
-                        sender.getVehicle() == null? null : RIDE,
-                        leashedEntities.isEmpty()? null : MODIFY
-                ),
-                can(this, mov.lastHolder(),
-                        LEAVE,
-                        leashedEntities.isEmpty()? null : MODIFY
-                )
-        ).flatMap(Function.identity()).findFirst();
+
+        FlagHolder destiny = plot != null? plot : city;
+
+        // Check if can enter the plot and leave the previous location
+        FlagHolder lastHolder = mov.lastHolder();
+        Stream<Message> stream = optionalStream(
+                can(this, ENTER, destiny),
+                can(this, LEAVE, lastHolder)
+        );
+
+        Entity vehicle = sender.getVehicle();
+        boolean modifying = !leashedEntities.isEmpty();
+        if(vehicle != null)
+        {
+            // Check if can use the ride in that location
+            stream = Stream.concat(stream, optionalStream(
+                    can(this, RIDE, destiny)
+            ));
+
+            if(!modifying)
+            {
+                // Check if the ride is a community ride
+                if(vehicle instanceof Tameable)
+                    modifying = !sender.equals(((Tameable) vehicle).getOwner());
+                else if(vehicle instanceof LivingEntity)
+                    modifying = true;
+            }
+        }
+
+        // Check if the player can move entities
+        if(modifying)
+            stream = Stream.concat(stream, can(this, MODIFY, plot, lastHolder instanceof Nature? null : lastHolder));
+
+        return stream.findFirst();
     }
 
     @Override
     public Optional<Message> onPlotEnter(@NotNull Plot plot)
     {
         removeUnleashedEntities();
-        return optionalStream(
+
+        // Check if can enter the plot and leave the previous plot
+        Stream<Message> stream = optionalStream(
                 can(this, ENTER, plot),
-                can(this, RIDE, sender.getVehicle() == null? null : plot),
-                can(this, MODIFY, leashedEntities.isEmpty()? null : plot),
-                can(this, MODIFY, leashedEntities.isEmpty()? null : mov.lastHolder()),
-                can(this, LEAVE, mov.lastPlot)
-        ).findFirst();
+                can(this, LEAVE, mov.lastPlot != null? mov.lastPlot : null)
+        );
+
+        Entity vehicle = sender.getVehicle();
+        boolean modifying = !leashedEntities.isEmpty();
+        if(vehicle != null)
+        {
+            // Check if can use the ride in the plot
+            stream = Stream.concat(stream, optionalStream(
+                    can(this, RIDE, plot)
+            ));
+
+            if(!modifying)
+            {
+                // Check if the ride is a community ride
+                if(vehicle instanceof Tameable)
+                    modifying = !sender.equals(((Tameable) vehicle).getOwner());
+                else if(vehicle instanceof LivingEntity)
+                    modifying = true;
+            }
+        }
+
+        // Check if the player can move entities
+        if(modifying)
+            stream = Stream.concat(stream, can(this, MODIFY, plot, mov.lastPlot != null? mov.lastPlot : mov.lastCity));
+
+        return stream.findFirst();
     }
 
     @Override
     public Optional<Message> onPlotLeave(@NotNull City city)
     {
         removeUnleashedEntities();
-        return optionalStream(
+        // Check if can enter the city and leave the plot
+        Stream<Message> stream = optionalStream(
                 can(this, ENTER, city),
-                can(this, RIDE, sender.getVehicle() == null? null : city),
-                can(this, MODIFY, leashedEntities.isEmpty()? null : city),
-                can(this, MODIFY, leashedEntities.isEmpty()? null : mov.lastHolder()),
                 can(this, LEAVE, mov.lastPlot)
-        ).findFirst();
+        );
+
+        Entity vehicle = sender.getVehicle();
+        boolean modifying = !leashedEntities.isEmpty();
+        if(vehicle != null)
+        {
+            // Check if can use the ride in the city
+            stream = Stream.concat(stream, optionalStream(
+                    can(this, RIDE, city)
+            ));
+
+            if(!modifying)
+            {
+                // Check if the ride is a community ride
+                if(vehicle instanceof Tameable)
+                    modifying = !sender.equals(((Tameable) vehicle).getOwner());
+                else if(vehicle instanceof LivingEntity)
+                    modifying = true;
+            }
+        }
+
+        // Check if the player can move entities
+        if(modifying)
+            stream = Stream.concat(stream, can(this, MODIFY, city, mov.lastPlot));
+
+        return stream.findFirst();
     }
 
     @Override
     public Optional<Message> onCityLeave(@NotNull Nature nature)
     {
         removeUnleashedEntities();
+
+        boolean modifying = !leashedEntities.isEmpty();
+        if(!modifying)
+        {
+            Entity vehicle = sender.getVehicle();
+            if(vehicle != null)
+            {
+                // Check if the ride is a community ride
+                if(vehicle instanceof Tameable)
+                    modifying = !sender.equals(((Tameable) vehicle).getOwner());
+                else if(vehicle instanceof LivingEntity)
+                    modifying = true;
+            }
+        }
+
         FlagHolder lastHolder = mov.lastHolder();
         return optionalStream(
                 can(this, ENTER, nature),
-                can(this, RIDE, sender.getVehicle() == null? null : nature),
-                can(this, MODIFY, leashedEntities.isEmpty()? null : nature),
-                can(this, MODIFY, leashedEntities.isEmpty()? null : lastHolder),
-                can(this, LEAVE, leashedEntities.isEmpty()? null : lastHolder)
+                can(this, LEAVE, lastHolder),
+                can(this, MODIFY, modifying? lastHolder : null)
         ).findFirst();
     }
 
     @Override
     public Optional<Message> onNatureChange(@NotNull Nature nature)
     {
-        removeUnleashedEntities();
-        FlagHolder lastHolder = mov.lastHolder();
         return optionalStream(
                 can(this, ENTER, nature),
-                can(this, RIDE, sender.getVehicle() == null? null : nature),
-                can(this, MODIFY, leashedEntities.isEmpty()? null : nature),
-                can(this, MODIFY, leashedEntities.isEmpty()? null : lastHolder),
-                can(this, LEAVE, lastHolder)
+                can(this, LEAVE, mov.lastHolder())
         ).findFirst();
     }
 
@@ -221,14 +299,13 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
                 if(!world.isPresent())
                     teleport(new BlockPos(lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
                 else
-                    if(!vehicle.teleport(new Location(world.get(), mov.lastX+0.5, mov.lastY+0.5, mov.lastZ+0.5, vLoc.getYaw(), vLoc.getPitch())))
-                    {
-                        Entity passenger = vehicle.getPassenger();
+                {
+                    Location safeLoc = new Location(world.get(), mov.lastX + 0.5, mov.lastY + 0.5, mov.lastZ + 0.5,
+                            vLoc.getYaw(), vLoc.getPitch()
+                    );
+                    if(!vehicle.teleport(safeLoc))
                         vehicle.eject();
-                        teleport(new BlockPos(lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
-                        if(vehicle.teleport(new Location(world.get(), mov.lastX+0.5, mov.lastY+0.5, mov.lastZ+0.5, vLoc.getYaw(), vLoc.getPitch())))
-                            getServer().callSyncMethod(()-> vehicle.setPassenger(passenger));
-                    }
+                }
             }
 
             return;

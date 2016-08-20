@@ -6,6 +6,7 @@ import br.com.gamemods.minecity.structure.Nature;
 import br.com.gamemods.minecity.structure.Plot;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ public interface MovementListener
     Optional<Message> onCityLeave(@NotNull Nature nature);
     Optional<Message> onNatureChange(@NotNull Nature nature);
 
-    default boolean isSafeToStep(LivingEntity entity, Block block)
+    default boolean isSafeToStep(Entity entity, Block block)
     {
         Material type = block.getType();
         switch(type)
@@ -46,7 +47,7 @@ public interface MovementListener
             case GRASS_PATH:
                 return true;
             default:
-                return type.isOccluding() || entity.isGliding() ||
+                return type.isOccluding() || entity instanceof LivingEntity && ((LivingEntity) entity).isGliding() ||
                         entity instanceof Player && ((Player) entity).isFlying();
         }
     }

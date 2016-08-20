@@ -37,7 +37,7 @@ public class LeashedEntityMonitor extends BukkitRunnable implements MovementList
     @Override
     public void run()
     {
-        LivingEntity entity = mov.entity;
+        LivingEntity entity = (LivingEntity) mov.entity;
         if(!entity.isValid() || !entity.isLeashed() || !entity.getLeashHolder().getUniqueId().equals(player.getUniqueId()))
         {
             cancel();

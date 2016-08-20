@@ -56,6 +56,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+@SuppressWarnings("deprecation")
 public class BlockProtections extends AbstractProtection
 {
     private Map<Location, Player> portalCreator = new MapMaker().weakKeys().weakValues().makeMap();
@@ -760,6 +761,13 @@ public class BlockProtections extends AbstractProtection
                     }
                 }
             }
+            default:
+                if(entity instanceof LivingEntity)
+                {
+                    Block block = event.getBlock();
+                    if(block.getType() == Material.SOIL)
+                        event.setCancelled(true);
+                }
         }
     }
 
