@@ -8,6 +8,8 @@ import br.com.gamemods.minecity.api.permission.GroupID;
 import br.com.gamemods.minecity.api.unchecked.UFunction;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
+import br.com.gamemods.minecity.bukkit.protection.MovementListener;
+import br.com.gamemods.minecity.bukkit.protection.MovementMonitor;
 import br.com.gamemods.minecity.structure.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -33,19 +35,15 @@ import static br.com.gamemods.minecity.api.permission.FlagHolder.can;
 import static br.com.gamemods.minecity.api.permission.PermissionFlag.*;
 
 @SuppressWarnings("deprecation")
-public class BukkitPlayer extends BukkitLocatableSender<Player> implements MinecraftEntity
+public class BukkitPlayer extends BukkitLocatableSender<Player> implements MinecraftEntity, MovementListener
 {
     public final PlayerID playerId;
     private BukkitSelection selection;
     private UFunction<CommandSender, CommandResult<?>> confirmAction;
     private String confirmCode;
-    public ChunkPos lastChunk;
-    private int lastX, lastY, lastZ;
     @Nullable
     private Set<GroupID> groups;
-    private City lastCity;
-    private Plot lastPlot;
-    private byte movMessageWait;
+    private final MovementMonitor mov;
     public byte pickupRandomDelay;
     public byte pickupHarvestDelay;
     public byte lureDelay;
@@ -56,14 +54,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     {
         super(plugin, player);
         this.playerId = new PlayerID(player.getUniqueId(), player.getName());
-        Location location = sender.getLocation();
-        lastX = location.getBlockX();
-        lastY = location.getBlockY();
-        lastZ = location.getBlockZ();
-        lastChunk = new ChunkPos(plugin.world(location.getWorld()), lastX >> 4, lastZ >> 4);
-        Optional<ClaimedChunk> chunk = plugin.mineCity.getChunk(lastChunk);
-        lastCity = chunk.flatMap(ClaimedChunk::getCity).orElse(null);
-        lastPlot = chunk.flatMap(c-> c.getPlotAt(lastX, lastY, lastZ)).orElse(null);
+        mov = new MovementMonitor(plugin, player, this);
         plugin.runAsynchronously(() ->
         {
             try
@@ -104,7 +95,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
         int x = location.getBlockX();
         int y = location.getBlockY();
         int z = location.getBlockZ();
-        if(x == lastX && y == lastY && z == lastZ)
+        if(x == mov.lastX && y == mov.lastY && z == mov.lastZ)
             return;
 
         for(int i = 0; i <= 1; i++)
@@ -132,235 +123,160 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
         leashedEntities.removeIf(entity -> !entity.isLeashed() || !sender.equals(entity.getLeashHolder()));
     }
 
+    @Override
+    public Optional<Message> onCityChange(@NotNull City city, Plot plot)
+    {
+        removeUnleashedEntities();
+        Optional<Message> denial = Stream.of(
+                can(this, plot != null? plot : city,
+                        ENTER,
+                        sender.getVehicle() == null? null : RIDE,
+                        leashedEntities.isEmpty()? null : MODIFY
+                ),
+                can(this, mov.lastHolder(),
+                        LEAVE,
+                        leashedEntities.isEmpty()? null : MODIFY
+                )
+        ).flatMap(Function.identity()).findFirst();
+
+        if(!denial.isPresent())
+        {
+            Message title = new Message("", "${name}", new Object[]{"name", city.getName()});
+            Message subtitle;
+            if(plot != null)
+                subtitle = new Message("","${name}", new Object[]{"name", plot.getName()});
+            else
+                subtitle = null;
+
+            sendTitle(title, subtitle);
+        }
+
+        return denial;
+    }
+
+    @Override
+    public Optional<Message> onPlotEnter(@NotNull Plot plot)
+    {
+        removeUnleashedEntities();
+        Optional<Message> denial = optionalStream(
+                can(this, ENTER, plot),
+                can(this, RIDE, sender.getVehicle() == null? null : plot),
+                can(this, MODIFY, leashedEntities.isEmpty()? null : plot),
+                can(this, MODIFY, leashedEntities.isEmpty()? null : mov.lastHolder()),
+                can(this, LEAVE, mov.lastPlot)
+        ).findFirst();
+
+        if(!denial.isPresent())
+        {
+            City city = plot.getCity();
+            Message title = mov.lastCity != city? new Message("", "${name}", new Object[]{"name", city.getName()}) : null;
+            Message subtitle = new Message("","${name}", new Object[]{"name", plot.getName()});
+            sendTitle(title, subtitle);
+        }
+
+        return denial;
+    }
+
+    @Override
+    public Optional<Message> onPlotLeave(@NotNull City city)
+    {
+        removeUnleashedEntities();
+        Optional<Message> denial = optionalStream(
+                can(this, ENTER, city),
+                can(this, RIDE, sender.getVehicle() == null? null : city),
+                can(this, MODIFY, leashedEntities.isEmpty()? null : city),
+                can(this, MODIFY, leashedEntities.isEmpty()? null : mov.lastHolder()),
+                can(this, LEAVE, mov.lastPlot)
+        ).findFirst();
+
+        if(!denial.isPresent())
+        {
+            Message title = new Message("", "${name}", new Object[]{"name", city.getName()});
+            sendTitle(title, null);
+        }
+
+        return denial;
+    }
+
+    @Override
+    public Optional<Message> onCityLeave(@NotNull Nature nature)
+    {
+        removeUnleashedEntities();
+        FlagHolder lastHolder = mov.lastHolder();
+        Optional<Message> denial = optionalStream(
+                can(this, ENTER, nature),
+                can(this, RIDE, sender.getVehicle() == null? null : nature),
+                can(this, MODIFY, leashedEntities.isEmpty()? null : nature),
+                can(this, MODIFY, leashedEntities.isEmpty()? null : lastHolder),
+                can(this, LEAVE, leashedEntities.isEmpty()? null : lastHolder)
+        ).findFirst();
+
+        if(!denial.isPresent())
+        {
+            Message title = new Message("enter.nature", LegacyFormat.GREEN+"Nature");
+            Message subtitle = new Message("","${name}", new Object[]{"name", nature.world.name()});
+            sendTitle(title, subtitle);
+        }
+
+        return denial;
+    }
+
+    @Override
+    public Optional<Message> onNatureChange(@NotNull Nature nature)
+    {
+        removeUnleashedEntities();
+        FlagHolder lastHolder = mov.lastHolder();
+        Optional<Message> denial = optionalStream(
+                can(this, ENTER, nature),
+                can(this, RIDE, sender.getVehicle() == null? null : nature),
+                can(this, MODIFY, leashedEntities.isEmpty()? null : nature),
+                can(this, MODIFY, leashedEntities.isEmpty()? null : lastHolder),
+                can(this, LEAVE, lastHolder)
+        ).findFirst();
+
+        if(!denial.isPresent())
+        {
+            Message title = new Message("enter.nature", LegacyFormat.GREEN+"Nature");
+            Message subtitle = new Message("","${name}", new Object[]{"name", nature.world.name()});
+            sendTitle(title, subtitle);
+        }
+
+        return denial;
+    }
+
     public void checkPosition(Location location)
     {
-        int posX = location.getBlockX();
-        int posY = location.getBlockY();
-        int posZ = location.getBlockZ();
-        int chunkX = posX >> 4;
-        int chunkZ = posZ >> 4;
-        World worldObj = location.getWorld();
-        WorldDim worldDim = plugin.world(worldObj);
-        Optional<Message> message;
-        Entity vehicle = sender.getVehicle();
-        if(lastChunk.x != chunkX || lastChunk.z != chunkZ || !lastChunk.world.equals(worldDim))
-        {
-            ChunkPos chunk = new ChunkPos(worldDim, chunkX, chunkZ);
-            ClaimedChunk claim = plugin.mineCity.getChunk(chunk).orElseGet(()-> Inconsistency.claim(chunk));
-            City city = claim.reserve? null : claim.getCity().orElse(null);
-            Plot plot = null;
-            FlagHolder lastHolder = lastPlot != null? lastPlot :
-                    lastCity != null? lastCity :
-                            lastChunk.world.nature;
-            if(city != null)
-            {
-                plot = claim.getPlotAt(posX, posY, posZ).orElse(null);
-                if(city != lastCity)
-                {
-                    removeUnleashedEntities();
-                    message = Stream.of(
-                            can(this, plot != null? plot : city,
-                                    ENTER,
-                                    vehicle == null? null : RIDE,
-                                    leashedEntities.isEmpty()? null : MODIFY
-                            ),
-                            can(this, lastHolder,
-                                    LEAVE,
-                                    leashedEntities.isEmpty()? null : MODIFY
-                            )
-                    ).flatMap(Function.identity()).findFirst();
-
-                    if(!message.isPresent())
-                    {
-                        Message title = new Message("", "${name}", new Object[]{"name", city.getName()});
-                        Message subtitle;
-                        if(plot != null)
-                            subtitle = new Message("","${name}", new Object[]{"name", plot.getName()});
-                        else
-                            subtitle = null;
-
-                        sendTitle(title, subtitle);
-                    }
-                }
-                else if(plot != lastPlot)
-                {
-                    removeUnleashedEntities();
-                    message = optionalStream(
-                            can(this, ENTER, plot),
-                            can(this, RIDE, vehicle == null? null : plot),
-                            can(this, MODIFY, leashedEntities.isEmpty()? null : plot),
-                            can(this, MODIFY, leashedEntities.isEmpty()? null : lastHolder),
-                            can(this, LEAVE, lastPlot)
-                    ).findFirst();
-
-                    if(!message.isPresent())
-                    {
-                        Message subtitle = new Message("","${name}", new Object[]{"name", plot == null? city.getName() : plot.getName()});
-                        sendTitle(null, subtitle);
-                    }
-                }
-                else
-                    message = Optional.empty();
-            }
-            else if(lastCity != null)
-            {
-                removeUnleashedEntities();
-                Nature nature = plugin.mineCity.nature(chunk.world);
-                message = optionalStream(
-                        can(this, ENTER, nature),
-                        can(this, RIDE, vehicle == null? null : nature),
-                        can(this, MODIFY, leashedEntities.isEmpty()? null : nature),
-                        can(this, MODIFY, leashedEntities.isEmpty()? null : lastHolder),
-                        can(this, LEAVE, leashedEntities.isEmpty()? null : lastHolder)
-                ).findFirst();
-
-                if(!message.isPresent())
-                {
-                    Message title = new Message("enter.nature", LegacyFormat.GREEN+"Nature");
-                    Message subtitle = new Message("","${name}", new Object[]{"name", chunk.world.name()});
-                    sendTitle(title, subtitle);
-                }
-            }
-            else if(!lastChunk.world.equals(chunk.world))
-            {
-                removeUnleashedEntities();
-                Nature nature = plugin.mineCity.nature(chunk.world);
-                message = optionalStream(
-                        can(this, ENTER, nature),
-                        can(this, RIDE, vehicle == null? null : nature),
-                        can(this, MODIFY, leashedEntities.isEmpty()? null : nature),
-                        can(this, MODIFY, leashedEntities.isEmpty()? null : lastHolder),
-                        can(this, LEAVE, lastHolder)
-                ).findFirst();
-
-                if(!message.isPresent())
-                {
-                    Message title = new Message("enter.nature", LegacyFormat.GREEN+"Nature");
-                    Message subtitle = new Message("","${name}", new Object[]{"name", chunk.world.name()});
-                    sendTitle(title, subtitle);
-                }
-            }
-            else
-                message = Optional.empty();
-
-            if(!message.isPresent())
-            {
-                lastCity = city;
-                lastChunk = chunk;
-                lastPlot = plot;
-            }
-        }
-        else if(posX != lastX || posY != lastY || posZ != lastZ)
-        {
-            if(lastCity != null)
-            {
-                Plot plot = plugin.mineCity.getChunk(new ChunkPos(worldDim, chunkX, chunkZ))
-                        .flatMap(chunk -> chunk.getPlotAt(posX, posY, posZ))
-                        .orElse(null);
-
-                if(plot != lastPlot)
-                {
-                    removeUnleashedEntities();
-                    message = optionalStream(
-                            can(this, ENTER, plot),
-                            can(this, RIDE, vehicle == null? null : plot),
-                            can(this, MODIFY, leashedEntities.isEmpty()? null : plot),
-                            can(this, MODIFY, leashedEntities.isEmpty()? null : lastPlot),
-                            can(this, MODIFY, leashedEntities.isEmpty()? null : lastCity),
-                            can(this, LEAVE, lastPlot)
-                    ).findFirst();
-
-                    if(!message.isPresent())
-                    {
-                        lastPlot = plot;
-
-                        Message title = new Message("", "${name}", new Object[]{"name", lastCity.getName()});
-                        Message subtitle;
-                        if(plot != null)
-                            subtitle = new Message("","${name}", new Object[]{"name", plot.getName()});
-                        else
-                            subtitle = null;
-
-                        sendTitle(title, subtitle);
-                    }
-                }
-                else
-                    message = Optional.empty();
-            }
-            else
-                message = Optional.empty();
-        }
-        else
-            message = Optional.empty();
-
+        Optional<Message> message = mov.checkPosition(location);
         if(message.isPresent())
         {
-            if(movMessageWait > 0 && movMessageWait % 5 == 0)
+            if(mov.messageWait > 0 && mov.messageWait % 5 == 0)
                 sender.damage(2);
 
-            if(movMessageWait == 0)
+            if(mov.messageWait == 0)
             {
                 send(new Message("","<msg><red>${msg}</red></msg>", new Object[]{"msg", message.get()}));
-                movMessageWait = (byte) 20*3;
+                mov.messageWait = (byte) 20*3;
             }
 
-
+            Entity vehicle = sender.getVehicle();
             if(vehicle == null)
-                teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
+                teleport(new BlockPos(mov.lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
             else
             {
                 Location vLoc = vehicle.getLocation();
-                Optional<World> world = plugin.world(lastChunk.world);
+                Optional<World> world = plugin.world(mov.lastChunk.world);
                 if(!world.isPresent())
-                    teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
+                    teleport(new BlockPos(mov.lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
                 else
-                    if(!vehicle.teleport(new Location(world.get(), lastX+0.5, lastY+0.5, lastZ+0.5, vLoc.getYaw(), vLoc.getPitch())))
+                    if(!vehicle.teleport(new Location(world.get(), mov.lastX+0.5, mov.lastY+0.5, mov.lastZ+0.5, vLoc.getYaw(), vLoc.getPitch())))
                     {
                         Entity passenger = vehicle.getPassenger();
                         vehicle.eject();
-                        teleport(new BlockPos(lastChunk.world, lastX, lastY, lastZ));
-                        if(vehicle.teleport(new Location(world.get(), lastX+0.5, lastY+0.5, lastZ+0.5, vLoc.getYaw(), vLoc.getPitch())))
+                        teleport(new BlockPos(mov.lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
+                        if(vehicle.teleport(new Location(world.get(), mov.lastX+0.5, mov.lastY+0.5, mov.lastZ+0.5, vLoc.getYaw(), vLoc.getPitch())))
                             getServer().callSyncMethod(()-> vehicle.setPassenger(passenger));
                     }
             }
-            return;
-        }
-
-        if(movMessageWait > 0)
-            movMessageWait--;
-        else if((lastX != posX || lastZ != posZ || lastY < posY))
-        {
-            Material block = sender.getWorld().getBlockAt(posX, posY - 1, posZ).getType();
-            switch(block)
-            {
-                case WATER:
-                case STATIONARY_WATER:
-                case LAVA:
-                case STATIONARY_LAVA:
-                case GLASS:
-                case LEAVES:
-                case LEAVES_2:
-                case PISTON_STICKY_BASE:
-                case PISTON_BASE:
-                case SOIL:
-                case ICE:
-                case GLOWSTONE:
-                case STAINED_GLASS:
-                case DRAGON_EGG:
-                case BEACON:
-                case COBBLE_WALL:
-                case SEA_LANTERN:
-                case GRASS_PATH:
-                    break;
-                default:
-                    if(block.isOccluding())
-                        break;
-                    else if(!sender.isGliding() && !sender.isFlying())
-                        return;
-            }
-            lastX = posX;
-            lastY = posY;
-            lastZ = posZ;
         }
     }
 
