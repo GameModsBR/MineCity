@@ -88,6 +88,7 @@ public class SafeHorseRideMonitor extends BukkitRunnable implements MovementList
                         case STATIONARY_WATER:
                         case FIRE:
                         case CACTUS:
+                        case MAGMA:
                         {
                             if(enableFirstCheck)
                             {
@@ -180,6 +181,7 @@ public class SafeHorseRideMonitor extends BukkitRunnable implements MovementList
                     case WATER:
                     case STATIONARY_LAVA:
                     case STATIONARY_WATER:
+                    case MAGMA:
                         return false;
                     default:
                         if(!MovementListener.super.isSafeToStep(entity, block))

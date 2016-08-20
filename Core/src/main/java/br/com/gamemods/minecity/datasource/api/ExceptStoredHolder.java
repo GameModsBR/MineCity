@@ -202,7 +202,49 @@ public class ExceptStoredHolder extends ExceptFlagHolder
         @Override
         public Set<Entry<Identity<?>, Status>> entrySet()
         {
-            return Collections.unmodifiableSet(backend.entrySet());
+            if(isEmpty())
+                return Collections.emptySet();
+
+            return new AbstractSet<Entry<Identity<?>, Status>>()
+            {
+                @NotNull
+                @Override
+                public Iterator<Entry<Identity<?>, Status>> iterator()
+                {
+                    return new Iterator<Entry<Identity<?>, Status>>()
+                    {
+                        Iterator<Entry<Identity<?>, Status>> iter = backend.entrySet().iterator();
+                        Entry<Identity<?>, Status> last;
+
+                        @Override
+                        public boolean hasNext()
+                        {
+                            return iter.hasNext();
+                        }
+
+                        @Override
+                        public Entry<Identity<?>, Status> next()
+                        {
+                            return last = iter.next();
+                        }
+
+                        @Override
+                        public void remove()
+                        {
+                            if(last == null)
+                                throw new NoSuchElementException();
+
+                            ExceptMap.this.remove(last.getKey());
+                        }
+                    };
+                }
+
+                @Override
+                public int size()
+                {
+                    return ExceptMap.this.size();
+                }
+            };
         }
 
         @Override
