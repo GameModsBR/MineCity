@@ -908,7 +908,7 @@
                 <msg id="got-city-expected-player">You've typed a city name, type a player name instead to allow a specific player or type a group name after the city name to prohibit that specific group. Do not use spaces in the names.</msg>
                 <msg id="player-not-found">No player was found with name ${name}</msg>
                 <msg id="group-not-found">The city ${city} does not have a group named ${group}</msg>
-                <msg id="city-not-found">No city was found with name ${name}</msg>
+                <msg id="success.custom">The permission was prohibited by default with the message: <red>${msg}</red></msg>
                 <msg id="success.player">The player ${player} was prohibited successfully</msg>
                 <msg id="success.group">The permission was granted to the group ${group} from ${home} successfully</msg>
                 <msg id="success">The permission was denied by default successfully</msg>

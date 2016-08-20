@@ -419,7 +419,7 @@ public class PermissionCommands
                 PlayerID player = playerOpt.get();
 
                 String reason = String.join(" ", cmd.args.subList(1, cmd.args.size()));
-                city.deny(flag, player, new Message("", reason));
+                city.deny(flag, player, Message.string(reason));
 
                 return new CommandResult<>(new Message("cmd.city.deny.success.player",
                         "The player ${player} was prohibited successfully",
@@ -544,7 +544,7 @@ public class PermissionCommands
         else
         {
             String reason = String.join(" ", cmd.args);
-            city.denyAll(flag, new Message("", reason));
+            city.denyAll(flag, Message.string(reason));
         }
 
         return new CommandResult<>(new Message("cmd.city.deny.success",
@@ -656,7 +656,7 @@ public class PermissionCommands
                 PlayerID player = playerOpt.get();
 
                 String reason = String.join(" ", cmd.args.subList(1, cmd.args.size()));
-                plot.deny(flag, player, new Message("", reason));
+                plot.deny(flag, player, Message.string(reason));
 
                 return new CommandResult<>(new Message("cmd.plot.deny.success.player",
                         "The player ${player} was prohibited successfully",
@@ -670,9 +670,11 @@ public class PermissionCommands
                         new Object[][]{{"city",cityOpt.get().getName()},{"group",cmd.args.get(1)}}
                 ));
 
-            return new CommandResult<>(new Message("cmd.plot.allow.city-not-found",
-                    "No city was found with name ${name}", new Object[]{"name",cmd.args.get(0)}
-            ));
+            String msg = String.join(" ", cmd.args);
+            plot.deny(flag, Message.string(msg));
+            return new CommandResult<>(new Message("cmd.plot.deny.success.custom",
+                    "<msg>The permission was prohibited by default with the message: <red>${msg}</red></msg>", new Object[]{"msg",msg}
+            ), false, true);
         }
     }
 
@@ -779,7 +781,7 @@ public class PermissionCommands
         else
         {
             String reason = String.join(" ", cmd.args);
-            plot.denyAll(flag, new Message("", reason));
+            plot.denyAll(flag, Message.string(reason));
         }
 
         return new CommandResult<>(new Message("cmd.plot.deny.success",
