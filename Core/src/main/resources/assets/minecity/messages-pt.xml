@@ -358,9 +358,9 @@
                 <msg id="got-city-expected-player">Você digitou um nome de cidade, digite um nome de jogador ao invés disso para proibir um jogador específico ou digite o nome de um grupo após o nome da cidade para proibir o grupo diretamente. <b>Não use espaços nos nomes.</b></msg>
                 <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
                 <msg id="group-not-found">A cidade ${city} não tem um grupo chamado ${group}</msg>
-                <msg id="city-not-found">Nenhuma cidade foi encontrada com o nome ${name}</msg>
                 <msg id="success.player">O jogador ${player} foi proibido com sucesso</msg>
                 <msg id="success.group">O grupo ${group} de ${home} foi proibido com sucesso</msg>
+                <msg id="success.custom">A permissão foi negada por padrão com a seguinte mensagem: <red>${msg}</red></msg>
                 <msg id="success">A permissão foi negada por padrão com sucesso</msg>
             </deny>
             <allow>

@@ -53,6 +53,11 @@ public class Message
         return new Message("", sb.toString(), args);
     }
 
+    public static Message string(String str)
+    {
+        return new Message("","${arg}", new Object[]{"arg", str});
+    }
+
     public Message(@NotNull String id, @Nullable String fallback, @Nullable Object[]... args)
     {
         this.id = id;

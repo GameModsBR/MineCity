@@ -345,6 +345,7 @@ public class PermissionCommands
     private CommandResult<Boolean> deny(CommandEvent cmd, PermissionFlag flag)
             throws DataSourceException
     {
+        assert cmd.position != null && cmd.sender.getPlayerId() != null;
         City city = mineCity.getChunk(cmd.position.getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.deny.not-claimed", "You are not inside a city"));
@@ -372,7 +373,7 @@ public class PermissionCommands
                 Optional<City> optCity = mineCity.dataSource.getCityByName(playerName);
                 if(optCity.isPresent())
                     return new CommandResult<>(new Message("cmd.city.deny.got-city-expected-player",
-                            "You've typed a city name, type a player name instead to allow a specific player or type a " +
+                            "You've typed a city name, type a player name instead to prohibit a specific player or type a " +
                                     "group name after the city name to prohibit that specific group. Do not use spaces in the names."
                     ));
 
@@ -407,8 +408,8 @@ public class PermissionCommands
                     city.deny(flag, group.getIdentity(), new Message("", reason));
                 }
 
-                return new CommandResult<>(new Message("cmd.city.allow.success.group",
-                        "The permission was granted to the group ${group} from ${home} successfully",
+                return new CommandResult<>(new Message("cmd.city.deny.success.group",
+                        "The permission was prohibited to the group ${group} from ${home} successfully",
                         new Object[][]{{"home", group.home.getName()},{"group",group.getName()}}
                 ), true, true);
             }
@@ -427,14 +428,16 @@ public class PermissionCommands
             }
 
             if(cityOpt.isPresent())
-                return new CommandResult<>(new Message("cmd.city.allow.group-not-found",
+                return new CommandResult<>(new Message("cmd.city.deny.group-not-found",
                         "The city ${city} does not have a group named ${group}",
                         new Object[][]{{"city",cityOpt.get().getName()},{"group",cmd.args.get(1)}}
                 ));
 
-            return new CommandResult<>(new Message("cmd.city.allow.city-not-found",
-                    "No city was found with name ${name}", new Object[]{"name",cmd.args.get(0)}
-            ));
+            String msg = String.join(" ", cmd.args);
+            city.deny(flag, Message.string(msg));
+            return new CommandResult<>(new Message("cmd.city.deny.success.custom",
+                    "<msg>The permission was prohibited by default with the message: <red>${msg}</red></msg>", new Object[]{"msg",msg}
+            ), false, true);
         }
     }
 
@@ -442,6 +445,7 @@ public class PermissionCommands
     @Async
     private CommandResult<?> allow(CommandEvent cmd, PermissionFlag flag) throws DataSourceException
     {
+        assert cmd.position != null && cmd.sender.getPlayerId() != null;
         City city = mineCity.getChunk(cmd.position.getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.allow.not-claimed", "You are not inside a city"));
@@ -524,6 +528,7 @@ public class PermissionCommands
     @Async
     private CommandResult<?> denyAll(CommandEvent cmd, PermissionFlag flag)
     {
+        assert cmd.position != null && cmd.sender.getPlayerId() != null;
         City city = mineCity.getChunk(cmd.position.getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.deny.not-claimed", "You are not inside a city"));
@@ -550,6 +555,7 @@ public class PermissionCommands
     @Async
     private CommandResult<?> allowAll(CommandEvent cmd, PermissionFlag flag)
     {
+        assert cmd.position != null && cmd.sender.getPlayerId() != null;
         City city = mineCity.getChunk(cmd.position.getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.allow.not-claimed", "You are not inside a city"));
@@ -576,6 +582,7 @@ public class PermissionCommands
     private CommandResult<Boolean> denyPlot(CommandEvent cmd, PermissionFlag flag)
             throws DataSourceException
     {
+        assert cmd.position != null && cmd.sender.getPlayerId() != null;
         Plot plot = mineCity.getPlot(cmd.position.getBlock()).orElse(null);
         if(plot == null)
             return new CommandResult<>(new Message("cmd.plot.deny.not-claimed", "You are not inside a plot"));
@@ -673,6 +680,7 @@ public class PermissionCommands
     @Async
     private CommandResult<?> allowPlot(CommandEvent cmd, PermissionFlag flag) throws DataSourceException
     {
+        assert cmd.position != null && cmd.sender.getPlayerId() != null;
         Plot plot = mineCity.getPlot(cmd.position.getBlock()).orElse(null);
         if(plot == null)
             return new CommandResult<>(new Message("cmd.plot.allow.not-claimed", "You are not inside a plot"));
@@ -755,6 +763,7 @@ public class PermissionCommands
     @Async
     private CommandResult<?> denyAllPlot(CommandEvent cmd, PermissionFlag flag)
     {
+        assert cmd.position != null && cmd.sender.getPlayerId() != null;
         Plot plot = mineCity.getPlot(cmd.position.getBlock()).orElse(null);
         if(plot == null)
             return new CommandResult<>(new Message("cmd.plot.deny.not-claimed", "You are not inside a plot"));
@@ -781,6 +790,7 @@ public class PermissionCommands
     @Async
     private CommandResult<?> allowAllPlot(CommandEvent cmd, PermissionFlag flag)
     {
+        assert cmd.position != null && cmd.sender.getPlayerId() != null;
         Plot plot = mineCity.getPlot(cmd.position.getBlock()).orElse(null);
         if(plot == null)
             return new CommandResult<>(new Message("cmd.plot.allow.not-claimed", "You are not inside a plot"));
