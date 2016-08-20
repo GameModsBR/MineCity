@@ -1946,8 +1946,29 @@ public class EntityProtections extends AbstractProtection
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerLeashEntity(PlayerLeashEntityEvent event)
     {
-        if(check(event.getEntity().getLocation(), event.getPlayer(), MODIFY))
+        BlockPos entityPos = plugin.blockPos(event.getEntity().getLocation());
+        ClaimedChunk entityChunk = plugin.mineCity.provideChunk(entityPos.getChunk());
+        FlagHolder entityHolder = entityChunk.getFlagHolder(entityPos);
+        BukkitPlayer player = plugin.player(event.getPlayer());
+        Optional<Message> denial = entityHolder.can(player, MODIFY);
+        if(!denial.isPresent())
+        {
+            Entity leashHolder = event.getLeashHolder();
+            if(leashHolder instanceof LeashHitch)
+            {
+                BlockPos hitchPos = plugin.blockPos(entityPos, leashHolder.getLocation());
+                ClaimedChunk hitchChunk = plugin.mineCity.provideChunk(hitchPos.getChunk(), entityChunk);
+                FlagHolder hitchHolder = hitchChunk.getFlagHolder(hitchPos);
+                if(!hitchHolder.equals(entityHolder))
+                    denial = hitchHolder.can(player, MODIFY);
+            }
+        }
+
+        if(denial.isPresent())
+        {
             event.setCancelled(true);
+            player.send(FlagHolder.wrapDeny(denial.get()));
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
