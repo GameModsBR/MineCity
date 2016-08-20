@@ -1960,7 +1960,10 @@ public class EntityProtections extends AbstractProtection
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerLeashEntityMonitor(PlayerLeashEntityEvent event)
     {
-        plugin.player(event.getPlayer()).leashedEntities.add((LivingEntity) event.getEntity());
+        BukkitPlayer player = plugin.player(event.getPlayer());
+        LivingEntity entity = (LivingEntity) event.getEntity();
+        new LeashedEntityMonitor(plugin, player, entity).runTaskTimer(plugin.plugin, 1, 1);
+        player.leashedEntities.add(entity);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

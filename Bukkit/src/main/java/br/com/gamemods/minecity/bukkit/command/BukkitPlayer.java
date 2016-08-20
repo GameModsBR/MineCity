@@ -127,7 +127,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     public Optional<Message> onCityChange(@NotNull City city, Plot plot)
     {
         removeUnleashedEntities();
-        Optional<Message> denial = Stream.of(
+        return Stream.of(
                 can(this, plot != null? plot : city,
                         ENTER,
                         sender.getVehicle() == null? null : RIDE,
@@ -138,64 +138,32 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
                         leashedEntities.isEmpty()? null : MODIFY
                 )
         ).flatMap(Function.identity()).findFirst();
-
-        if(!denial.isPresent())
-        {
-            Message title = new Message("", "${name}", new Object[]{"name", city.getName()});
-            Message subtitle;
-            if(plot != null)
-                subtitle = new Message("","${name}", new Object[]{"name", plot.getName()});
-            else
-                subtitle = null;
-
-            sendTitle(title, subtitle);
-        }
-
-        return denial;
     }
 
     @Override
     public Optional<Message> onPlotEnter(@NotNull Plot plot)
     {
         removeUnleashedEntities();
-        Optional<Message> denial = optionalStream(
+        return optionalStream(
                 can(this, ENTER, plot),
                 can(this, RIDE, sender.getVehicle() == null? null : plot),
                 can(this, MODIFY, leashedEntities.isEmpty()? null : plot),
                 can(this, MODIFY, leashedEntities.isEmpty()? null : mov.lastHolder()),
                 can(this, LEAVE, mov.lastPlot)
         ).findFirst();
-
-        if(!denial.isPresent())
-        {
-            City city = plot.getCity();
-            Message title = mov.lastCity != city? new Message("", "${name}", new Object[]{"name", city.getName()}) : null;
-            Message subtitle = new Message("","${name}", new Object[]{"name", plot.getName()});
-            sendTitle(title, subtitle);
-        }
-
-        return denial;
     }
 
     @Override
     public Optional<Message> onPlotLeave(@NotNull City city)
     {
         removeUnleashedEntities();
-        Optional<Message> denial = optionalStream(
+        return optionalStream(
                 can(this, ENTER, city),
                 can(this, RIDE, sender.getVehicle() == null? null : city),
                 can(this, MODIFY, leashedEntities.isEmpty()? null : city),
                 can(this, MODIFY, leashedEntities.isEmpty()? null : mov.lastHolder()),
                 can(this, LEAVE, mov.lastPlot)
         ).findFirst();
-
-        if(!denial.isPresent())
-        {
-            Message title = new Message("", "${name}", new Object[]{"name", city.getName()});
-            sendTitle(title, null);
-        }
-
-        return denial;
     }
 
     @Override
@@ -203,22 +171,13 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     {
         removeUnleashedEntities();
         FlagHolder lastHolder = mov.lastHolder();
-        Optional<Message> denial = optionalStream(
+        return optionalStream(
                 can(this, ENTER, nature),
                 can(this, RIDE, sender.getVehicle() == null? null : nature),
                 can(this, MODIFY, leashedEntities.isEmpty()? null : nature),
                 can(this, MODIFY, leashedEntities.isEmpty()? null : lastHolder),
                 can(this, LEAVE, leashedEntities.isEmpty()? null : lastHolder)
         ).findFirst();
-
-        if(!denial.isPresent())
-        {
-            Message title = new Message("enter.nature", LegacyFormat.GREEN+"Nature");
-            Message subtitle = new Message("","${name}", new Object[]{"name", nature.world.name()});
-            sendTitle(title, subtitle);
-        }
-
-        return denial;
     }
 
     @Override
@@ -226,26 +185,20 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     {
         removeUnleashedEntities();
         FlagHolder lastHolder = mov.lastHolder();
-        Optional<Message> denial = optionalStream(
+        return optionalStream(
                 can(this, ENTER, nature),
                 can(this, RIDE, sender.getVehicle() == null? null : nature),
                 can(this, MODIFY, leashedEntities.isEmpty()? null : nature),
                 can(this, MODIFY, leashedEntities.isEmpty()? null : lastHolder),
                 can(this, LEAVE, lastHolder)
         ).findFirst();
-
-        if(!denial.isPresent())
-        {
-            Message title = new Message("enter.nature", LegacyFormat.GREEN+"Nature");
-            Message subtitle = new Message("","${name}", new Object[]{"name", nature.world.name()});
-            sendTitle(title, subtitle);
-        }
-
-        return denial;
     }
 
     public void checkPosition(Location location)
     {
+        City lastCity = mov.lastCity;
+        Plot lastPlot = mov.lastPlot;
+        ChunkPos lastChunk = mov.lastChunk;
         Optional<Message> message = mov.checkPosition(location);
         if(message.isPresent())
         {
@@ -260,22 +213,53 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
 
             Entity vehicle = sender.getVehicle();
             if(vehicle == null)
-                teleport(new BlockPos(mov.lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
+                teleport(new BlockPos(lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
             else
             {
                 Location vLoc = vehicle.getLocation();
-                Optional<World> world = plugin.world(mov.lastChunk.world);
+                Optional<World> world = plugin.world(lastChunk.world);
                 if(!world.isPresent())
-                    teleport(new BlockPos(mov.lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
+                    teleport(new BlockPos(lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
                 else
                     if(!vehicle.teleport(new Location(world.get(), mov.lastX+0.5, mov.lastY+0.5, mov.lastZ+0.5, vLoc.getYaw(), vLoc.getPitch())))
                     {
                         Entity passenger = vehicle.getPassenger();
                         vehicle.eject();
-                        teleport(new BlockPos(mov.lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
+                        teleport(new BlockPos(lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
                         if(vehicle.teleport(new Location(world.get(), mov.lastX+0.5, mov.lastY+0.5, mov.lastZ+0.5, vLoc.getYaw(), vLoc.getPitch())))
                             getServer().callSyncMethod(()-> vehicle.setPassenger(passenger));
                     }
+            }
+
+            return;
+        }
+
+        if(mov.lastCity != lastCity)
+        {
+            if(mov.lastCity != null)
+            {
+                Message title = new Message("", "${name}", new Object[]{"name", mov.lastCity.getName()});
+                Message subtitle = mov.lastPlot != null? new Message("","${name}", new Object[]{"name", mov.lastPlot.getName()}) : null;
+                sendTitle(title, subtitle);
+            }
+            else
+            {
+                Message title = new Message("enter.nature", LegacyFormat.GREEN+"Nature");
+                Message subtitle = new Message("","${name}", new Object[]{"name", mov.lastChunk.world.name()});
+                sendTitle(title, subtitle);
+            }
+        }
+        else if(mov.lastPlot != lastPlot)
+        {
+            if(mov.lastPlot != null)
+            {
+                Message subtitle = new Message("","${name}", new Object[]{"name", mov.lastPlot.getName()});
+                sendTitle(null, subtitle);
+            }
+            else
+            {
+                Message title = new Message("", "${name}", new Object[]{"name", mov.lastCity.getName()});
+                sendTitle(title, null);
             }
         }
     }
