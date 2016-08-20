@@ -3,8 +3,8 @@ package br.com.gamemods.minecity.bukkit.command;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.*;
+import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.GroupID;
-import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.unchecked.UFunction;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -23,10 +24,13 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 import static br.com.gamemods.minecity.api.CollectionUtil.optionalStream;
 import static br.com.gamemods.minecity.api.permission.FlagHolder.can;
+import static br.com.gamemods.minecity.api.permission.PermissionFlag.*;
 
 @SuppressWarnings("deprecation")
 public class BukkitPlayer extends BukkitLocatableSender<Player> implements MinecraftEntity
@@ -46,6 +50,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     public byte pickupHarvestDelay;
     public byte lureDelay;
     public byte skipTick;
+    public Set<LivingEntity> leashedEntities = new HashSet<>(1);
 
     public BukkitPlayer(MineCityBukkit plugin, Player player)
     {
@@ -122,6 +127,11 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
         }
     }
 
+    private void removeUnleashedEntities()
+    {
+        leashedEntities.removeIf(entity -> !entity.isLeashed() || !sender.equals(entity.getLeashHolder()));
+    }
+
     public void checkPosition(Location location)
     {
         int posX = location.getBlockX();
@@ -139,22 +149,26 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
             ClaimedChunk claim = plugin.mineCity.getChunk(chunk).orElseGet(()-> Inconsistency.claim(chunk));
             City city = claim.reserve? null : claim.getCity().orElse(null);
             Plot plot = null;
+            FlagHolder lastHolder = lastPlot != null? lastPlot :
+                    lastCity != null? lastCity :
+                            lastChunk.world.nature;
             if(city != null)
             {
                 plot = claim.getPlotAt(posX, posY, posZ).orElse(null);
                 if(city != lastCity)
                 {
-                    message = optionalStream(
-                            can(this, PermissionFlag.ENTER, plot),
-                            can(this, PermissionFlag.ENTER, city),
-                            can(this, PermissionFlag.RIDE, vehicle == null? null : plot),
-                            can(this, PermissionFlag.RIDE, vehicle == null? null : city),
-                            can(this, PermissionFlag.LEAVE, lastPlot),
-                            can(this, PermissionFlag.LEAVE, lastCity),
-                            can(this, PermissionFlag.LEAVE,
-                                    lastCity == null? plugin.mineCity.nature(lastChunk.world) : null
+                    removeUnleashedEntities();
+                    message = Stream.of(
+                            can(this, plot != null? plot : city,
+                                    ENTER,
+                                    vehicle == null? null : RIDE,
+                                    leashedEntities.isEmpty()? null : MODIFY
+                            ),
+                            can(this, lastHolder,
+                                    LEAVE,
+                                    leashedEntities.isEmpty()? null : MODIFY
                             )
-                    ).findFirst();
+                    ).flatMap(Function.identity()).findFirst();
 
                     if(!message.isPresent())
                     {
@@ -170,10 +184,13 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
                 }
                 else if(plot != lastPlot)
                 {
+                    removeUnleashedEntities();
                     message = optionalStream(
-                            can(this, PermissionFlag.ENTER, plot),
-                            can(this, PermissionFlag.RIDE, vehicle == null? null : plot),
-                            can(this, PermissionFlag.LEAVE, lastPlot)
+                            can(this, ENTER, plot),
+                            can(this, RIDE, vehicle == null? null : plot),
+                            can(this, MODIFY, leashedEntities.isEmpty()? null : plot),
+                            can(this, MODIFY, leashedEntities.isEmpty()? null : lastHolder),
+                            can(this, LEAVE, lastPlot)
                     ).findFirst();
 
                     if(!message.isPresent())
@@ -187,12 +204,14 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
             }
             else if(lastCity != null)
             {
+                removeUnleashedEntities();
                 Nature nature = plugin.mineCity.nature(chunk.world);
                 message = optionalStream(
-                        can(this, PermissionFlag.ENTER, nature),
-                        can(this, PermissionFlag.RIDE, vehicle == null? null : nature),
-                        can(this, PermissionFlag.LEAVE, lastPlot),
-                        can(this, PermissionFlag.LEAVE, lastCity)
+                        can(this, ENTER, nature),
+                        can(this, RIDE, vehicle == null? null : nature),
+                        can(this, MODIFY, leashedEntities.isEmpty()? null : nature),
+                        can(this, MODIFY, leashedEntities.isEmpty()? null : lastHolder),
+                        can(this, LEAVE, leashedEntities.isEmpty()? null : lastHolder)
                 ).findFirst();
 
                 if(!message.isPresent())
@@ -204,11 +223,14 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
             }
             else if(!lastChunk.world.equals(chunk.world))
             {
+                removeUnleashedEntities();
                 Nature nature = plugin.mineCity.nature(chunk.world);
                 message = optionalStream(
-                        can(this, PermissionFlag.ENTER, nature),
-                        can(this, PermissionFlag.RIDE, vehicle == null? null : nature),
-                        can(this, PermissionFlag.LEAVE, plugin.mineCity.nature(lastChunk.world))
+                        can(this, ENTER, nature),
+                        can(this, RIDE, vehicle == null? null : nature),
+                        can(this, MODIFY, leashedEntities.isEmpty()? null : nature),
+                        can(this, MODIFY, leashedEntities.isEmpty()? null : lastHolder),
+                        can(this, LEAVE, lastHolder)
                 ).findFirst();
 
                 if(!message.isPresent())
@@ -238,10 +260,14 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
 
                 if(plot != lastPlot)
                 {
+                    removeUnleashedEntities();
                     message = optionalStream(
-                            can(this, PermissionFlag.ENTER, plot),
-                            can(this, PermissionFlag.RIDE, vehicle == null? null : plot),
-                            can(this, PermissionFlag.LEAVE, lastPlot)
+                            can(this, ENTER, plot),
+                            can(this, RIDE, vehicle == null? null : plot),
+                            can(this, MODIFY, leashedEntities.isEmpty()? null : plot),
+                            can(this, MODIFY, leashedEntities.isEmpty()? null : lastPlot),
+                            can(this, MODIFY, leashedEntities.isEmpty()? null : lastCity),
+                            can(this, LEAVE, lastPlot)
                     ).findFirst();
 
                     if(!message.isPresent())
@@ -311,9 +337,23 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
                 case STATIONARY_WATER:
                 case LAVA:
                 case STATIONARY_LAVA:
+                case GLASS:
+                case LEAVES:
+                case LEAVES_2:
+                case PISTON_STICKY_BASE:
+                case PISTON_BASE:
+                case SOIL:
+                case ICE:
+                case GLOWSTONE:
+                case STAINED_GLASS:
+                case DRAGON_EGG:
+                case BEACON:
+                case COBBLE_WALL:
+                case SEA_LANTERN:
+                case GRASS_PATH:
                     break;
                 default:
-                    if(block.isSolid())
+                    if(block.isOccluding())
                         break;
                     else if(!sender.isGliding() && !sender.isFlying())
                         return;

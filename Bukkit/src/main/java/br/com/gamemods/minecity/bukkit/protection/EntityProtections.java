@@ -1942,4 +1942,31 @@ public class EntityProtections extends AbstractProtection
             }
         }
     }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerLeashEntity(PlayerLeashEntityEvent event)
+    {
+        if(check(event.getEntity().getLocation(), event.getPlayer(), MODIFY))
+            event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerUnleashEntity(PlayerUnleashEntityEvent event)
+    {
+        if(check(event.getEntity().getLocation(), event.getPlayer(), MODIFY))
+            event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerLeashEntityMonitor(PlayerLeashEntityEvent event)
+    {
+        plugin.player(event.getPlayer()).leashedEntities.add((LivingEntity) event.getEntity());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerUnleashEntityMonitor(PlayerUnleashEntityEvent event)
+    {
+        //noinspection SuspiciousMethodCalls
+        plugin.player(event.getPlayer()).leashedEntities.remove(event.getEntity());
+    }
 }

@@ -165,6 +165,30 @@ public interface FlagHolder
                 ;
     }
 
+    static Stream<Message> can(Identity<?> identity, FlagHolder holder, PermissionFlag... flags)
+    {
+        if(holder == null)
+            return Stream.empty();
+
+        return Stream.of(flags)
+                .filter(flag -> flag != null)
+                .map(flag -> can(identity, flag, holder).get())
+                .filter(Optional::isPresent)
+                .map(Optional::get);
+    }
+
+    static Stream<Message> can(MinecraftEntity entity, FlagHolder holder, PermissionFlag... flags)
+    {
+        if(holder == null)
+            return Stream.empty();
+
+        return Stream.of(flags)
+                .filter(flag -> flag != null)
+                .map(flag -> can(entity, flag, holder).get())
+                .filter(Optional::isPresent)
+                .map(Optional::get);
+    }
+
     /**
      * Wraps a denial message in a container to be displayed to a player.
      * @param message The denial message

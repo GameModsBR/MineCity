@@ -42,6 +42,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -292,27 +293,27 @@ public class MineCityBukkit implements Server, Listener
     }
 
     @NotNull
-    public BlockPos blockPos(@NotNull BlockPos base, @NotNull BlockState block)
+    public BlockPos blockPos(@Nullable BlockPos base, @NotNull BlockState block)
     {
-        return block.getWorld().equals(base.world.instance)?
+        return base != null && block.getWorld().equals(base.world.instance)?
                 new BlockPos(base, block.getX(), block.getY(), block.getZ())
                 : blockPos(block)
                 ;
     }
 
     @NotNull
-    public BlockPos blockPos(@NotNull BlockPos base, @NotNull Block block)
+    public BlockPos blockPos(@Nullable BlockPos base, @NotNull Block block)
     {
-        return block.getWorld().equals(base.world.instance)?
+        return base != null && block.getWorld().equals(base.world.instance)?
                 new BlockPos(base, block.getX(), block.getY(), block.getZ())
                 : blockPos(block)
                 ;
     }
 
     @NotNull
-    public BlockPos blockPos(@NotNull BlockPos base, @NotNull Location loc)
+    public BlockPos blockPos(@Nullable BlockPos base, @NotNull Location loc)
     {
-        return loc.getWorld().equals(base.world.instance)?
+        return base != null && loc.getWorld().equals(base.world.instance)?
                 new BlockPos(base, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())
                 : blockPos(loc)
                 ;
