@@ -33,12 +33,15 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCreatePortalEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.EntityPortalEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.CocoaPlant;
 import org.bukkit.material.PistonBaseMaterial;
@@ -761,6 +764,15 @@ public class BlockProtections extends AbstractProtection
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onInventory(InventoryOpenEvent event)
+    {
+        InventoryHolder inventoryHolder = event.getInventory().getHolder();
+        if(inventoryHolder instanceof BlockState)
+            if(check(((BlockState)inventoryHolder).getLocation(), (Player) event.getPlayer(), PermissionFlag.OPEN))
+                event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event)
     {
         Action action = event.getAction();
@@ -812,15 +824,7 @@ public class BlockProtections extends AbstractProtection
 
             switch(type)
             {
-                case CHEST:
-                case TRAPPED_CHEST:
-                case FURNACE:
-                case HOPPER:
                 case ANVIL:
-                case DROPPER:
-                case DISPENSER:
-                case BEACON:
-                case BREWING_STAND:
                     if(check(block.getLocation(), event.getPlayer(), PermissionFlag.OPEN))
                         event.setUseInteractedBlock(Event.Result.DENY);
                     return;
@@ -1270,6 +1274,80 @@ public class BlockProtections extends AbstractProtection
             return;
 
         if(checkPistonEvent(block, event.getBlocks(), piston.getAttachedFace()))
+            event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onInventoryMoveItem(InventoryMoveItemEvent event)
+    {
+        InventoryHolder fromIH = event.getSource().getHolder();
+        InventoryHolder toIH = event.getDestination().getHolder();
+
+        FlagHolder fromHolder = FlagHolderData.get(plugin, fromIH);
+        FlagHolder toHolder = FlagHolderData.get(plugin, toIH);
+
+        boolean fromMeta = fromHolder != null;
+        boolean toMeta = toHolder != null;
+
+        if(fromHolder != null && toHolder != null)
+        {
+            if(toHolder.can(fromHolder.owner(), PermissionFlag.OPEN).isPresent())
+                event.setCancelled(true);
+            return;
+        }
+
+        BlockPos fromPos;
+        BlockPos toPos;
+
+        ClaimedChunk fromClaim;
+
+        if(fromMeta)
+        {
+            fromPos = null;
+            fromClaim = null;
+        }
+        else
+        {
+            if(fromIH instanceof Entity)
+                fromPos = plugin.blockPos(((Entity) fromIH).getLocation());
+            else if(fromIH instanceof BlockState)
+                fromPos = plugin.blockPos(((BlockState) fromIH).getLocation());
+            else
+            {
+                event.setCancelled(true);
+                return;
+            }
+
+            fromClaim = plugin.mineCity.provideChunk(fromPos.getChunk());
+            fromHolder = fromClaim.getFlagHolder(fromPos);
+
+            if(fromIH instanceof BlockState)
+                ((BlockState) fromIH).setMetadata(FlagHolderData.KEY, new FixedMetadataValue(
+                        plugin.plugin, new FlagHolderData(fromHolder)
+                ));
+        }
+
+        if(!toMeta)
+        {
+            if(toIH instanceof Entity)
+                toPos = plugin.blockPos(fromPos, ((Entity)toIH).getLocation());
+            else if(toIH instanceof BlockState)
+                toPos = plugin.blockPos(fromPos, ((BlockState)toIH).getLocation());
+            else
+            {
+                event.setCancelled(true);
+                return;
+            }
+
+            toHolder = plugin.mineCity.provideChunk(toPos.getChunk(), fromClaim).getFlagHolder(toPos);
+
+            if(toIH instanceof BlockState)
+                ((BlockState) toIH).setMetadata(FlagHolderData.KEY, new FixedMetadataValue(
+                        plugin.plugin, new FlagHolderData(toHolder)
+                ));
+        }
+
+        if(toHolder.can(fromHolder.owner(), PermissionFlag.OPEN).isPresent())
             event.setCancelled(true);
     }
 }
