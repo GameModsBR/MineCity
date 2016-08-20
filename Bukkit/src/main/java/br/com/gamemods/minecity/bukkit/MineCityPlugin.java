@@ -78,7 +78,7 @@ public class MineCityPlugin extends JavaPlugin
             for(PermissionFlag flag: PermissionFlag.values())
             {
                 boolean allow = yaml.getBoolean("permissions.default.nature."+flag+".allow", flag.defaultNature);
-                String msg = yaml.getString("permissions.default.nature."+flag+".allow", "");
+                String msg = yaml.getString("permissions.default.nature."+flag+".message", "");
                 if(!allow)
                 {
                     if(msg.isEmpty())
@@ -88,7 +88,7 @@ public class MineCityPlugin extends JavaPlugin
                 }
 
                 allow = yaml.getBoolean("permissions.default.city."+flag+".allow", flag.defaultNature);
-                msg = yaml.getString("permissions.default.city."+flag+".allow", "");
+                msg = yaml.getString("permissions.default.city."+flag+".message", "");
                 if(!allow)
                 {
                     if(msg.isEmpty())
@@ -98,7 +98,7 @@ public class MineCityPlugin extends JavaPlugin
                 }
 
                 allow = yaml.getBoolean("permissions.default.plot."+flag+".allow", flag.defaultNature);
-                msg = yaml.getString("permissions.default.plot."+flag+".allow", "");
+                msg = yaml.getString("permissions.default.plot."+flag+".message", "");
                 if(!allow)
                 {
                     if(msg.isEmpty())
