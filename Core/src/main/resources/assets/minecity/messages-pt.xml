@@ -393,7 +393,7 @@
             <allow>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
                 <msg id="no-permission">Você não está autoriazado a mudar as permissões de ${city}</msg>
-                <msg id="got-city-expected-player">Você digitou um nome de cidade, digite um nome de jogador ao invpes disso para permitir um jogador específico ou digite um nome de grupo após o nome da cidade para permitir o grupo diretamente. <b>Não use espaço nos nomes.</b></msg>
+                <msg id="got-city-expected-player">Você digitou um nome de cidade, digite um nome de jogador ao invés disso para permitir um jogador específico ou digite um nome de grupo após o nome da cidade para permitir o grupo diretamente. <b>Não use espaço nos nomes.</b></msg>
                 <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
                 <msg id="too-many-args">Você digitou argumentos demais, você não pode especificar uma razão ao permitir alguém.</msg>
                 <msg id="group-not-found">A cidade ${city} não tem um grupo chamado ${group}</msg>
@@ -437,6 +437,54 @@
                     </arg>
                 </pvc>
             </allow>
+            <clear>
+                <msg id="not-claimed">Você não está dentro de uma cidade</msg>
+                <msg id="no-permission">Você não está autoriazado a mudar as permissões de ${city}</msg>
+                <msg id="got-city-expected-player">Você digitou um nome de cidade, digite um nome de jogador ao invés disso para resetar um jogador específico ou digite um nome de grupo após o nome da cidade para resetar o grupo diretamente. <b>Não use espaço nos nomes.</b></msg>
+                <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
+                <msg id="too-many-args">Você digitou argumentos demais, você não pode especificar uma razão ao resetar as permissões de alguém.</msg>
+                <msg id="no-args">Digite um nome de jogador ou um nome de grupo seguido de um nome de cidade se o grupo for de uma cidade diferente</msg>
+                <msg id="group-not-found">A cidade ${city} não tem um grupo chamado ${group}</msg>
+                <msg id="city-not-found">Nenhuma cidade foi encontrada com o nome ${name}</msg>
+                <msg id="success">A permissão foi concedida por padrão com sucesso</msg>
+                <msg id="success.player">A permissão direta foi removida de ${player} com sucesso, a permissão padrão irá ser aplicada agora.</msg>
+                <msg id="success.group">A permissão direta foi removida do grupo ${group} de ${home} com sucesso, a permissão padrão será aplicada agora.</msg>
+                <msg id="all.args.count">Este comeando não aceita argumentos extras, você tem certeza que quer resetar as permissões de todos?</msg>
+                <enter>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </enter>
+                <msg id="click.arg.player-or-city">jogador ou cidade</msg>
+                <msg id="click.arg.group-name">grupo</msg>
+                <pickup>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </pickup>
+                <harvest>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </harvest>
+                <msg id="open.arg.player-or-city">jogador ou cidade</msg>
+                <msg id="open.arg.group-name">grupo</msg>
+                <pvp>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </pvp>
+                <pvc>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </pvc>
+            </clear>
         </city>
         <group>
             <create>
@@ -1006,6 +1054,58 @@
                     </arg>
                 </pvc>
             </allow>
+            <clear>
+                <msg id="not-claimed">Você não está dentro de um lote</msg>
+                <msg id="no-permission">Você não está autorizado a mudar as permissões do lote ${plot}</msg>
+                <msg id="got-city-expected-player">Você digitou um nome de cidade,
+                    digite um nome de jogador ao invés disso para resetar um jogador específico
+                    ou digite um nome de grupo após o nome da cidade para resetar um grupo específico.
+                    <b>Não use espaços nos nomes</b>.
+                </msg>
+                <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
+                <msg id="too-many-args">Você digitou argumentos demais, Você não pode especificar o motivo ao permitir alguém.</msg>
+                <msg id="no-args">Digite um nome de jogador ou um nome de grupo seguido de um nome de cidade se o grupo for de uma cidade diferente</msg>
+                <msg id="group-not-found">A cidade ${city} não possui um grupo chamado ${group}</msg>
+                <msg id="city-not-found">Nenhuma cidade foi encontrada com o nome ${name}</msg>
+                <msg id="success">Todas as permissões diretas foram removidas com sucesso, a permissão padrão será aplicada agora</msg>
+                <msg id="success.player">A permissão direta foi removida de ${player} com sucesso, a permissão padrão irá ser aplicada agora.</msg>
+                <msg id="success.group">A permissão direta foi removida do grupo ${group} de ${home} com sucesso, a permissão padrão será aplicada agora.</msg>
+                <msg id="all.args.count">Este comeando não aceita argumentos extras, você tem certeza que quer resetar as permissões de todos?</msg>
+                <enter>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </enter>
+                <msg id="click.arg.player-or-city">jogador ou cidade</msg>
+                <msg id="click.arg.group-name">grupo</msg>
+                <pickup>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </pickup>
+                <harvest>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </harvest>
+                <msg id="open.arg.player-or-city">jogador ou cidade</msg>
+                <msg id="open.arg.group-name">grupo</msg>
+                <pvp>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </pvp>
+                <pvc>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </pvc>
+            </clear>
         </plot>
         <help>
             <arg>

@@ -149,6 +149,12 @@ public class ExceptStoredHolder extends ExceptFlagHolder
         super.resetAll(identity);
     }
 
+    @Override
+    public void resetAll(PermissionFlag flag)
+    {
+        strictPermission.getOrDefault(flag, Collections.emptyMap()).values().removeIf(s-> true);
+    }
+
     protected class ExceptMap extends AbstractMap<Identity<?>, Status>
     {
         private HashMap<Identity<?>, Status> backend = new HashMap<>(1);

@@ -167,6 +167,11 @@ public class ExceptFlagHolder extends SimpleFlagHolder
         strictPermission.values().forEach(v-> v.remove(identity));
     }
 
+    public void resetAll(PermissionFlag flag)
+    {
+        strictPermission.remove(flag);
+    }
+
     /**
      * Changes the default permission for a flag and removes all direct restrictions, direct permissions will be kept
      * @param flag The flag that will be allowed

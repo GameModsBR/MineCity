@@ -3,7 +3,6 @@ package br.com.gamemods.minecity.api.command;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
-import br.com.gamemods.minecity.structure.Inconsistency;
 
 import java.util.List;
 
@@ -26,6 +25,6 @@ public class CommandEvent
 
     public ClaimedChunk getChunk()
     {
-        return mineCity.getChunk(position.getChunk()).orElseGet(()-> Inconsistency.claim(position.getChunk()));
+        return mineCity.provideChunk(position.getChunk());
     }
 }

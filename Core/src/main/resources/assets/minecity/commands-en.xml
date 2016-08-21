@@ -23,11 +23,17 @@
         <group id="city.deny" parent="city" cmd="deny">
             <desc>Revokes permission</desc>
         </group>
+        <group id="city.reset" parent="city" cmd="reset">
+            <desc>Removes direct permissions and restrictions</desc>
+        </group>
         <group id="city.allow.all" parent="city.allow" cmd="all">
             <desc>Gives permission to everybody, including players who were directly prohibited</desc>
         </group>
         <group id="city.deny.all" parent="city.deny" cmd="all">
             <desc>Prohibits everybody, including players who were directly allowed</desc>
+        </group>
+        <group id="city.reset.all" parent="city.reset" cmd="all">
+            <desc>Removes direct permissions from everybody</desc>
         </group>
         <group id="city.check" parent="city" cmd="check">
             <desc>Shows details about permissions</desc>
@@ -38,11 +44,17 @@
         <group id="plot.deny" parent="plot" cmd="deny">
             <desc>Revokes permission</desc>
         </group>
+        <group id="plot.reset" parent="plot" cmd="reset">
+            <desc>Removes direct permissions and restrictions</desc>
+        </group>
         <group id="plot.allow.all" parent="plot.allow" cmd="all">
             <desc>Gives permission to everybody, including players who were directly prohibited</desc>
         </group>
         <group id="plot.deny.all" parent="plot.deny" cmd="all">
             <desc>Prohibits everybody, including players who were directly allowed</desc>
+        </group>
+        <group id="plot.reset.all" parent="plot.reset" cmd="all">
+            <desc>Removes direct permissions from everybody</desc>
         </group>
         <group id="plot.check" parent="plot" cmd="check">
             <desc>Shows details about permissions</desc>
@@ -218,6 +230,32 @@
             <desc>Stop players from doing structural modifications</desc>
         </command>
 
+        <!-- Reset -->
+        <command id="city.reset.enter" parent="city.reset" cmd="enter">
+            <desc>Removes a direct permission or restriction to enter the city</desc>
+        </command>
+        <command id="city.reset.click" parent="city.reset" cmd="click">
+            <desc>Removes a direct permission or restriction to click on clickable blocks, like doors, buttons and levelers</desc>
+        </command>
+        <command id="city.reset.pickup" parent="city.reset" cmd="pickup">
+            <desc>Removes a direct permission or restriction to pickup dropped items</desc>
+        </command>
+        <command id="city.reset.harvest" parent="city.reset" cmd="harvest">
+            <desc>Removes a direct permission or restriction to harvest productions like crops and wools</desc>
+        </command>
+        <command id="city.reset.open" parent="city.reset" cmd="open">
+            <desc>Removes a direct permission or restriction to open container like chests, furnaces, frames</desc>
+        </command>
+        <command id="city.reset.pvp" parent="city.reset" cmd="pvp">
+            <desc>Removes a direct permission or restriction to attack other players</desc>
+        </command>
+        <command id="city.reset.pvc" parent="city.reset" cmd="pvc">
+            <desc>Removes a direct permission or restriction to attack creatures</desc>
+        </command>
+        <command id="city.reset.modify" parent="city.reset" cmd="modify">
+            <desc>Removes a direct permission or restriction to structural modifications</desc>
+        </command>
+
         <!-- All permissions -->
         <command id="city.allow.all.enter" parent="city.allow.all" cmd="enter">
             <desc>Allows everybody to enter the city, including who were directly prohibited.</desc>
@@ -266,6 +304,32 @@
         </command>
         <command id="city.deny.all.modify" parent="city.deny.all" cmd="modify">
             <desc>Prohibits everybody from doing structural modifications, including who were directly allowed</desc>
+        </command>
+
+        <!-- Reset all -->
+        <command id="city.reset.all.enter" parent="city.reset.all" cmd="enter">
+            <desc>Resets all direct permission or restriction to enter the city</desc>
+        </command>
+        <command id="city.reset.all.click" parent="city.reset.all" cmd="click">
+            <desc>Resets all direct permission or restriction to click on clickable blocks, like doors, buttons and levelers</desc>
+        </command>
+        <command id="city.reset.all.pickup" parent="city.reset.all" cmd="pickup">
+            <desc>Resets all direct permission or restriction to pickup dropped items</desc>
+        </command>
+        <command id="city.reset.all.harvest" parent="city.reset.all" cmd="harvest">
+            <desc>Resets all direct permission or restriction to harvest productions like crops and wools</desc>
+        </command>
+        <command id="city.reset.all.open" parent="city.reset.all" cmd="open">
+            <desc>Resets all direct permission or restriction to open container like chests, furnaces, frames</desc>
+        </command>
+        <command id="city.reset.all.pvp" parent="city.reset.all" cmd="pvp">
+            <desc>Resets all direct permission or restriction to attack other players</desc>
+        </command>
+        <command id="city.reset.all.pvc" parent="city.reset.all" cmd="pvc">
+            <desc>Resets all direct permission or restriction to attack creatures</desc>
+        </command>
+        <command id="city.reset.all.modify" parent="city.reset.all" cmd="modify">
+            <desc>Resets all direct permission or restriction to structural modifications</desc>
         </command>
 
         <!-- ========== Plot Permissions ========== -->
@@ -348,6 +412,32 @@
             <desc>Stop players from doing structural modifications</desc>
         </command>
 
+        <!-- Reset permissions -->
+        <command id="plot.reset.enter" parent="plot.reset" cmd="enter">
+            <desc>Removes a direct permission or restriction to enter the plot</desc>
+        </command>
+        <command id="plot.reset.click" parent="plot.reset" cmd="click">
+            <desc>Removes a direct permission or restriction to click on clickable blocks, like doors, buttons and levelers</desc>
+        </command>
+        <command id="plot.reset.pickup" parent="plot.reset" cmd="pickup">
+            <desc>Removes a direct permission or restriction to pickup dropped items</desc>
+        </command>
+        <command id="plot.reset.harvest" parent="plot.reset" cmd="harvest">
+            <desc>Removes a direct permission or restriction to harvest productions like crops and wools</desc>
+        </command>
+        <command id="plot.reset.open" parent="plot.reset" cmd="open">
+            <desc>Removes a direct permission or restriction to open container like chests, furnaces, frames</desc>
+        </command>
+        <command id="plot.reset.pvp" parent="plot.reset" cmd="pvp">
+            <desc>Removes a direct permission or restriction to attack other players</desc>
+        </command>
+        <command id="plot.reset.pvc" parent="plot.reset" cmd="pvc">
+            <desc>Removes a direct permission or restriction to attack creatures</desc>
+        </command>
+        <command id="plot.reset.modify" parent="plot.reset" cmd="modify">
+            <desc>Removes a direct permission or restriction to structural modifications</desc>
+        </command>
+
         <!-- All permissions -->
         <command id="plot.allow.all.enter" parent="plot.allow.all" cmd="enter">
             <desc>Allows everybody to enter the plot, including who were directly prohibited.</desc>
@@ -396,6 +486,32 @@
         </command>
         <command id="plot.deny.all.modify" parent="plot.deny.all" cmd="modify">
             <desc>Prohibits everybody from doing structural modifications, including who were directly allowed</desc>
+        </command>
+
+        <!-- Reset all -->
+        <command id="plot.reset.all.enter" parent="plot.reset.all" cmd="enter">
+            <desc>Resets all direct permission or restriction to enter the plot</desc>
+        </command>
+        <command id="plot.reset.all.click" parent="plot.reset.all" cmd="click">
+            <desc>Resets all direct permission or restriction to click on clickable blocks, like doors, buttons and levelers</desc>
+        </command>
+        <command id="plot.reset.all.pickup" parent="plot.reset.all" cmd="pickup">
+            <desc>Resets all direct permission or restriction to pickup dropped items</desc>
+        </command>
+        <command id="plot.reset.all.harvest" parent="plot.reset.all" cmd="harvest">
+            <desc>Resets all direct permission or restriction to harvest productions like crops and wools</desc>
+        </command>
+        <command id="plot.reset.all.open" parent="plot.reset.all" cmd="open">
+            <desc>Resets all direct permission or restriction to open container like chests, furnaces, frames</desc>
+        </command>
+        <command id="plot.reset.all.pvp" parent="plot.reset.all" cmd="pvp">
+            <desc>Resets all direct permission or restriction to attack other players</desc>
+        </command>
+        <command id="plot.reset.all.pvc" parent="plot.reset.all" cmd="pvc">
+            <desc>Resets all direct permission or restriction to attack creatures</desc>
+        </command>
+        <command id="plot.reset.all.modify" parent="plot.reset.all" cmd="modify">
+            <desc>Resets all direct permission or restriction to structural modifications</desc>
         </command>
     </commands>
 </minecity-commands>

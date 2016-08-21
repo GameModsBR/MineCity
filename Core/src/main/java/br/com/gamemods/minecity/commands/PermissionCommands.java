@@ -526,6 +526,85 @@ public class PermissionCommands
 
     @Slow
     @Async
+    private CommandResult<?> reset(CommandEvent cmd, PermissionFlag flag) throws DataSourceException
+    {
+        City city = cmd.getChunk().getCity().orElse(null);
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.city.clear.not-claimed", "You are not inside a city"));
+
+        if(!cmd.sender.getPlayerId().equals(city.owner()))
+            return new CommandResult<>(new Message("cmd.city.clear.no-permission",
+                    "You are not allowed to change the ${city}'s permissions",
+                    new Object[]{"city", city.getName()}
+            ));
+
+        if(cmd.args.isEmpty())
+            return new CommandResult<>(new Message("cmd.city.clear.no-args",
+                    "Type a player name or a group name followed by a city name if the group is from a different city"
+            ));
+
+        if(cmd.args.size() == 1)
+        {
+            String playerName = cmd.args.get(0);
+            Optional<PlayerID> opt = mineCity.findPlayer(playerName);
+            if(!opt.isPresent())
+            {
+                Optional<City> optCity = mineCity.dataSource.getCityByName(playerName);
+                if(optCity.isPresent())
+                    return new CommandResult<>(new Message("cmd.city.clear.got-city-expected-player",
+                            "You've typed a city name, type a player name instead to reset a specific player or type a " +
+                                    "group name after the city name to reset that specific group. Do not use spaces in the names."
+                    ));
+
+                return new CommandResult<>(new Message("cmd.city.clear.player-not-found",
+                        "No player was found with name ${name}", new Object[]{"name",playerName}
+                ));
+            }
+
+            PlayerID player = opt.get();
+            city.reset(flag, player);
+
+            return new CommandResult<>(new Message("cmd.city.clear.success.player",
+                    "The direct permission was removed from ${player} successfully, the default permission will be applied now.",
+                    new Object[]{"player", player.getName()}
+            ), true, true);
+        }
+        else
+        {
+            Optional<City> cityOpt = mineCity.dataSource.getCityByName(cmd.args.get(0));
+            Optional<Group> groupOpt = cityOpt.map(c-> city.getGroup(cmd.args.get(1)));
+
+            if(cmd.args.size() > 2)
+                return new CommandResult<>(new Message("cmd.city.clear.too-many-args",
+                        "You've typed too many arguments, you can't give reason messages when resetting somebody's permission."
+                ));
+
+            if(groupOpt.isPresent())
+            {
+                Group group = groupOpt.get();
+
+                city.reset(flag, group.getIdentity());
+
+                return new CommandResult<>(new Message("cmd.city.clear.success.group",
+                        "The direct permission was removed from the the group ${group} from ${home} successfully, the default permission will be applied now.",
+                        new Object[][]{{"home", group.home.getName()},{"group",group.getName()}}
+                ), true, true);
+            }
+
+            if(cityOpt.isPresent())
+                return new CommandResult<>(new Message("cmd.city.clear.group-not-found",
+                        "The city ${city} does not have a group named ${group}",
+                        new Object[][]{{"city",cityOpt.get().getName()},{"group",cmd.args.get(1)}}
+                ));
+
+            return new CommandResult<>(new Message("cmd.city.clear.city-not-found",
+                    "No city was found with name ${name}", new Object[]{"name",cmd.args.get(0)}
+            ));
+        }
+    }
+
+    @Slow
+    @Async
     private CommandResult<?> denyAll(CommandEvent cmd, PermissionFlag flag)
     {
         assert cmd.position != null && cmd.sender.getPlayerId() != null;
@@ -575,6 +654,31 @@ public class PermissionCommands
 
         return new CommandResult<>(new Message("cmd.city.allow.success",
                 "The permission was granted successfully"), true, true);
+    }
+
+    @Slow
+    @Async
+    private CommandResult<?> resetAll(CommandEvent cmd, PermissionFlag flag)
+    {
+        City city = cmd.getChunk().getCity().orElse(null);
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.city.clear.not-claimed", "You are not inside a city"));
+
+        if(!cmd.sender.getPlayerId().equals(city.owner()))
+            return new CommandResult<>(new Message("cmd.city.clear.no-permission",
+                    "You are not allowed to change the ${city}'s permissions",
+                    new Object[]{"city",city.getName()}
+            ));
+
+        if(!cmd.args.isEmpty())
+            return new CommandResult<>(new Message("cmd.city.clear.all.args.count",
+                    "This command does not expect extra arguments, are you sure that you want to reset everybody's permissions?"
+            ));
+
+        city.resetAll(flag);
+
+        return new CommandResult<>(new Message("cmd.city.clear.success",
+                "The direct permissions were removed successfully. The default permission will be applied now."), true, true);
     }
 
     @Slow
@@ -763,6 +867,84 @@ public class PermissionCommands
 
     @Slow
     @Async
+    private CommandResult<?> resetPlot(CommandEvent cmd, PermissionFlag flag) throws DataSourceException
+    {
+        Plot plot = mineCity.getPlot(cmd.position.getBlock()).orElse(null);
+        if(plot == null)
+            return new CommandResult<>(new Message("cmd.plot.clear.not-claimed", "You are not inside a plot"));
+
+        if(!cmd.sender.getPlayerId().equals(plot.owner()))
+            return new CommandResult<>(new Message("cmd.plot.clear.no-permission",
+                    "You are not allowed to change the ${plot}'s permissions",
+                    new Object[]{"plot",plot.getName()}
+            ));
+
+        if(cmd.args.isEmpty())
+            return new CommandResult<>(new Message("cmd.plot.clear.no-args",
+                    "Type a player name or a group name followed by a city name if the group is from a different city"
+            ));
+        else if(cmd.args.size() == 1)
+        {
+            String playerName = cmd.args.get(0);
+            Optional<PlayerID> opt = mineCity.findPlayer(playerName);
+            if(!opt.isPresent())
+            {
+                Optional<City> optCity = mineCity.dataSource.getCityByName(playerName);
+                if(optCity.isPresent())
+                    return new CommandResult<>(new Message("cmd.plot.clear.got-city-expected-player",
+                            "You've typed a city name, type a player name instead to reset a specific player or type a " +
+                                    "group name after the city name to reset that specific group. Do not use spaces in the names."
+                    ));
+
+                return new CommandResult<>(new Message("cmd.plot.clear.player-not-found",
+                        "No player was found with name ${name}", new Object[]{"name",playerName}
+                ));
+            }
+
+            PlayerID player = opt.get();
+            plot.reset(flag, player);
+
+            return new CommandResult<>(new Message("cmd.plot.clear.success.player",
+                    "The direct permission was removed from ${player} successfully, the default permission will be applied now.",
+                    new Object[]{"player", player.getName()}
+            ), true, true);
+        }
+        else
+        {
+            Optional<City> cityOpt = mineCity.dataSource.getCityByName(cmd.args.get(0));
+            Optional<Group> groupOpt = cityOpt.map(c-> plot.getCity().getGroup(cmd.args.get(1)));
+
+            if(cmd.args.size() > 2)
+                return new CommandResult<>(new Message("cmd.plot.clear.too-many-args",
+                        "You've typed too many arguments, you can't give reason messages when resetting somebody's permission."
+                ));
+
+            if(groupOpt.isPresent())
+            {
+                Group group = groupOpt.get();
+
+                plot.reset(flag, group.getIdentity());
+
+                return new CommandResult<>(new Message("cmd.plot.clear.success.group",
+                        "The direct permission was removed from the the group ${group} from ${home} successfully, the default permission will be applied now.",
+                        new Object[][]{{"home", group.home.getName()},{"group",group.getName()}}
+                ), true, true);
+            }
+
+            if(cityOpt.isPresent())
+                return new CommandResult<>(new Message("cmd.plot.clear.group-not-found",
+                        "The city ${city} does not have a group named ${group}",
+                        new Object[][]{{"city",cityOpt.get().getName()},{"group",cmd.args.get(1)}}
+                ));
+
+            return new CommandResult<>(new Message("cmd.plot.clear.city-not-found",
+                    "No city was found with name ${name}", new Object[]{"name",cmd.args.get(0)}
+            ));
+        }
+    }
+
+    @Slow
+    @Async
     private CommandResult<?> denyAllPlot(CommandEvent cmd, PermissionFlag flag)
     {
         assert cmd.position != null && cmd.sender.getPlayerId() != null;
@@ -812,6 +994,31 @@ public class PermissionCommands
 
         return new CommandResult<>(new Message("cmd.plot.allow.success",
                 "The permission was granted successfully"), true, true);
+    }
+
+    @Slow
+    @Async
+    private CommandResult<?> resetAllPlot(CommandEvent cmd, PermissionFlag flag)
+    {
+        Plot plot = mineCity.getPlot(cmd.position.getBlock()).orElse(null);
+        if(plot == null)
+            return new CommandResult<>(new Message("cmd.plot.reset.not-claimed", "You are not inside a plot"));
+
+        if(!cmd.sender.getPlayerId().equals(plot.owner()))
+            return new CommandResult<>(new Message("cmd.plot.reset.no-permission",
+                    "You are not allowed to change the ${plot}'s permissions",
+                    new Object[]{"plot",plot.getName()}
+            ));
+
+        if(!cmd.args.isEmpty())
+            return new CommandResult<>(new Message("cmd.plot.reset.all.args.count",
+                    "This command does not expect extra arguments, are you sure that you want to reset everybody's permissions?"
+            ));
+
+        plot.resetAll(flag);
+
+        return new CommandResult<>(new Message("cmd.plot.reset.success",
+                "The direct permissions were removed successfully. The default permission will be applied now."), true, true);
     }
 
     @Slow
@@ -1156,6 +1363,97 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "city.reset.enter", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetEnter(CommandEvent cmd)
+            throws DataSourceException
+    {
+        return reset(cmd, PermissionFlag.ENTER);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.reset.click", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetClick(CommandEvent cmd)
+            throws DataSourceException
+    {
+        return reset(cmd, PermissionFlag.CLICK);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.reset.pickup", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetPickup(CommandEvent cmd)
+            throws DataSourceException
+    {
+        return reset(cmd, PermissionFlag.PICKUP);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.reset.harvest", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetHarvest(CommandEvent cmd) throws DataSourceException
+    {
+        return reset(cmd, PermissionFlag.HARVEST);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.reset.open", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetOpen(CommandEvent cmd) throws DataSourceException
+    {
+        return reset(cmd, PermissionFlag.OPEN);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.reset.pvp", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetPVP(CommandEvent cmd) throws DataSourceException
+    {
+        return reset(cmd, PermissionFlag.PVP);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.reset.pvc", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetPVC(CommandEvent cmd) throws DataSourceException
+    {
+        return reset(cmd, PermissionFlag.PVC);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.reset.modify", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetModify(CommandEvent cmd) throws DataSourceException
+    {
+        return reset(cmd, PermissionFlag.MODIFY);
+    }
+
+    @Slow
+    @Async
     @Command(value = "city.allow.all.enter", console = false)
     public CommandResult<?> allowAllEnter(CommandEvent cmd)
     {
@@ -1216,6 +1514,70 @@ public class PermissionCommands
     public CommandResult<?> allowAllModify(CommandEvent cmd)
     {
         return allowAll(cmd, PermissionFlag.MODIFY);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.reset.all.enter", console = false)
+    public CommandResult<?> resetAllEnter(CommandEvent cmd)
+    {
+        return resetAll(cmd, PermissionFlag.ENTER);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.reset.all.click", console = false)
+    public CommandResult<?> resetAllClick(CommandEvent cmd)
+    {
+        return resetAll(cmd, PermissionFlag.CLICK);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.reset.all.pickup", console = false)
+    public CommandResult<?> resetAllPickup(CommandEvent cmd)
+    {
+        return resetAll(cmd, PermissionFlag.PICKUP);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.reset.all.harvest", console = false)
+    public CommandResult<?> resetAllHarvest(CommandEvent cmd)
+    {
+        return resetAll(cmd, PermissionFlag.HARVEST);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.reset.all.open", console = false)
+    public CommandResult<?> resetAllOpen(CommandEvent cmd)
+    {
+        return resetAll(cmd, PermissionFlag.OPEN);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.reset.all.pvp", console = false)
+    public CommandResult<?> resetAllPVP(CommandEvent cmd)
+    {
+        return resetAll(cmd, PermissionFlag.PVP);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.reset.all.pvc", console = false)
+    public CommandResult<?> resetAllPVC(CommandEvent cmd)
+    {
+        return resetAll(cmd, PermissionFlag.PVC);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.reset.all.modify", console = false)
+    public CommandResult<?> resetAllModify(CommandEvent cmd)
+    {
+        return resetAll(cmd, PermissionFlag.MODIFY);
     }
 
     @Slow
@@ -1472,6 +1834,97 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "plot.reset.enter", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetEnterPlot(CommandEvent cmd)
+            throws DataSourceException
+    {
+        return resetPlot(cmd, PermissionFlag.ENTER);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.reset.click", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetClickPlot(CommandEvent cmd)
+            throws DataSourceException
+    {
+        return resetPlot(cmd, PermissionFlag.CLICK);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.reset.pickup", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetPickupPlot(CommandEvent cmd)
+            throws DataSourceException
+    {
+        return resetPlot(cmd, PermissionFlag.PICKUP);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.reset.harvest", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetHarvestPlot(CommandEvent cmd) throws DataSourceException
+    {
+        return resetPlot(cmd, PermissionFlag.HARVEST);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.reset.open", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetOpenPlot(CommandEvent cmd) throws DataSourceException
+    {
+        return resetPlot(cmd, PermissionFlag.OPEN);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.reset.pvp", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetPVPPlot(CommandEvent cmd) throws DataSourceException
+    {
+        return resetPlot(cmd, PermissionFlag.PVP);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.reset.pvc", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetPVCPlot(CommandEvent cmd) throws DataSourceException
+    {
+        return resetPlot(cmd, PermissionFlag.PVC);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.reset.modify", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> resetModifyPlot(CommandEvent cmd) throws DataSourceException
+    {
+        return resetPlot(cmd, PermissionFlag.MODIFY);
+    }
+
+    @Slow
+    @Async
     @Command(value = "plot.allow.all.enter", console = false)
     public CommandResult<?> allowAllEnterPlot(CommandEvent cmd)
     {
@@ -1596,5 +2049,69 @@ public class PermissionCommands
     public CommandResult<?> denyAllModifyPlot(CommandEvent cmd)
     {
         return denyAllPlot(cmd, PermissionFlag.MODIFY);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.reset.all.enter", console = false)
+    public CommandResult<?> resetAllEnterPlot(CommandEvent cmd)
+    {
+        return resetAllPlot(cmd, PermissionFlag.ENTER);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.reset.all.click", console = false)
+    public CommandResult<?> resetAllClickPlot(CommandEvent cmd)
+    {
+        return resetAllPlot(cmd, PermissionFlag.CLICK);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.reset.all.pickup", console = false)
+    public CommandResult<?> resetAllPickupPlot(CommandEvent cmd)
+    {
+        return resetAllPlot(cmd, PermissionFlag.PICKUP);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.reset.all.harvest", console = false)
+    public CommandResult<?> resetAllHarvestPlot(CommandEvent cmd)
+    {
+        return resetAllPlot(cmd, PermissionFlag.HARVEST);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.reset.all.open", console = false)
+    public CommandResult<?> resetAllOpenPlot(CommandEvent cmd)
+    {
+        return resetAllPlot(cmd, PermissionFlag.OPEN);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.reset.all.pvp", console = false)
+    public CommandResult<?> resetAllPVPPlot(CommandEvent cmd)
+    {
+        return resetAllPlot(cmd, PermissionFlag.PVP);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.reset.all.pvc", console = false)
+    public CommandResult<?> resetAllPVCPlot(CommandEvent cmd)
+    {
+        return resetAllPlot(cmd, PermissionFlag.PVC);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.reset.all.modify", console = false)
+    public CommandResult<?> resetAllModifyPlot(CommandEvent cmd)
+    {
+        return resetAllPlot(cmd, PermissionFlag.MODIFY);
     }
 }
