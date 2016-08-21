@@ -3,7 +3,10 @@ package br.com.gamemods.minecity.bukkit;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.Slow;
-import br.com.gamemods.minecity.api.command.*;
+import br.com.gamemods.minecity.api.command.Arg;
+import br.com.gamemods.minecity.api.command.CommandInfo;
+import br.com.gamemods.minecity.api.command.LegacyFormat;
+import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.ChunkPos;
@@ -11,8 +14,8 @@ import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -52,28 +55,38 @@ public class MineCityPlugin extends JavaPlugin
     @Override
     public void onEnable()
     {
-        LegacyFormat.BLACK.server = ChatColor.BLACK;
-        LegacyFormat.DARK_BLUE.server = ChatColor.DARK_BLUE;
-        LegacyFormat.DARK_GREEN.server = ChatColor.DARK_GREEN;
-        LegacyFormat.DARK_AQUA.server = ChatColor.DARK_AQUA;
-        LegacyFormat.DARK_RED.server = ChatColor.DARK_RED;
-        LegacyFormat.DARK_PURPLE.server = ChatColor.DARK_PURPLE;
-        LegacyFormat.GOLD.server = ChatColor.GOLD;
-        LegacyFormat.GRAY.server = ChatColor.GRAY;
-        LegacyFormat.DARK_GRAY.server = ChatColor.DARK_GRAY;
-        LegacyFormat.BLUE.server = ChatColor.BLUE;
-        LegacyFormat.GREEN.server = ChatColor.GREEN;
-        LegacyFormat.AQUA.server = ChatColor.AQUA;
-        LegacyFormat.RED.server = ChatColor.RED;
-        LegacyFormat.LIGHT_PURPLE.server = ChatColor.LIGHT_PURPLE;
-        LegacyFormat.YELLOW.server = ChatColor.YELLOW;
-        LegacyFormat.WHITE.server = ChatColor.WHITE;
-        LegacyFormat.RESET.server = ChatColor.RESET;
-        LegacyFormat.MAGIC.server = ChatColor.MAGIC;
-        LegacyFormat.BOLD.server = ChatColor.BOLD;
-        LegacyFormat.STRIKE.server = ChatColor.STRIKETHROUGH;
-        LegacyFormat.UNDERLINE.server = ChatColor.UNDERLINE;
-        LegacyFormat.ITALIC.server = ChatColor.ITALIC;
+        BukkitTransformer transformer;
+        try
+        {
+            LegacyFormat.BLACK.server = ChatColor.BLACK;
+            LegacyFormat.DARK_BLUE.server = ChatColor.DARK_BLUE;
+            LegacyFormat.DARK_GREEN.server = ChatColor.DARK_GREEN;
+            LegacyFormat.DARK_AQUA.server = ChatColor.DARK_AQUA;
+            LegacyFormat.DARK_RED.server = ChatColor.DARK_RED;
+            LegacyFormat.DARK_PURPLE.server = ChatColor.DARK_PURPLE;
+            LegacyFormat.GOLD.server = ChatColor.GOLD;
+            LegacyFormat.GRAY.server = ChatColor.GRAY;
+            LegacyFormat.DARK_GRAY.server = ChatColor.DARK_GRAY;
+            LegacyFormat.BLUE.server = ChatColor.BLUE;
+            LegacyFormat.GREEN.server = ChatColor.GREEN;
+            LegacyFormat.AQUA.server = ChatColor.AQUA;
+            LegacyFormat.RED.server = ChatColor.RED;
+            LegacyFormat.LIGHT_PURPLE.server = ChatColor.LIGHT_PURPLE;
+            LegacyFormat.YELLOW.server = ChatColor.YELLOW;
+            LegacyFormat.WHITE.server = ChatColor.WHITE;
+            LegacyFormat.RESET.server = ChatColor.RESET;
+            LegacyFormat.MAGIC.server = ChatColor.MAGIC;
+            LegacyFormat.BOLD.server = ChatColor.BOLD;
+            LegacyFormat.STRIKE.server = ChatColor.STRIKETHROUGH;
+            LegacyFormat.UNDERLINE.server = ChatColor.UNDERLINE;
+            LegacyFormat.ITALIC.server = ChatColor.ITALIC;
+
+            transformer = new SpigotTransformer();
+        }
+        catch(NoClassDefFoundError ignored)
+        {
+            transformer = new BukkitTransformer();
+        }
 
         try
         {
@@ -96,7 +109,6 @@ public class MineCityPlugin extends JavaPlugin
                 adjustDefaultFlag(yaml, "permissions.default.reserve.", flag, flag.defaultReserve, config.defaultReserveFlags);
             }
 
-            MessageTransformer transformer = new MessageTransformer();
             transformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages-en.xml"));
             instance = new MineCityBukkit(this, config, transformer);
             instance.mineCity.dataSource.initDB();
@@ -120,7 +132,7 @@ public class MineCityPlugin extends JavaPlugin
                                         sb.append('[');
                                     else
                                         sb.append('<');
-                                    sb.append(transformer.toSimpleText(new Message(
+                                    sb.append(instance.mineCity.messageTransformer.toSimpleText(new Message(
                                             "cmd."+info.commandId+".arg."+arg.name().toLowerCase().replaceAll("\\s+","-"),
                                             arg.name()
                                     )));

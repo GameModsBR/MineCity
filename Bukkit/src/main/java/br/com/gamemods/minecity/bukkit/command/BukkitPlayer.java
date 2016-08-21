@@ -505,6 +505,18 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
         }
     }
 
+    @Override
+    public void send(Message message)
+    {
+        plugin.transformer.send(sender, message);
+    }
+
+    @Override
+    public void send(Message[] messages)
+    {
+        plugin.transformer.send(sender, messages);
+    }
+
     public class BukkitSelection extends DisplayedSelection<Material>
     {
         private BukkitTask autoHide;

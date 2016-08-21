@@ -4,7 +4,6 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.command.CommandResult;
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.command.MessageTransformer;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -48,7 +47,7 @@ public class MineCityPluginTest
         when(joserobjr.getUniqueId()).thenReturn(UUID.fromString("185e2176-0095-4ff8-a201-6f2aed9a032a"));
         when(joserobjr.getLocation()).thenReturn(new Location(world, 100,64,250));
 
-        bukkit = new MineCityBukkit(plugin, new MineCityConfig(), new MessageTransformer());
+        bukkit = new MineCityBukkit(plugin, new MineCityConfig(), new BukkitTransformer());
         mineCity = bukkit.mineCity;
     }
 

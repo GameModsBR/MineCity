@@ -6,7 +6,6 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.bukkit.command.BukkitCommandSender;
@@ -64,11 +63,13 @@ public class MineCityBukkit implements Server, Listener
     public final Map<PlayerID, BukkitPlayer> playerIdMap = new HashMap<>();
     public final Map<World, WorldDim> worldMap = new HashMap<>();
     public final EntityProtections entityProtections;
+    public final BukkitTransformer transformer;
     private String selectionToolTitle;
     private List<String> selectionToolLore;
 
-    public MineCityBukkit(MineCityPlugin plugin, MineCityConfig config, MessageTransformer transformer)
+    public MineCityBukkit(MineCityPlugin plugin, MineCityConfig config, BukkitTransformer transformer)
     {
+        this.transformer = transformer;
         this.plugin = plugin;
         logger = plugin.getLogger();
         scheduler = plugin.getScheduler();
