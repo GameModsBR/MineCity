@@ -32,6 +32,13 @@ public abstract class DisplayedSelection<B> extends Selection
         updateDisplay();
     }
 
+    public void hide()
+    {
+        Map<BlockPos, B> last = display;
+        display = new HashMap<>(0);
+        send(last);
+    }
+
     @Override
     public void clear()
     {

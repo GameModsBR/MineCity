@@ -53,6 +53,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
     private String confirmCode;
     private short confirmExpires;
     private ForgeSelection selection;
+    private short hideSelectionTimer = 0;
 
     public ForgePlayer(MineCityForgeMod mod, EntityPlayerMP player)
     {
@@ -88,6 +89,11 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
         tickConfirm();
         updateGroups();
         checkPosition();
+        if(hideSelectionTimer > 0)
+        {
+            if(--hideSelectionTimer == 0)
+                selection.hide();
+        }
     }
 
     public void checkStepOnFakeBlock()
@@ -583,6 +589,13 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
             linesB = Blocks.lapis_block;
             lines = Blocks.glass;
             extension = Blocks.glowstone;
+        }
+
+        @Override
+        public void updateDisplay()
+        {
+            super.updateDisplay();
+            hideSelectionTimer = 60*20;
         }
 
         @Override

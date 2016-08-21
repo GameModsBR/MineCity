@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -506,7 +507,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
 
     public class BukkitSelection extends DisplayedSelection<Material>
     {
-
+        private BukkitTask autoHide;
         protected BukkitSelection(@NotNull WorldDim world)
         {
             super(world);
@@ -517,6 +518,16 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
             linesB = Material.LAPIS_BLOCK;
             lines = Material.GLASS;
             extension = Material.GLOWSTONE;
+        }
+
+        @Override
+        public void updateDisplay()
+        {
+            super.updateDisplay();
+            if(autoHide != null)
+                autoHide.cancel();
+
+            autoHide = plugin.scheduler.runTaskLater(plugin.plugin, this::hide, 60*20);
         }
 
         @Override
