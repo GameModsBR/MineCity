@@ -1095,7 +1095,10 @@ public class EntityProtections extends AbstractProtection
     {
         FlagHolder holder = plugin.getFlagHolder(item.getLocation());
 
-        Optional<Message> denial;
+        Optional<Message> denial = holder.can(player, MODIFY);
+        if(!denial.isPresent())
+            return denial;
+
         if(harvest)
         {
             denial = holder.can(player, HARVEST);
