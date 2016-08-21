@@ -18,8 +18,7 @@ import java.text.Format;
 import java.text.NumberFormat;
 import java.util.*;
 
-import static br.com.gamemods.minecity.api.StringUtil.identity;
-import static br.com.gamemods.minecity.api.StringUtil.replaceTokens;
+import static br.com.gamemods.minecity.api.StringUtil.*;
 import static br.com.gamemods.minecity.api.command.LegacyFormat.*;
 
 public class MessageTransformer
@@ -118,6 +117,16 @@ public class MessageTransformer
     public String[] toMultilineSimpleText(Message message)
     {
         return toSimpleText(message).split("\n");
+    }
+
+    public String toJson(Message message)
+    {
+        Component component = toComponent(message);
+        component.apply(Locale.getDefault(), message.getArgs());
+        StringBuilder sb = new StringBuilder("[\"\",");
+        component.toJson(sb);
+        sb.append(']');
+        return sb.toString();
     }
 
     protected Component parse(String message) throws SAXException
@@ -483,6 +492,8 @@ public class MessageTransformer
         public Hover hover;
         public Component parent;
         public List<Component> extra = new ArrayList<>(2);
+
+        protected abstract void toJson(StringBuilder sb);
 
         public abstract boolean splitNewLines(List<Component> list);
 
@@ -866,6 +877,50 @@ public class MessageTransformer
             tokens.forEach((i,q)-> q.forEach((t)-> sb.insert(i, "${"+t+"}")));
             return sb.toString();
         }
+
+        @Override
+        protected void toJson(StringBuilder sb)
+        {
+            sb.append("{\"text\":\"").append(escapeJson(literalValue())).append("\"");
+            if(color != null && color != RESET)
+            {
+                sb.append(",\"color\":\"").append(color.name().toLowerCase()).append('"');
+                for(LegacyFormat format: style)
+                    switch(format)
+                    {
+                        case BOLD: sb.append(",\"bold\":true"); break;
+                        case ITALIC: sb.append(",\"italic\":true"); break;
+                        case UNDERLINE: sb.append(",\"underlined\":true"); break;
+                        case STRIKE: sb.append(",\"strikethrough\":true"); break;
+                        case MAGIC: sb.append(",\"obfuscated\":true"); break;
+                    }
+            }
+
+            if(click != null)
+            {
+                sb.append(",\"clickEvent\":");
+                click.toJson(sb);
+            }
+
+            if(hover != null)
+            {
+                sb.append(",\"hoverEvent\":");
+                hover.toJson(sb);
+            }
+
+            if(!extra.isEmpty())
+            {
+                sb.append(",\"extra\":[");
+                for(Component comp: extra)
+                {
+                    comp.toJson(sb);
+                    sb.append(',');
+                }
+                sb.setCharAt(sb.length()-1, ']');
+            }
+
+            sb.append('}');
+        }
     }
 
     protected abstract class Click implements Cloneable
@@ -884,6 +939,8 @@ public class MessageTransformer
         }
 
         public abstract void replaceStrings(Map<String, String> replacements);
+
+        protected abstract void toJson(StringBuilder sb);
     }
 
     protected final class ClickCommand extends Click
@@ -915,6 +972,21 @@ public class MessageTransformer
                 throw new RuntimeException(e);
             }
         }
+
+        @Override
+        protected void toJson(StringBuilder sb)
+        {
+            sb.append("{\"action\":\"");
+            switch(action)
+            {
+                case RUN: sb.append("run_command"); break;
+                case SUGGEST: sb.append("suggest_command"); break;
+                case OPEN_URL: sb.append("open_url"); break;
+                default:
+                    throw new UnsupportedOperationException("Unsupported click action: "+action);
+            }
+            sb.append("\",\"value\":\"").append(escapeJson(value)).append("\"}");
+        }
     }
 
     protected enum ClickAction
@@ -939,6 +1011,8 @@ public class MessageTransformer
 
         public void replaceStrings(Map<String, String> replacements)
         {}
+
+        protected abstract void toJson(StringBuilder sb);
     }
 
     protected final class HoverMessage extends Hover
@@ -954,6 +1028,14 @@ public class MessageTransformer
         public void replace(Locale locale, Map<String, Object> replacements)
         {
             message.replace(locale, replacements);
+        }
+
+        @Override
+        protected void toJson(StringBuilder sb)
+        {
+            sb.append("{\"action\":\"show_text\",\"value\":");
+            message.toJson(sb);
+            sb.append('}');
         }
 
         @Override
@@ -1000,6 +1082,14 @@ public class MessageTransformer
         }
 
         @Override
+        protected void toJson(StringBuilder sb)
+        {
+            sb.append("{\"action\":\"show_entity\",\"value\":\"{id:").append(escapeJson(id))
+                    .append(",name:").append(escapeJson(name.toString())).append(",type:").append(escapeJson(type))
+                    .append("}\"}");
+        }
+
+        @Override
         protected HoverEntity clone()
         {
             try
@@ -1041,6 +1131,12 @@ public class MessageTransformer
             {
                 throw new RuntimeException(e);
             }
+        }
+
+        @Override
+        protected void toJson(StringBuilder sb)
+        {
+            sb.append("{\"action\":\"show_achievement\",\"value\":\"").append(escapeJson(id)).append("\"}");
         }
     }
 }

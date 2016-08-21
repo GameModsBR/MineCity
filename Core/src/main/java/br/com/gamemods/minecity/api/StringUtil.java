@@ -89,4 +89,9 @@ public class StringUtil
         matcher.appendTail(builder);
         return builder.toString();
     }
+
+    public static String escapeJson(String str)
+    {
+        return str.replace("\\", "\\\\").replaceAll("(\r\n|\r|\n)","\n").replace("\n","\\n").replace("\"", "\\\"");
+    }
 }
