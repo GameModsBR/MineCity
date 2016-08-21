@@ -41,6 +41,13 @@ public final class Reserve implements ChunkOwner, FlagHolder
         return island.getCity().mineCity.defaultReserveFlags.can(permissible, action);
     }
 
+    @NotNull
+    @Override
+    public Identity<?> owner()
+    {
+        return island.getCity().mineCity.nature(island.world).owner();
+    }
+
     @Override
     public boolean equals(Object o)
     {
