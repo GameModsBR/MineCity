@@ -137,7 +137,7 @@ public class MineCity
     @NotNull
     public ClaimedChunk provideChunk(@NotNull ChunkPos pos, @Nullable ClaimedChunk cache)
     {
-        if(cache != null && pos.equals(cache.chunk))
+        if(cache != null && !cache.isInvalid() && pos.equals(cache.chunk))
             return cache;
 
         return provideChunk(pos);
@@ -192,7 +192,7 @@ public class MineCity
     {
         Nature nature = natures.get(world);
         if(nature != null)
-            nature.invalidate();
+            unloadNature(world);
 
         nature = dataSource.getNature(world);
         world.nature = nature;
@@ -228,7 +228,11 @@ public class MineCity
                 .orElseGet(()-> new ClaimedChunk(nature(pos.world), pos));
 
         if(!getChunkProvider().map(p-> p.setClaim(chunk)).orElse(false))
-            chunks.put(pos, chunk);
+        {
+            ClaimedChunk removed = chunks.put(pos, chunk);
+            if(removed != null)
+                removed.invalidate();
+        }
 
         mapCache.remove(pos);
 
@@ -262,7 +266,11 @@ public class MineCity
 
         ClaimedChunk claim = Inconsistency.claim(pos);
         if(!getChunkProvider().map(p-> p.setClaim(claim)).orElse(false))
-            chunks.put(pos, claim);
+        {
+            ClaimedChunk removed = chunks.put(pos, claim);
+            if(removed != null)
+                removed.invalidate();
+        }
         mapCache.remove(pos);
 
         reloadQueue.offer(pos);
@@ -318,15 +326,25 @@ public class MineCity
     public ClaimedChunk unloadChunk(@NotNull ChunkPos pos)
     {
         ClaimedChunk chunk = chunks.remove(pos);
-        return getChunkProvider().map(p-> p.getClaim(pos)).orElse(chunk);
+        chunk = getChunkProvider().map(p-> p.getClaim(pos)).orElse(chunk);
+
+        if(chunk != null)
+            chunk.invalidate();
+        return chunk;
     }
 
     @Nullable
     public Nature unloadNature(@NotNull WorldDim world)
     {
-        Predicate<ChunkPos> condition = c -> c.world.equals(world);
-        chunks.keySet().removeIf(condition);
-        mapCache.keySet().removeIf(condition);
+        chunks.entrySet().removeIf(e-> {
+            if(e.getKey().world.equals(world))
+            {
+                e.getValue().invalidate();
+                return true;
+            }
+            return false;
+        });
+        mapCache.keySet().removeIf(c -> c.world.equals(world));
 
         Nature nature = natures.remove(world);
         if(nature != null)

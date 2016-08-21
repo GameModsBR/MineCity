@@ -431,7 +431,10 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
             IChunk chunk = (IChunk) pos.instance;
             if(chunk.isMineCityChunkValid())
             {
+                ClaimedChunk old = chunk.getMineCityClaim();
                 chunk.setMineCityClaim(claim);
+                if(old != null && old != claim)
+                    old.invalidate();
                 return true;
             }
         }

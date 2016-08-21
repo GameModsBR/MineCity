@@ -25,7 +25,6 @@ public interface CommandSender extends Permissible
      * Gets the sender position when the sender is locatable
      * @return The position or {@code null} when no position is available
      */
-    @Nullable
     EntityPos getPosition();
 
     /**
@@ -38,14 +37,12 @@ public interface CommandSender extends Permissible
      * Gets a PlayerID if {@link #isPlayer()} is {@code true}
      * @return The player id or {@code null} if this is not a player
      */
-    @Nullable
     PlayerID getPlayerId();
 
     /**
      * Gets the direction that this sender is looking
      * @return The direction or {@code null} if this sender is not in the world
      */
-    @Nullable
     Direction getCardinalDirection();
 
     /**

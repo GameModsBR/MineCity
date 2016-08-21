@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ public final class ClaimedChunk
     public final boolean reserve;
     @Nullable
     private Set<Plot> plots;
+    private boolean invalid;
 
     public ClaimedChunk(@NotNull ChunkOwner owner, @NotNull ChunkPos chunk)
     {
@@ -68,20 +70,38 @@ public final class ClaimedChunk
         return Optional.empty();
     }
 
+    public Optional<Nature> nature()
+    {
+        Nature nature = chunk.world.nature;
+        if(nature != null)
+            return Optional.of(nature);
+
+        if(owner instanceof Nature)
+            return Optional.of((Nature) owner);
+
+        return Optional.empty();
+    }
+
+    /**
+     * @throws NoSuchElementException If the chunk is reserved but the nature object is not available
+     */
     @NotNull
     public FlagHolder getFlagHolder()
     {
         if(reserve)
-            return chunk.world.nature;
+            return nature().get();
 
         return getIsland().<FlagHolder>map(Island::getCity).orElse(chunk.world.nature);
     }
 
+    /**
+     * @throws NoSuchElementException If the chunk is reserved but the nature object is not available
+     */
     @NotNull
     public FlagHolder getFlagHolder(int blockX, int blockY, int blockZ)
     {
         if(reserve)
-            return chunk.world.nature;
+            return nature().get();
 
         Optional<Plot> plot = getPlotAt(blockX, blockY, blockZ);
         if(plot.isPresent())
@@ -111,6 +131,16 @@ public final class ClaimedChunk
     public ChunkPos getChunk()
     {
         return chunk;
+    }
+
+    public boolean isInvalid()
+    {
+        return invalid;
+    }
+
+    public void invalidate()
+    {
+        invalid = true;
     }
 
     @Override

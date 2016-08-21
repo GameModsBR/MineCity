@@ -1073,7 +1073,6 @@
     <action>
         <msg id="denied">You don't have permission to perform this action.</msg>
         <msg id="group-loading">You can't perform this action yet, your permission groups are still loading.</msg>
-        <msg id="chunk.inconsistent">This chunk is inconsistent.</msg>
         <teleport>
             <msg id="unsupported">Unsupported operation</msg>
             <msg id="cancelled">The teleport were cancelled</msg>
@@ -1089,6 +1088,11 @@
             <msg id="lore">Right click two blocks in the world<br/>to mark a cuboid selection.</msg>
         </selection>
     </tool>
+    <inconsistent>
+        <msg id="chunk">This chunk is inconsistent.</msg>
+        <msg id="plot">This plot is inconsistent.</msg>
+        <msg id="city">This city is inconsistent.</msg>
+    </inconsistent>
     <msg id="task.player.load.groups.failed">
         Oops, an error occurred while loading your groups: ${error}
     </msg>

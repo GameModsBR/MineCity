@@ -28,6 +28,8 @@ import static java.util.Collections.emptyMap;
 
 public final class Plot extends ExceptStoredHolder
 {
+    public static final Message INCONSISTENT_PLOT_MESSAGE = new Message("inconsistent.plot", "This plot is inconsistent.");
+
     public final int id;
 
     @NotNull
@@ -111,7 +113,7 @@ public final class Plot extends ExceptStoredHolder
     public Optional<Message> can(@NotNull Identity<?> identity, @NotNull PermissionFlag action)
     {
         if(invalid)
-            return Optional.of(Inconsistency.INCONSISTENT_CHUNK_MESSAGE);
+            return Optional.of(INCONSISTENT_PLOT_MESSAGE);
 
         if(identity.getType() == Identity.Type.NATURE)
             return Optional.of(new Message("Plots are protected from natural actions"));
@@ -155,7 +157,7 @@ public final class Plot extends ExceptStoredHolder
     public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
     {
         if(invalid)
-            return Optional.of(Inconsistency.INCONSISTENT_CHUNK_MESSAGE);
+            return Optional.of(INCONSISTENT_PLOT_MESSAGE);
 
         Identity<UUID> identity = entity.getIdentity();
         if(owner != null)

@@ -44,6 +44,9 @@ public class SnowmanData
 
     public boolean checkFormSnow(Snowman entity, Block block)
     {
+        if(claim.isInvalid())
+            claim = bukkit.mineCity.provideChunk(claim.chunk);
+
         int cx = block.getX();
         int cy = block.getY();
         int cz = block.getZ();

@@ -27,6 +27,8 @@ import static br.com.gamemods.minecity.api.StringUtil.identity;
 
 public final class City extends ExceptStoredHolder
 {
+    public static final Message INCONSISTENT_CITY_MESSAGE = new Message("inconsistent.city", "This city is inconsistent.");
+
     @NotNull
     public final MineCity mineCity;
 
@@ -259,7 +261,7 @@ public final class City extends ExceptStoredHolder
     public Optional<Message> can(@NotNull Identity<?> identity, @NotNull PermissionFlag action)
     {
         if(invalid)
-            return Optional.of(Inconsistency.INCONSISTENT_CHUNK_MESSAGE);
+            return Optional.of(INCONSISTENT_CITY_MESSAGE);
 
         if(identity.equals(owner))
             return Optional.empty();
@@ -275,7 +277,7 @@ public final class City extends ExceptStoredHolder
     public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
     {
         if(invalid)
-            return Optional.of(Inconsistency.INCONSISTENT_CHUNK_MESSAGE);
+            return Optional.of(INCONSISTENT_CITY_MESSAGE);
 
         if(entity.getIdentity().equals(owner))
             return Optional.empty();

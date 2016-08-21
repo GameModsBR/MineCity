@@ -20,7 +20,7 @@ public class MovementMonitor
     public final MineCityBukkit plugin;
     public final Entity entity;
     private final MovementListener listener;
-    public ChunkPos lastChunk;
+    public ClaimedChunk lastClaim;
     public int lastX, lastY, lastZ;
     public City lastCity;
     public Plot lastPlot;
@@ -35,10 +35,10 @@ public class MovementMonitor
         lastX = location.getBlockX();
         lastY = location.getBlockY();
         lastZ = location.getBlockZ();
-        lastChunk = new ChunkPos(plugin.world(location.getWorld()), lastX >> 4, lastZ >> 4);
-        Optional<ClaimedChunk> chunk = plugin.mineCity.getChunk(lastChunk);
-        lastCity = chunk.flatMap(ClaimedChunk::getCity).orElse(null);
-        lastPlot = chunk.flatMap(c-> c.getPlotAt(lastX, lastY, lastZ)).orElse(null);
+        ChunkPos chunk = new ChunkPos(plugin.world(location.getWorld()), lastX >> 4, lastZ >> 4);
+        lastClaim = plugin.mineCity.provideChunk(chunk);
+        lastCity = lastClaim.getCity().orElse(null);
+        lastPlot = lastClaim.getPlotAt(lastX, lastY, lastZ).orElse(null);
     }
 
     @Contract(pure = true)
@@ -47,13 +47,19 @@ public class MovementMonitor
     {
         return lastPlot != null? lastPlot :
                 lastCity != null? lastCity :
-                        lastChunk.world.nature != null? lastChunk.world.nature :
-                                plugin.mineCity.nature(lastChunk.world)
+                        lastClaim.nature().orElseGet(()-> plugin.mineCity.nature(lastClaim.chunk.world))
                 ;
     }
 
     public Optional<Message> checkPosition(Location location)
     {
+        if(lastClaim.isInvalid())
+        {
+            lastClaim = plugin.mineCity.provideChunk(lastClaim.chunk);
+            lastCity = lastClaim.getCity().orElse(null);
+            lastPlot = lastClaim.getPlotAt(lastX, lastY, lastZ).orElse(null);
+        }
+
         int posX = location.getBlockX();
         int posY = location.getBlockY();
         int posZ = location.getBlockZ();
@@ -61,7 +67,7 @@ public class MovementMonitor
         int chunkZ = posZ >> 4;
         World worldObj = location.getWorld();
         WorldDim worldDim = plugin.world(worldObj);
-        if(lastChunk.x != chunkX || lastChunk.z != chunkZ || !lastChunk.world.equals(worldDim))
+        if(lastClaim.chunk.x != chunkX || lastClaim.chunk.z != chunkZ || !lastClaim.chunk.world.equals(worldDim))
         {
             ChunkPos chunk = new ChunkPos(worldDim, chunkX, chunkZ);
             ClaimedChunk claim = plugin.mineCity.getChunk(chunk).orElseGet(() -> Inconsistency.claim(chunk));
@@ -95,7 +101,7 @@ public class MovementMonitor
                 if(denial.isPresent())
                     return denial;
             }
-            else if(!lastChunk.world.equals(chunk.world))
+            else if(!lastClaim.chunk.world.equals(chunk.world))
             {
                 Nature nature = plugin.mineCity.nature(chunk.world);
                 denial = listener.onNatureChange(nature);
@@ -104,16 +110,14 @@ public class MovementMonitor
             }
 
             lastCity = city;
-            lastChunk = chunk;
+            lastClaim = claim;
             lastPlot = plot;
         }
         else if(posX != lastX || posY != lastY || posZ != lastZ)
         {
             if(lastCity != null)
             {
-                Plot plot = plugin.mineCity.getChunk(new ChunkPos(worldDim, chunkX, chunkZ))
-                        .flatMap(chunk -> chunk.getPlotAt(posX, posY, posZ))
-                        .orElse(null);
+                Plot plot = lastClaim.getPlotAt(posX, posY, posZ).orElse(null);
 
                 if(plot != lastPlot)
                 {
@@ -148,7 +152,7 @@ public class MovementMonitor
 
     public Location lastLocation()
     {
-        return plugin.location(new BlockPos(lastChunk.world, lastX, lastY, lastZ)).orElseGet(()->
+        return plugin.location(new BlockPos(lastClaim.chunk.world, lastX, lastY, lastZ)).orElseGet(()->
                 new Location(entity.getWorld(), lastX+0.5, lastY+0.5, lastZ+0.5)
         );
     }

@@ -58,19 +58,19 @@ public class LeashedEntityMonitor extends BukkitRunnable implements MovementList
 
             Entity vehicle = entity.getVehicle();
             if(vehicle == null)
-                teleport(new BlockPos(mov.lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
+                teleport(new BlockPos(mov.lastClaim.chunk.world, mov.lastX, mov.lastY, mov.lastZ));
             else
             {
                 Location vLoc = vehicle.getLocation();
-                Optional<World> world = plugin.world(mov.lastChunk.world);
+                Optional<World> world = plugin.world(mov.lastClaim.chunk.world);
                 if(!world.isPresent())
-                    teleport(new BlockPos(mov.lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
+                    teleport(new BlockPos(mov.lastClaim.chunk.world, mov.lastX, mov.lastY, mov.lastZ));
                 else
                 if(!vehicle.teleport(new Location(world.get(), mov.lastX+0.5, mov.lastY+0.5, mov.lastZ+0.5, vLoc.getYaw(), vLoc.getPitch())))
                 {
                     Entity passenger = vehicle.getPassenger();
                     vehicle.eject();
-                    teleport(new BlockPos(mov.lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
+                    teleport(new BlockPos(mov.lastClaim.chunk.world, mov.lastX, mov.lastY, mov.lastZ));
                     if(vehicle.teleport(new Location(world.get(), mov.lastX+0.5, mov.lastY+0.5, mov.lastZ+0.5, vLoc.getYaw(), vLoc.getPitch())))
                         player.getServer().callSyncMethod(()-> vehicle.setPassenger(passenger));
                 }

@@ -20,7 +20,7 @@ import java.util.*;
 
 public class Inconsistency implements ChunkOwner
 {
-    public static final Message INCONSISTENT_CHUNK_MESSAGE = new Message("chunk.inconsistent", "This chunk is inconsistent.");
+    public static final Message INCONSISTENT_CHUNK_MESSAGE = new Message("inconsistent.chunk", "This chunk is inconsistent.");
     public static final Inconsistency INSTANCE = new Inconsistency();
     public static final WorldDim WORLD = new WorldDim(-10000, "inconsistency", "Inconsistent");
     private static MineCity mineCity;
@@ -69,7 +69,9 @@ public class Inconsistency implements ChunkOwner
 
     public static ClaimedChunk claim(ChunkPos pos)
     {
-        return new ClaimedChunk(INSTANCE, pos);
+        ClaimedChunk chunk = new ClaimedChunk(INSTANCE, pos);
+        chunk.invalidate();
+        return chunk;
     }
 
     public static City getInconsistentCity()

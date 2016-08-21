@@ -276,7 +276,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     {
         City lastCity = mov.lastCity;
         Plot lastPlot = mov.lastPlot;
-        ChunkPos lastChunk = mov.lastChunk;
+        ChunkPos lastChunk = mov.lastClaim.chunk;
         Optional<Message> message = mov.checkPosition(location);
         if(message.isPresent())
         {
@@ -313,30 +313,28 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
 
         if(mov.lastCity != lastCity)
         {
+            Message title, subtitle;
             if(mov.lastCity != null)
             {
-                Message title = new Message("", "${name}", new Object[]{"name", mov.lastCity.getName()});
-                Message subtitle = mov.lastPlot != null? new Message("","${name}", new Object[]{"name", mov.lastPlot.getName()}) : null;
-                sendTitle(title, subtitle);
+                title = mov.lastCity.getId() > 0? Message.string(mov.lastCity.getName()) : null;
+                subtitle = mov.lastPlot != null? Message.string(mov.lastPlot.getName()) : null;
             }
             else
             {
-                Message title = new Message("enter.nature", LegacyFormat.GREEN+"Nature");
-                Message subtitle = new Message("","${name}", new Object[]{"name", mov.lastChunk.world.name()});
-                sendTitle(title, subtitle);
+                title = new Message("enter.nature", LegacyFormat.GREEN+"Nature");
+                subtitle = Message.string(mov.lastClaim.chunk.world.name());
             }
+            sendTitle(title, subtitle);
         }
         else if(mov.lastPlot != lastPlot)
         {
             if(mov.lastPlot != null)
             {
-                Message subtitle = new Message("","${name}", new Object[]{"name", mov.lastPlot.getName()});
-                sendTitle(null, subtitle);
+                sendTitle(null, Message.string(mov.lastPlot.getName()));
             }
             else
             {
-                Message title = new Message("", "${name}", new Object[]{"name", mov.lastCity.getName()});
-                sendTitle(title, null);
+                sendTitle(Message.string(mov.lastCity.getName()), null);
             }
         }
     }

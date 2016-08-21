@@ -55,7 +55,7 @@ public class Message
 
     public static Message string(String str)
     {
-        return new Message("","${arg}", new Object[]{"arg", str});
+        return new Message("","${a}", new Object[]{"a", str});
     }
 
     public Message(@NotNull String id, @Nullable String fallback, @Nullable Object[]... args)

@@ -1059,7 +1059,6 @@
     <action>
         <msg id="denied">Você não tem permissão para executar esta ação.</msg>
         <msg id="group-loading">Você não pode executar esta ação ainda porque seus grupos de permissões ainda estão carregando.</msg>
-        <msg id="chunk.inconsistent">Este chunk está inconsistente.</msg>
         <teleport>
             <msg id="unsupported">Operação não suportada</msg>
             <msg id="cancelled">O teleporte foi cancelado</msg>
@@ -1075,5 +1074,10 @@
             <msg id="lore">Clique com o botão direto em dois blocos no mundo<br/>para marcar uma seleção em cubo.</msg>
         </selection>
     </tool>
+    <inconsistent>
+        <msg id="chunk">Este chunk está inconsistente.</msg>
+        <msg id="plot">Este lote está inconsistente.</msg>
+        <msg id="city">Esta cidade está inconsistente.</msg>
+    </inconsistent>
     <msg id="task.player.load.groups.failed">Oops, ocorreu um erro ao carregar os seus grupos: ${error}</msg>
 </minecity-messages>
