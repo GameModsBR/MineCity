@@ -149,6 +149,9 @@
         <command id="city.perms.pickup" parent="city.check" cmd="pickup">
             <desc>View who can pickup dropped items in the city</desc>
         </command>
+        <command id="city.perms.harvest" parent="city.check" cmd="harvest">
+            <desc>View who can harvest productions from the city</desc>
+        </command>
         <command id="city.perms.open" parent="city.check" cmd="open">
             <desc>View who can open containers in the city</desc>
         </command>
@@ -175,6 +178,9 @@
         <command id="city.allow.pickup" parent="city.allow" cmd="pickup">
             <desc>Allows players to pickup dropped items</desc>
         </command>
+        <command id="city.allow.harvest" parent="city.allow" cmd="harvest">
+            <desc>Allows players to harvest productions like crops and wools</desc>
+        </command>
         <command id="city.allow.open" parent="city.allow" cmd="open">
             <desc>Allows players to open container like chests, furnaces, frames</desc>
         </command>
@@ -195,6 +201,9 @@
         </command>
         <command id="city.deny.pickup" parent="city.deny" cmd="pickup">
             <desc>Deny players to pickup dropped items</desc>
+        </command>
+        <command id="city.deny.harvest" parent="city.deny" cmd="harvest">
+            <desc>Deny players to harvest productions like crops and wools</desc>
         </command>
         <command id="city.deny.open" parent="city.deny" cmd="open">
             <desc>Deny players to open container like chests, furnaces, frames</desc>
@@ -219,6 +228,9 @@
         <command id="city.allow.all.pickup" parent="city.allow.all" cmd="pickup">
             <desc>Allows everybody to pickup dropped items, will also allow who were directly prohibited.</desc>
         </command>
+        <command id="city.allow.all.harvest" parent="city.allow.all" cmd="harvest">
+            <desc>Allows everybody to harvest productions like crops and wools. Will also allow who were directly prohibited.</desc>
+        </command>
         <command id="city.allow.all.open" parent="city.allow.all" cmd="open">
             <desc>Allows everybody to open container like chests, furnaces, frames. Will also allow who were directly prohibited.</desc>
         </command>
@@ -239,6 +251,9 @@
         </command>
         <command id="city.deny.all.pickup" parent="city.deny.all" cmd="pickup">
             <desc>Prohibits everybody to pickup dropped items. Will also prohibit who were directly allowed.</desc>
+        </command>
+        <command id="city.deny.all.harvest" parent="city.deny.all" cmd="harvest">
+            <desc>Prohibits everybody to harvest productions like crops and wools. Will also prohibit who were directly allowed.</desc>
         </command>
         <command id="city.deny.all.open" parent="city.deny.all" cmd="open">
             <desc>Prohibits everybody to open container like chests, furnaces, frames. Will also prohibit who were directly allowed.</desc>
@@ -263,6 +278,9 @@
         </command>
         <command id="plot.perms.pickup" parent="plot.check" cmd="pickup">
             <desc>View who can pickup dropped items in the plot</desc>
+        </command>
+        <command id="plot.perms.harvest" parent="plot.check" cmd="harvest">
+            <desc>View who can harvest productions from the plot</desc>
         </command>
         <command id="plot.perms.open" parent="plot.check" cmd="open">
             <desc>View who can open containers in the plot</desc>
@@ -290,6 +308,9 @@
         <command id="plot.allow.pickup" parent="plot.allow" cmd="pickup">
             <desc>Allows players to pickup dropped items</desc>
         </command>
+        <command id="plot.allow.harvest" parent="plot.allow" cmd="harvest">
+            <desc>Allows players to harvest productions like crops and wools</desc>
+        </command>
         <command id="plot.allow.open" parent="plot.allow" cmd="open">
             <desc>Allows players to open container like chests, furnaces, frames</desc>
         </command>
@@ -310,6 +331,9 @@
         </command>
         <command id="plot.deny.pickup" parent="plot.deny" cmd="pickup">
             <desc>Deny players to pickup dropped items</desc>
+        </command>
+        <command id="plot.deny.harvest" parent="plot.deny" cmd="harvest">
+            <desc>Deny players to harvest productions like crops and wools</desc>
         </command>
         <command id="plot.deny.open" parent="plot.deny" cmd="open">
             <desc>Deny players to open container like chests, furnaces, frames</desc>
@@ -334,6 +358,9 @@
         <command id="plot.allow.all.pickup" parent="plot.allow.all" cmd="pickup">
             <desc>Allows everybody to pickup dropped items, will also allow who were directly prohibited.</desc>
         </command>
+        <command id="plot.allow.all.harvest" parent="plot.allow.all" cmd="harvest">
+            <desc>Allows everybody to harvest productions like crops and wools. Will also allow who were directly prohibited.</desc>
+        </command>
         <command id="plot.allow.all.open" parent="plot.allow.all" cmd="open">
             <desc>Allows everybody to open container like chests, furnaces, frames. Will also allow who were directly prohibited.</desc>
         </command>
@@ -354,6 +381,9 @@
         </command>
         <command id="plot.deny.all.pickup" parent="plot.deny.all" cmd="pickup">
             <desc>Prohibits everybody to pickup dropped items. Will also prohibit who were directly allowed.</desc>
+        </command>
+        <command id="plot.deny.all.harvest" parent="plot.deny.all" cmd="harvest">
+            <desc>Prohibits everybody to harvest productions like crops and wools. Will also prohibit who were directly allowed.</desc>
         </command>
         <command id="plot.deny.all.open" parent="plot.deny.all" cmd="open">
             <desc>Prohibits everybody to open container like chests, furnaces, frames. Will also prohibit who were directly allowed.</desc>

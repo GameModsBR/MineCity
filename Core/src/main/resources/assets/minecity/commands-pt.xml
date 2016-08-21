@@ -149,6 +149,9 @@
         <command id="city.perms.pickup" parent="city.check" cmd="pegar">
             <desc>Ver quem pode pegar itens soltos na cidade</desc>
         </command>
+        <command id="city.perms.harvest" parent="city.check" cmd="colher">
+            <desc>Ver quem pode colher produções da cidade</desc>
+        </command>
         <command id="city.perms.open" parent="city.check" cmd="abrir">
             <desc>Ver quem pode abrir contêiners na cidade</desc>
         </command>
@@ -175,6 +178,9 @@
         <command id="city.allow.pickup" parent="city.allow" cmd="pegar">
             <desc>Permite que jogadores peguem itens soltos</desc>
         </command>
+        <command id="city.allow.harvest" parent="city.allow" cmd="colher">
+            <desc>Permite que jogadores colham produções como plantações e lãs</desc>
+        </command>
         <command id="city.allow.open" parent="city.allow" cmd="abrir">
             <desc>Permite que jogadores abram contêiner como baús, molduras e fornalhas</desc>
         </command>
@@ -195,6 +201,9 @@
         </command>
         <command id="city.deny.pickup" parent="city.deny" cmd="pegar">
             <desc>Proíbe que jogadores peguem itens soltos</desc>
+        </command>
+        <command id="city.deny.harvest" parent="city.deny" cmd="colher">
+            <desc>Proíbe que jogadores colham produções como plantações e lãs</desc>
         </command>
         <command id="city.deny.open" parent="city.deny" cmd="abrir">
             <desc>Proíbe que jogadores abram contêiner como baús, molduras e fornalhas</desc>
@@ -219,6 +228,9 @@
         <command id="city.allow.all.pickup" parent="city.allow.all" cmd="pegar">
             <desc>Permite que todos peguem itens soltos, incluindo quem foi proibido diretamente.</desc>
         </command>
+        <command id="city.allow.all.harvest" parent="city.allow.all" cmd="colher">
+            <desc>Permite que todos colham produções como plantações e lãs. Também irá permitir quem foi proibido diretamente.</desc>
+        </command>
         <command id="city.allow.all.open" parent="city.allow.all" cmd="abrir">
             <desc>Permite que todos abram contêiner como baús, molduras e fornalhas. Também irá permitir quem foi proibido diretamente.</desc>
         </command>
@@ -239,6 +251,9 @@
         </command>
         <command id="city.deny.all.pickup" parent="city.deny.all" cmd="pegar">
             <desc>Proíbe que todos peguem itens soltos. Também irá proibir quem foi permitido diretamente.</desc>
+        </command>
+        <command id="city.deny.all.harvest" parent="city.deny.all" cmd="colher">
+            <desc>Proíbe que todos colham produções como plantações e lãs. Também irá proibir quem foi permitido diretamente.</desc>
         </command>
         <command id="city.deny.all.open" parent="city.deny.all" cmd="abrir">
             <desc>Proíbe que todos abram contêiner como baús, molduras e fornalhas. Também irá proibir quem foi permitido diretamente.</desc>
@@ -263,6 +278,9 @@
         </command>
         <command id="plot.perms.pickup" parent="plot.check" cmd="pegar">
             <desc>Ver quem pode pegar itens soltos no lote</desc>
+        </command>
+        <command id="plot.perms.harvest" parent="plot.check" cmd="colher">
+            <desc>Ver quem pode abrir colher produções do lote</desc>
         </command>
         <command id="plot.perms.open" parent="plot.check" cmd="abrir">
             <desc>Ver quem pode abrir contêiners no lote</desc>
@@ -290,6 +308,9 @@
         <command id="plot.allow.pickup" parent="plot.allow" cmd="pegar">
             <desc>Permite que jogadores peguem itens soltos</desc>
         </command>
+        <command id="plot.allow.harvest" parent="plot.allow" cmd="colher">
+            <desc>Permite que jogadores colham produções como plantações e lãs</desc>
+        </command>
         <command id="plot.allow.open" parent="plot.allow" cmd="abrir">
             <desc>Permite que jogadores abram contêiner como baús, molduras e fornalhas</desc>
         </command>
@@ -310,6 +331,9 @@
         </command>
         <command id="plot.deny.pickup" parent="plot.deny" cmd="pegar">
             <desc>Proíbe que jogadores peguem itens soltos</desc>
+        </command>
+        <command id="plot.deny.harvest" parent="plot.deny" cmd="colher">
+            <desc>Proíbe que jogadores colham produções como plantações e lãs</desc>
         </command>
         <command id="plot.deny.open" parent="plot.deny" cmd="abir">
             <desc>Proíbe que jogadores abram contêiner como baús, molduras e fornalhas</desc>
@@ -334,6 +358,9 @@
         <command id="plot.allow.all.pickup" parent="plot.allow.all" cmd="pegar">
             <desc>Permite que todos peguem itens soltos, incluindo quem foi proibido diretamente.</desc>
         </command>
+        <command id="plot.allow.all.harvest" parent="plot.allow.all" cmd="colher">
+            <desc>Permite que todos colham produções como plantações e lãs. Também irá permitir quem foi proibido diretamente.</desc>
+        </command>
         <command id="plot.allow.all.open" parent="plot.allow.all" cmd="abrir">
             <desc>Permite que todos abram contêiner como baús, molduras e fornalhas. Também irá permitir quem foi proibido diretamente.</desc>
         </command>
@@ -354,6 +381,9 @@
         </command>
         <command id="plot.deny.all.pickup" parent="plot.deny.all" cmd="pegar">
             <desc>Proíbe que todos peguem itens soltos, incluindo quem foi diretamente permitido.</desc>
+        </command>
+        <command id="plot.deny.all.harvest" parent="plot.deny.all" cmd="colher">
+            <desc>Proíbe que todos colham produções como plantações e lãs. Também irá proibir quem foi diretamente permitido.</desc>
         </command>
         <command id="plot.deny.all.open" parent="plot.deny.all" cmd="abrir">
             <desc>Proíbe que todos abram contêiner como baús, molduras e fornalhas. Também irá proibir quem foi diretamente permitido.</desc>

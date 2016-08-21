@@ -33,6 +33,13 @@
                             <yellow>Exceptions:</yellow><br/>${exceptions}
                         </msg>
                     </pickup>
+                    <harvest>
+                        <msg id="no-exception"><red><b>Nobody</b></red> can harvest productions from ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can harvest productions from ${name}, that will be shown when that happens:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </harvest>
                     <pvp>
                         <msg id="no-exception"><red><b>Nobody</b></red> can attack players on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
                         <msg id="except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can attack players on ${name}, that will be shown when that happens:
@@ -76,6 +83,13 @@
                     <pickup>
                         <msg id="no-exception"><green><b>Everybody</b></green> can collect drops on ${name}</msg>
                         <msg id="except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can collect drops on ${name}
+                            <br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </pickup>
+                    <pickup>
+                        <msg id="no-exception"><green><b>Everybody</b></green> can harvest productions from ${name}</msg>
+                        <msg id="except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can harvest productions from ${name}
                             <br/><br/>
                             <yellow>Exceptions:</yellow><br/>${exceptions}
                         </msg>
@@ -167,6 +181,10 @@
                         <msg id="name">PICKUP</msg>
                         <msg id="info">Collect dropped items</msg>
                     </pickup>
+                    <harvest>
+                        <msg id="name">HARVEST</msg>
+                        <msg id="info">Harvest crops, wools and spoon cow milk</msg>
+                    </harvest>
                     <msg id="open.name">OPEN</msg>
                     <msg id="open.info">Open containers like chests and frame</msg>
                     <pvp>
@@ -330,6 +348,7 @@
                     <msg id="enter.arg.reason">reason</msg>
                     <msg id="click.arg.reason">reason</msg>
                     <msg id="pickup.arg.reason">reason</msg>
+                    <msg id="harvest.arg.reason">reason</msg>
                     <msg id="open.arg.reason">reason</msg>
                     <msg id="pvp.arg.reason">reason</msg>
                     <msg id="pvc.arg.reason">reason</msg>
@@ -351,6 +370,13 @@
                         <msg id="reason">reason</msg>
                     </arg>
                 </pickup>
+                <harvest>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </harvest>
                 <msg id="open.arg.player-or-city">player or city</msg>
                 <msg id="open.arg.group-name">group name</msg>
                 <msg id="open.arg.reason">reason</msg>
@@ -412,6 +438,12 @@
                         <msg id="group-name">group name</msg>
                     </arg>
                 </pickup>
+                <harvest>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </harvest>
                 <msg id="open.arg.player-or-city">player or city</msg>
                 <msg id="open.arg.group-name">group name</msg>
                 <pvp>
@@ -594,6 +626,13 @@
                             <yellow>Exceptions:</yellow><br/>${exceptions}
                         </msg>
                     </pickup>
+                    <harvest>
+                        <msg id="no-exception"><red><b>Nobody</b></red> can harvest productions from ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can harvest productions from ${name}, that will be shown when that happens:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </harvest>
                     <pvp>
                         <msg id="no-exception"><red><b>Nobody</b></red> can attack players on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
                         <msg id="except"><red><b>Nobody</b></red> <yellow>(${count} exceptions)</yellow> can attack players on ${name}, that will be shown when that happens:
@@ -641,6 +680,13 @@
                             <yellow>Exceptions:</yellow><br/>${exceptions}
                         </msg>
                     </pickup>
+                    <harvest>
+                        <msg id="no-exception"><green><b>Everybody</b></green> can harvest productions from ${name}</msg>
+                        <msg id="except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can harvest productions from ${name}
+                            <br/><br/>
+                            <yellow>Exceptions:</yellow><br/>${exceptions}
+                        </msg>
+                    </harvest>
                     <pvp>
                         <msg id="no-exception"><green><b>Everybody</b></green> can attack players on ${name}</msg>
                         <msg id="except"><green><b>Everybody</b></green> <yellow>(${count} exceptions)</yellow> can attack players on ${name}
@@ -729,6 +775,10 @@
                         <msg id="name">PICKUP</msg>
                         <msg id="info">Collect dropped items</msg>
                     </pickup>
+                    <harvest>
+                        <msg id="name">HARVEST</msg>
+                        <msg id="info">Harvest crops, wools and spoon cow milk</msg>
+                    </harvest>
                     <msg id="open.name">OPEN</msg>
                     <msg id="open.info">Open containers like chests and frames</msg>
                     <pvp>
@@ -865,6 +915,7 @@
                     <msg id="enter.arg.reason">reason</msg>
                     <msg id="click.arg.reason">reason</msg>
                     <msg id="pickup.arg.reason">reason</msg>
+                    <msg id="harvest.arg.reason">reason</msg>
                     <msg id="open.arg.reason">reason</msg>
                     <msg id="pvp.arg.reason">reason</msg>
                     <msg id="pvc.arg.reason">reason</msg>
@@ -886,6 +937,13 @@
                         <msg id="reason">reason</msg>
                     </arg>
                 </pickup>
+                <harvest>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </harvest>
                 <msg id="open.arg.player-or-city">player or city</msg>
                 <msg id="open.arg.group-name">group name</msg>
                 <msg id="open.arg.reason">reason</msg>
@@ -939,6 +997,12 @@
                         <msg id="group-name">group name</msg>
                     </arg>
                 </pickup>
+                <harvest>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </harvest>
                 <msg id="open.arg.player-or-city">player or city</msg>
                 <msg id="open.arg.group-name">group name</msg>
                 <pvp>

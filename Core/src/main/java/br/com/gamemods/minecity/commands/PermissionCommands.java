@@ -19,8 +19,8 @@ import java.util.Set;
 public class PermissionCommands
 {
     private static final EnumSet<PermissionFlag> CITY_FLAGS = EnumSet.of(
-            PermissionFlag.ENTER, PermissionFlag.CLICK, PermissionFlag.PICKUP, PermissionFlag.OPEN,
-            PermissionFlag.PVP, PermissionFlag.PVC, PermissionFlag.MODIFY
+            PermissionFlag.ENTER, PermissionFlag.CLICK, PermissionFlag.PICKUP, PermissionFlag.HARVEST,
+            PermissionFlag.OPEN, PermissionFlag.PVP, PermissionFlag.PVC, PermissionFlag.MODIFY
     );
     private static final EnumSet<PermissionFlag> PLOT_FLAGS = EnumSet.copyOf(CITY_FLAGS);
 
@@ -840,6 +840,14 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "city.perms.harvest", args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
+    public CommandResult<?> listHarvest(CommandEvent cmd) throws DataSourceException
+    {
+        return list(cmd, PermissionFlag.HARVEST);
+    }
+
+    @Slow
+    @Async
     @Command(value = "city.perms.open", args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
     public CommandResult<?> listOpen(CommandEvent cmd) throws DataSourceException
     {
@@ -901,6 +909,17 @@ public class PermissionCommands
     public CommandResult<?> listPlotPickup(CommandEvent cmd) throws DataSourceException
     {
         return listPlot(cmd, PermissionFlag.PICKUP);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.perms.harvest", args = {
+            @Arg(name = "city-or-plot", optional = true, type = Arg.Type.PLOT_OR_CITY),
+            @Arg(name = "plot", sticky = true, optional = true, type = Arg.Type.PLOT)
+    })
+    public CommandResult<?> listPlotHarvest(CommandEvent cmd) throws DataSourceException
+    {
+        return listPlot(cmd, PermissionFlag.HARVEST);
     }
 
     @Slow
@@ -982,6 +1001,18 @@ public class PermissionCommands
             throws DataSourceException
     {
         return deny(cmd, PermissionFlag.PICKUP);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.deny.harvest", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
+                    @Arg(name = "reason", sticky = true, optional = true)
+            })
+    public CommandResult<?> denyHarvest(CommandEvent cmd) throws DataSourceException
+    {
+        return deny(cmd, PermissionFlag.HARVEST);
     }
 
     @Slow
@@ -1070,6 +1101,17 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "city.allow.harvest", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> allowHarvest(CommandEvent cmd) throws DataSourceException
+    {
+        return allow(cmd, PermissionFlag.HARVEST);
+    }
+
+    @Slow
+    @Async
     @Command(value = "city.allow.open", console = false,
             args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
@@ -1138,6 +1180,14 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "city.allow.all.harvest", console = false)
+    public CommandResult<?> allowAllHarvest(CommandEvent cmd)
+    {
+        return allowAll(cmd, PermissionFlag.HARVEST);
+    }
+
+    @Slow
+    @Async
     @Command(value = "city.allow.all.open", console = false)
     public CommandResult<?> allowAllOpen(CommandEvent cmd)
     {
@@ -1190,6 +1240,14 @@ public class PermissionCommands
     public CommandResult<?> denyAllPickup(CommandEvent cmd)
     {
         return denyAll(cmd, PermissionFlag.PICKUP);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.deny.all.harvest", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
+    public CommandResult<?> denyAllHarvest(CommandEvent cmd)
+    {
+        return denyAll(cmd, PermissionFlag.HARVEST);
     }
 
     @Slow
@@ -1259,6 +1317,18 @@ public class PermissionCommands
             throws DataSourceException
     {
         return denyPlot(cmd, PermissionFlag.PICKUP);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.deny.harvest", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
+                    @Arg(name = "reason", sticky = true, optional = true)
+            })
+    public CommandResult<?> denyHarvestPlot(CommandEvent cmd) throws DataSourceException
+    {
+        return denyPlot(cmd, PermissionFlag.HARVEST);
     }
 
     @Slow
@@ -1347,6 +1417,17 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "plot.allow.harvest", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
+    public CommandResult<?> allowHarvestPlot(CommandEvent cmd) throws DataSourceException
+    {
+        return allowPlot(cmd, PermissionFlag.HARVEST);
+    }
+
+    @Slow
+    @Async
     @Command(value = "plot.allow.open", console = false,
             args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
@@ -1415,6 +1496,14 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "plot.allow.all.harvest", console = false)
+    public CommandResult<?> allowAllHarvestPlot(CommandEvent cmd)
+    {
+        return allowAllPlot(cmd, PermissionFlag.HARVEST);
+    }
+
+    @Slow
+    @Async
     @Command(value = "plot.allow.all.open", console = false)
     public CommandResult<?> allowAllOpenPlot(CommandEvent cmd)
     {
@@ -1467,6 +1556,14 @@ public class PermissionCommands
     public CommandResult<?> denyAllPickupPlot(CommandEvent cmd)
     {
         return denyAllPlot(cmd, PermissionFlag.PICKUP);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.deny.all.harvest", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
+    public CommandResult<?> denyAllHarvestPlot(CommandEvent cmd)
+    {
+        return denyAllPlot(cmd, PermissionFlag.HARVEST);
     }
 
     @Slow

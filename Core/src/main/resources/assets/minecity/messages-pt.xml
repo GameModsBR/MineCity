@@ -25,6 +25,13 @@
                             <yellow>Excessões:</yellow><br/>${exceptions}
                         </msg>
                     </pickup>
+                    <harvest>
+                        <msg id="no-exception"><red><b>Ninguém</b></red> pode colher produções de ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode colher produções de ${name}, isto será mostrado quando alguém tentar:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </harvest>
                     <pvp>
                         <msg id="no-exception"><red><b>Ninguém</b></red> pode atacar jogadores em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
                         <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode atacar jogadores em ${name}, isto será mostrado quando alguém tentar:
@@ -66,40 +73,47 @@
                         </msg>
                     </enter>
                     <pickup>
-                        <msg id="no-exception"><green><b>Todos</b></green> pode coletar itens em ${name}</msg>
-                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode coletar itens em ${name}
+                        <msg id="no-exception"><green><b>Todos</b></green> podem coletar itens em ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem coletar itens em ${name}
                             <br/><br/>
                             <yellow>Excessões:</yellow><br/>${exceptions}
                         </msg>
                     </pickup>
+                    <harvest>
+                        <msg id="no-exception"><green><b>Todos</b></green> podem colher produções de ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem colher produções de ${name}
+                            <br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </harvest>
                     <pvp>
-                        <msg id="no-exception"><green><b>Todos</b></green> pode atacar jogadores em ${name}</msg>
-                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode atacar jogadores em ${name}
+                        <msg id="no-exception"><green><b>Todos</b></green> podem atacar jogadores em ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem atacar jogadores em ${name}
                             <br/><br/>
                             <yellow>Excessões:</yellow><br/>${exceptions}
                         </msg>
                     </pvp>
                     <pvc>
-                        <msg id="no-exception"><green><b>Todos</b></green> pode atacar criaturas em ${name}</msg>
-                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode atacar criaturas em ${name}
+                        <msg id="no-exception"><green><b>Todos</b></green> podem atacar criaturas em ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem atacar criaturas em ${name}
                             <br/><br/>
                             <yellow>Excessões:</yellow><br/>${exceptions}
                         </msg>
                     </pvc>
                     <modify>
-                        <msg id="no-exception"><green><b>Todos</b></green> pode modificar ${name}</msg>
-                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode modificar ${name}
+                        <msg id="no-exception"><green><b>Todos</b></green> podem modificar ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem modificar ${name}
                             <br/><br/>
                             <yellow>Excessões:</yellow><br/>${exceptions}
                         </msg>
                     </modify>
-                    <msg id="click.no-exception"><green><b>Todos</b></green> pode clicar em coisas em ${name}</msg>
-                    <msg id="click.except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode clicar em coisas em ${name}
+                    <msg id="click.no-exception"><green><b>Todos</b></green> podem clicar em coisas em ${name}</msg>
+                    <msg id="click.except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem clicar em coisas em ${name}
                         <br/><br/>
                         <yellow>Excessões:</yellow><br/>${exceptions}
                     </msg>
-                    <msg id="open.no-exception"><green><b>Todos</b></green> pode abrir contêiners em ${name}</msg>
-                    <msg id="open.except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode abrir contêiners em ${name}
+                    <msg id="open.no-exception"><green><b>Todos</b></green> podem abrir contêiners em ${name}</msg>
+                    <msg id="open.except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem abrir contêiners em ${name}
                         <br/><br/>
                         <yellow>Excessões:</yellow><br/>${exceptions}
                     </msg>
@@ -158,8 +172,13 @@
                     <msg id="click.name">CLICAR</msg>
                     <msg id="click.info">Clicar em blocos clicáveis, como botões, alavancas e portas</msg>
                     <pickup>
-
+                        <msg id="name">PEGAR</msg>
+                        <msg id="info">Pegar itens soltos</msg>
                     </pickup>
+                    <enter>
+                        <msg id="name">COLHER</msg>
+                        <msg id="info">Colher plantações, lãs e leite das vacas</msg>
+                    </enter>
                     <msg id="open.name">ABRIR</msg>
                     <msg id="open.info">Abrir contêiners como baús, molduras e fornalhas</msg>
                     <pvp>
@@ -315,6 +334,7 @@
                     <msg id="enter.arg.reason">motivo</msg>
                     <msg id="click.arg.reason">motivo</msg>
                     <msg id="pickup.arg.reason">motivo</msg>
+                    <msg id="harvest.arg.reason">motivo</msg>
                     <msg id="open.arg.reason">motivo</msg>
                     <msg id="pvp.arg.reason">motivo</msg>
                     <msg id="pvc.arg.reason">motivo</msg>
@@ -336,6 +356,13 @@
                         <msg id="reason">motivo</msg>
                     </arg>
                 </pickup>
+                <harvest>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
+                    </arg>
+                </harvest>
                 <msg id="open.arg.player-or-city">jogador ou cidade</msg>
                 <msg id="open.arg.group-name">grupo</msg>
                 <msg id="open.arg.reason">motivo</msg>
@@ -389,6 +416,12 @@
                         <msg id="group-name">grupo</msg>
                     </arg>
                 </pickup>
+                <harvest>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </harvest>
                 <msg id="open.arg.player-or-city">jogador ou cidade</msg>
                 <msg id="open.arg.group-name">grupo</msg>
                 <pvp>
@@ -571,6 +604,13 @@
                             <yellow>Excessões:</yellow><br/>${exceptions}
                         </msg>
                     </pickup>
+                    <harvest>
+                        <msg id="no-exception"><red><b>Ninguém</b></red> pode colher produções de ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode colher produções de ${name}, isto será mostrado quando alguém tentar:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </harvest>
                     <pvp>
                         <msg id="no-exception"><red><b>Ninguém</b></red> pode atacar jogadores em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
                         <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode atacar jogadores em ${name}, isto será mostrado quando alguém tentar:
@@ -612,40 +652,47 @@
                         </msg>
                     </enter>
                     <pickup>
-                        <msg id="no-exception"><green><b>Todos</b></green> pode coletar itens em ${name}</msg>
-                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode coletar itens em ${name}
+                        <msg id="no-exception"><green><b>Todos</b></green> podem coletar itens em ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem coletar itens em ${name}
                             <br/><br/>
                             <yellow>Excessões:</yellow><br/>${exceptions}
                         </msg>
                     </pickup>
+                    <harvest>
+                        <msg id="no-exception"><green><b>Todos</b></green> podem colher produções de ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem colher produções de ${name}
+                            <br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </harvest>
                     <pvp>
-                        <msg id="no-exception"><green><b>Todos</b></green> pode atacar jogadores em ${name}</msg>
-                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode atacar jogadores em ${name}
+                        <msg id="no-exception"><green><b>Todos</b></green> podem atacar jogadores em ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem atacar jogadores em ${name}
                             <br/><br/>
                             <yellow>Excessões:</yellow><br/>${exceptions}
                         </msg>
                     </pvp>
                     <pvc>
-                        <msg id="no-exception"><green><b>Todos</b></green> pode atacar criaturas em ${name}</msg>
-                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode atacar criaturas em ${name}
+                        <msg id="no-exception"><green><b>Todos</b></green> podem atacar criaturas em ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem atacar criaturas em ${name}
                             <br/><br/>
                             <yellow>Excessões:</yellow><br/>${exceptions}
                         </msg>
                     </pvc>
                     <modify>
-                        <msg id="no-exception"><green><b>Todos</b></green> pode modificar ${name}</msg>
-                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode modificar ${name}
+                        <msg id="no-exception"><green><b>Todos</b></green> podem modificar ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem modificar ${name}
                             <br/><br/>
                             <yellow>Excessões:</yellow><br/>${exceptions}
                         </msg>
                     </modify>
-                    <msg id="click.no-exception"><green><b>Todos</b></green> pode clicar em coisas em ${name}</msg>
-                    <msg id="click.except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode clicar em coisas em ${name}
+                    <msg id="click.no-exception"><green><b>Todos</b></green> podem clicar em coisas em ${name}</msg>
+                    <msg id="click.except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem clicar em coisas em ${name}
                         <br/><br/>
                         <yellow>Excessões:</yellow><br/>${exceptions}
                     </msg>
-                    <msg id="open.no-exception"><green><b>Todos</b></green> pode abrir contêiners em ${name}</msg>
-                    <msg id="open.except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> pode abrir contêiners em ${name}
+                    <msg id="open.no-exception"><green><b>Todos</b></green> podem abrir contêiners em ${name}</msg>
+                    <msg id="open.except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem abrir contêiners em ${name}
                         <br/><br/>
                         <yellow>Excessões:</yellow><br/>${exceptions}
                     </msg>
@@ -700,13 +747,18 @@
                     </msg>
                     <enter>
                         <msg id="name">ENTRAR</msg>
-                        <msg id="info">Entrar na cidade</msg>
+                        <msg id="info">Entrar no lote</msg>
                     </enter>
                     <msg id="click.name">CLICAR</msg>
                     <msg id="click.info">Clicar em blocos clicáveis, como botões, alavancas e portas</msg>
                     <pickup>
-
+                        <msg id="name">PEGAR</msg>
+                        <msg id="info">Pegar itens soltos</msg>
                     </pickup>
+                    <harvest>
+                        <msg id="name">COLHER</msg>
+                        <msg id="info">Colher plantações, lãs e leite das vacas</msg>
+                    </harvest>
                     <msg id="open.name">ABRIR</msg>
                     <msg id="open.info">Abrir contêiners como baús, molduras e fornalhas</msg>
                     <pvp>
@@ -843,6 +895,7 @@
                     <msg id="enter.arg.reason">motivo</msg>
                     <msg id="click.arg.reason">motivo</msg>
                     <msg id="pickup.arg.reason">motivo</msg>
+                    <msg id="harvest.arg.reason">motivo</msg>
                     <msg id="open.arg.reason">motivo</msg>
                     <msg id="pvp.arg.reason">motivo</msg>
                     <msg id="pvc.arg.reason">motivo</msg>
@@ -864,6 +917,13 @@
                         <msg id="reason">motivo</msg>
                     </arg>
                 </pickup>
+                <harvest>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
+                    </arg>
+                </harvest>
                 <msg id="open.arg.player-or-city">jogador ou cidade</msg>
                 <msg id="open.arg.group-name">grupo</msg>
                 <msg id="open.arg.reason">motivo</msg>
@@ -925,6 +985,12 @@
                         <msg id="group-name">grupo</msg>
                     </arg>
                 </pickup>
+                <harvest>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </harvest>
                 <msg id="open.arg.player-or-city">jogador ou cidade</msg>
                 <msg id="open.arg.group-name">grupo</msg>
                 <pvp>

@@ -1,4 +1,4 @@
-<!ENTITY % ids "msg|cmd|city|create|name|chunk|claim|disclaim|success|spawn|rename|transfer|player|setspawn|deny|allow|action|teleport|all|args|map|result|group|add|remove|empty|list|member|task|load|groups|info|delete|confirm|managers|plot|conflict|overlaps|give|tool|selection|you|return|mayor|self|help|expanded|arg|short|footer|enter|pickup|pvp|pvc|manager|details|type|props|big|perms|perm|exceptions|modify|nobody|everybody|inconsistent">
+<!ENTITY % ids "msg|cmd|city|create|name|chunk|claim|disclaim|success|spawn|rename|transfer|player|setspawn|deny|allow|action|teleport|all|args|map|result|group|add|remove|empty|list|member|task|load|groups|info|delete|confirm|managers|plot|conflict|overlaps|give|tool|selection|you|return|mayor|self|help|expanded|arg|short|footer|enter|pickup|pvp|pvc|manager|details|type|props|big|perms|perm|exceptions|modify|nobody|everybody|inconsistent|harvest">
 <!ENTITY % formatting "click|hover|br|o|b|s|u|i|c|reset|black|darkblue|darkgreen|darkaqua|darkred|darkpurple|gold|gray|darkgray|blue|green|aqua|red|lightpurple|yellow|white">
 
 <!ELEMENT minecity-messages (%ids;)*>
@@ -120,3 +120,4 @@
 <!ELEMENT nobody (%ids;)*>
 <!ELEMENT everybody (%ids;)*>
 <!ELEMENT inconsistent (%ids;)*>
+<!ELEMENT harvest (%ids;)*>
