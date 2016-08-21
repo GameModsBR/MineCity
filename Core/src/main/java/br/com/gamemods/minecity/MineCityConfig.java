@@ -13,4 +13,5 @@ public class MineCityConfig
     public SimpleFlagHolder defaultNatureFlags = new SimpleFlagHolder();
     public SimpleFlagHolder defaultCityFlags = new SimpleFlagHolder();
     public SimpleFlagHolder defaultPlotFlags = new SimpleFlagHolder();
+    public SimpleFlagHolder defaultReserveFlags = new SimpleFlagHolder();
 }

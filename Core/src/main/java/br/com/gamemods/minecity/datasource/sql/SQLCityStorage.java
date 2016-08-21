@@ -128,15 +128,16 @@ public class SQLCityStorage implements ICityStorage
         {
             try
             {
+                int worldId = source.worldId(transaction, sqlIsland.world);
                 Collection<ChunkPos> chunks = new HashSet<>();
                 String x = sbx.toString(), z = sbz.toString();
 
                 if(!x.isEmpty())
                 {
 
-                    ResultSet results = stm.executeQuery("SELECT x, z FROM minecity_chunks WHERE x IN("+x+") AND z IN("+z+") AND island_id!="+sqlIsland.id+";");
+                    ResultSet results = stm.executeQuery("SELECT x, z FROM minecity_chunks WHERE world_id="+worldId+" AND island_id!="+sqlIsland.id+" AND x IN("+x+") AND z IN("+z+");");
                     while(results.next())
-                        reserve.claims[results.getInt(1)-reserve.x][results.getInt(2)-reserve.z] = false;
+                        reserve.setClaimed(results.getInt(1), results.getInt(2), false);
                     results.close();
 
                     results = stm.executeQuery("SELECT x,z FROM minecity_chunks WHERE island_id="+sqlIsland.id+" LIMIT 1");
@@ -164,12 +165,11 @@ public class SQLCityStorage implements ICityStorage
 
                 if(!x.isEmpty())
                 {
-                    results = stm.executeQuery("SELECT x, z FROM minecity_chunks WHERE x IN("+x+") AND z IN("+z+");");
+                    results = stm.executeQuery("SELECT x, z FROM minecity_chunks WHERE world_id="+worldId+" AND x IN("+x+") AND z IN("+z+");");
                     while(results.next())
-                        reserve.claims[results.getInt(1)-reserve.x][results.getInt(2)-reserve.z] = false;
+                        reserve.setClaimed(results.getInt(1), results.getInt(2), false);
                     results.close();
 
-                    int worldId = source.worldId(transaction, sqlIsland.world);
                     sbx.setLength(0);
                     List<ChunkPos> insert = reserve.claims().collect(Collectors.toList());
                     chunks.addAll(insert);

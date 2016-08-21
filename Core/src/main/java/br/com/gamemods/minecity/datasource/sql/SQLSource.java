@@ -390,7 +390,7 @@ public class SQLSource implements IDataSource
 
                 City city = city(connection, cityId);
                 Island island = city.getIsland(islandId);
-                return new ClaimedChunk(island != null? island : Inconsistency.INSTANCE, pos, reserve);
+                return new ClaimedChunk(island != null? island : Inconsistency.getInconsistentIsland(), pos, reserve);
             }
         }
         catch(SQLException e)

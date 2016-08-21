@@ -67,7 +67,7 @@ public class CityCommand
 
         ClaimedChunk claim = optionalClaim.get();
         Island island = claim.getIsland().orElse(null);
-        if(island != null && !claim.reserve)
+        if(island != null)
             return new CommandResult<>(new Message("cmd.city.create.chunk.claimed",
                     "The chunk that you are is already claimed to ${city}",
                     new Object[]{"city",island.getCity().getName()}
@@ -131,7 +131,7 @@ public class CityCommand
 
         Optional<ClaimedChunk> claimOpt = mineCity.getChunk(chunk);
         City city = claimOpt.flatMap(ClaimedChunk::getCity).orElse(null);
-        if(city != null && !claimOpt.get().reserve)
+        if(city != null)
             return new CommandResult<>(new Message("cmd.city.claim.already-claimed",
                     "This chunk is already claimed in name of ${city}",
                     new Object[]{"city",city.getName()}
@@ -142,7 +142,7 @@ public class CityCommand
             for(Direction direction: Direction.cardinal)
             {
                 ChunkPos possible = chunk.add(direction);
-                City city2 = mineCity.getChunk(possible).filter(c-> !c.reserve).flatMap(ClaimedChunk::getCity).orElse(null);
+                City city2 = mineCity.getChunk(possible).flatMap(ClaimedChunk::getCity).orElse(null);
                 if(city2 == null || city2.equals(city))
                     continue;
 
@@ -183,7 +183,7 @@ public class CityCommand
                 ));
         }
 
-        if(claimOpt.get().reserve && claimOpt.get().getCity().get() != city)
+        if(claimOpt.get().reserve && claimOpt.get().getCityAcceptingReserve().get() != city)
             return new CommandResult<>(new Message("cmd.city.claim.reserved",
                     "This chunk is reserved to ${name}",
                     new Object[]{"name",claimOpt.get().getCity().get().getName()}
@@ -211,7 +211,7 @@ public class CityCommand
     {
         ChunkPos chunk = cmd.position.getChunk();
         Optional<ClaimedChunk> claim = mineCity.getChunk(chunk);
-        City city = claim.filter(c-> !c.reserve).flatMap(ClaimedChunk::getCity).orElse(null);
+        City city = claim.flatMap(ClaimedChunk::getCity).orElse(null);
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.disclaim.not-claimed",
                     "This chunk is not claimed by any city"
@@ -498,7 +498,7 @@ public class CityCommand
         ChunkPos chunk = cmd.position.getChunk();
         ChunkPos cursorPos = chunk;
         Optional<ClaimedChunk> claimAtPosition = mineCity.getChunk(chunk);
-        City cityAtPosition = claimAtPosition.flatMap(ClaimedChunk::getCity).orElse(null);
+        City cityAtPosition = claimAtPosition.flatMap(ClaimedChunk::getCityAcceptingReserve).orElse(null);
         char cursor;
         LegacyFormat cursorColor;
         if(cityAtPosition != null && !claimAtPosition.get().reserve)
@@ -664,7 +664,7 @@ public class CityCommand
                                     mineCity.mapCache.put(pos, new MapCache(LegacyFormat.BLACK, unclaimed, null));
                                 else
                                 {
-                                    City city = dbClaim.getCity().orElseGet(Inconsistency::getInconsistentCity);
+                                    City city = dbClaim.getCityAcceptingReserve().orElseGet(Inconsistency::getInconsistentCity);
                                     mineCity.mapCache.put(pos, new MapCache(city.getColor(), dbClaim.reserve?reserved:claimed, city));
                                 }
                             }
@@ -677,7 +677,7 @@ public class CityCommand
                     continue;
                 }
 
-                Optional<Island> island = claim.flatMap(ClaimedChunk::getIsland);
+                Optional<Island> island = claim.flatMap(ClaimedChunk::getIslandAcceptingReserve);
                 if(island.isPresent())
                 {
                     City city = island.get().getCity();

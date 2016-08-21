@@ -71,7 +71,7 @@ public class MovementMonitor
         {
             ChunkPos chunk = new ChunkPos(worldDim, chunkX, chunkZ);
             ClaimedChunk claim = plugin.mineCity.getChunk(chunk).orElseGet(() -> Inconsistency.claim(chunk));
-            City city = claim.reserve? null : claim.getCity().orElse(null);
+            City city = claim.getCity().orElse(null);
             Plot plot = null;
             Optional<Message> denial;
             if(city != null)

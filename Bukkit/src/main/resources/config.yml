@@ -16,11 +16,52 @@ permissions:
       PICKUP:
         allow: true
         message:
+      HARVEST:
+        allow: true
+        message:
       OPEN:
         allow: true
         message:
       MODIFY:
         allow: true
+        message:
+      LEAVE:
+        allow: true
+        message:
+      PVP:
+        allow: true
+        message:
+      PVC:
+        allow: true
+        message:
+      PVM:
+        allow: true
+        message:
+      SPAWN_VEHICLES:
+        allow: true
+        message:
+      RIDE:
+        allow: true
+        message:
+
+    reserve:
+      ENTER:
+        allow: true
+        message:
+      CLICK:
+        allow: true
+        message:
+      PICKUP:
+        allow: true
+        message:
+      HARVEST:
+        allow: true
+        message:
+      OPEN:
+        allow: true
+        message:
+      MODIFY:
+        allow: false
         message:
       LEAVE:
         allow: true
@@ -49,6 +90,9 @@ permissions:
         allow: false
         message:
       PICKUP:
+        allow: true
+        message:
+      HARVEST:
         allow: true
         message:
       OPEN:
@@ -85,6 +129,9 @@ permissions:
         message:
       PICKUP:
         allow: false
+        message:
+      HARVEST:
+        allow: true
         message:
       OPEN:
         allow: false

@@ -6,10 +6,7 @@ import br.com.gamemods.minecity.api.world.ChunkPos;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,12 +25,12 @@ public final class ClaimedChunk
     {
         this.owner = owner;
         this.chunk = chunk;
-        this.reserve = false;
+        this.reserve = owner instanceof Reserve;
     }
 
-    public ClaimedChunk(@NotNull ChunkOwner owner, @NotNull ChunkPos chunk, boolean reserve)
+    public ClaimedChunk(@NotNull Island owner, @NotNull ChunkPos chunk, boolean reserve)
     {
-        this.owner = owner;
+        this.owner = reserve? owner.reserve : owner;
         this.chunk = chunk;
         this.reserve = reserve;
     }
@@ -59,7 +56,19 @@ public final class ClaimedChunk
     {
         if(plots != null)
             return plots;
+
+        if(reserve)
+            return plots = Collections.emptySet();
+
         return plots = getIsland().map(i -> i.getPlotsAt(chunk)).orElse(Stream.empty()).collect(Collectors.toSet());
+    }
+
+    public Optional<Island> getIslandAcceptingReserve()
+    {
+        if(!reserve)
+            return getIsland();
+
+        return Optional.of(((Reserve)owner).island);
     }
 
     @NotNull
@@ -67,6 +76,12 @@ public final class ClaimedChunk
     {
         if(owner instanceof Island) return Optional.of((Island) owner);
         if(owner instanceof Inconsistency) return Optional.of(Inconsistency.getInconsistentIsland());
+        return Optional.empty();
+    }
+
+    public Optional<Reserve> getReserve()
+    {
+        if(owner instanceof Reserve) return Optional.of((Reserve)owner);
         return Optional.empty();
     }
 
@@ -89,7 +104,7 @@ public final class ClaimedChunk
     public FlagHolder getFlagHolder()
     {
         if(reserve)
-            return nature().get();
+            return (Reserve) owner;
 
         return getIsland().<FlagHolder>map(Island::getCity).orElse(chunk.world.nature);
     }
@@ -101,7 +116,7 @@ public final class ClaimedChunk
     public FlagHolder getFlagHolder(int blockX, int blockY, int blockZ)
     {
         if(reserve)
-            return nature().get();
+            return (Reserve) owner;
 
         Optional<Plot> plot = getPlotAt(blockX, blockY, blockZ);
         if(plot.isPresent())
@@ -119,6 +134,14 @@ public final class ClaimedChunk
     public Optional<City> getCity()
     {
         return getIsland().map(Island::getCity);
+    }
+
+    public Optional<City> getCityAcceptingReserve()
+    {
+        if(!reserve)
+            return getCity();
+
+        return Optional.of(((Reserve)owner).island.getCity());
     }
 
     @NotNull

@@ -175,7 +175,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
         {
             ChunkPos chunk = new ChunkPos(mod.world(sender.worldObj), sender.chunkCoordX, sender.chunkCoordZ);
             ClaimedChunk claim = mod.mineCity.getChunk(chunk).orElseGet(()->Inconsistency.claim(chunk));
-            City city = claim.reserve? null : claim.getCity().orElse(null);
+            City city = claim.getCity().orElse(null);
             Plot plot = null;
             if(city != null)
             {

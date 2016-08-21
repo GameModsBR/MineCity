@@ -93,6 +93,7 @@ public class MineCityPlugin extends JavaPlugin
                 adjustDefaultFlag(yaml, "permissions.default.nature.", flag, flag.defaultNature, config.defaultNatureFlags);
                 adjustDefaultFlag(yaml, "permissions.default.city.", flag, flag.defaultCity, config.defaultCityFlags);
                 adjustDefaultFlag(yaml, "permissions.default.plot.", flag, flag.defaultPlot, config.defaultPlotFlags);
+                adjustDefaultFlag(yaml, "permissions.default.reserve.", flag, flag.defaultReserve, config.defaultReserveFlags);
             }
 
             MessageTransformer transformer = new MessageTransformer();

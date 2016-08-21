@@ -18,6 +18,8 @@ import java.util.stream.Stream;
 
 public abstract class Island implements ChunkOwner
 {
+    public final Reserve reserve = new Reserve(this);
+
     @NotNull
     protected final ICityStorage storage;
 

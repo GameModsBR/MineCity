@@ -144,6 +144,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
             adjustDefaultFlag(config, "permissions.default.nature.", flag, flag.defaultNature, this.config.defaultNatureFlags);
             adjustDefaultFlag(config, "permissions.default.city.", flag, flag.defaultCity, this.config.defaultCityFlags);
             adjustDefaultFlag(config, "permissions.default.plot.", flag, flag.defaultPlot, this.config.defaultPlotFlags);
+            adjustDefaultFlag(config, "permissions.default.reserve.", flag, flag.defaultReserve, this.config.defaultReserveFlags);
         }
 
         config.save();

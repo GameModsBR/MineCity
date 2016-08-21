@@ -184,9 +184,14 @@ public class IslandArea
         return !(az == null || rz >= az.length) && az[rz];
     }
 
+    public void setClaimed(int px, int pz, boolean val) throws IndexOutOfBoundsException
+    {
+        claims[px - x][pz - z] = val;
+    }
+
     public void setClaimed(ChunkPos pos, boolean val) throws IllegalArgumentException, IndexOutOfBoundsException
     {
         if(!pos.world.equals(world)) throw new IllegalArgumentException("Different world");
-        claims[pos.x - x][pos.z - z] = val;
+        setClaimed(pos.x, pos.z, val);
     }
 }
