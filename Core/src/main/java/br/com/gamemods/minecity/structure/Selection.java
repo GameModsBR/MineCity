@@ -69,4 +69,9 @@ public class Selection
     {
         return a == null || b == null;
     }
+
+    public void clear()
+    {
+        a = b = null;
+    }
 }

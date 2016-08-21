@@ -32,6 +32,13 @@ public abstract class DisplayedSelection<B> extends Selection
         updateDisplay();
     }
 
+    @Override
+    public void clear()
+    {
+        super.clear();
+        updateDisplay();
+    }
+
     @Async
     public void updateDisplay()
     {

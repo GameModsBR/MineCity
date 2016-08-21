@@ -103,6 +103,7 @@ public class PlotCommand
         }
 
         Plot plot = island.createPlot(name, null, cmd.position.getBlock(), shape);
+        selection.clear();
         return new CommandResult<>(new Message("cmd.plot.create.success",
                 "The plot ${name} was created successfully",
                 new Object[]{"name", plot.getName()}
