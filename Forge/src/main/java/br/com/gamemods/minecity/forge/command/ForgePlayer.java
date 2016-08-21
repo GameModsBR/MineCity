@@ -587,7 +587,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
             corners = Blocks.lit_furnace;
             linesA = Blocks.gold_block;
             linesB = Blocks.lapis_block;
-            lines = Blocks.glass;
+            lines = Blocks.sponge;
             extension = Blocks.glowstone;
         }
 
@@ -601,6 +601,9 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
         @Override
         protected void send(Map<BlockPos, Block> last)
         {
+            BlockPos pos = getPosition().getBlock();
+            display.remove(pos);
+            display.remove(pos.add(Direction.UP));
             mod.callSyncMethod(()->{
                 World worldObj = sender.worldObj;
                 if(!mod.world(worldObj).equals(world))

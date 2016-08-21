@@ -513,10 +513,10 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
             super(world);
             cornerA = Material.GLOWSTONE;
             cornerB = Material.REDSTONE_LAMP_ON;
-            corners = Material.BURNING_FURNACE;
+            corners = Material.SEA_LANTERN;
             linesA = Material.GOLD_BLOCK;
             linesB = Material.LAPIS_BLOCK;
-            lines = Material.GLASS;
+            lines = Material.PRISMARINE;
             extension = Material.GLOWSTONE;
         }
 
@@ -533,6 +533,9 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
         @Override
         protected void send(Map<BlockPos, Material> last)
         {
+            BlockPos pos = getPosition().getBlock();
+            display.remove(pos);
+            display.remove(pos.add(Direction.UP));
             plugin.callSyncMethod(()->{
                 World worldObj = sender.getWorld();
                 if(!plugin.world(worldObj).equals(world))
