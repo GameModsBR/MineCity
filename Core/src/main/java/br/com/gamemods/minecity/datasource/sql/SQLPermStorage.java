@@ -50,7 +50,9 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                                 "UPDATE minecity_city SET perm_denial_message=? WHERE city_id=?"
                         ))
                         {
-                            source.setNullableString(pst, 1, message == null? null : message.getFallback());
+                            source.setNullableString(pst, 1, message == null || message.equals(holder.getDefaultMessage())?
+                                    null : message.toString()
+                            );
                             pst.setInt(2, cityId);
                             source.executeUpdate(pst, 1);
                         }
@@ -76,7 +78,9 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                                 "UPDATE minecity_plots SET perm_denial_message=? WHERE plot_id=?"
                         ))
                         {
-                            source.setNullableString(pst, 1, message == null? null : message.getFallback());
+                            source.setNullableString(pst, 1, message == null || message.equals(holder.getDefaultMessage())?
+                                    null : message.toString()
+                            );
                             pst.setInt(2, plotId);
                             source.executeUpdate(pst, 1);
                         }
@@ -102,7 +106,9 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                                 "UPDATE minecity_world SET perm_denial_message=? WHERE world_id=?"
                         ))
                         {
-                            source.setNullableString(pst, 1, message == null? null : message.getFallback());
+                            source.setNullableString(pst, 1, message == null || message.equals(holder.getDefaultMessage())?
+                                    null : message.toString()
+                            );
                             pst.setInt(2, worldId);
                             source.executeUpdate(pst, 1);
                         }
@@ -165,10 +171,12 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                             for(Map.Entry<? extends PermissionFlag, ? extends Message> entry : flags.entrySet())
                             {
                                 pst.setInt(i++, cityId);
-                                pst.setString(i++, entry.getKey().name());
+                                PermissionFlag flag = entry.getKey();
+                                pst.setString(i++, flag.name());
                                 Message message = entry.getValue();
                                 source.setNullableString(pst, i++,
-                                        FlagHolder.DEFAULT_DENIAL_MESSAGE.equals(message)? null: message.getFallback()
+                                        message == null || message.equals(holder.getDefaultMessage(flag))?
+                                                null: message.toString()
                                 );
                             }
 
@@ -215,10 +223,12 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                             for(Map.Entry<? extends PermissionFlag, ? extends Message> entry : flags.entrySet())
                             {
                                 pst.setInt(i++, plotId);
-                                pst.setString(i++, entry.getKey().name());
+                                PermissionFlag flag = entry.getKey();
+                                pst.setString(i++, flag.name());
                                 Message message = entry.getValue();
                                 source.setNullableString(pst, i++,
-                                        FlagHolder.DEFAULT_DENIAL_MESSAGE.equals(message)? null: message.getFallback()
+                                        message == null || message.equals(holder.getDefaultMessage(flag))?
+                                                null: message.toString()
                                 );
                             }
 
@@ -265,10 +275,12 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                             for(Map.Entry<? extends PermissionFlag, ? extends Message> entry : flags.entrySet())
                             {
                                 pst.setInt(i++, worldId);
-                                pst.setString(i++, entry.getKey().name());
+                                PermissionFlag flag = entry.getKey();
+                                pst.setString(i++, flag.name());
                                 Message message = entry.getValue();
                                 source.setNullableString(pst, i++,
-                                        FlagHolder.DEFAULT_DENIAL_MESSAGE.equals(message)? null: message.getFallback()
+                                        message == null || message.equals(holder.getDefaultMessage(flag))?
+                                                null: message.toString()
                                 );
                             }
 
@@ -323,7 +335,10 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                         {
                             pst.setInt(1, city.getId());
                             pst.setString(2, flag.name());
-                            source.setNullableString(pst, 3, message == null? null : message.getFallback());
+                            source.setNullableString(pst, 3,
+                                    message == null || message.equals(holder.getDefaultMessage(flag))?
+                                    null : message.toString()
+                            );
                             source.executeUpdate(pst, 1);
                         }
 
@@ -359,7 +374,9 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                         {
                             pst.setInt(1, plotId);
                             pst.setString(2, flag.name());
-                            source.setNullableString(pst, 3, message == null? null : message.getFallback());
+                            source.setNullableString(pst, 3, message == null || message.equals(holder.getDefaultMessage(flag))?
+                                    null : message.toString()
+                            );
                             source.executeUpdate(pst, 1);
                         }
 
@@ -395,7 +412,9 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                         {
                             pst.setInt(1, worldId);
                             pst.setString(2, flag.name());
-                            source.setNullableString(pst, 3, message == null? null : message.getFallback());
+                            source.setNullableString(pst, 3, message == null || message.equals(holder.getDefaultMessage(flag))?
+                                    null : message.toString()
+                            );
                             source.executeUpdate(pst, 1);
                         }
 
@@ -713,7 +732,9 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                                     pst.setString(2, flag.name());
                                     pst.setInt(3, id);
                                     pst.setBoolean(4, allow);
-                                    source.setNullableString(pst, 5, allow || message == null? null : message.getFallback());
+                                    source.setNullableString(pst, 5, allow || message == null || message.equals(holder.getDefaultMessage(flag))?
+                                            null : message.toString()
+                                    );
                                     source.executeUpdate(pst, 1);
                                 }
                                 transaction.commit();
@@ -731,7 +752,9 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                                     pst.setString(2, flag.name());
                                     pst.setInt(3, id);
                                     pst.setBoolean(4, allow);
-                                    source.setNullableString(pst, 5, allow || message == null? null : message.getFallback());
+                                    source.setNullableString(pst, 5, allow || message == null || message.equals(holder.getDefaultMessage(flag))?
+                                            null : message.toString()
+                                    );
                                     source.executeUpdate(pst, 1);
                                 }
                                 transaction.commit();
@@ -749,7 +772,9 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                                     pst.setString(2, flag.name());
                                     pst.setInt(3, id);
                                     pst.setBoolean(4, allow);
-                                    source.setNullableString(pst, 5, allow || message == null? null : message.getFallback());
+                                    source.setNullableString(pst, 5, allow || message == null || message.equals(holder.getDefaultMessage(flag))?
+                                            null : message.toString()
+                                    );
                                     source.executeUpdate(pst, 1);
                                 }
                                 transaction.commit();
@@ -787,7 +812,9 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                                     pst.setString(2, flag.name());
                                     pst.setInt(3, id);
                                     pst.setBoolean(4, allow);
-                                    source.setNullableString(pst, 5, allow || message == null? null : message.getFallback());
+                                    source.setNullableString(pst, 5, allow || message == null || message.equals(holder.getDefaultMessage(flag))?
+                                            null : message.toString()
+                                    );
                                     source.executeUpdate(pst, 1);
                                 }
                                 transaction.commit();
@@ -805,7 +832,9 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                                     pst.setString(2, flag.name());
                                     pst.setInt(3, id);
                                     pst.setBoolean(4, allow);
-                                    source.setNullableString(pst, 5, allow || message == null? null : message.getFallback());
+                                    source.setNullableString(pst, 5, allow || message == null || message.equals(holder.getDefaultMessage(flag))?
+                                            null : message.toString()
+                                    );
                                     source.executeUpdate(pst, 1);
                                 }
                                 transaction.commit();
@@ -823,7 +852,9 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                                     pst.setString(2, flag.name());
                                     pst.setInt(3, id);
                                     pst.setBoolean(4, allow);
-                                    source.setNullableString(pst, 5, allow || message == null? null : message.getFallback());
+                                    source.setNullableString(pst, 5, allow || message == null || message.equals(holder.getDefaultMessage(flag))?
+                                            null : message.toString()
+                                    );
                                     source.executeUpdate(pst, 1);
                                 }
                                 transaction.commit();
@@ -961,14 +992,15 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                     EnumMap<PermissionFlag, Message> map = new EnumMap<>(PermissionFlag.class);
                     while(result.next())
                     {
+                        PermissionFlag perm = PermissionFlag.valueOf(result.getString(1));
                         Message message;
                         String str = result.getString(2);
                         if(str == null)
-                            message = holder.getDefaultMessage();
+                            message = holder.getDefaultMessage(perm);
                         else
-                            message = new Message("", "${msg}", new Object[]{"msg", str});
+                            message = Message.string(str);
 
-                        map.put(PermissionFlag.valueOf(result.getString(1)), message);
+                        map.put(perm, message);
                     }
 
                     return map;
@@ -986,14 +1018,15 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                     EnumMap<PermissionFlag, Message> map = new EnumMap<>(PermissionFlag.class);
                     while(result.next())
                     {
+                        PermissionFlag perm = PermissionFlag.valueOf(result.getString(1));
                         Message message;
                         String str = result.getString(2);
                         if(str == null)
-                            message = holder.getDefaultMessage();
+                            message = holder.getDefaultMessage(perm);
                         else
-                            message = new Message("", "${msg}", new Object[]{"msg", str});
+                            message = Message.string(str);
 
-                        map.put(PermissionFlag.valueOf(result.getString(1)), message);
+                        map.put(perm, message);
                     }
 
                     return map;
@@ -1011,14 +1044,15 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                     EnumMap<PermissionFlag, Message> map = new EnumMap<>(PermissionFlag.class);
                     while(result.next())
                     {
+                        PermissionFlag perm = PermissionFlag.valueOf(result.getString(1));
                         Message message;
                         String str = result.getString(2);
                         if(str == null)
-                            message = holder.getDefaultMessage();
+                            message = holder.getDefaultMessage(perm);
                         else
-                            message = new Message("", "${msg}", new Object[]{"msg", str});
+                            message = Message.string(str);
 
-                        map.put(PermissionFlag.valueOf(result.getString(1)), message);
+                        map.put(perm, message);
                     }
 
                     return map;
@@ -1045,7 +1079,6 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
             {
                 int cityId = ((City) holder).getId();
                 Map<PermissionFlag, Map<Identity<?>, Optional<Message>>> map = new HashMap<>();
-                Message defaultMessage = holder.getDefaultMessage();
 
                 Connection connection = this.connection.connect();
                 try(PreparedStatement pst = connection.prepareStatement(
@@ -1071,7 +1104,7 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                                         )
                                 );
 
-                            insertIdentity(result, map, player, defaultMessage);
+                            insertIdentity(result, map, player, holder);
                         } while(result.next());
                     }
                 }
@@ -1100,7 +1133,7 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                                         )
                                 );
 
-                            insertIdentity(result, map, entity, defaultMessage);
+                            insertIdentity(result, map, entity, holder);
                         } while(result.next());
                     }
                 }
@@ -1149,7 +1182,7 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                                     );
                             }
 
-                            insertIdentity(result, map, group, defaultMessage);
+                            insertIdentity(result, map, group, holder);
                         } while(result.next());
                     }
                 }
@@ -1160,7 +1193,6 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
             {
                 int plotId = ((Plot) holder).id;
                 Map<PermissionFlag, Map<Identity<?>, Optional<Message>>> map = new HashMap<>();
-                Message defaultMessage = holder.getDefaultMessage();
 
                 Connection connection = this.connection.connect();
                 try(PreparedStatement pst = connection.prepareStatement(
@@ -1186,7 +1218,7 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                                         )
                                 );
 
-                            insertIdentity(result, map, player, defaultMessage);
+                            insertIdentity(result, map, player, holder);
                         } while(result.next());
                     }
                 }
@@ -1215,7 +1247,7 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                                         )
                                 );
 
-                            insertIdentity(result, map, entity, defaultMessage);
+                            insertIdentity(result, map, entity, holder);
                         } while(result.next());
                     }
                 }
@@ -1264,7 +1296,7 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
                                     );
                             }
 
-                            insertIdentity(result, map, group, defaultMessage);
+                            insertIdentity(result, map, group, holder);
                         } while(result.next());
                     }
                 }
@@ -1281,9 +1313,10 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
     }
 
     private void insertIdentity(ResultSet result, Map<PermissionFlag, Map<Identity<?>, Optional<Message>>> map,
-                                Identity<?> identity, Message defaultMessage) throws SQLException
+                                Identity<?> identity, SimpleFlagHolder holder) throws SQLException
     {
         PermissionFlag flag = PermissionFlag.valueOf(result.getString("perm"));
+        Message defaultMessage = holder.getDefaultMessage(flag);
         Map<Identity<?>, Optional<Message>> subMap = map.computeIfAbsent(flag, (f)-> new HashMap<>());
 
         if(result.getBoolean("allow"))
@@ -1295,7 +1328,7 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
             if(str == null)
                 message = defaultMessage;
             else
-                message = new Message("", "${msg}", new Object[]{"msg", str});
+                message = Message.string(str);
 
             subMap.put(identity, Optional.of(message));
         }

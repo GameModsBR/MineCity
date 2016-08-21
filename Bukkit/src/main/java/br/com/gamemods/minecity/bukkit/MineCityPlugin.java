@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
@@ -34,6 +35,18 @@ public class MineCityPlugin extends JavaPlugin
     private MineCityBukkit instance;
     private BukkitTask reloadTask;
     private BukkitTask playerTick;
+
+    private void adjustDefaultFlag(FileConfiguration yaml, String prefix, PermissionFlag flag, boolean def, SimpleFlagHolder holder)
+    {
+        boolean allow = yaml.getBoolean(prefix+flag+".allow", def);
+        String msg = yaml.getString(prefix+flag+".message", "");
+
+        if(!msg.isEmpty())
+            holder.getDefaultMessages().put(flag, new Message("", msg));
+
+        if(!allow)
+            holder.deny(flag);
+    }
 
     @Slow
     @Override
@@ -77,35 +90,9 @@ public class MineCityPlugin extends JavaPlugin
 
             for(PermissionFlag flag: PermissionFlag.values())
             {
-                boolean allow = yaml.getBoolean("permissions.default.nature."+flag+".allow", flag.defaultNature);
-                String msg = yaml.getString("permissions.default.nature."+flag+".message", "");
-                if(!allow)
-                {
-                    if(msg.isEmpty())
-                        config.defaultNatureFlags.deny(flag);
-                    else
-                        config.defaultNatureFlags.deny(flag, new Message("", msg));
-                }
-
-                allow = yaml.getBoolean("permissions.default.city."+flag+".allow", flag.defaultNature);
-                msg = yaml.getString("permissions.default.city."+flag+".message", "");
-                if(!allow)
-                {
-                    if(msg.isEmpty())
-                        config.defaultCityFlags.deny(flag);
-                    else
-                        config.defaultCityFlags.deny(flag, new Message("", msg));
-                }
-
-                allow = yaml.getBoolean("permissions.default.plot."+flag+".allow", flag.defaultNature);
-                msg = yaml.getString("permissions.default.plot."+flag+".message", "");
-                if(!allow)
-                {
-                    if(msg.isEmpty())
-                        config.defaultPlotFlags.deny(flag);
-                    else
-                        config.defaultPlotFlags.deny(flag, new Message("", msg));
-                }
+                adjustDefaultFlag(yaml, "permissions.default.nature.", flag, flag.defaultNature, config.defaultNatureFlags);
+                adjustDefaultFlag(yaml, "permissions.default.city.", flag, flag.defaultCity, config.defaultCityFlags);
+                adjustDefaultFlag(yaml, "permissions.default.plot.", flag, flag.defaultPlot, config.defaultPlotFlags);
             }
 
             MessageTransformer transformer = new MessageTransformer();

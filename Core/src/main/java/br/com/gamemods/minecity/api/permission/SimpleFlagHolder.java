@@ -13,25 +13,46 @@ import java.util.Optional;
  */
 public class SimpleFlagHolder implements FlagHolder
 {
+    @NotNull
     protected Message defaultMessage = DEFAULT_DENIAL_MESSAGE;
+
+    @NotNull
     protected final Map<PermissionFlag, Message> generalPermissions;
+
+    @NotNull
+    protected Map<PermissionFlag, Message> defaultMessages;
 
     public SimpleFlagHolder()
     {
         generalPermissions = new EnumMap<>(PermissionFlag.class);
+        defaultMessages = new EnumMap<>(PermissionFlag.class);
     }
 
-    protected SimpleFlagHolder(Map<PermissionFlag, Message> map)
+    protected SimpleFlagHolder(@NotNull Map<PermissionFlag, Message> map)
     {
         this.generalPermissions = map;
+        this.defaultMessages = new EnumMap<>(PermissionFlag.class);
     }
 
+    @NotNull
+    public Map<PermissionFlag, Message> getDefaultMessages()
+    {
+        return defaultMessages;
+    }
+
+    public Message getDefaultMessage(PermissionFlag flag)
+    {
+        Message message = defaultMessages.get(flag);
+        return message != null? message : getDefaultMessage();
+    }
+
+    @NotNull
     public Message getDefaultMessage()
     {
         return defaultMessage;
     }
 
-    public void setDefaultMessage(Message message)
+    public void setDefaultMessage(@NotNull Message message)
     {
         Message old = this.defaultMessage;
         defaultMessage = message;
@@ -80,7 +101,7 @@ public class SimpleFlagHolder implements FlagHolder
      */
     public void deny(PermissionFlag flag)
     {
-        generalPermissions.put(flag, defaultMessage);
+        generalPermissions.put(flag, getDefaultMessage(flag));
     }
 
     /**

@@ -96,6 +96,7 @@ public final class City extends ExceptStoredHolder
 
         try
         {
+            defaultMessages = mineCity.defaultCityFlags.getDefaultMessages();
             denyAll(mineCity.defaultCityFlags);
         }
         catch(UncheckedDataSourceException e)
@@ -139,6 +140,7 @@ public final class City extends ExceptStoredHolder
         groups = new HashMap<>(loadedGroups.size());
         loadedGroups.forEach(g -> groups.put(g.getIdentityName(), g));
 
+        defaultMessages = mineCity.defaultCityFlags.getDefaultMessages();
         loadSimplePermissions();
         loadExceptPermissions();
     }

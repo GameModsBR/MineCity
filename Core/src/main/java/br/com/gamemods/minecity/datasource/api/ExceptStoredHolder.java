@@ -51,7 +51,7 @@ public class ExceptStoredHolder extends ExceptFlagHolder
 
     @Slow
     @Override
-    public void setDefaultMessage(Message message) throws UncheckedDataSourceException
+    public void setDefaultMessage(@NotNull Message message) throws UncheckedDataSourceException
     {
         if(!message.equals(defaultMessage))
             try

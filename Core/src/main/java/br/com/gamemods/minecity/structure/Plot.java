@@ -57,7 +57,7 @@ public final class Plot extends ExceptStoredHolder
 
     private AdminPlot adminOwner;
 
-    public Plot(@NotNull ICityStorage storage, @NotNull IExceptPermissionStorage permissionStorage, int id,
+    public Plot(@NotNull MineCity mineCity, @NotNull ICityStorage storage, @NotNull IExceptPermissionStorage permissionStorage, int id,
                 @NotNull Island island, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
                 @NotNull BlockPos spawn, @NotNull Shape shape, @Nullable Message defaultMessage)
             throws DataSourceException
@@ -73,6 +73,7 @@ public final class Plot extends ExceptStoredHolder
         this.shape = shape;
         this.id = id;
 
+        defaultMessages = mineCity.defaultPlotFlags.getDefaultMessages();
         loadSimplePermissions();
         loadExceptPermissions();
     }
@@ -97,6 +98,7 @@ public final class Plot extends ExceptStoredHolder
 
         try
         {
+            defaultMessages = mineCity.defaultPlotFlags.getDefaultMessages();
             denyAll(mineCity.defaultPlotFlags);
         }
         catch(UncheckedDataSourceException e)

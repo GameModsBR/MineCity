@@ -18,7 +18,7 @@ public class SimpleStorageHolder extends SimpleFlagHolder
     public SimpleStorageHolder(@Nullable Message defaultMessage)
     {
         super(new SimpleMap());
-        this.defaultMessage = defaultMessage;
+        this.defaultMessage = defaultMessage == null? DEFAULT_DENIAL_MESSAGE : defaultMessage;
 
         SimpleMap map = (SimpleMap) generalPermissions;
         map.holder = this;
@@ -37,7 +37,7 @@ public class SimpleStorageHolder extends SimpleFlagHolder
 
     @Slow
     @Override
-    public void setDefaultMessage(Message message) throws UncheckedDataSourceException
+    public void setDefaultMessage(@NotNull Message message) throws UncheckedDataSourceException
     {
         if(!message.equals(defaultMessage))
             try

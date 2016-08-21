@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.forge.accessors.IChunk;
@@ -74,6 +75,20 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
     private ExecutorService executors;
     private final ConcurrentLinkedQueue<FutureTask> syncTasks = new ConcurrentLinkedQueue<>();
 
+    private void adjustDefaultFlag(Configuration config, String prefix, PermissionFlag flag, boolean def, SimpleFlagHolder flags)
+    {
+        boolean allow = config.getBoolean("allow", prefix+flag, def, "If this permission is allowed by default");
+        String msg = config.getString("message", prefix+flag, "",
+                "The message that will be displayed when this permission is denied, leave blank for the default message."
+        );
+
+        if(!msg.isEmpty())
+            flags.getDefaultMessages().put(flag, new Message("", msg));
+
+        if(!allow)
+            flags.deny(flag);
+    }
+
     @EventHandler
     public void onPreInit(FMLPreInitializationEvent event) throws IOException, SAXException
     {
@@ -126,41 +141,9 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
 
         for(PermissionFlag flag: PermissionFlag.values())
         {
-            boolean allowNature = config.getBoolean("allow", "permissions.default.nature."+flag, flag.defaultNature,
-                    "If this permission is allowed by default");
-            boolean allowCity = config.getBoolean("allow", "permissions.default.city."+flag, flag.defaultCity,
-                    "If this permission is allowed by default");
-            boolean allowPlot = config.getBoolean("allow", "permissions.default.plot."+flag, flag.defaultCity,
-                    "If this permission is allowed by default");
-            String natureMsg = config.getString("message", "permissions.default.nature."+flag, "",
-                    "The message that will be displayed when this permission is denied, leave blank for the default message.");
-            String cityMsg = config.getString("message", "permissions.default.city."+flag, "",
-                    "The message that will be displayed when this permission is denied, leave blank for the default message.");
-            String plotMsg = config.getString("message", "permissions.default.plot."+flag, "",
-                    "The message that will be displayed when this permission is denied, leave blank for the default message.");
-            if(!allowNature)
-            {
-                if(natureMsg.isEmpty())
-                    this.config.defaultNatureFlags.deny(flag);
-                else
-                    this.config.defaultNatureFlags.deny(flag, new Message("", natureMsg));
-            }
-
-            if(!allowCity)
-            {
-                if(cityMsg.isEmpty())
-                    this.config.defaultCityFlags.deny(flag);
-                else
-                    this.config.defaultCityFlags.deny(flag, new Message("", cityMsg));
-            }
-
-            if(!allowPlot)
-            {
-                if(plotMsg.isEmpty())
-                    this.config.defaultPlotFlags.deny(flag);
-                else
-                    this.config.defaultPlotFlags.deny(flag, new Message("", plotMsg));
-            }
+            adjustDefaultFlag(config, "permissions.default.nature.", flag, flag.defaultNature, this.config.defaultNatureFlags);
+            adjustDefaultFlag(config, "permissions.default.city.", flag, flag.defaultCity, this.config.defaultCityFlags);
+            adjustDefaultFlag(config, "permissions.default.plot.", flag, flag.defaultPlot, this.config.defaultPlotFlags);
         }
 
         config.save();

@@ -54,12 +54,9 @@ public class MineCity
     public MineCity(@NotNull Server server, @NotNull MineCityConfig config, @Nullable IDataSource dataSource,
                     @NotNull MessageTransformer messageTransformer)
     {
-        defaultCityFlags.denyAll(config.defaultCityFlags);
-        defaultNatureFlags.denyAll(config.defaultNatureFlags);
-        defaultPlotFlags.denyAll(config.defaultPlotFlags);
-        defaultCityFlags.setDefaultMessage(config.defaultCityFlags.getDefaultMessage());
-        defaultNatureFlags.setDefaultMessage(config.defaultNatureFlags.getDefaultMessage());
-        defaultPlotFlags.setDefaultMessage(config.defaultPlotFlags.getDefaultMessage());
+        defaultCityFlags = config.defaultCityFlags;
+        defaultNatureFlags = config.defaultNatureFlags;
+        defaultPlotFlags = config.defaultPlotFlags;
 
         this.server = server;
         this.messageTransformer = messageTransformer;

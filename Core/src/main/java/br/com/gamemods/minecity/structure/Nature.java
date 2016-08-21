@@ -37,6 +37,8 @@ public final class Nature extends SimpleStorageHolder implements ChunkOwner
         this.mineCity = mineCity;
         this.world = world;
         this.id = new NatureID(world);
+
+        defaultMessages = mineCity.defaultNatureFlags.getDefaultMessages();
         denyAll(mineCity.defaultNatureFlags);
     }
 
@@ -53,6 +55,7 @@ public final class Nature extends SimpleStorageHolder implements ChunkOwner
         this.id = new NatureID(world);
         this.denyCityCreation = denyCityCreation;
 
+        defaultMessages = mineCity.defaultNatureFlags.getDefaultMessages();
         loadPermissions();
     }
 

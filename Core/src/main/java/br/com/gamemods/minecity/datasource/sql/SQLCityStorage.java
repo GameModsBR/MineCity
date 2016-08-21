@@ -1181,7 +1181,7 @@ public class SQLCityStorage implements ICityStorage
                    else
                        denial = new Message("", "${msg}", new Object[]{"msg",str});
 
-                   plots.add(new Plot(this, permStorage, result.getInt(1), island, result.getString(2), result.getString(3), owner,
+                   plots.add(new Plot(source.mineCity, this, permStorage, result.getInt(1), island, result.getString(2), result.getString(3), owner,
                            new BlockPos(island.world, result.getInt(4), result.getInt(5), result.getInt(6)),
                            Shape.deserializeBytes(result.getBytes(7)), denial
                    ));
