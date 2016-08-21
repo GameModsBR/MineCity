@@ -377,11 +377,13 @@ public class SQLSourceTest
 
         ClaimedChunk claim = mineCity.loadChunk(spawnA.add(Direction.NORTH, 2));
         assertTrue(claim.reserve);
-        assertEquals(islandA, claim.getIsland().orElse(null));
+        assertEquals(null, claim.getIsland().orElse(null));
+        assertEquals(islandA, claim.getIslandAcceptingReserve().orElse(null));
 
         claim = mineCity.loadChunk(spawnA.add(Direction.SOUTH));
         assertTrue(claim.reserve);
-        assertEquals(islandA, claim.getIsland().orElse(null));
+        assertEquals(null, claim.getIsland().orElse(null));
+        assertEquals(islandA, claim.getIslandAcceptingReserve().orElse(null));
 
         claim = mineCity.loadChunk(spawnA.add(Direction.EAST));
         assertFalse(claim.reserve);
@@ -390,11 +392,13 @@ public class SQLSourceTest
         cityA.claim(spawnA.add(Direction.EAST), false);
         claim = mineCity.loadChunk(spawnA.add(Direction.EAST, 2));
         assertTrue(claim.reserve);
-        assertEquals(islandA, claim.getIsland().orElse(null));
+        assertEquals(null, claim.getIsland().orElse(null));
+        assertEquals(islandA, claim.getIslandAcceptingReserve().orElse(null));
 
         claim = mineCity.loadChunk(spawnA.add(Direction.NORTH_EAST));
         assertTrue(claim.reserve);
-        assertEquals(islandA, claim.getIsland().orElse(null));
+        assertEquals(null, claim.getIsland().orElse(null));
+        assertEquals(islandA, claim.getIslandAcceptingReserve().orElse(null));
 
         assertThrown(()-> cityA.claim(spawnA.add(Direction.NORTH, 3), false))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -407,7 +411,8 @@ public class SQLSourceTest
         ChunkPos spawnB = spawnA.add(Direction.NORTH, 5);
         claim = mineCity.loadChunk(spawnB);
         assertTrue(claim.reserve);
-        assertEquals(islandA, claim.getIsland().orElse(null));
+        assertEquals(null, claim.getIsland().orElse(null));
+        assertEquals(islandA, claim.getIslandAcceptingReserve().orElse(null));
         spawnB = spawnB.add(Direction.WEST, 4);
         assertFalse(mineCity.loadChunk(spawnB.add(Direction.EAST,6)).reserve);
         assertFalse(mineCity.loadChunk(spawnB.add(Direction.EAST,2)).reserve);
@@ -417,43 +422,44 @@ public class SQLSourceTest
         Island islandB = cityB.claim(spawnB.add(Direction.WEST), false);
         claim = mineCity.loadChunk(spawnB.add(Direction.EAST));
         assertTrue(claim.reserve);
-        assertEquals(islandB, claim.getIsland().orElse(null));
+        assertEquals(null, claim.getIsland().orElse(null));
+        assertEquals(islandB, claim.getIslandAcceptingReserve().orElse(null));
 
         cityB.claim(spawnB.add(Direction.WEST, 2), false);
         cityB.claim(spawnB.add(Direction.WEST, 3), false);
         claim = mineCity.loadChunk(spawnB.add(Direction.EAST,2 ));
         assertTrue(claim.reserve);
-        assertEquals(islandB, claim.getIsland().orElse(null));
+        assertEquals(islandB, claim.getIslandAcceptingReserve().orElse(null));
 
         cityB.claim(spawnB.add(Direction.WEST, 4), false);
         cityB.claim(spawnB.add(Direction.WEST, 5), false);
         claim = mineCity.loadChunk(spawnB.add(Direction.EAST,3 ));
         assertTrue(claim.reserve);
-        assertEquals(islandA, claim.getIsland().orElse(null));
+        assertEquals(islandA, claim.getIslandAcceptingReserve().orElse(null));
 
         cityB.claim(spawnB.add(Direction.WEST, 6), false);
         cityB.claim(spawnB.add(Direction.WEST, 7), false);
         claim = mineCity.loadChunk(spawnB.add(Direction.EAST,4 ));
         assertTrue(claim.reserve);
-        assertEquals(islandA, claim.getIsland().orElse(null));
+        assertEquals(islandA, claim.getIslandAcceptingReserve().orElse(null));
 
         cityB.claim(spawnB.add(Direction.WEST, 8), false);
         cityB.claim(spawnB.add(Direction.WEST, 9), false);
         claim = mineCity.loadChunk(spawnB.add(Direction.EAST,5 ));
         assertTrue(claim.reserve);
-        assertEquals(islandA, claim.getIsland().orElse(null));
+        assertEquals(islandA, claim.getIslandAcceptingReserve().orElse(null));
 
         cityB.claim(spawnB.add(Direction.WEST, 10), false);
         cityB.claim(spawnB.add(Direction.WEST, 11), false);
         claim = mineCity.loadChunk(spawnB.add(Direction.EAST,6 ));
         assertFalse(claim.reserve);
-        assertEquals(Optional.empty(), claim.getIsland());
+        assertEquals(Optional.empty(), claim.getIslandAcceptingReserve());
 
         cityB.claim(spawnB.add(Direction.WEST, 12), false);
         cityB.claim(spawnB.add(Direction.WEST, 13), false);
         claim = mineCity.loadChunk(spawnB.add(Direction.EAST,7 ));
         assertFalse(claim.reserve);
-        assertEquals(Optional.empty(), claim.getIsland());
+        assertEquals(Optional.empty(), claim.getIslandAcceptingReserve());
     }
 
     @Test

@@ -85,7 +85,6 @@ public abstract class AbstractProtection implements Listener
         ClaimedChunk chunk = plugin.mineCity.provideChunk(blockPos.getChunk());
         FlagHolder holder = chunk.getFlagHolder(blockPos);
 
-        Optional<Message> denial;
         if(flags.length == 1)
             return holder.can(user, flags[0]);
         else
