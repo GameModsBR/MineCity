@@ -131,6 +131,9 @@
         </command>
 
         <!-- Lotes -->
+        <command id="plot.info" parent="plot" cmd="info">
+            <desc>Exibe informações sobre o lote</desc>
+        </command>
         <command id="plot.create" parent="plot" cmd="criar,novo">
             <desc>Cria um novo lote</desc>
         </command>

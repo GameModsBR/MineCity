@@ -45,7 +45,13 @@ public class Empty implements Shape
     }
 
     @Override
-    public int size()
+    public int area()
+    {
+        return 0;
+    }
+
+    @Override
+    public int squareSize()
     {
         return 0;
     }

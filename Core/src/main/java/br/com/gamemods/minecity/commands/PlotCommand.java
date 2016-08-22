@@ -5,7 +5,10 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.StringUtil;
 import br.com.gamemods.minecity.api.command.*;
+import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.permission.OptionalPlayer;
 import br.com.gamemods.minecity.api.shape.Shape;
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.structure.*;
@@ -17,6 +20,79 @@ import java.util.stream.Collectors;
 
 public class PlotCommand
 {
+    @Command(value = "plot.info", console = false, args = @Arg(name = "plot name", sticky = true))
+    public static Message info(CommandEvent cmd)
+    {
+        Plot plot;
+        if(cmd.args.isEmpty())
+        {
+            plot = cmd.getChunk().getPlotAt(cmd.position.getBlock()).orElse(null);
+            if(plot == null)
+                return new Message("cmd.plot.info.not-inside-plot", "You are not inside a plot");
+        }
+        else
+        {
+            Island island = cmd.getChunk().getIsland().orElse(null);
+            if(island == null)
+                return new Message("cmd.plot.info.not-inside-city", "You are not inside a city");
+
+            String name = String.join(" ", cmd.args);
+            plot = island.getPlot(name).orElseGet(()-> island.getCity().getPlot(name).orElse(null));
+            if(plot == null)
+                return new Message("cmd.plot.info.not-found",
+                        "The city ${city} does not contains a plot named ${plot}",
+                        new Object[][]{
+                                {"city", island.getCity().getName()},
+                                {"plot", name}
+                        }
+                );
+        }
+
+        BlockPos spawn = plot.getSpawn();
+        Shape shape = plot.getShape();
+        City city = plot.getCity();
+        OptionalPlayer mayor = city.owner();
+        cmd.sender.send(new Message(
+                "cmd.plot.info.page",
+                "<msg><darkgray>---<yellow>-=[Plot: ${name}]=-</yellow>-----------</darkgray><br/>\n" +
+                "<aqua>City: </aqua><white>${city}</white><br/>\n" +
+                "<aqua>Location: </aqua><white>${nature-name} X:${spawn-x} Y:${spawn-y} Z:${spawn-z}</white><br/>\n" +
+                "<aqua>Owner: </aqua><white>${owner}</white><br/>\n" +
+                "<aqua>Size: </aqua><white>${area-squared}m², ${area-cube}m³, X:${size-x}, Y:${size-y}, Z:${size-z}</white>" +
+                "<br/><darkgreen>----------------------------------</darkgreen></msg>",
+                new Object[][]{
+                        {"name", plot.getName()},
+                        {"city", city.getName()},
+                        {"nature-name", spawn.world.name()},
+                        {"spawn-x", spawn.x},
+                        {"spawn-y", spawn.y},
+                        {"spawn-z", spawn.z},
+                        {"owner", plot.getOwner().map(Identity::getName).map(Message::string).orElse(
+                                mayor.player() != null?
+                                    new Message("cmd.plot.info.mayor", "<msg><i>${city}</i>'s mayor: ${mayor}</msg>",
+                                            new Object[][]{
+                                                    {"city", city.getName()},
+                                                    {"mayor", mayor.getName()}
+                                            }
+                                    ) :
+                                    new Message("cmd.plot.info.admin", "<msg><i>The server administrators</i></msg>",
+                                            new Object[][]{
+                                                    {"city", city.getName()},
+                                                    {"admin", mayor.getName()}
+                                            }
+                                    )
+                        )},
+                        {"area-squared", shape.squareSize()},
+                        {"area-cube", shape.area()},
+                        {"size-x", shape.sizeX()},
+                        {"size-y", shape.sizeY()},
+                        {"size-z", shape.sizeZ()}
+                }
+        ));
+
+        return null;
+    }
+
     @Slow
     @Async
     @Command(value = "plot.create", console = false, args = @Arg(name = "plot name", sticky = true))

@@ -31,7 +31,7 @@
 <!ENTITY % CityPermListCommands "city.perms.enter|city.perms.click|city.perms.pickup|city.perms.harvest|city.perms.open|city.perms.pvp|city.perms.pvc|city.perms.modify|city.perms">
 <!ENTITY % GroupCommands "group.create|group.add|group.remove|group.list|group.info|group.delete|group.add.manager|group.remove.manager">
 <!ENTITY % GeneralCommands "confirm|help|reload">
-<!ENTITY % PlotManageCommands "plot.create|plot.rename|plot.return|plot.transfer|plot.delete">
+<!ENTITY % PlotManageCommands "plot.create|plot.rename|plot.return|plot.transfer|plot.delete|plot.info">
 
 <!ENTITY % PlotPermCommands "%PlotAllowCommands;|%PlotDenyCommands;|%PlotAllowAllCommands;|%PlotDenyAllCommands;|%PlotPermListCommands;|%CityResetCommands;|%CityResetAllCommands;">
 <!ENTITY % CityPermCommands "%CityAllowCommands;|%CityDenyCommands;|%CityAllowAllCommands;|%CityDenyAllCommands;|%CityPermListCommands;|%PlotResetCommands;|%PlotResetAllCommands;">

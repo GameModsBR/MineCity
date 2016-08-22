@@ -133,9 +133,14 @@ public class Cuboid implements Shape
     }
 
     @Override
-    public int size()
+    public int area()
     {
         return sizeX() * sizeZ() * sizeY();
+    }
+
+    public int squareSize()
+    {
+        return sizeX() * sizeZ();
     }
 
     @NotNull

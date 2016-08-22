@@ -17,7 +17,8 @@ public interface Shape
     int sizeX();
     int sizeY();
     int sizeZ();
-    int size();
+    int area();
+    int squareSize();
 
     boolean contains(int x, int y, int z);
 
@@ -160,8 +161,8 @@ public interface Shape
         if(shape.getType() == Type.EMPTY)
             return false;
 
-        int sizeA = size();
-        int sizeB = shape.size();
+        int sizeA = area();
+        int sizeB = shape.area();
 
         Shape smaller = sizeA <= sizeB? this : shape;
         Shape bigger  = sizeA <= sizeB? shape : this;

@@ -662,6 +662,20 @@
             <msg id="not-pending">You don't have any pending confirmation</msg>
         </confirm>
         <plot>
+            <info>
+                <msg id="arg.plot-name">plot-name</msg>
+                <msg id="not-inside-plot">You are not inside a plot</msg>
+                <msg id="not-inside-city">You are not inside a city</msg>
+                <msg id="mayor"><i>${city}</i>'s mayor: ${mayor}</msg>
+                <msg id="admin"><i>The server administrators</i></msg>
+                <msg id="page"><darkgreen>---<yellow>-=[Plot: ${name}]=-</yellow>---------</darkgreen><br/>
+                    <aqua>City: </aqua><white>${city}</white><br/>
+                    <aqua>Location: </aqua><white>${nature-name} X:${spawn-x} Y:${spawn-y} Z:${spawn-z}</white><br/>
+                    <aqua>Owner: </aqua><white>${owner}</white><br/>
+                    <aqua>Size: </aqua><white>${area-squared}m², ${area-cube}m³, X:${size-x}, Y:${size-y}, Z:${size-z}</white>
+                    <br/><darkgreen>----------------------------------</darkgreen>
+                </msg>
+            </info>
             <perms>
                 <nobody>
                     <enter>

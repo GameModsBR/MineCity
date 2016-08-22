@@ -131,6 +131,9 @@
         </command>
 
         <!-- Plots -->
+        <command id="plot.info" parent="plot" cmd="info">
+            <desc>Shows information about the plot</desc>
+        </command>
         <command id="plot.create" parent="plot" cmd="create,new">
             <desc>Creates a new plot</desc>
         </command>

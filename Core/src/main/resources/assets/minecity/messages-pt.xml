@@ -636,6 +636,20 @@
             <msg id="not-pending">Você não tem nenhum código de confirmação pendente</msg>
         </confirm>
         <plot>
+            <info>
+                <msg id="arg.plot-name">nome-do-lote</msg>
+                <msg id="not-inside-plot">Você não está dentro de um lote</msg>
+                <msg id="not-inside-city">Você não está dentro de uma cidade</msg>
+                <msg id="mayor">Prefeito(a) de <i>${city}</i>: ${mayor}</msg>
+                <msg id="admin"><i>Os administradores do servidor</i></msg>
+                <msg id="page"><darkgreen>---<yellow>-=[Lote: ${name}]=-</yellow>---------</darkgreen><br/>
+                    <aqua>Cidade: </aqua><white>${city}</white><br/>
+                    <aqua>Local: </aqua><white>${nature-name} X:${spawn-x} Y:${spawn-y} Z:${spawn-z}</white><br/>
+                    <aqua>Dono: </aqua><white>${owner}</white><br/>
+                    <aqua>Tamanho: </aqua><white>${area-squared}m², ${area-cube}m³, X:${size-x}, Y:${size-y}, Z:${size-z}</white>
+                    <br/><darkgreen>----------------------------------</darkgreen>
+                </msg>
+            </info>
             <perms>
                 <nobody>
                     <enter>
