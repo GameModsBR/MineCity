@@ -225,7 +225,7 @@ CONSTRAINT `world_perm_world` FOREIGN KEY (`world_id`) REFERENCES `minecity_worl
 
 CREATE TABLE `minecity_setup` (
 `property`  enum('version') NOT NULL ,
-`value`  enum('1') NOT NULL DEFAULT '1' ,
+`value`  enum('2') NOT NULL DEFAULT '2' ,
 PRIMARY KEY (`property`)
 );
 
