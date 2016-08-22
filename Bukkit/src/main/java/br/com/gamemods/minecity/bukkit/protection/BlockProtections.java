@@ -39,6 +39,7 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.InventoryHolder;
@@ -60,6 +61,7 @@ import java.util.stream.Stream;
 public class BlockProtections extends AbstractProtection
 {
     private Map<Location, Player> portalCreator = new MapMaker().weakKeys().weakValues().makeMap();
+    private Map<Location, UUID> vehicleCreators = new MapMaker().weakKeys().weakValues().makeMap();
     private boolean harvesting;
 
     public BlockProtections(@NotNull MineCityBukkit plugin)
@@ -778,6 +780,38 @@ public class BlockProtections extends AbstractProtection
         if(inventoryHolder instanceof BlockState)
             if(check(((BlockState)inventoryHolder).getLocation(), (Player) event.getPlayer(), PermissionFlag.OPEN))
                 event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void onVehicleCreate(VehicleCreateEvent event)
+    {
+        Vehicle vehicle = event.getVehicle();
+        Location loc = vehicle.getLocation();
+        Iterator<Map.Entry<Location, UUID>> iterator = vehicleCreators.entrySet().iterator();
+        while(iterator.hasNext())
+        {
+            Map.Entry<Location, UUID> entry = iterator.next();
+            if(entry.getKey().distance(loc) <= 2)
+            {
+                iterator.remove();
+                vehicle.setMetadata("VehicleOwner", new FixedMetadataValue(plugin.plugin, entry.getValue()));
+                return;
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerInteractMonitor(PlayerInteractEvent event)
+    {
+        if(event.hasBlock() && event.hasItem())
+        {
+            switch(event.getMaterial())
+            {
+                case BOAT:
+                case MINECART:
+                    vehicleCreators.put(event.getClickedBlock().getLocation(), event.getPlayer().getUniqueId());
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)

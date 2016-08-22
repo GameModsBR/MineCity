@@ -216,6 +216,10 @@ public class EntityProtections extends AbstractProtection
 
         if(attacker instanceof Player)
         {
+            UUID ownerId = BukkitUtil.getMeta(plugin.plugin, "VehicleOwner", vehicle);
+            if(ownerId != null && attacker.getUniqueId().equals(ownerId))
+                return;
+
             if(check(vehicle.getLocation(), (Player) attacker, PermissionFlag.MODIFY))
                 event.setCancelled(true);
         }
