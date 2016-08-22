@@ -61,7 +61,14 @@ public class EntityMonitor extends BukkitRunnable implements MovementListener
         }
 
         if(checkPosition().isPresent())
-            entity.teleport(safe);
+            teleportBack();
+    }
+
+    public void teleportBack()
+    {
+        entity.teleport(safe);
+        BukkitUtil.setLocation(safe, previous);
+        BukkitUtil.setLocation(safe, valid);
     }
 
     public Optional<Message> checkPosition()
