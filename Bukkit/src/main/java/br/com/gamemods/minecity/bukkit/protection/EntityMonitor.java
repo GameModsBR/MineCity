@@ -102,14 +102,14 @@ public class EntityMonitor extends BukkitRunnable implements MovementListener
         {
             LivingEntity living = (LivingEntity) entity;
             boolean allow = target instanceof Player;
-            if(living.isLeashed())
+            if(!allow && living.isLeashed())
             {
                 Entity leashHolder = living.getLeashHolder();
                 if(leashHolder != null && leashHolder instanceof HumanEntity)
                     allow = true;
             }
 
-            if(entity instanceof Horse)
+            if(!allow && entity instanceof Horse)
             {
                 Horse horse = (Horse) entity;
                 ItemStack saddle = horse.getInventory().getSaddle();
