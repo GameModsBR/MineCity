@@ -54,6 +54,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
     private short confirmExpires;
     private ForgeSelection selection;
     private short hideSelectionTimer = 0;
+    private short clearSelectionTimer = 0;
 
     public ForgePlayer(MineCityForgeMod mod, EntityPlayerMP player)
     {
@@ -89,10 +90,21 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
         tickConfirm();
         updateGroups();
         checkPosition();
+        selectionTimer();
+    }
+
+    public void selectionTimer()
+    {
         if(hideSelectionTimer > 0)
         {
             if(--hideSelectionTimer == 0)
                 selection.hide();
+        }
+
+        if(clearSelectionTimer > 0)
+        {
+            if(--clearSelectionTimer == 0)
+                selection.clear();
         }
     }
 
@@ -596,6 +608,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
         {
             super.updateDisplay();
             hideSelectionTimer = 60*20;
+            clearSelectionTimer = 5*60*20;
         }
 
         @Override

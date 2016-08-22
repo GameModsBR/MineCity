@@ -408,7 +408,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
         MessageTransformer transformer = plugin.mineCity.messageTransformer;
         meta.setDisplayName(transformer.toLegacy(new Message("tool.selection.title", LegacyFormat.AQUA+"Selection Tool")));
         meta.setLore(Arrays.asList(transformer.toMultilineLegacy(
-                new Message("","<white>${lore}</white>", new Object[]
+                new Message("","<msg><white>${lore}</white></msg>", new Object[]
                         {"lore", new Message("tool.selection.lore","Selects an area in the world")}
                 ))
         ));
@@ -528,6 +528,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     public class BukkitSelection extends DisplayedSelection<Material>
     {
         private BukkitTask autoHide;
+        private BukkitTask autoClear;
         protected BukkitSelection(@NotNull WorldDim world)
         {
             super(world);
@@ -546,8 +547,11 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
             super.updateDisplay();
             if(autoHide != null)
                 autoHide.cancel();
+            if(autoClear != null)
+                autoClear.cancel();
 
             autoHide = plugin.scheduler.runTaskLater(plugin.plugin, this::hide, 60*20);
+            autoClear = plugin.scheduler.runTaskLater(plugin.plugin, this::clear, 5*60*20);
         }
 
         @Override
