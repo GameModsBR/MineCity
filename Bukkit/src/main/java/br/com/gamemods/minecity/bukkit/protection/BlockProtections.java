@@ -801,6 +801,40 @@ public class BlockProtections extends AbstractProtection
             {
                 switch(event.getMaterial())
                 {
+                    case MINECART:
+                    case BOAT:
+                    {
+                        BlockPos pos = plugin.blockPos(block);
+                        ClaimedChunk claim = plugin.mineCity.provideChunk(pos.getChunk());
+                        FlagHolder flagHolder = claim.getFlagHolder(pos);
+                        BukkitPlayer player = plugin.player(event.getPlayer());
+
+                        Optional<Message> denial = flagHolder.can(player, PermissionFlag.MODIFY);
+                        if(denial.isPresent())
+                            denial = flagHolder.can(player, PermissionFlag.SPAWN_VEHICLES);
+
+                        if(denial.isPresent())
+                        {
+                            event.setCancelled(true);
+                            player.send(FlagHolder.wrapDeny(denial.get()));
+                            player.sender.updateInventory();
+                            return;
+                        }
+                        break;
+                    }
+
+                    case COMMAND_MINECART:
+                    case EXPLOSIVE_MINECART:
+                    case HOPPER_MINECART:
+                    case POWERED_MINECART:
+                    case STORAGE_MINECART:
+                        if(check(block.getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
+                        {
+                            event.setUseItemInHand(Event.Result.DENY);
+                            event.getPlayer().updateInventory();
+                        }
+                        break;
+
                     case ARMOR_STAND:
                     case MONSTER_EGG:
                     case MONSTER_EGGS:
