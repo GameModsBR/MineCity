@@ -650,6 +650,21 @@
             <msg id="not-pending">Você não tem nenhum código de confirmação pendente</msg>
         </confirm>
         <plot>
+            <readjust>
+                <msg id="no-selection">Selecione a nova área e execute este comando novamente.</msg>
+                <msg id="not-inside-plot">Você não está dentro de um lote</msg>
+                <msg id="not-inside-city">Você não está dentro de uma cidade</msg>
+                <msg id="not-found">A cidade ${city} não tem um lote chamado ${name}</msg>
+                <msg id="no-city-permission">Você não tem permissão para reajustar lotes em ${city}</msg>
+                <msg id="no-plot-permission">Os lotes só podem ser reajustado quando eles são propriedades da cidade ou do seu prefeito, ${plot} é propriedade de ${owner}</msg>
+                <msg id="outside">Fique dentro da nova área e execute este comando novamente.</msg>
+                <msg id="unclaimed">A área selecionada sobrepõe um chunk que não pertence à cidade em: X: ${x} and Z: ${z}</msg>
+                <overlaps>
+                    <msg id="plots">A área seleciona sobrepõe ${count} lotes: ${plots}</msg>
+                    <msg id="plot">A área selecionada sobrepõe o lote ${name}</msg>
+                    <msg id="success">O lote ${name} foi reajustado com sucesso</msg>
+                </overlaps>
+            </readjust>
             <info>
                 <msg id="arg.plot-name">nome-do-lote</msg>
                 <msg id="not-inside-plot">Você não está dentro de um lote</msg>

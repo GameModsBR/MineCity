@@ -188,6 +188,118 @@ public class PlotCommand
 
     @Slow
     @Async
+    @Command(value = "plot.readjust", console = false, args = @Arg(name = "plot-name", optional = true, sticky = true, type = Arg.Type.PLOT))
+    public static CommandResult<?> readjust(CommandEvent cmd) throws DataSourceException
+    {
+        Selection selection = cmd.sender.getSelection(cmd.position.world);
+        if(selection.isIncomplete())
+        {
+            cmd.sender.getServer().callSyncMethod(cmd.sender::giveSelectionTool);
+            return new CommandResult<>(new Message("cmd.plot.readjust.no-selection",
+                    "Select the new area and then execute this command again."
+            ), true);
+        }
+
+        City city;
+        Plot plot;
+        Island island;
+        if(cmd.args.isEmpty())
+        {
+            plot = cmd.getChunk().getPlotAt(cmd.position.getBlock()).orElse(null);
+            if(plot == null)
+                return new CommandResult<>(new Message("cmd.plot.readjust.not-inside-plot", "You are not inside a plot"));
+            island = plot.getIsland();
+            city = island.getCity();
+        }
+        else
+        {
+            island = cmd.getChunk().getIsland().orElse(null);
+            if(island == null)
+                return new CommandResult<>(new Message("cmd.plot.readjust.not-inside-city", "You are not inside a city"));
+            city = island.getCity();
+
+            String name = String.join(" ", cmd.args);
+            plot = island.searchPlot(name).orElse(null);
+            if(plot == null)
+                return new CommandResult<>(new Message("cmd.plot.readjust.not-found",
+                        "The city ${city} does not contains a plot named ${name}",
+                        new Object[][]{
+                                {"city", city.getName()},
+                                {"name", name}
+                        }
+                ));
+        }
+
+        Shape shape = selection.toShape();
+        if(!cmd.sender.getPlayerId().equals(city.owner()))
+            return new CommandResult<>(new Message("cmd.plot.readjust.no-city-permission",
+                    "You don't have permission to readjust plots in ${city}",
+                    new Object[]{"city", city.getName()}
+            ));
+
+        if(!cmd.sender.getPlayerId().equals(plot.owner()))
+            return new CommandResult<>(new Message("cmd.plot.readjust.no-plot-permission",
+                    "Plots can only be readjusted when they are owned by the city's mayor, ${plot} is owned by ${owner}",
+                    new Object[][]{
+                            {"plot", plot.getName()},
+                            {"owner", plot.owner().getName()}
+                    }
+            ));
+
+        if(!shape.contains(cmd.position.getBlock()))
+            return new CommandResult<>(new Message("cmd.plot.readjust.outside",
+                    "Stand inside the new area and execute this command again."
+            ));
+
+        Optional<ChunkPos> unclaimed = shape.chunks(selection.world)
+                .filter(c ->
+                        !cmd.mineCity.getOrFetchChunkUnchecked(c)
+                                .flatMap(ClaimedChunk::getIsland)
+                                .filter(island::equals)
+                                .isPresent()
+                ).findAny();
+
+        if(unclaimed.isPresent())
+            return new CommandResult<>(new Message("cmd.plot.create.readjust.unclaimed",
+                    "The selected area overlaps an unclaimed chunk located at: X: ${x} and Z: ${z}",
+                    new Object[][]{
+                            {"x", unclaimed.get().x}, {"z", unclaimed.get().z}
+                    }
+            ));
+
+        List<Plot> overlaps = island.getPlots().stream().filter(p -> !p.equals(plot) && p.getShape().overlaps(shape))
+                .collect(Collectors.toList());
+
+        if(!overlaps.isEmpty())
+        {
+            if(overlaps.size() > 1)
+                return new CommandResult<>(new Message("cmd.plot.readjust.overlaps.plots",
+                        "The selected area overlaps ${count} plots: ${plots}",
+                        new Object[][]{
+                                {"count", overlaps.size()},
+                                {"plots", Message.list(
+                                        overlaps.stream().map(Plot::getName).sorted()
+                                                .map(Message::new).toArray(Message[]::new)
+                                )}
+                        }
+                ));
+            else
+                return new CommandResult<>(new Message("cmd.plot.readjust.overlaps.plot",
+                        "The selected area overlaps the plot ${name}",
+                        new Object[]{"name", overlaps.get(0).getName()}
+                ));
+        }
+
+        plot.setShape(shape);
+        selection.clear();
+        return new CommandResult<>(new Message("cmd.plot.readjust.success",
+                "The plot ${name} was readjusted successfully",
+                new Object[]{"name", plot.getName()}
+        ), plot);
+    }
+
+    @Slow
+    @Async
     @Command(value = "plot.rename", console = false, args = @Arg(name = "new name", sticky = true))
     public static CommandResult<?> rename(CommandEvent cmd) throws DataSourceException
     {

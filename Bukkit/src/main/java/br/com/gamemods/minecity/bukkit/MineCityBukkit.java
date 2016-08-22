@@ -77,7 +77,7 @@ public class MineCityBukkit implements Server, Listener
         pluginManager.registerEvents(this, plugin);
         selectionToolTitle = transformer.toLegacy(new Message("tool.selection.title", LegacyFormat.AQUA+"Selection Tool"));
         selectionToolLore = Arrays.asList(transformer.toMultilineLegacy(
-                new Message("","<white>${lore}</white>", new Object[]
+                new Message("","<msg><white>${lore}</white></msg>", new Object[]
                         {"lore", new Message("tool.selection.lore","Selects an area in the world")}
                 ))
         );

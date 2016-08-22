@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyMap;
 
@@ -224,8 +225,12 @@ public final class Plot extends ExceptStoredHolder
         if(invalid)
             throw new IllegalStateException();
 
+        Shape old = this.shape;
         storage.setShape(this, shape);
         this.shape = shape;
+
+        Stream.concat(this.shape.chunks(island.world), old.chunks(island.world))
+                .distinct().forEach(getCity().mineCity::reloadChunkSlowly);
     }
 
     @Slow

@@ -137,6 +137,9 @@
         <command id="plot.info" parent="plot" cmd="info">
             <desc>Shows information about the plot</desc>
         </command>
+        <command id="plot.readjust" parent="plot" cmd="readjust">
+            <desc>Readjust the plot's shape. Can be used to completely relocate the plot.</desc>
+        </command>
         <command id="plot.create" parent="plot" cmd="create,new">
             <desc>Creates a new plot</desc>
         </command>

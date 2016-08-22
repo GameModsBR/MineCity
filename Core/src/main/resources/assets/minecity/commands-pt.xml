@@ -137,6 +137,9 @@
         <command id="plot.info" parent="plot" cmd="info">
             <desc>Exibe informações sobre o lote</desc>
         </command>
+        <command id="plot.readjust" parent="plot" cmd="readjust">
+            <desc>Reajusta o formato do lote. Pode ser usado para reposicionar o lote completamente.</desc>
+        </command>
         <command id="plot.create" parent="plot" cmd="criar,novo">
             <desc>Cria um novo lote</desc>
         </command>

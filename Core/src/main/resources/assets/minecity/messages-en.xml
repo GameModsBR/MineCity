@@ -677,6 +677,21 @@
             <msg id="not-pending">You don't have any pending confirmation</msg>
         </confirm>
         <plot>
+            <readjust>
+                <msg id="no-selection">Select the new area and then execute this command again.</msg>
+                <msg id="not-inside-plot">You are not inside a plot</msg>
+                <msg id="not-inside-city">You are not inside a city</msg>
+                <msg id="not-found">The city ${city} does not contains a plot named ${name}</msg>
+                <msg id="no-city-permission">You don't have permission to readjust plots in ${city}</msg>
+                <msg id="no-plot-permission">Plots can only be readjusted when they are owned by the city's mayor, ${plot} is owned by ${owner}</msg>
+                <msg id="outside">Stand inside the new area and execute this command again.</msg>
+                <msg id="unclaimed">The selected area overlaps an unclaimed chunk located at: X: ${x} and Z: ${z}</msg>
+                <overlaps>
+                    <msg id="plots">The selected area overlaps ${count} plots: ${plots}</msg>
+                    <msg id="plot">The selected area overlaps the plot ${name}</msg>
+                    <msg id="success">The plot ${name} was readjusted successfully</msg>
+                </overlaps>
+            </readjust>
             <info>
                 <msg id="arg.plot-name">plot-name</msg>
                 <msg id="not-inside-plot">You are not inside a plot</msg>

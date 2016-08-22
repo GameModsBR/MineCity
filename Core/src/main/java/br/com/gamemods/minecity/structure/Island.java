@@ -145,4 +145,13 @@ public abstract class Island implements ChunkOwner
                 ", city=" + getCity().getName() +
                 '}';
     }
+
+    public Optional<Plot> searchPlot(String name)
+    {
+        Optional<Plot> plot = getPlot(name);
+        if(plot.isPresent())
+            return plot;
+
+        return getCity().getPlot(name);
+    }
 }
