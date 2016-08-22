@@ -21,6 +21,7 @@ public class ArmorStandData
 {
     public static final String KEY = "ArmorStandData";
     private final ArmorStand armorStand;
+    private final Location location;
     private MineCityBukkit bukkit;
     private FlagHolder home;
     private BukkitTask timer;
@@ -28,7 +29,8 @@ public class ArmorStandData
 
     public ArmorStandData(@NotNull MineCityBukkit bukkit, ArmorStand armorStand)
     {
-        this.lastPos = bukkit.blockPos(armorStand.getLocation());
+        this.location = armorStand.getLocation();
+        this.lastPos = bukkit.blockPos(location);
         this.home = bukkit.mineCity.provideChunk(lastPos.getChunk()).getFlagHolder(lastPos);
         this.armorStand = armorStand;
         this.bukkit = bukkit;
@@ -43,7 +45,7 @@ public class ArmorStandData
             return;
         }
 
-        Location location = armorStand.getLocation();
+        Location location = armorStand.getLocation(this.location);
         if(lastPos.x == location.getBlockX() && lastPos.y == location.getBlockY() && lastPos.z == location.getBlockZ())
             return;
 

@@ -102,6 +102,11 @@ public class EntityProtections extends AbstractProtection
                         return;
                     }
                 }
+
+                if(reason == CreatureSpawnEvent.SpawnReason.ENDER_PEARL)
+                    return;
+
+                break;
             }
             case BUILD_SNOWMAN:
             {
@@ -111,11 +116,12 @@ public class EntityProtections extends AbstractProtection
                 plugin.callSyncMethod(()->
                     entity.setMetadata(SnowmanData.KEY, new FixedMetadataValue(
                             plugin.plugin,
-                            new SnowmanData(plugin, chunk, pos)
+                            new SnowmanData(plugin, chunk, pos, entity)
                     ))
                 );
+
+                return;
             }
-            break;
             case DEFAULT:
             {
                 if(event.getEntityType() == EntityType.ARMOR_STAND)
@@ -127,9 +133,14 @@ public class EntityProtections extends AbstractProtection
                                 new ArmorStandData(plugin, armorStand)
                         ))
                     );
+
+                    return;
                 }
             }
         }
+
+        Entity entity = event.getEntity();
+        plugin.callSyncMethod(() -> plugin.markEntities(Stream.of(entity)));
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -880,6 +891,20 @@ public class EntityProtections extends AbstractProtection
                 }
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onEntityTargetMonitor(EntityTargetEvent event)
+    {
+        Entity target = event.getTarget();
+        if(event.isCancelled() && target != null)
+            return;
+
+        EntityMonitor monitor = BukkitUtil.getMeta(plugin.plugin, EntityMonitor.KEY, event.getEntity());
+        if(monitor == null)
+            return;
+
+        monitor.target = target;
     }
 
     public void allowToPickup(Item item, UUID playerId)

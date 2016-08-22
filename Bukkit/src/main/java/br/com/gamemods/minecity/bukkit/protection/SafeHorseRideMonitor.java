@@ -34,6 +34,7 @@ public class SafeHorseRideMonitor extends BukkitRunnable implements MovementList
     private boolean enableFirstCheck = false;
     private boolean teleported;
     private boolean cancelled;
+    private final Location location;
 
     public SafeHorseRideMonitor(MineCityBukkit plugin, BukkitPlayer player, Horse horse)
     {
@@ -42,6 +43,7 @@ public class SafeHorseRideMonitor extends BukkitRunnable implements MovementList
         this.lastHealth = horse.getHealth();
         this.horse = horse;
         this.mov = new MovementMonitor(plugin, horse, this);
+        location = horse.getLocation();
         horse.setMetadata(KEY, new FixedMetadataValue(plugin.plugin, this));
     }
 
@@ -74,7 +76,7 @@ public class SafeHorseRideMonitor extends BukkitRunnable implements MovementList
             lastHealth = health;
 
         boolean safe = true;
-        Block block = horse.getLocation().getBlock();
+        Block block = horse.getLocation(location).getBlock();
         search:
         for(int ix = -1; ix <= 1; ix++)
             for(int iz = -1; iz <= 1; iz++)
@@ -121,7 +123,7 @@ public class SafeHorseRideMonitor extends BukkitRunnable implements MovementList
         }
 
         int previousY = mov.lastY;
-        Optional<Message> message = mov.checkPosition(horse.getLocation());
+        Optional<Message> message = mov.checkPosition(horse.getLocation(location));
         if(unregisterTimer > Byte.MIN_VALUE)
         {
             if(!message.isPresent())
@@ -149,7 +151,7 @@ public class SafeHorseRideMonitor extends BukkitRunnable implements MovementList
         if(!teleported)
         {
             horse.eject();
-            Location current = horse.getLocation();
+            Location current = horse.getLocation(location);
             Location loc = mov.lastLocation();
             loc.setPitch(current.getPitch());
             loc.setYaw(current.getYaw());

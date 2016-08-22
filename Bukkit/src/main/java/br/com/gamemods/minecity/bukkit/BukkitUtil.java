@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.bukkit;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
@@ -24,6 +25,17 @@ public class BukkitUtil
         }
 
         return null;
+    }
+
+    public static Location setLocation(Location from, Location to)
+    {
+        to.setX(from.getX());
+        to.setY(from.getY());
+        to.setZ(from.getZ());
+        to.setPitch(from.getPitch());
+        to.setYaw(from.getYaw());
+        to.setWorld(from.getWorld());
+        return to;
     }
 
     @NotNull

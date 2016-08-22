@@ -1,15 +1,16 @@
 package br.com.gamemods.minecity.bukkit.protection;
 
+import br.com.gamemods.minecity.api.CacheMap;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Nature;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Snowman;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 @SuppressWarnings("serial")
@@ -24,22 +25,19 @@ public class SnowmanData
     private final MineCityBukkit bukkit;
 
     @NotNull
-    private ClaimedChunk claim;
-    private Map<BlockPos, Boolean> last = new LinkedHashMap<BlockPos, Boolean>(4)
-    {
-        @Override
-        protected boolean removeEldestEntry(Map.Entry eldest)
-        {
-            return size() >= 4;
-        }
-    };
+    private final Location entityLocation;
 
-    public SnowmanData(@NotNull MineCityBukkit bukkit, @NotNull ClaimedChunk claim, @NotNull BlockPos pos)
+    @NotNull
+    private ClaimedChunk claim;
+    private Map<BlockPos, Boolean> last = new CacheMap<>(4);
+
+    public SnowmanData(@NotNull MineCityBukkit bukkit, @NotNull ClaimedChunk claim, @NotNull BlockPos pos, @NotNull Snowman snowman)
     {
         this.bukkit = bukkit;
         this.claim = claim;
-        home = claim.getFlagHolder(pos);
-        last.put(pos, home instanceof Nature);
+        this.home = claim.getFlagHolder(pos);
+        this.last.put(pos, home instanceof Nature);
+        this.entityLocation = snowman.getLocation();
     }
 
     public boolean checkFormSnow(Snowman entity, Block block)
@@ -70,7 +68,7 @@ public class SnowmanData
             return result;
         }
 
-        BlockPos entityLoc = bukkit.blockPos(entity.getLocation());
+        BlockPos entityLoc = bukkit.blockPos(entity.getLocation(entityLocation));
         if(entityLoc.equals(pos) || !claim.getFlagHolder(entityLoc).equals(holder))
             entity.damage(1000);
 

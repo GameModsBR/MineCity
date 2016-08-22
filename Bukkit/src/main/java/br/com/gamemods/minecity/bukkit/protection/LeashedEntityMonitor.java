@@ -22,16 +22,19 @@ public class LeashedEntityMonitor extends BukkitRunnable implements MovementList
     private final MovementMonitor mov;
     private final BukkitPlayer player;
     private final MineCityBukkit plugin;
+    private final Location location, vehicleLocation;
     public LeashedEntityMonitor(MineCityBukkit bukkit, BukkitPlayer player, LivingEntity entity)
     {
         this.player = player;
         this.plugin = bukkit;
+        location = entity.getLocation();
+        vehicleLocation = location.clone();
         mov = new MovementMonitor(bukkit, entity, this);
     }
 
     private void teleport(BlockPos pos)
     {
-        mov.entity.teleport(plugin.location(pos).orElseGet(player.sender::getLocation));
+        mov.entity.teleport(plugin.reuseLocation(location, pos));
     }
 
     @Override
@@ -44,7 +47,7 @@ public class LeashedEntityMonitor extends BukkitRunnable implements MovementList
             return;
         }
 
-        Optional<Message> message = mov.checkPosition(entity.getLocation());
+        Optional<Message> message = mov.checkPosition(entity.getLocation(location));
         if(message.isPresent())
         {
             if(mov.messageWait > 0 && mov.messageWait % 5 == 0)
@@ -61,7 +64,7 @@ public class LeashedEntityMonitor extends BukkitRunnable implements MovementList
                 teleport(new BlockPos(mov.lastClaim.chunk.world, mov.lastX, mov.lastY, mov.lastZ));
             else
             {
-                Location vLoc = vehicle.getLocation();
+                Location vLoc = vehicle.getLocation(vehicleLocation);
                 Optional<World> world = plugin.world(mov.lastClaim.chunk.world);
                 if(!world.isPresent())
                     teleport(new BlockPos(mov.lastClaim.chunk.world, mov.lastX, mov.lastY, mov.lastZ));

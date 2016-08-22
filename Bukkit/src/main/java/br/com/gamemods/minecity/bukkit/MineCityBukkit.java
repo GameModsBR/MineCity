@@ -11,10 +11,7 @@ import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.bukkit.command.BukkitCommandSender;
 import br.com.gamemods.minecity.bukkit.command.BukkitLocatableSender;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
-import br.com.gamemods.minecity.bukkit.protection.ArmorStandData;
-import br.com.gamemods.minecity.bukkit.protection.BlockProtections;
-import br.com.gamemods.minecity.bukkit.protection.EntityProtections;
-import br.com.gamemods.minecity.bukkit.protection.SnowmanData;
+import br.com.gamemods.minecity.bukkit.protection.*;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -24,10 +21,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -198,7 +192,7 @@ public class MineCityBukkit implements Server, Listener
 
                     entity.setMetadata(SnowmanData.KEY, new FixedMetadataValue(
                             plugin,
-                            new SnowmanData(this, claim, pos)
+                            new SnowmanData(this, claim, pos, (Snowman) entity)
                     ));
                 }
                 break;
@@ -207,6 +201,29 @@ public class MineCityBukkit implements Server, Listener
                             plugin,
                             new ArmorStandData(this, (ArmorStand) entity)
                     ));
+                break;
+                default:
+                    if(entity instanceof LivingEntity)
+                    {
+                        if(entity.getCustomName() == null)
+                        {
+                            if(entity instanceof Monster)
+                            {
+                                if(!(entity instanceof Wither || entity instanceof Silverfish))
+                                    return;
+                            }
+                            else if(entity instanceof Ambient ||entity instanceof ComplexLivingEntity ||
+                                    entity instanceof Flying || entity instanceof HumanEntity ||
+                                    entity instanceof WaterMob || entity instanceof Slime)
+                                return;
+                        }
+                    }
+
+                    if(!(entity instanceof Player) && entity instanceof LivingEntity)
+                        entity.setMetadata(EntityMonitor.KEY, new FixedMetadataValue(
+                                plugin,
+                                new EntityMonitor(this, entity)
+                        ));
             }
         });
     }
@@ -342,6 +359,32 @@ public class MineCityBukkit implements Server, Listener
     public Optional<Location> location(@NotNull EntityPos pos)
     {
         return world(pos.world).map(world -> new Location(world, pos.x, pos.y, pos.z, pos.yaw, pos.pitch));
+    }
+
+    @NotNull
+    public Location reuseLocation(@NotNull Location location, @NotNull BlockPos pos)
+    {
+        location.setX(pos.x+0.5);
+        location.setY(pos.y+0.5);
+        location.setZ(pos.z+0.5);
+        Optional<World> world = world(pos.world);
+        if(world.isPresent())
+            location.setWorld(world.get());
+        return location;
+    }
+
+    @NotNull
+    public Location reuseLocation(@NotNull Location location, @NotNull EntityPos pos)
+    {
+        location.setX(pos.x);
+        location.setY(pos.y);
+        location.setZ(pos.z);
+        location.setPitch(pos.pitch);
+        location.setYaw(pos.yaw);
+        Optional<World> world = world(pos.world);
+        if(world.isPresent())
+            location.setWorld(world.get());
+        return location;
     }
 
     @NotNull

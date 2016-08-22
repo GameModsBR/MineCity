@@ -45,6 +45,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     @Nullable
     private Set<GroupID> groups;
     private final MovementMonitor mov;
+    private final Location location, vehicleLocation;
     public byte pickupRandomDelay;
     public byte pickupHarvestDelay;
     public byte lureDelay;
@@ -55,6 +56,8 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     {
         super(plugin, player);
         this.playerId = new PlayerID(player.getUniqueId(), player.getName());
+        location = player.getLocation();
+        vehicleLocation = location.clone();
         mov = new MovementMonitor(plugin, player, this);
         plugin.runAsynchronously(() ->
         {
@@ -75,7 +78,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
 
     public void tick()
     {
-        Location location = sender.getLocation();
+        Location location = sender.getLocation(this.location);
         if(skipTick > 0)
         {
             skipTick--;
@@ -295,7 +298,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
                 teleport(new BlockPos(lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
             else
             {
-                Location vLoc = vehicle.getLocation();
+                Location vLoc = vehicle.getLocation(vehicleLocation);
                 Optional<World> world = plugin.world(lastChunk.world);
                 if(!world.isPresent())
                     teleport(new BlockPos(lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
@@ -422,7 +425,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     @Override
     public EntityPos getPosition()
     {
-        return plugin.entityPos(sender.getLocation());
+        return plugin.entityPos(location);
     }
 
     @Override
@@ -515,6 +518,11 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     public void send(Message[] messages)
     {
         plugin.transformer.send(sender, messages);
+    }
+
+    public Location getLocation()
+    {
+        return location;
     }
 
     public class BukkitSelection extends DisplayedSelection<Material>
