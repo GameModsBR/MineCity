@@ -185,6 +185,12 @@
         <command id="city.perms.modify" parent="city.check" cmd="modificar">
             <desc>Ver quem pode fazer modificações estruturais na cidade</desc>
         </command>
+        <command id="city.perms.vehicle" parent="city.check" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Ver quem pode colocar veículos na cidade</desc>
+        </command>
+        <command id="city.perms.ride" parent="city.check" cmd="montar">
+            <desc>Ver quem pode montar em veículos da cidade</desc>
+        </command>
 
         <!-- Permissões padrões -->
         <command id="city.perms" parent="city" cmd="perms,permissões,perm">
@@ -214,6 +220,12 @@
         <command id="city.allow.modify" parent="city.allow" cmd="modificar">
             <desc>Permite que jogadores façam modificações estruturais na cidade</desc>
         </command>
+        <command id="city.allow.vehicle" parent="city.allow" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Permite que jogadores coloquem veículos na cidade</desc>
+        </command>
+        <command id="city.allow.ride" parent="city.allow" cmd="montar">
+            <desc>Permite que jogadores usem veículos da cidade</desc>
+        </command>
         <command id="city.deny.enter" parent="city.deny" cmd="entrar">
             <desc>Proíbe que jogadores entrem na cidade, não irá expulsar jogadores que já estão dentro.</desc>
         </command>
@@ -237,6 +249,12 @@
         </command>
         <command id="city.deny.modify" parent="city.deny" cmd="modificar">
             <desc>Proíbe que jogadores façam modificações estruturais na cidade</desc>
+        </command>
+        <command id="city.deny.vehicle" parent="city.deny" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Proíbe que jogadores coloquem veículos na cidade</desc>
+        </command>
+        <command id="city.deny.ride" parent="city.deny" cmd="montar">
+            <desc>Proíbe que jogadores usem veículos da cidade</desc>
         </command>
 
         <!-- Resetar -->
@@ -264,6 +282,12 @@
         <command id="city.reset.modify" parent="city.reset" cmd="modificar">
             <desc>Remove uma permissão ou restrição direta para modificações estruturais na cidade</desc>
         </command>
+        <command id="city.reset.vehicle" parent="city.reset" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Remove uma permissão ou restrição direta para colocação de veículos na cidade</desc>
+        </command>
+        <command id="city.reset.ride" parent="city.reset" cmd="montar">
+            <desc>Remove uma permissão ou restrição direta para a utilização de veículos da cidade</desc>
+        </command>
 
         <!-- Permissões para todos -->
         <command id="city.allow.all.enter" parent="city.allow.all" cmd="entrar">
@@ -290,6 +314,12 @@
         <command id="city.allow.all.modify" parent="city.allow.all" cmd="modificar">
             <desc>Permite que todos façam modificações estruturais na cidade, inclusive quem foi proibido diretamente</desc>
         </command>
+        <command id="city.allow.all.vehicle" parent="city.allow.all" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Permite que todos coloquem veículos na cidade, inclusive quem foi proibido diretamente</desc>
+        </command>
+        <command id="city.allow.all.ride" parent="city.allow.all" cmd="montar">
+            <desc>Permite que todos utilizem veículos da cidade, inclusive quem foi proibido diretamente</desc>
+        </command>
         <command id="city.deny.all.enter" parent="city.deny.all" cmd="entrar">
             <desc>Proíbe que todos entrem na cidade, incluindo quem foi permitido diretamente.</desc>
         </command>
@@ -313,6 +343,12 @@
         </command>
         <command id="city.deny.all.modify" parent="city.deny.all" cmd="modificar">
             <desc>Proíbe que todos façam modificações estruturais na cidade, inclusive quem foi permitido diretamente</desc>
+        </command>
+        <command id="city.deny.all.vehicle" parent="city.deny.all" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Proíbe que todos coloquem veículos na cidade, inclusive quem foi permitido diretamente</desc>
+        </command>
+        <command id="city.deny.all.ride" parent="city.deny.all" cmd="montar">
+            <desc>Proíbe que todos utilizem veículos da cidade, inclusive quem foi permitido diretamente</desc>
         </command>
 
         <!-- Resetar tudo -->
@@ -340,6 +376,12 @@
         <command id="city.reset.all.modify" parent="city.reset.all" cmd="modificar">
             <desc>Remove todas as permissões ou restrições diretas para modificações estruturais na cidade</desc>
         </command>
+        <command id="city.reset.all.vehicle" parent="city.reset.all" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Remove todas as permissões ou restrições diretas para a colocação de veículos na cidade</desc>
+        </command>
+        <command id="city.reset.all.ride" parent="city.reset.all" cmd="montar">
+            <desc>Remove todas as permissões ou restrições diretas para a utlização de veículos da cidade</desc>
+        </command>
 
         <!-- ========== Permissões de lotes ========== -->
         <!-- Listar permissões -->
@@ -366,6 +408,12 @@
         </command>
         <command id="plot.perms.modify" parent="plot.check" cmd="modificar">
             <desc>Ver quem pode fazer modificações estruturais no lote</desc>
+        </command>
+        <command id="plot.perms.vehicle" parent="plot.check" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Ver quem pode colocar veículos no lote</desc>
+        </command>
+        <command id="plot.perms.ride" parent="plot.check" cmd="montar">
+            <desc>Ver quem pode utilizar veículos do lote</desc>
         </command>
 
         <!-- Permissões padrões -->
@@ -396,6 +444,12 @@
         <command id="plot.allow.modify" parent="plot.allow" cmd="modificar">
             <desc>Permite que jogadores façam modificações estruturais no lote</desc>
         </command>
+        <command id="plot.allow.vehicle" parent="plot.allow" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Permite que jogadores coloquem veículos no lote</desc>
+        </command>
+        <command id="plot.allow.ride" parent="plot.allow" cmd="montar">
+            <desc>Permite que jogadores utilizem veículos do lote</desc>
+        </command>
         <command id="plot.deny.enter" parent="plot.deny" cmd="entrar">
             <desc>Proíbe que jogadores entrem no lote, não irá expulsar quem já estiver dentro.</desc>
         </command>
@@ -419,6 +473,12 @@
         </command>
         <command id="plot.deny.modify" parent="plot.deny" cmd="modificar">
             <desc>Proíbe que jogadores façam modificações estruturais no lote</desc>
+        </command>
+        <command id="plot.deny.vehicle" parent="plot.deny" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Proíbe que jogadores coloquem veículos no lote</desc>
+        </command>
+        <command id="plot.deny.ride" parent="plot.deny" cmd="montar">
+            <desc>Proíbe que jogadores utilizem veículos do lote</desc>
         </command>
 
         <!-- Resetar permissões -->
@@ -446,6 +506,12 @@
         <command id="plot.reset.modify" parent="plot.reset" cmd="modificar">
             <desc>Remove uma permissão ou restrição direta para modificações estruturais no lote</desc>
         </command>
+        <command id="plot.reset.vehicle" parent="plot.reset" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Remove uma permissão ou restrição direta para a colocação de veículos no lote</desc>
+        </command>
+        <command id="plot.reset.ride" parent="plot.reset" cmd="montar">
+            <desc>Remove uma permissão ou restrição direta para utilização de veículos da cidade</desc>
+        </command>
 
         <!-- Permissões para todos -->
         <command id="plot.allow.all.enter" parent="plot.allow.all" cmd="entrar">
@@ -472,6 +538,12 @@
         <command id="plot.allow.all.modify" parent="plot.allow.all" cmd="modificar">
             <desc>Permite que todos façam modificações estruturais no lote, inclusive quem foi proibido diretamente</desc>
         </command>
+        <command id="plot.allow.all.vehicle" parent="plot.allow.all" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Permite que todos coloquem veículos no lote, incluindo quem foi proibido diretamente.</desc>
+        </command>
+        <command id="plot.allow.all.ride" parent="plot.allow.all" cmd="montar">
+            <desc>Permite que todos utilizem veículos do lote, incluindo quem foi proibido diretamente.</desc>
+        </command>
         <command id="plot.deny.all.enter" parent="plot.deny.all" cmd="entrar">
             <desc>Proibe que todos entrem no lote, incluindo quem foi permitido diretamente. Não irá expulsar quem já estiver dentro</desc>
         </command>
@@ -495,6 +567,12 @@
         </command>
         <command id="plot.deny.all.modify" parent="plot.deny.all" cmd="modificar">
             <desc>Proíbe que todos façam modificações estruturais no lote, inclusive quem foi permitido diretamente</desc>
+        </command>
+        <command id="plot.deny.all.vehicle" parent="plot.deny.all" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Proíbe que todos coloquem veículos no lote, incluindo quem foi diretamente permitido.</desc>
+        </command>
+        <command id="plot.deny.all.ride" parent="plot.deny.all" cmd="montar">
+            <desc>Proíbe que todos utilizem veículos do lote, incluindo quem foi diretamente permitido.</desc>
         </command>
 
         <!-- Resetar tudo -->
@@ -521,6 +599,12 @@
         </command>
         <command id="plot.reset.all.modify" parent="plot.reset.all" cmd="modificar">
             <desc>Remove todas as permissões ou restrições diretas para modificações estruturais no lote</desc>
+        </command>
+        <command id="plot.reset.all.vehicle" parent="plot.reset.all" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Remove todas as permissões ou restrições diretas para a colocação de veículos no lote</desc>
+        </command>
+        <command id="plot.reset.all.ride" parent="plot.reset.all" cmd="montar">
+            <desc>Remove todas as permissões ou restrições diretas para a utlização de veículos do lote</desc>
         </command>
     </commands>
 </minecity-commands>

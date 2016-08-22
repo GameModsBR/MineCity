@@ -214,6 +214,14 @@
                         <msg id="name">MODIFY</msg>
                         <msg id="info">Do structural modifications</msg>
                     </modify>
+                    <vehicle>
+                        <msg id="name">VEHICLE</msg>
+                        <msg id="info">Place vehicles</msg>
+                    </vehicle>
+                    <ride>
+                        <msg id="name">RIDE</msg>
+                        <msg id="info">Use city's vehicles</msg>
+                    </ride>
                 </perm>
             </perms>
             <list>
@@ -367,6 +375,8 @@
                     <msg id="open.arg.reason">reason</msg>
                     <msg id="pvp.arg.reason">reason</msg>
                     <msg id="pvc.arg.reason">reason</msg>
+                    <msg id="vehicle.arg.reason">reason</msg>
+                    <msg id="ride.arg.reason">reason</msg>
                 </all>
                 <enter>
                     <arg>
@@ -409,6 +419,20 @@
                         <msg id="reason">reason</msg>
                     </arg>
                 </pvc>
+                <vehicle>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </vehicle>
+                <ride>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </ride>
                 <msg id="not-claimed">You are not inside a city</msg>
                 <msg id="no-permission">You are not allowed to change the ${city}'s permissions</msg>
                 <msg id="got-city-expected-player">You've typed a city name,
@@ -473,6 +497,18 @@
                         <msg id="group-name">group name</msg>
                     </arg>
                 </pvc>
+                <vehicle>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </vehicle>
+                <ride>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </ride>
             </allow>
             <clear>
                 <msg id="not-claimed">You are not inside a city</msg>
@@ -525,6 +561,18 @@
                         <msg id="group-name">group name</msg>
                     </arg>
                 </pvc>
+                <vehicle>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </vehicle>
+                <ride>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </ride>
             </clear>
         </city>
         <group>
@@ -893,6 +941,14 @@
                         <msg id="name">MODIFY</msg>
                         <msg id="info">Do structural modifications</msg>
                     </modify>
+                    <vehicle>
+                        <msg id="name">VEHICLE</msg>
+                        <msg id="info">Place vehicles</msg>
+                    </vehicle>
+                    <ride>
+                        <msg id="name">RIDE</msg>
+                        <msg id="info">Use plot's vehicles</msg>
+                    </ride>
                 </perm>
             </perms>
             <list>
@@ -1016,6 +1072,8 @@
                     <msg id="open.arg.reason">reason</msg>
                     <msg id="pvp.arg.reason">reason</msg>
                     <msg id="pvc.arg.reason">reason</msg>
+                    <msg id="vehicle.arg.reason">reason</msg>
+                    <msg id="ride.arg.reason">reason</msg>
                 </all>
                 <enter>
                     <arg>
@@ -1058,6 +1116,20 @@
                         <msg id="reason">reason</msg>
                     </arg>
                 </pvc>
+                <vehicle>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </vehicle>
+                <ride>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </ride>
                 <msg id="not-claimed">You are not inside a plot</msg>
                 <msg id="no-permission">You are not allowed to change the ${plot}'s permissions</msg>
                 <msg id="got-city-expected-player">You've typed a city name, type a player name instead to allow a specific player or type a group name after the city name to prohibit that specific group. Do not use spaces in the names.</msg>
@@ -1114,6 +1186,18 @@
                         <msg id="group-name">group name</msg>
                     </arg>
                 </pvc>
+                <vehicle>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </vehicle>
+                <ride>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </ride>
             </allow>
             <clear>
                 <msg id="not-claimed">You are not inside a plot</msg>
@@ -1162,6 +1246,18 @@
                         <msg id="group-name">group name</msg>
                     </arg>
                 </pvc>
+                <vehicle>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </vehicle>
+                <ride>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </ride>
             </clear>
         </plot>
         <help>

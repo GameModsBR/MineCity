@@ -100,7 +100,7 @@ CONSTRAINT `group_entities_entity` FOREIGN KEY (`entity_id`) REFERENCES `minecit
 
 CREATE TABLE `minecity_city_perm_defaults` (
 `city_id`  int NOT NULL ,
-`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','VEHICLE','RIDE') NOT NULL ,
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`city_id`, `perm`),
 CONSTRAINT `city_perm_defaults` FOREIGN KEY (`city_id`) REFERENCES `minecity_city` (`city_id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -110,7 +110,7 @@ CONSTRAINT `city_perm_defaults` FOREIGN KEY (`city_id`) REFERENCES `minecity_cit
 CREATE TABLE `minecity_city_perm_player` (
 `city_id`  int NOT NULL ,
 `player_id`  int NOT NULL ,
-`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','VEHICLE','RIDE') NOT NULL ,
 `allow`  bit(1) NOT NULL DEFAULT b'0' ,
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`city_id`, `player_id`, `perm`),
@@ -122,7 +122,7 @@ CONSTRAINT `city_perm_player_player` FOREIGN KEY (`player_id`) REFERENCES `minec
 CREATE TABLE `minecity_city_perm_entity` (
 `city_id`  int NOT NULL ,
 `entity_id`  int NOT NULL ,
-`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','VEHICLE','RIDE') NOT NULL ,
 `allow`  bit(1) NOT NULL DEFAULT b'0' ,
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`city_id`, `entity_id`, `perm`),
@@ -134,7 +134,7 @@ CONSTRAINT `city_perm_entity_entity` FOREIGN KEY (`entity_id`) REFERENCES `minec
 CREATE TABLE `minecity_city_perm_group` (
 `city_id`  int NOT NULL ,
 `group_id`  int NOT NULL ,
-`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','VEHICLE','RIDE') NOT NULL ,
 `allow`  bit(1) NOT NULL ,
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`city_id`, `group_id`, `perm`),
@@ -171,7 +171,7 @@ CONSTRAINT `plot_owner` FOREIGN KEY (`owner`) REFERENCES `minecity_players` (`pl
 
 CREATE TABLE `minecity_plot_perm_defaults` (
 `plot_id`  int NOT NULL ,
-`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','VEHICLE','RIDE') NOT NULL ,
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`plot_id`, `perm`),
 CONSTRAINT `plot_perm_plot` FOREIGN KEY (`plot_id`) REFERENCES `minecity_plots` (`plot_id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -181,7 +181,7 @@ CONSTRAINT `plot_perm_plot` FOREIGN KEY (`plot_id`) REFERENCES `minecity_plots` 
 CREATE TABLE `minecity_plot_perm_player` (
 `plot_id`  int NOT NULL ,
 `player_id`  int NOT NULL ,
-`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','VEHICLE','RIDE') NOT NULL ,
 `allow`  bit NOT NULL ,
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`plot_id`, `player_id`, `perm`),
@@ -193,7 +193,7 @@ CONSTRAINT `plot_perm_player_player` FOREIGN KEY (`player_id`) REFERENCES `minec
 CREATE TABLE `minecity_plot_perm_entity` (
 `plot_id`  int NOT NULL ,
 `entity_id`  int NOT NULL ,
-`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','VEHICLE','RIDE') NOT NULL ,
 `allow`  bit NOT NULL ,
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`plot_id`, `entity_id`, `perm`),
@@ -205,7 +205,7 @@ CONSTRAINT `plot_perm_entity_entity` FOREIGN KEY (`entity_id`) REFERENCES `minec
 CREATE TABLE `minecity_plot_perm_group` (
 `plot_id`  int NOT NULL ,
 `group_id`  int NOT NULL ,
-`perm`  enum('ENTER','CLICK','PICKUP','OPEN','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','LEAVE','PVP','PVC','PVM','VEHICLE','RIDE') NOT NULL ,
 `allow`  bit NOT NULL ,
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`plot_id`, `group_id`, `perm`),
@@ -216,7 +216,7 @@ CONSTRAINT `plot_perm_group_entity` FOREIGN KEY (`group_id`) REFERENCES `minecit
 
 CREATE TABLE `minecity_world_perm_defaults` (
 `world_id`  int NOT NULL ,
-`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','SPAWN_VEHICLES','RIDE') NOT NULL ,
+`perm`  enum('ENTER','CLICK','PICKUP','OPEN','MODIFY','LEAVE','PVP','PVC','PVM','VEHICLE','RIDE') NOT NULL ,
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`world_id`, `perm`),
 CONSTRAINT `world_perm_world` FOREIGN KEY (`world_id`) REFERENCES `minecity_world` (`world_id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -229,4 +229,4 @@ CREATE TABLE `minecity_setup` (
 PRIMARY KEY (`property`)
 );
 
-INSERT INTO `minecity_setup` VALUES('version', '1');
+INSERT INTO `minecity_setup` VALUES('version', '2');

@@ -549,6 +549,7 @@ public class SQLSource implements IDataSource
                 }
                 catch(SQLException e)
                 {
+                    System.out.println("[MineCity] Installing the SQL database version 2");
                     ScriptRunner runner = new ScriptRunner(transaction, false, true);
                     runner.setLogWriter(null);
                     runner.runScript(new InputStreamReader(
@@ -558,8 +559,25 @@ public class SQLSource implements IDataSource
                     return;
                 }
 
-                if(version != 1)
+                if(version > 2)
                     throw new DataSourceException("Unsupported database version: "+version);
+
+                if(version < 2)
+                {
+                    System.out.println("[MineCity] Starting the database upgrade from "+version+" to 2");
+                    for(; version < 2; version++)
+                    {
+                        System.out.println("[MineCity] Upgrading to version "+(version+1));
+                        ScriptRunner runner = new ScriptRunner(transaction, false, true);
+                        runner.setLogWriter(null);
+                        runner.runScript(new InputStreamReader(
+                                getClass().getResourceAsStream("/assets/minecity/db/update_"+version+".sql"), "UTF-8"
+                        ));
+                    }
+
+                    transaction.commit();
+                    System.out.println("[MineCity] The database was successfully upgraded");
+                }
 
                 result = stm.executeQuery("SELECT `display_name` FROM `minecity_city ");
                 while(result.next())
@@ -781,7 +799,7 @@ public class SQLSource implements IDataSource
                     if(str == null)
                         message = null;
                     else
-                        message = new Message(str);
+                        message = Message.string(str);
                     pst.close();
 
                     return new Nature(mineCity, world, message, permStorage, permStorage, !cityCreation);

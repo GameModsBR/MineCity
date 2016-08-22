@@ -55,7 +55,7 @@ public enum PermissionFlag
     /**
      * Allows to spawn vehicles
      */
-    SPAWN_VEHICLES(true, true, false, false),
+    VEHICLE(true, true, false, false),
 
     /**
      * Allows to ride vehicles

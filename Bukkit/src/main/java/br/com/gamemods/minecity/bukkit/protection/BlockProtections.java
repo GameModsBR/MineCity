@@ -845,7 +845,7 @@ public class BlockProtections extends AbstractProtection
 
                         Optional<Message> denial = flagHolder.can(player, PermissionFlag.MODIFY);
                         if(denial.isPresent())
-                            denial = flagHolder.can(player, PermissionFlag.SPAWN_VEHICLES);
+                            denial = flagHolder.can(player, PermissionFlag.VEHICLE);
 
                         if(denial.isPresent())
                         {

@@ -52,6 +52,7 @@ public class MineCity
     private Queue<ChunkPos> reloadQueue = new DistinctQueue<>();
     public boolean lazyReloads = true;
 
+    @SuppressWarnings("LanguageMismatch")
     public MineCity(@NotNull Server server, @NotNull MineCityConfig config, @Nullable IDataSource dataSource,
                     @NotNull MessageTransformer messageTransformer)
     {
@@ -92,7 +93,7 @@ public class MineCity
             }).toArray(Arg[]::new)
         ;
         commands.registerCommands(new CityCommand(this));
-        commands.registerCommands(new PermissionCommands(this));
+        new PermissionCommands(this).register(commands);
         commands.registerCommands(new GroupCommand(this));
         commands.registerCommands(GeneralCommands.class);
         commands.registerCommands(PlotCommand.class);

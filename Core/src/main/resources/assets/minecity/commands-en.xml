@@ -185,6 +185,12 @@
         <command id="city.perms.modify" parent="city.check" cmd="modify">
             <desc>View who can do structural modifications to the city</desc>
         </command>
+        <command id="city.perms.vehicle" parent="city.check" cmd="vehicles,vehicle">
+            <desc>View who can place vehicles in the city</desc>
+        </command>
+        <command id="city.perms.ride" parent="city.check" cmd="ride">
+            <desc>View who can use city's vehicles</desc>
+        </command>
 
         <!-- Default permissions -->
         <command id="city.perms" parent="city" cmd="perms,permissions,perm">
@@ -214,6 +220,12 @@
         <command id="city.allow.modify" parent="city.allow" cmd="modify">
             <desc>Allows players to do structural modifications</desc>
         </command>
+        <command id="city.allow.vehicle" parent="city.allow" cmd="vehicles,vehicle">
+            <desc>Allows players to place vehicles</desc>
+        </command>
+        <command id="city.allow.ride" parent="city.allow" cmd="ride">
+            <desc>Allows players to use city's vehicles like horses, boats and minecarts</desc>
+        </command>
         <command id="city.deny.enter" parent="city.deny" cmd="enter">
             <desc>Deny players to enter the city, will not affect players who are already inside.</desc>
         </command>
@@ -237,6 +249,12 @@
         </command>
         <command id="city.deny.modify" parent="city.deny" cmd="modify">
             <desc>Stop players from doing structural modifications</desc>
+        </command>
+        <command id="city.deny.vehicle" parent="city.deny" cmd="vehicles,vehicle">
+            <desc>Deny players to place vehicles</desc>
+        </command>
+        <command id="city.deny.ride" parent="city.deny" cmd="ride">
+            <desc>Deny players to use city's vehicles</desc>
         </command>
 
         <!-- Reset -->
@@ -264,6 +282,12 @@
         <command id="city.reset.modify" parent="city.reset" cmd="modify">
             <desc>Removes a direct permission or restriction to structural modifications</desc>
         </command>
+        <command id="city.reset.vehicle" parent="city.reset" cmd="vehicles,vehicle">
+            <desc>Removes a direct permission or restriction to spawn vehicles</desc>
+        </command>
+        <command id="city.reset.ride" parent="city.reset" cmd="ride">
+            <desc>Removes a direct permission or restruction to use city's vehicles</desc>
+        </command>
 
         <!-- All permissions -->
         <command id="city.allow.all.enter" parent="city.allow.all" cmd="enter">
@@ -290,6 +314,12 @@
         <command id="city.allow.all.modify" parent="city.allow.all" cmd="modify">
             <desc>Allows everybody to do structural modifications, including who were directly prohibited.</desc>
         </command>
+        <command id="city.allow.all.vehicle" parent="city.allow.all" cmd="vehicles,vehicle">
+            <desc>Allows everybody to spawn vehicles in the city, including who were directly prohibited.</desc>
+        </command>
+        <command id="city.allow.all.ride" parent="city.allow.all" cmd="ride">
+            <desc>Allows everybody to use city's vehicles, including who were directly prohibited.</desc>
+        </command>
         <command id="city.deny.all.enter" parent="city.deny.all" cmd="enter">
             <desc>Prohibits everybody to enter the city, including who were directly allowed.</desc>
         </command>
@@ -313,6 +343,12 @@
         </command>
         <command id="city.deny.all.modify" parent="city.deny.all" cmd="modify">
             <desc>Prohibits everybody from doing structural modifications, including who were directly allowed</desc>
+        </command>
+        <command id="city.deny.all.vehicle" parent="city.deny.all" cmd="vehicles,vehicle">
+            <desc>Prohibits everybody to place vehicles in the city, including who were directly allowed</desc>
+        </command>
+        <command id="city.deny.all.ride" parent="city.deny.all" cmd="ride">
+            <desc>Prohibits everybody to use city's vehicles, including who were directly allowed</desc>
         </command>
 
         <!-- Reset all -->
@@ -340,6 +376,12 @@
         <command id="city.reset.all.modify" parent="city.reset.all" cmd="modify">
             <desc>Resets all direct permission or restriction to structural modifications</desc>
         </command>
+        <command id="city.reset.all.vehicle" parent="city.reset.all" cmd="vehicles,vehicle">
+            <desc>Resets all direct permission or restriction to place vehicles in the city</desc>
+        </command>
+        <command id="city.reset.all.ride" parent="city.reset.all" cmd="ride">
+            <desc>Resets all direct permission or restriction to use city's vehicles</desc>
+        </command>
 
         <!-- ========== Plot Permissions ========== -->
         <!-- List permissions -->
@@ -366,6 +408,12 @@
         </command>
         <command id="plot.perms.modify" parent="plot.check" cmd="modify">
             <desc>View who can do structural modifications to the plot</desc>
+        </command>
+        <command id="plot.perms.vehicle" parent="plot.check" cmd="vehicles,vehicle">
+            <desc>View who can place vehicles in the plot</desc>
+        </command>
+        <command id="plot.perms.ride" parent="plot.check" cmd="ride">
+            <desc>View who can use plot's vehicles</desc>
         </command>
 
         <!-- Default permissions -->
@@ -396,6 +444,12 @@
         <command id="plot.allow.modify" parent="plot.allow" cmd="modify">
             <desc>Allows players to do structural modifications</desc>
         </command>
+        <command id="plot.allow.vehicle" parent="plot.allow" cmd="vehicles,vehicle">
+            <desc>Allows players to place vehicles in the plot</desc>
+        </command>
+        <command id="plot.allow.ride" parent="plot.allow" cmd="ride">
+            <desc>Allows players to use plot's vehicles</desc>
+        </command>
         <command id="plot.deny.enter" parent="plot.deny" cmd="enter">
             <desc>Deny players to enter the plot, will not affect players who are already inside.</desc>
         </command>
@@ -419,6 +473,12 @@
         </command>
         <command id="plot.deny.modify" parent="plot.deny" cmd="modify">
             <desc>Stop players from doing structural modifications</desc>
+        </command>
+        <command id="plot.deny.vehicle" parent="plot.deny" cmd="vehicles,vehicle">
+            <desc>Deny players to place vehicles in the plot</desc>
+        </command>
+        <command id="plot.deny.ride" parent="plot.deny" cmd="ride">
+            <desc>Deny players to use plot's vehicles</desc>
         </command>
 
         <!-- Reset permissions -->
@@ -446,6 +506,12 @@
         <command id="plot.reset.modify" parent="plot.reset" cmd="modify">
             <desc>Removes a direct permission or restriction to structural modifications</desc>
         </command>
+        <command id="plot.reset.vehicle" parent="plot.reset" cmd="vehicles,vehicle">
+            <desc>Removes a direct permission or restriction to place vehicles in the plot</desc>
+        </command>
+        <command id="plot.reset.ride" parent="plot.reset" cmd="ride">
+            <desc>Removes a direct permission or restriction to use plot's vehicles</desc>
+        </command>
 
         <!-- All permissions -->
         <command id="plot.allow.all.enter" parent="plot.allow.all" cmd="enter">
@@ -472,6 +538,12 @@
         <command id="plot.allow.all.modify" parent="plot.allow.all" cmd="modify">
             <desc>Allows everybody to do structural modifications, including who were directly prohibited.</desc>
         </command>
+        <command id="plot.allow.all.vehicle" parent="plot.allow.all" cmd="vehicles,vehicle">
+            <desc>Allows everybody to place vehicles in the plot</desc>
+        </command>
+        <command id="plot.allow.all.ride" parent="plot.allow.all" cmd="ride">
+            <desc>Allows everybody to use plot's vehicles</desc>
+        </command>
         <command id="plot.deny.all.enter" parent="plot.deny.all" cmd="enter">
             <desc>Prohibits everybody to enter the plot, including who were directly allowed.</desc>
         </command>
@@ -495,6 +567,12 @@
         </command>
         <command id="plot.deny.all.modify" parent="plot.deny.all" cmd="modify">
             <desc>Prohibits everybody from doing structural modifications, including who were directly allowed</desc>
+        </command>
+        <command id="plot.deny.all.vehicle" parent="plot.deny.all" cmd="vehicles,vehicle">
+            <desc>Prohibits everybody to place vehicles in the plot, including who were directly allowed</desc>
+        </command>
+        <command id="plot.deny.all.ride" parent="plot.deny.all" cmd="ride">
+            <desc>Prohibits everybody from using plot's vehicles, including who were directly allowed</desc>
         </command>
 
         <!-- Reset all -->
@@ -521,6 +599,12 @@
         </command>
         <command id="plot.reset.all.modify" parent="plot.reset.all" cmd="modify">
             <desc>Resets all direct permission or restriction to structural modifications</desc>
+        </command>
+        <command id="plot.reset.all.vehicle" parent="plot.reset.all" cmd="vehicles,vehicle">
+            <desc>Resets all direct permission or restriction to place vehicles</desc>
+        </command>
+        <command id="plot.reset.all.ride" parent="plot.reset.all" cmd="ride">
+            <desc>Resets all direct permission or restriction to use plot's vehicles</desc>
         </command>
     </commands>
 </minecity-commands>

@@ -20,7 +20,8 @@ public class PermissionCommands
 {
     private static final EnumSet<PermissionFlag> CITY_FLAGS = EnumSet.of(
             PermissionFlag.ENTER, PermissionFlag.CLICK, PermissionFlag.PICKUP, PermissionFlag.HARVEST,
-            PermissionFlag.OPEN, PermissionFlag.PVP, PermissionFlag.PVC, PermissionFlag.MODIFY
+            PermissionFlag.OPEN, PermissionFlag.PVP, PermissionFlag.PVC, PermissionFlag.MODIFY,
+            PermissionFlag.VEHICLE, PermissionFlag.RIDE
     );
     private static final EnumSet<PermissionFlag> PLOT_FLAGS = EnumSet.copyOf(CITY_FLAGS);
 
@@ -29,6 +30,58 @@ public class PermissionCommands
     public PermissionCommands(MineCity mineCity)
     {
         this.mineCity = mineCity;
+    }
+
+    public void register(CommandTree tree)
+    {
+        tree.registerCommands(this);
+
+        try
+        {
+            Arg[] list = PermissionCommands.class.getDeclaredMethod("list", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+            Arg[] deny = PermissionCommands.class.getDeclaredMethod("deny", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+            Arg[] allow = PermissionCommands.class.getDeclaredMethod("allow", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+            Arg[] reset = PermissionCommands.class.getDeclaredMethod("reset", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+            Arg[] denyAll = PermissionCommands.class.getDeclaredMethod("denyAll", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+            Arg[] allowAll = PermissionCommands.class.getDeclaredMethod("allowAll", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+            Arg[] resetAll = PermissionCommands.class.getDeclaredMethod("resetAll", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+
+            for(PermissionFlag flag: CITY_FLAGS)
+            {
+                String name = flag.name().toLowerCase();
+                tree.registerCommand("city.perms."+name, list, true, (CommandFunction) cmd-> list(cmd, flag));
+                tree.registerCommand("city.deny."+name, deny, true, (PlayerCommand) cmd-> deny(cmd, flag));
+                tree.registerCommand("city.allow."+name, allow, true, (PlayerCommand) cmd-> allow(cmd, flag));
+                tree.registerCommand("city.reset."+name, reset, true, (PlayerCommand) cmd-> reset(cmd, flag));
+                tree.registerCommand("city.denyAll."+name, denyAll, true, (PlayerCommand) cmd-> denyAll(cmd, flag));
+                tree.registerCommand("city.allowAll."+name, allowAll, true, (PlayerCommand) cmd-> allowAll(cmd, flag));
+                tree.registerCommand("city.resetAll."+name, resetAll, true, (PlayerCommand) cmd-> resetAll(cmd, flag));
+            }
+
+            list = PermissionCommands.class.getDeclaredMethod("listPlot", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+            deny = PermissionCommands.class.getDeclaredMethod("denyPlot", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+            allow = PermissionCommands.class.getDeclaredMethod("allowPlot", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+            reset = PermissionCommands.class.getDeclaredMethod("resetPlot", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+            denyAll = PermissionCommands.class.getDeclaredMethod("denyAllPlot", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+            allowAll = PermissionCommands.class.getDeclaredMethod("allowAllPlot", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+            resetAll = PermissionCommands.class.getDeclaredMethod("resetAllPlot", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+
+            for(PermissionFlag flag: PLOT_FLAGS)
+            {
+                String name = flag.name().toLowerCase();
+                tree.registerCommand("plot.perms."+name, list, true, (CommandFunction) cmd-> listPlot(cmd, flag));
+                tree.registerCommand("plot.deny."+name, deny, true, (PlayerCommand) cmd-> denyPlot(cmd, flag));
+                tree.registerCommand("plot.allow."+name, allow, true, (PlayerCommand) cmd-> allowPlot(cmd, flag));
+                tree.registerCommand("plot.reset."+name, reset, true, (PlayerCommand) cmd-> resetPlot(cmd, flag));
+                tree.registerCommand("plot.denyAll."+name, denyAll, true, (PlayerCommand) cmd-> denyAllPlot(cmd, flag));
+                tree.registerCommand("plot.allowAll."+name, allowAll, true, (PlayerCommand) cmd-> allowAllPlot(cmd, flag));
+                tree.registerCommand("plot.resetAll."+name, resetAll, true, (PlayerCommand) cmd-> resetAllPlot(cmd, flag));
+            }
+        }
+        catch(ReflectiveOperationException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     private Message list(ExceptFlagHolder holder, PermissionFlag flag, String prefix, String name)
@@ -201,7 +254,10 @@ public class PermissionCommands
         return lines;
     }
 
-    public CommandResult<?> list(CommandEvent cmd, PermissionFlag flag) throws DataSourceException
+    @Slow
+    @Async
+    @Command(value = "#model:city.perms", args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
+    private CommandResult<?> list(CommandEvent cmd, PermissionFlag flag) throws DataSourceException
     {
         City city;
         if(cmd.args.isEmpty())
@@ -225,7 +281,13 @@ public class PermissionCommands
         return new CommandResult<>(list(city, flag, "cmd.city.perms", city.getName()), true);
     }
 
-    public CommandResult<?> listPlot(CommandEvent cmd, PermissionFlag flag) throws DataSourceException
+    @Slow
+    @Async
+    @Command(value = "#model:plot.perms", args = {
+            @Arg(name = "city-or-plot", optional = true, type = Arg.Type.PLOT_OR_CITY),
+            @Arg(name = "plot", sticky = true, optional = true, type = Arg.Type.PLOT)
+    })
+    private CommandResult<?> listPlot(CommandEvent cmd, PermissionFlag flag) throws DataSourceException
     {
         Plot plot;
         if(cmd.args.isEmpty())
@@ -342,6 +404,11 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "#model:city.deny", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
+                    @Arg(name = "reason", sticky = true, optional = true)
+            })
     private CommandResult<Boolean> deny(CommandEvent cmd, PermissionFlag flag)
             throws DataSourceException
     {
@@ -405,7 +472,7 @@ public class PermissionCommands
                 else
                 {
                     String reason = String.join(" ", cmd.args.subList(2, cmd.args.size()));
-                    city.deny(flag, group.getIdentity(), new Message("", reason));
+                    city.deny(flag, group.getIdentity(), Message.string(reason));
                 }
 
                 return new CommandResult<>(new Message("cmd.city.deny.success.group",
@@ -443,6 +510,10 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "#model:city.allow", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
     private CommandResult<?> allow(CommandEvent cmd, PermissionFlag flag) throws DataSourceException
     {
         assert cmd.position != null && cmd.sender.getPlayerId() != null;
@@ -526,6 +597,10 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "#model:city.reset", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
     private CommandResult<?> reset(CommandEvent cmd, PermissionFlag flag) throws DataSourceException
     {
         City city = cmd.getChunk().getCity().orElse(null);
@@ -605,6 +680,7 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "#model:city.deny.all", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
     private CommandResult<?> denyAll(CommandEvent cmd, PermissionFlag flag)
     {
         assert cmd.position != null && cmd.sender.getPlayerId() != null;
@@ -632,6 +708,7 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "#model:city.allow.all", console = false)
     private CommandResult<?> allowAll(CommandEvent cmd, PermissionFlag flag)
     {
         assert cmd.position != null && cmd.sender.getPlayerId() != null;
@@ -658,6 +735,7 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "#model:city.reset.all", console = false)
     private CommandResult<?> resetAll(CommandEvent cmd, PermissionFlag flag)
     {
         City city = cmd.getChunk().getCity().orElse(null);
@@ -683,6 +761,11 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "#model:plot.deny", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
+                    @Arg(name = "reason", sticky = true, optional = true)
+            })
     private CommandResult<Boolean> denyPlot(CommandEvent cmd, PermissionFlag flag)
             throws DataSourceException
     {
@@ -746,7 +829,7 @@ public class PermissionCommands
                 else
                 {
                     String reason = String.join(" ", cmd.args.subList(2, cmd.args.size()));
-                    plot.deny(flag, group.getIdentity(), new Message("", reason));
+                    plot.deny(flag, group.getIdentity(), Message.string(reason));
                 }
 
                 return new CommandResult<>(new Message("cmd.plot.allow.success.group",
@@ -784,6 +867,10 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "#model:plot.allow", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
     private CommandResult<?> allowPlot(CommandEvent cmd, PermissionFlag flag) throws DataSourceException
     {
         assert cmd.position != null && cmd.sender.getPlayerId() != null;
@@ -867,6 +954,10 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "#model:plot.reset", console = false,
+            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
+                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
+            })
     private CommandResult<?> resetPlot(CommandEvent cmd, PermissionFlag flag) throws DataSourceException
     {
         Plot plot = mineCity.getPlot(cmd.position.getBlock()).orElse(null);
@@ -945,6 +1036,7 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "#model:plot.deny.all", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
     private CommandResult<?> denyAllPlot(CommandEvent cmd, PermissionFlag flag)
     {
         assert cmd.position != null && cmd.sender.getPlayerId() != null;
@@ -972,6 +1064,7 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "#model:plot.allow.all", console = false)
     private CommandResult<?> allowAllPlot(CommandEvent cmd, PermissionFlag flag)
     {
         assert cmd.position != null && cmd.sender.getPlayerId() != null;
@@ -998,6 +1091,7 @@ public class PermissionCommands
 
     @Slow
     @Async
+    @Command(value = "#model:plot.reset.all", console = false)
     private CommandResult<?> resetAllPlot(CommandEvent cmd, PermissionFlag flag)
     {
         Plot plot = mineCity.getPlot(cmd.position.getBlock()).orElse(null);
@@ -1019,1099 +1113,5 @@ public class PermissionCommands
 
         return new CommandResult<>(new Message("cmd.plot.reset.success",
                 "The direct permissions were removed successfully. The default permission will be applied now."), true, true);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.perms.enter", args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
-    public CommandResult<?> listEnter(CommandEvent cmd) throws DataSourceException
-    {
-        return list(cmd, PermissionFlag.ENTER);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.perms.click", args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
-    public CommandResult<?> listClick(CommandEvent cmd) throws DataSourceException
-    {
-        return list(cmd, PermissionFlag.CLICK);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.perms.pickup", args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
-    public CommandResult<?> listPickup(CommandEvent cmd) throws DataSourceException
-    {
-        return list(cmd, PermissionFlag.PICKUP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.perms.harvest", args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
-    public CommandResult<?> listHarvest(CommandEvent cmd) throws DataSourceException
-    {
-        return list(cmd, PermissionFlag.HARVEST);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.perms.open", args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
-    public CommandResult<?> listOpen(CommandEvent cmd) throws DataSourceException
-    {
-        return list(cmd, PermissionFlag.OPEN);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.perms.pvp", args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
-    public CommandResult<?> listPVP(CommandEvent cmd) throws DataSourceException
-    {
-        return list(cmd, PermissionFlag.PVP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.perms.pvc", args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
-    public CommandResult<?> listPVC(CommandEvent cmd) throws DataSourceException
-    {
-        return list(cmd, PermissionFlag.PVC);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.perms.modify", args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
-    public CommandResult<?> listModify(CommandEvent cmd) throws DataSourceException
-    {
-        return list(cmd, PermissionFlag.MODIFY);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.perms.enter", args = {
-            @Arg(name = "city-or-plot", optional = true, type = Arg.Type.PLOT_OR_CITY),
-            @Arg(name = "plot", sticky = true, optional = true, type = Arg.Type.PLOT)
-    })
-    public CommandResult<?> listPlotEnter(CommandEvent cmd) throws DataSourceException
-    {
-        return listPlot(cmd, PermissionFlag.ENTER);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.perms.click", args = {
-            @Arg(name = "city-or-plot", optional = true, type = Arg.Type.PLOT_OR_CITY),
-            @Arg(name = "plot", sticky = true, optional = true, type = Arg.Type.PLOT)
-    })
-    public CommandResult<?> listPlotClick(CommandEvent cmd) throws DataSourceException
-    {
-        return listPlot(cmd, PermissionFlag.CLICK);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.perms.pickup", args = {
-            @Arg(name = "city-or-plot", optional = true, type = Arg.Type.PLOT_OR_CITY),
-            @Arg(name = "plot", sticky = true, optional = true, type = Arg.Type.PLOT)
-    })
-    public CommandResult<?> listPlotPickup(CommandEvent cmd) throws DataSourceException
-    {
-        return listPlot(cmd, PermissionFlag.PICKUP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.perms.harvest", args = {
-            @Arg(name = "city-or-plot", optional = true, type = Arg.Type.PLOT_OR_CITY),
-            @Arg(name = "plot", sticky = true, optional = true, type = Arg.Type.PLOT)
-    })
-    public CommandResult<?> listPlotHarvest(CommandEvent cmd) throws DataSourceException
-    {
-        return listPlot(cmd, PermissionFlag.HARVEST);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.perms.open", args = {
-            @Arg(name = "city-or-plot", optional = true, type = Arg.Type.PLOT_OR_CITY),
-            @Arg(name = "plot", sticky = true, optional = true, type = Arg.Type.PLOT)
-    })
-    public CommandResult<?> listPlotOpen(CommandEvent cmd) throws DataSourceException
-    {
-        return listPlot(cmd, PermissionFlag.OPEN);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.perms.pvp", args = {
-            @Arg(name = "city-or-plot", optional = true, type = Arg.Type.PLOT_OR_CITY),
-            @Arg(name = "plot", sticky = true, optional = true, type = Arg.Type.PLOT)
-    })
-    public CommandResult<?> listPlotPVP(CommandEvent cmd) throws DataSourceException
-    {
-        return listPlot(cmd, PermissionFlag.PVP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.perms.pvc", args = {
-            @Arg(name = "city-or-plot", optional = true, type = Arg.Type.PLOT_OR_CITY),
-            @Arg(name = "plot", sticky = true, optional = true, type = Arg.Type.PLOT)
-    })
-    public CommandResult<?> listPlotPVC(CommandEvent cmd) throws DataSourceException
-    {
-        return listPlot(cmd, PermissionFlag.PVC);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.perms.modify", args = {
-            @Arg(name = "city-or-plot", optional = true, type = Arg.Type.PLOT_OR_CITY),
-            @Arg(name = "plot", sticky = true, optional = true, type = Arg.Type.PLOT)
-    })
-    public CommandResult<?> listPlotModify(CommandEvent cmd) throws DataSourceException
-    {
-        return listPlot(cmd, PermissionFlag.MODIFY);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.enter", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-    })
-    public CommandResult<?> denyEnter(CommandEvent cmd) throws DataSourceException
-    {
-        return deny(cmd, PermissionFlag.ENTER);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.click", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-            })
-    public CommandResult<?> denyClick(CommandEvent cmd) throws DataSourceException
-    {
-        return deny(cmd, PermissionFlag.CLICK);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.pickup", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-            })
-    public CommandResult<?> denyPickup(CommandEvent cmd)
-            throws DataSourceException
-    {
-        return deny(cmd, PermissionFlag.PICKUP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.harvest", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-            })
-    public CommandResult<?> denyHarvest(CommandEvent cmd) throws DataSourceException
-    {
-        return deny(cmd, PermissionFlag.HARVEST);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.open", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-            })
-    public CommandResult<?> denyOpen(CommandEvent cmd) throws DataSourceException
-    {
-        return deny(cmd, PermissionFlag.OPEN);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.pvp", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-            })
-    public CommandResult<?> denyPVP(CommandEvent cmd) throws DataSourceException
-    {
-        return deny(cmd, PermissionFlag.PVP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.pvc", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-            })
-    public CommandResult<?> denyPVC(CommandEvent cmd) throws DataSourceException
-    {
-        return deny(cmd, PermissionFlag.PVC);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.modify", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-            })
-    public CommandResult<?> denyModify(CommandEvent cmd) throws DataSourceException
-    {
-        return deny(cmd, PermissionFlag.MODIFY);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.enter", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowEnter(CommandEvent cmd)
-            throws DataSourceException
-    {
-        return allow(cmd, PermissionFlag.ENTER);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.click", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowClick(CommandEvent cmd)
-            throws DataSourceException
-    {
-        return allow(cmd, PermissionFlag.CLICK);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.pickup", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowPickup(CommandEvent cmd)
-            throws DataSourceException
-    {
-        return allow(cmd, PermissionFlag.PICKUP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.harvest", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowHarvest(CommandEvent cmd) throws DataSourceException
-    {
-        return allow(cmd, PermissionFlag.HARVEST);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.open", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowOpen(CommandEvent cmd) throws DataSourceException
-    {
-        return allow(cmd, PermissionFlag.OPEN);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.pvp", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowPVP(CommandEvent cmd) throws DataSourceException
-    {
-        return allow(cmd, PermissionFlag.PVP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.pvc", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowPVC(CommandEvent cmd) throws DataSourceException
-    {
-        return allow(cmd, PermissionFlag.PVC);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.modify", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowModify(CommandEvent cmd) throws DataSourceException
-    {
-        return allow(cmd, PermissionFlag.MODIFY);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.enter", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetEnter(CommandEvent cmd)
-            throws DataSourceException
-    {
-        return reset(cmd, PermissionFlag.ENTER);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.click", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetClick(CommandEvent cmd)
-            throws DataSourceException
-    {
-        return reset(cmd, PermissionFlag.CLICK);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.pickup", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetPickup(CommandEvent cmd)
-            throws DataSourceException
-    {
-        return reset(cmd, PermissionFlag.PICKUP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.harvest", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetHarvest(CommandEvent cmd) throws DataSourceException
-    {
-        return reset(cmd, PermissionFlag.HARVEST);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.open", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetOpen(CommandEvent cmd) throws DataSourceException
-    {
-        return reset(cmd, PermissionFlag.OPEN);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.pvp", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetPVP(CommandEvent cmd) throws DataSourceException
-    {
-        return reset(cmd, PermissionFlag.PVP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.pvc", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetPVC(CommandEvent cmd) throws DataSourceException
-    {
-        return reset(cmd, PermissionFlag.PVC);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.modify", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetModify(CommandEvent cmd) throws DataSourceException
-    {
-        return reset(cmd, PermissionFlag.MODIFY);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.all.enter", console = false)
-    public CommandResult<?> allowAllEnter(CommandEvent cmd)
-    {
-        return allowAll(cmd, PermissionFlag.ENTER);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.all.click", console = false)
-    public CommandResult<?> allowAllClick(CommandEvent cmd)
-    {
-        return allowAll(cmd, PermissionFlag.CLICK);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.all.pickup", console = false)
-    public CommandResult<?> allowAllPickup(CommandEvent cmd)
-    {
-        return allowAll(cmd, PermissionFlag.PICKUP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.all.harvest", console = false)
-    public CommandResult<?> allowAllHarvest(CommandEvent cmd)
-    {
-        return allowAll(cmd, PermissionFlag.HARVEST);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.all.open", console = false)
-    public CommandResult<?> allowAllOpen(CommandEvent cmd)
-    {
-        return allowAll(cmd, PermissionFlag.OPEN);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.all.pvp", console = false)
-    public CommandResult<?> allowAllPVP(CommandEvent cmd)
-    {
-        return allowAll(cmd, PermissionFlag.PVP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.all.pvc", console = false)
-    public CommandResult<?> allowAllPVC(CommandEvent cmd)
-    {
-        return allowAll(cmd, PermissionFlag.PVC);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.allow.all.modify", console = false)
-    public CommandResult<?> allowAllModify(CommandEvent cmd)
-    {
-        return allowAll(cmd, PermissionFlag.MODIFY);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.all.enter", console = false)
-    public CommandResult<?> resetAllEnter(CommandEvent cmd)
-    {
-        return resetAll(cmd, PermissionFlag.ENTER);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.all.click", console = false)
-    public CommandResult<?> resetAllClick(CommandEvent cmd)
-    {
-        return resetAll(cmd, PermissionFlag.CLICK);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.all.pickup", console = false)
-    public CommandResult<?> resetAllPickup(CommandEvent cmd)
-    {
-        return resetAll(cmd, PermissionFlag.PICKUP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.all.harvest", console = false)
-    public CommandResult<?> resetAllHarvest(CommandEvent cmd)
-    {
-        return resetAll(cmd, PermissionFlag.HARVEST);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.all.open", console = false)
-    public CommandResult<?> resetAllOpen(CommandEvent cmd)
-    {
-        return resetAll(cmd, PermissionFlag.OPEN);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.all.pvp", console = false)
-    public CommandResult<?> resetAllPVP(CommandEvent cmd)
-    {
-        return resetAll(cmd, PermissionFlag.PVP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.all.pvc", console = false)
-    public CommandResult<?> resetAllPVC(CommandEvent cmd)
-    {
-        return resetAll(cmd, PermissionFlag.PVC);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.reset.all.modify", console = false)
-    public CommandResult<?> resetAllModify(CommandEvent cmd)
-    {
-        return resetAll(cmd, PermissionFlag.MODIFY);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.all.enter", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllEnter(CommandEvent cmd)
-    {
-        return denyAll(cmd, PermissionFlag.ENTER);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.all.click", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllClick(CommandEvent cmd)
-    {
-        return denyAll(cmd, PermissionFlag.CLICK);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.all.pickup", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllPickup(CommandEvent cmd)
-    {
-        return denyAll(cmd, PermissionFlag.PICKUP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.all.harvest", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllHarvest(CommandEvent cmd)
-    {
-        return denyAll(cmd, PermissionFlag.HARVEST);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.all.open", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllOpen(CommandEvent cmd)
-    {
-        return denyAll(cmd, PermissionFlag.OPEN);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.all.pvp", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllPVP(CommandEvent cmd)
-    {
-        return denyAll(cmd, PermissionFlag.PVP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.all.pvc", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllPVC(CommandEvent cmd)
-    {
-        return denyAll(cmd, PermissionFlag.PVC);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "city.deny.all.modify", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllModify(CommandEvent cmd)
-    {
-        return denyAll(cmd, PermissionFlag.MODIFY);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.enter", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-            })
-    public CommandResult<?> denyEnterPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return denyPlot(cmd, PermissionFlag.ENTER);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.click", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-            })
-    public CommandResult<?> denyClickPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return denyPlot(cmd, PermissionFlag.CLICK);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.pickup", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-            })
-    public CommandResult<?> denyPickupPlot(CommandEvent cmd)
-            throws DataSourceException
-    {
-        return denyPlot(cmd, PermissionFlag.PICKUP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.harvest", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-            })
-    public CommandResult<?> denyHarvestPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return denyPlot(cmd, PermissionFlag.HARVEST);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.open", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-            })
-    public CommandResult<?> denyOpenPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return denyPlot(cmd, PermissionFlag.OPEN);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.pvp", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-            })
-    public CommandResult<?> denyPVPPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return denyPlot(cmd, PermissionFlag.PVP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.pvc", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-            })
-    public CommandResult<?> denyPVCPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return denyPlot(cmd, PermissionFlag.PVC);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.modify", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
-                    @Arg(name = "reason", sticky = true, optional = true)
-            })
-    public CommandResult<?> denyModifyPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return denyPlot(cmd, PermissionFlag.MODIFY);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.enter", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowEnterPlot(CommandEvent cmd)
-            throws DataSourceException
-    {
-        return allowPlot(cmd, PermissionFlag.ENTER);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.click", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowClickPlot(CommandEvent cmd)
-            throws DataSourceException
-    {
-        return allowPlot(cmd, PermissionFlag.CLICK);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.pickup", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowPickupPlot(CommandEvent cmd)
-            throws DataSourceException
-    {
-        return allowPlot(cmd, PermissionFlag.PICKUP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.harvest", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowHarvestPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return allowPlot(cmd, PermissionFlag.HARVEST);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.open", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowOpenPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return allowPlot(cmd, PermissionFlag.OPEN);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.pvp", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowPVPPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return allowPlot(cmd, PermissionFlag.PVP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.pvc", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowPVCPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return allowPlot(cmd, PermissionFlag.PVC);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.modify", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> allowModifyPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return allowPlot(cmd, PermissionFlag.MODIFY);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.enter", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetEnterPlot(CommandEvent cmd)
-            throws DataSourceException
-    {
-        return resetPlot(cmd, PermissionFlag.ENTER);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.click", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetClickPlot(CommandEvent cmd)
-            throws DataSourceException
-    {
-        return resetPlot(cmd, PermissionFlag.CLICK);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.pickup", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetPickupPlot(CommandEvent cmd)
-            throws DataSourceException
-    {
-        return resetPlot(cmd, PermissionFlag.PICKUP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.harvest", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetHarvestPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return resetPlot(cmd, PermissionFlag.HARVEST);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.open", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetOpenPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return resetPlot(cmd, PermissionFlag.OPEN);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.pvp", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetPVPPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return resetPlot(cmd, PermissionFlag.PVP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.pvc", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetPVCPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return resetPlot(cmd, PermissionFlag.PVC);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.modify", console = false,
-            args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
-                    @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
-            })
-    public CommandResult<?> resetModifyPlot(CommandEvent cmd) throws DataSourceException
-    {
-        return resetPlot(cmd, PermissionFlag.MODIFY);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.all.enter", console = false)
-    public CommandResult<?> allowAllEnterPlot(CommandEvent cmd)
-    {
-        return allowAllPlot(cmd, PermissionFlag.ENTER);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.all.click", console = false)
-    public CommandResult<?> allowAllClickPlot(CommandEvent cmd)
-    {
-        return allowAllPlot(cmd, PermissionFlag.CLICK);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.all.pickup", console = false)
-    public CommandResult<?> allowAllPickupPlot(CommandEvent cmd)
-    {
-        return allowAllPlot(cmd, PermissionFlag.PICKUP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.all.harvest", console = false)
-    public CommandResult<?> allowAllHarvestPlot(CommandEvent cmd)
-    {
-        return allowAllPlot(cmd, PermissionFlag.HARVEST);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.all.open", console = false)
-    public CommandResult<?> allowAllOpenPlot(CommandEvent cmd)
-    {
-        return allowAllPlot(cmd, PermissionFlag.OPEN);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.all.pvp", console = false)
-    public CommandResult<?> allowAllPVPPlot(CommandEvent cmd)
-    {
-        return allowAllPlot(cmd, PermissionFlag.PVP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.all.pvc", console = false)
-    public CommandResult<?> allowAllPVCPlot(CommandEvent cmd)
-    {
-        return allowAllPlot(cmd, PermissionFlag.PVC);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.allow.all.modify", console = false)
-    public CommandResult<?> allowAllModifyPlot(CommandEvent cmd)
-    {
-        return allowAllPlot(cmd, PermissionFlag.MODIFY);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.all.enter", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllEnterPlot(CommandEvent cmd)
-    {
-        return denyAllPlot(cmd, PermissionFlag.ENTER);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.all.click", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllClickPlot(CommandEvent cmd)
-    {
-        return denyAllPlot(cmd, PermissionFlag.CLICK);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.all.pickup", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllPickupPlot(CommandEvent cmd)
-    {
-        return denyAllPlot(cmd, PermissionFlag.PICKUP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.all.harvest", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllHarvestPlot(CommandEvent cmd)
-    {
-        return denyAllPlot(cmd, PermissionFlag.HARVEST);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.all.open", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllOpenPlot(CommandEvent cmd)
-    {
-        return denyAllPlot(cmd, PermissionFlag.OPEN);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.all.pvp", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllPVPPlot(CommandEvent cmd)
-    {
-        return denyAllPlot(cmd, PermissionFlag.PVP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.all.pvc", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllPVCPlot(CommandEvent cmd)
-    {
-        return denyAllPlot(cmd, PermissionFlag.PVC);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.deny.all.modify", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
-    public CommandResult<?> denyAllModifyPlot(CommandEvent cmd)
-    {
-        return denyAllPlot(cmd, PermissionFlag.MODIFY);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.all.enter", console = false)
-    public CommandResult<?> resetAllEnterPlot(CommandEvent cmd)
-    {
-        return resetAllPlot(cmd, PermissionFlag.ENTER);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.all.click", console = false)
-    public CommandResult<?> resetAllClickPlot(CommandEvent cmd)
-    {
-        return resetAllPlot(cmd, PermissionFlag.CLICK);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.all.pickup", console = false)
-    public CommandResult<?> resetAllPickupPlot(CommandEvent cmd)
-    {
-        return resetAllPlot(cmd, PermissionFlag.PICKUP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.all.harvest", console = false)
-    public CommandResult<?> resetAllHarvestPlot(CommandEvent cmd)
-    {
-        return resetAllPlot(cmd, PermissionFlag.HARVEST);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.all.open", console = false)
-    public CommandResult<?> resetAllOpenPlot(CommandEvent cmd)
-    {
-        return resetAllPlot(cmd, PermissionFlag.OPEN);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.all.pvp", console = false)
-    public CommandResult<?> resetAllPVPPlot(CommandEvent cmd)
-    {
-        return resetAllPlot(cmd, PermissionFlag.PVP);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.all.pvc", console = false)
-    public CommandResult<?> resetAllPVCPlot(CommandEvent cmd)
-    {
-        return resetAllPlot(cmd, PermissionFlag.PVC);
-    }
-
-    @Slow
-    @Async
-    @Command(value = "plot.reset.all.modify", console = false)
-    public CommandResult<?> resetAllModifyPlot(CommandEvent cmd)
-    {
-        return resetAllPlot(cmd, PermissionFlag.MODIFY);
     }
 }

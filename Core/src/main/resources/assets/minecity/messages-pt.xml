@@ -207,6 +207,14 @@
                         <msg id="name">MODIFICAR</msg>
                         <msg id="info">Fazer modificações estruturais e decorativas</msg>
                     </modify>
+                    <vehicle>
+                        <msg id="name">VEICULOS</msg>
+                        <msg id="info">Colocar veículos</msg>
+                    </vehicle>
+                    <ride>
+                        <msg id="name">MONTAR</msg>
+                        <msg id="info">Usar veículos da cidade</msg>
+                    </ride>
                 </perm>
             </perms>
             <list>
@@ -352,6 +360,8 @@
                     <msg id="open.arg.reason">motivo</msg>
                     <msg id="pvp.arg.reason">motivo</msg>
                     <msg id="pvc.arg.reason">motivo</msg>
+                    <msg id="vehicle.arg.reason">motivo</msg>
+                    <msg id="ride.arg.reason">motivo</msg>
                 </all>
                 <enter>
                     <arg>
@@ -394,6 +404,20 @@
                         <msg id="reason">motivo</msg>
                     </arg>
                 </pvc>
+                <vehicle>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
+                    </arg>
+                </vehicle>
+                <ride>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
+                    </arg>
+                </ride>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
                 <msg id="no-permission">Você não está autorizado a mudar a permissões de ${city}</msg>
                 <msg id="got-city-expected-player">Você digitou um nome de cidade, digite um nome de jogador ao invés disso para proibir um jogador específico ou digite o nome de um grupo após o nome da cidade para proibir o grupo diretamente. <b>Não use espaços nos nomes.</b></msg>
@@ -450,6 +474,18 @@
                         <msg id="group-name">grupo</msg>
                     </arg>
                 </pvc>
+                <vehicle>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </vehicle>
+                <ride>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </ride>
             </allow>
             <clear>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
@@ -498,6 +534,18 @@
                         <msg id="group-name">grupo</msg>
                     </arg>
                 </pvc>
+                <vehicle>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </vehicle>
+                <ride>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </ride>
             </clear>
         </city>
         <group>
@@ -868,6 +916,14 @@
                         <msg id="name">MODIFICAR</msg>
                         <msg id="info">Fazer modificações estruturais e decorativas</msg>
                     </modify>
+                    <vehicle>
+                        <msg id="name">VEICULOS</msg>
+                        <msg id="info">Colocar veículos</msg>
+                    </vehicle>
+                    <ride>
+                        <msg id="name">MONTAR</msg>
+                        <msg id="info">Usar veículos do lote</msg>
+                    </ride>
                 </perm>
             </perms>
             <list>
@@ -991,6 +1047,8 @@
                     <msg id="open.arg.reason">motivo</msg>
                     <msg id="pvp.arg.reason">motivo</msg>
                     <msg id="pvc.arg.reason">motivo</msg>
+                    <msg id="vehicle.arg.reason">motivo</msg>
+                    <msg id="ride.arg.reason">motivo</msg>
                 </all>
                 <enter>
                     <arg>
@@ -1033,6 +1091,20 @@
                         <msg id="reason">motivo</msg>
                     </arg>
                 </pvc>
+                <vehicle>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
+                    </arg>
+                </vehicle>
+                <ride>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
+                    </arg>
+                </ride>
                 <msg id="not-claimed">Você não está dentro de um lote</msg>
                 <msg id="no-permission">Você não está autorizado a alterar as permissões de ${plot}</msg>
                 <msg id="got-city-expected-player">Você digitou um nome de cidade,
@@ -1097,6 +1169,18 @@
                         <msg id="group-name">grupo</msg>
                     </arg>
                 </pvc>
+                <vehicle>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </vehicle>
+                <ride>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </ride>
             </allow>
             <clear>
                 <msg id="not-claimed">Você não está dentro de um lote</msg>
@@ -1149,6 +1233,18 @@
                         <msg id="group-name">grupo</msg>
                     </arg>
                 </pvc>
+                <vehicle>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </vehicle>
+                <ride>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </ride>
             </clear>
         </plot>
         <help>
