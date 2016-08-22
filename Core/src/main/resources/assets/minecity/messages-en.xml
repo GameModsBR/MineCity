@@ -686,6 +686,9 @@
                 <msg id="no-plot-permission">Plots can only be readjusted when they are owned by the city's mayor, ${plot} is owned by ${owner}</msg>
                 <msg id="outside">Stand inside the new area and execute this command again.</msg>
                 <msg id="unclaimed">The selected area overlaps an unclaimed chunk located at: X: ${x} and Z: ${z}</msg>
+                <msg id="selection-changed">The selection has changed before the confirmation. Execute the readjust command again to receive a new code.</msg>
+                <msg id="confirm">You are about to readjust the plot ${plot} in ${city}, the plot size will change from ${from-size} to ${to-size}. If you are sure about this then type /plot confirm ${code}</msg>
+                <msg id="size">${size-square}m² ${area}m³ X:${size-x}m Y:${size-y}m Z:${size-z}</msg>
                 <overlaps>
                     <msg id="plots">The selected area overlaps ${count} plots: ${plots}</msg>
                     <msg id="plot">The selected area overlaps the plot ${name}</msg>

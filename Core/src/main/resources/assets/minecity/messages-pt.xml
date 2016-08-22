@@ -659,6 +659,9 @@
                 <msg id="no-plot-permission">Os lotes só podem ser reajustado quando eles são propriedades da cidade ou do seu prefeito, ${plot} é propriedade de ${owner}</msg>
                 <msg id="outside">Fique dentro da nova área e execute este comando novamente.</msg>
                 <msg id="unclaimed">A área selecionada sobrepõe um chunk que não pertence à cidade em: X: ${x} and Z: ${z}</msg>
+                <msg id="selection-changed">A seleção foi alterada antes da confirmação. Execute o comando de reajuste novamente para receber um novo código.</msg>
+                <msg id="confirm">Você está prestes de reajustar o lote ${plot} de ${city}, o tamanho do lote irá mudar de ${from-size} para ${to-size}. Se você tiver certeza disso então digite /plot confirm ${code}</msg>
+                <msg id="size">${size-square}m² ${area}m³ X:${size-x}m Y:${size-y}m Z:${size-z}</msg>
                 <overlaps>
                     <msg id="plots">A área seleciona sobrepõe ${count} lotes: ${plots}</msg>
                     <msg id="plot">A área selecionada sobrepõe o lote ${name}</msg>

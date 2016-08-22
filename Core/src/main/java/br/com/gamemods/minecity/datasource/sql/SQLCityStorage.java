@@ -1022,7 +1022,7 @@ public class SQLCityStorage implements ICityStorage
 
     @Slow
     @Override
-    public void setShape(@NotNull Plot plot, @NotNull Shape shape) throws DataSourceException
+    public void setShape(@NotNull Plot plot, @NotNull Shape shape, BlockPos spawn) throws DataSourceException
     {
         try(Connection transaction = connection.transaction())
         {
@@ -1036,6 +1036,8 @@ public class SQLCityStorage implements ICityStorage
                     pst.setInt(2, plot.id);
                     source.executeUpdate(pst, 1);
                 }
+
+                setSpawn(transaction, plot, spawn);
 
                 transaction.commit();
             }
@@ -1083,9 +1085,24 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @SuppressWarnings("SuspiciousNameCombination")
+    private void setSpawn(@NotNull Connection transaction, @NotNull Plot plot, @NotNull BlockPos spawn)
+            throws DataSourceException, SQLException
+    {
+        try(PreparedStatement pst = transaction.prepareStatement(
+                "UPDATE minecity_plots SET spawn_x=?, spawn_y=?, spawn_z=? WHERE plot_id=?"
+        ))
+        {
+            pst.setInt(1, spawn.x);
+            pst.setInt(2, spawn.y);
+            pst.setInt(3, spawn.z);
+            pst.setInt(4, plot.id);
+            source.executeUpdate(pst, 1);
+        }
+    }
+
     @Slow
     @Override
-    @SuppressWarnings("SuspiciousNameCombination")
     public void setSpawn(@NotNull Plot plot, @NotNull BlockPos spawn) throws DataSourceException
     {
         if(!spawn.world.equals(plot.getIsland().world))
@@ -1095,17 +1112,7 @@ public class SQLCityStorage implements ICityStorage
         {
             try
             {
-                try(PreparedStatement pst = transaction.prepareStatement(
-                        "UPDATE minecity_plots SET spawn_x=?, spawn_y=?, spawn_z=? WHERE plot_id=?"
-                ))
-                {
-                    pst.setInt(1, spawn.x);
-                    pst.setInt(2, spawn.y);
-                    pst.setInt(3, spawn.z);
-                    pst.setInt(4, plot.id);
-                    source.executeUpdate(pst, 1);
-                }
-
+                setSpawn(transaction, plot, spawn);
                 transaction.commit();
             }
             catch(Exception e)

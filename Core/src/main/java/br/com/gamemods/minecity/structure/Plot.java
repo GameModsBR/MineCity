@@ -220,13 +220,13 @@ public final class Plot extends ExceptStoredHolder
     }
 
     @Slow
-    public void setShape(@NotNull Shape shape) throws DataSourceException
+    public void setShape(@NotNull Shape shape, BlockPos spawn) throws DataSourceException
     {
         if(invalid)
             throw new IllegalStateException();
 
         Shape old = this.shape;
-        storage.setShape(this, shape);
+        storage.setShape(this, shape, spawn);
         this.shape = shape;
 
         Stream.concat(this.shape.chunks(island.world), old.chunks(island.world))

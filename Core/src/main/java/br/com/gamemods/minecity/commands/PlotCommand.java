@@ -186,10 +186,8 @@ public class PlotCommand
         ), plot);
     }
 
-    @Slow
-    @Async
     @Command(value = "plot.readjust", console = false, args = @Arg(name = "plot-name", optional = true, sticky = true, type = Arg.Type.PLOT))
-    public static CommandResult<?> readjust(CommandEvent cmd) throws DataSourceException
+    public static CommandResult<?> readjust(CommandEvent cmd)
     {
         Selection selection = cmd.sender.getSelection(cmd.position.world);
         if(selection.isIncomplete())
@@ -290,12 +288,53 @@ public class PlotCommand
                 ));
         }
 
-        plot.setShape(shape);
-        selection.clear();
-        return new CommandResult<>(new Message("cmd.plot.readjust.success",
-                "The plot ${name} was readjusted successfully",
-                new Object[]{"name", plot.getName()}
-        ), plot);
+        String code = cmd.sender.confirm(sender -> {
+            Selection sel = sender.getSelection(island.world);
+            if(sel.isIncomplete() || !sel.toShape().equals(shape))
+                return new CommandResult<>(new Message("cmd.plot.readjust.selection-changed",
+                        "The selection has changed before the confirmation. Execute the readjust command again to receive a new code."
+                ));
+
+            BlockPos spawn = sender.getPosition().getBlock();
+            if(!shape.contains(spawn))
+                return new CommandResult<>(new Message("cmd.plot.readjust.outside",
+                        "Stand inside the new area and execute this command again."
+                ));
+
+            plot.setShape(shape, spawn);
+            selection.clear();
+            return new CommandResult<>(new Message("cmd.plot.readjust.success",
+                    "The plot ${name} was readjusted successfully",
+                    new Object[]{"name", plot.getName()}
+            ), plot);
+        });
+
+        String fallback = "${size-square}m² ${area}m³ X:${size-x}m Y:${size-y}m Z:${size-z}";
+        Shape old = plot.getShape();
+        //noinspection LanguageMismatch
+        return new CommandResult<>(new Message("cmd.plot.readjust.confirm",
+                "You are about to readjust the plot ${plot} in ${city}, the plot size will change from ${from-size} to ${to-size}." +
+                "If you are sure about this then type /plot confirm ${code}",
+                new Object[][]{
+                        {"plot", plot.getName()},
+                        {"city", city.getName()},
+                        {"code", code},
+                        {"from-size", new Message("cmd.plot.readjust.size", fallback, new Object[][]{
+                                {"size-square", old.squareSize()},
+                                {"area", old.area()},
+                                {"size-x", old.sizeX()},
+                                {"size-y", old.sizeY()},
+                                {"size-z", old.sizeZ()}
+                        })},
+                        {"to-size", new Message("cmd.plot.readjust.size", fallback, new Object[][]{
+                                {"size-square", shape.squareSize()},
+                                {"area", shape.area()},
+                                {"size-x", shape.sizeX()},
+                                {"size-y", shape.sizeY()},
+                                {"size-z", shape.sizeZ()}
+                        })}
+                }
+        ), true);
     }
 
     @Slow

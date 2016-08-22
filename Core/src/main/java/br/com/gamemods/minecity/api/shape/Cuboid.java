@@ -162,4 +162,23 @@ public class Cuboid implements Shape
     {
         return serializeString();
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if(this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+
+        Cuboid cuboid = (Cuboid) o;
+
+        return min.equals(cuboid.min) && max.equals(cuboid.max);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = min.hashCode();
+        result = 31*result + max.hashCode();
+        return result;
+    }
 }

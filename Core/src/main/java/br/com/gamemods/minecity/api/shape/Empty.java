@@ -85,4 +85,16 @@ public class Empty implements Shape
     {
         return "Shape:EMPTY";
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj.getClass() == getClass();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return 0;
+    }
 }
