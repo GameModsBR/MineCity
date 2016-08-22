@@ -14,7 +14,7 @@
         cmd CDATA #REQUIRED
         parent CDATA #IMPLIED>
 
-<!ENTITY % CityManageCommands "city.create|city.claim|city.disclaim|city.spawn|city.rename|city.transfer|city.setspawn|city.map|city.delete">
+<!ENTITY % CityManageCommands "city.create|city.claim|city.disclaim|city.spawn|city.rename|city.transfer|city.setspawn|city.map|city.delete|city.info">
 <!ENTITY % CityDenyCommands "city.deny.enter|city.deny.click|city.deny.pickup|city.deny.harvest|city.deny.open|city.deny.pvp|city.deny.pvc|city.deny.modify">
 <!ENTITY % CityAllowCommands "city.allow.enter|city.allow.click|city.allow.pickup|city.allow.harvest|city.allow.open|city.allow.pvp|city.allow.pvc|city.allow.modify">
 <!ENTITY % CityResetCommands "city.reset.enter|city.reset.click|city.reset.pickup|city.reset.harvest|city.reset.open|city.reset.pvp|city.reset.pvc|city.reset.modify">

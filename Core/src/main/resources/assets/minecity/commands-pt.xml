@@ -73,6 +73,9 @@
         </command>
 
         <!-- Gerência -->
+        <command id="city.info" parent="city" cmd="info">
+            <desc>Exibe informações sobre a cidade</desc>
+        </command>
         <command id="city.create" parent="city" cmd="criar,nova">
             <desc>Cria uma cidade</desc>
         </command>

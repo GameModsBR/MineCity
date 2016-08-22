@@ -9,6 +9,20 @@
         </result>
         <msg id="exception">Oops.. Ocorreu um erro ao executar este comando: ${error}</msg>
         <city>
+            <info>
+                <msg id="not-inside-city">Você não está dentro de uma cidade</msg>
+                <msg id="not-found">Não há nenhuma cidade chamada ${name}</msg>
+                <msg id="admin"><gray>Os administradores do servidor</gray></msg>
+                <msg id="page"><darkgreen>---<yellow>-=[Cidade: ${name}]=-</yellow>------------</darkgreen><br/><br/>
+                    <aqua>Prefeito: </aqua><white>${owner}</white><br/>
+                    <aqua>Local principal: </aqua><white>${spawn-world} X:${spawn-x} Y:${spawn-y} Z:${spawn-z}</white><br/>
+                    <aqua>Tamanho: </aqua><white>${area-squared}m², X:${size-x}, Z:${size-z}</white><br/>
+                    <aqua>Ilhas: </aqua><white>${island-count}</white><br/>
+                    <aqua>Lotes: </aqua><white>${plot-count}</white><br/>
+                    <aqua>Grupos: </aqua><white>${group-count}</white><br/>
+                    <br/><darkgreen>----------------------------------</darkgreen>
+                </msg>
+            </info>
             <perms>
                 <nobody>
                     <enter>
@@ -640,13 +654,14 @@
                 <msg id="arg.plot-name">nome-do-lote</msg>
                 <msg id="not-inside-plot">Você não está dentro de um lote</msg>
                 <msg id="not-inside-city">Você não está dentro de uma cidade</msg>
-                <msg id="mayor">Prefeito(a) de <i>${city}</i>: ${mayor}</msg>
-                <msg id="admin"><i>Os administradores do servidor</i></msg>
-                <msg id="page"><darkgreen>---<yellow>-=[Lote: ${name}]=-</yellow>---------</darkgreen><br/>
-                    <aqua>Cidade: </aqua><white>${city}</white><br/>
-                    <aqua>Local: </aqua><white>${nature-name} X:${spawn-x} Y:${spawn-y} Z:${spawn-z}</white><br/>
-                    <aqua>Dono: </aqua><white>${owner}</white><br/>
-                    <aqua>Tamanho: </aqua><white>${area-squared}m², ${area-cube}m³, X:${size-x}, Y:${size-y}, Z:${size-z}</white>
+                <msg id="mayor"><gray>Prefeito(a) de ${city}: ${mayor}</gray></msg>
+                <msg id="admin"><gray>Os administradores do servidor</gray></msg>
+                <msg id="page"><darkgreen>---<yellow>-=[Lote: ${name}]=-</yellow>---------</darkgreen><br/><br/><white>
+                    <aqua>Dono:</aqua> ${owner}<br/>
+                    <aqua>Cidade:</aqua> ${city}<br/><br/>
+                    <aqua>Local:</aqua> ${nature-name} <gray>X:</gray> ${spawn-x} <gray>Y:</gray> ${spawn-y} <gray>Z:</gray> ${spawn-z}<br/>
+                    <aqua>Tamanho:</aqua> ${area-squared}m² <aqua>Tamanho:</aqua> ${size-x} <aqua>Profundidade:</aqua> ${size-z}<br/>
+                    <aqua>Área:</aqua> ${area-cube}m³ <aqua>Altura:</aqua> ${size-y}</white><br/>
                     <br/><darkgreen>----------------------------------</darkgreen>
                 </msg>
             </info>
@@ -844,8 +859,7 @@
                 <msg id="header"><green>---<yellow>-=[Lotes em ${city}]=-</yellow>---</green></msg>
                 <msg id="plot"><darkgray><![CDATA[ * ]]></darkgray><white>${plot}</white> <gray>${size-x}x${size-z}x${size-y} ~${owner}</gray></msg>
                 <footer>
-                    <msg id="one-page">
-                        <green>Página <gold>1</gold>/<gold>1</gold>
+                    <msg id="one-page"><green>Página <gold>1</gold>/<gold>1</gold>
                             <darkgreen>---</darkgreen>
                             Dica: Digite <click>
                                 <suggest cmd='/cidade ir '/>
@@ -856,8 +870,7 @@
                             </click> para ir para a cidade
                         </green>
                     </msg>
-                    <msg id="last-page">
-                        <green>Página <gold>${page}</gold>/<gold>${page}</gold>
+                    <msg id="last-page"><green>Página <gold>${page}</gold>/<gold>${page}</gold>
                             <darkgreen>---</darkgreen>
                             Dica: Digite <click>
                             <suggest cmd='/cidade ir '/>
@@ -868,8 +881,7 @@
                         </click> para ir para uma cidade
                         </green>
                     </msg>
-                    <msg id="more-pages">
-                        <green>Página <gold>${page}</gold>/<gold>${total}</gold>
+                    <msg id="more-pages"><green>Página <gold>${page}</gold>/<gold>${total}</gold>
                             <darkgreen>---</darkgreen>
                             Próxima página: <hover>
                             <tooltip><gold>${next-page}</gold></tooltip>

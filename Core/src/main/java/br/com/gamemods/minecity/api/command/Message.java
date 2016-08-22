@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.api.command;
 
 import br.com.gamemods.minecity.api.StringUtil;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,10 +10,24 @@ import java.util.Optional;
 
 public class Message
 {
+    @SuppressWarnings("CheckTagEmptyBody")
+    @Language(value = "XML", suffix = "</minecity-messages>")
+    private static final String XML_PREFIX =
+            "<!DOCTYPE minecity-messages SYSTEM \"https://raw.githubusercontent.com/GameModsBR/MineCity/master/Core/src/main/resources/assets/minecity/messages-base.dtd\" " +
+                    "[<!ELEMENT msg (#PCDATA|%formatting;)*><!ELEMENT minecity-messages (#PCDATA|msg)>]>" +
+            "<minecity-messages>";
+
+    @SuppressWarnings("CheckTagEmptyBody")
+    @Language(value = "XML", prefix = XML_PREFIX)
+    private static final String XML_SUFFIX = "</minecity-messages>";
+
     @NotNull
     private final String id;
+
     @NotNull
+    @Language(value = "XML", prefix = XML_PREFIX, suffix = XML_SUFFIX)
     private final String fallback;
+
     @Nullable
     private final Object[][] args;
 
@@ -58,19 +73,22 @@ public class Message
         return new Message("","${a}", new Object[]{"a", str});
     }
 
-    public Message(@NotNull String id, @Nullable String fallback, @Nullable Object[]... args)
+    public Message(@NotNull String id,
+                   @Nullable @Language(value = "XML", prefix = XML_PREFIX, suffix = XML_SUFFIX)
+                           String fallback,
+                   @Nullable Object[]... args)
     {
         this.id = id;
         this.fallback = fallback == null? id : fallback;
         this.args = args == null? null : args.length == 0? null : args.clone();
     }
 
-    public Message(@NotNull String id, @Nullable String simple)
+    public Message(@NotNull String id, @Language(value = "XML", prefix = XML_PREFIX, suffix = XML_SUFFIX) @Nullable String simple)
     {
         this(id, simple, (Object[][]) null);
     }
 
-    public Message(@NotNull String simple)
+    public Message(@Language(value = "XML", prefix = XML_PREFIX, suffix = XML_SUFFIX) @NotNull String simple)
     {
         this("", simple);
     }
@@ -82,6 +100,7 @@ public class Message
     }
 
     @NotNull
+    @Language(value = "XML", prefix = XML_PREFIX, suffix = XML_SUFFIX)
     public String getFallback()
     {
         return fallback;

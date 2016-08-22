@@ -17,6 +17,21 @@
             -->
         </msg>
         <city>
+            <info>
+                <msg id="not-inside-city">You are not inside a city</msg>
+                <msg id="not-found">There are not city named ${name}</msg>
+                <msg id="admin"><gray>The server administrators</gray></msg>
+                <msg id="location">${spawn-world} <gray>X:</gray> ${spawn-x} <gray>Y:</gray> ${spawn-y} <gray>Z:</gray> ${spawn-z}</msg>
+                <msg id="hidden-location"><gray>Hidden</gray></msg>
+                <msg id="page"><darkgreen>---<yellow>-=[City: ${name}]=-</yellow>------------</darkgreen><br/><br/><white>
+                    <aqua>Owner:</aqua> ${owner}<br/>
+                    <aqua>Islands:</aqua> ${island-count}  <aqua>Plots:</aqua> ${plot-count}<br/>
+                    <aqua>Groups:</aqua> ${group-count}<br/><br/>
+                    <aqua>Main location:</aqua> ${location}<br/>
+                    <aqua>Size:</aqua> ${area-squared}m² <aqua>Width:</aqua> ${size-x}, <aqua>Depth:</aqua> ${size-z}</white><br/>
+                    <br/><darkgreen>----------------------------------</darkgreen>
+                </msg>
+            </info>
             <perms>
                 <nobody>
                     <enter>
@@ -666,13 +681,14 @@
                 <msg id="arg.plot-name">plot-name</msg>
                 <msg id="not-inside-plot">You are not inside a plot</msg>
                 <msg id="not-inside-city">You are not inside a city</msg>
-                <msg id="mayor"><i>${city}</i>'s mayor: ${mayor}</msg>
-                <msg id="admin"><i>The server administrators</i></msg>
-                <msg id="page"><darkgreen>---<yellow>-=[Plot: ${name}]=-</yellow>---------</darkgreen><br/>
-                    <aqua>City: </aqua><white>${city}</white><br/>
-                    <aqua>Location: </aqua><white>${nature-name} X:${spawn-x} Y:${spawn-y} Z:${spawn-z}</white><br/>
-                    <aqua>Owner: </aqua><white>${owner}</white><br/>
-                    <aqua>Size: </aqua><white>${area-squared}m², ${area-cube}m³, X:${size-x}, Y:${size-y}, Z:${size-z}</white>
+                <msg id="mayor"><gray>The city's mayor: ${mayor}</gray></msg>
+                <msg id="admin"><gray>The server administrators</gray></msg>
+                <msg id="page"><darkgreen>---<yellow>-=[Plot: ${name}]=-</yellow>---------</darkgreen><br/><br/><white>
+                    <aqua>Owner:</aqua> ${owner}<br/>
+                    <aqua>City:</aqua> ${city}<br/><br/>
+                    <aqua>Location:</aqua> ${nature-name} <aqua>X:</aqua>${spawn-x} <aqua>Y:</aqua>${spawn-y} <aqua>Z:</aqua>${spawn-z}<br/>
+                    <aqua>Size:</aqua> ${area-squared}m² <aqua>Width:</aqua> ${size-x}m <aqua>Depth</aqua> ${size-z}m<br/>
+                    <aqua>Area:</aqua> ${area-cube}m³ <aqua>Height:</aqua> ${size-y}</white><br/>
                     <br/><darkgreen>----------------------------------</darkgreen>
                 </msg>
             </info>
@@ -868,8 +884,7 @@
                 <msg id="header"><green>---<yellow>-=[Plots at ${city}]=-</yellow>---</green></msg>
                 <msg id="plot"><darkgray><![CDATA[ * ]]></darkgray><white>${plot}</white> <gray>${size-x}x${size-z}x${size-y} ~${owner}</gray></msg>
                 <footer>
-                    <msg id="one-page">
-                        <green>Page <gold>1</gold>/<gold>1</gold>
+                    <msg id="one-page"><green>Page <gold>1</gold>/<gold>1</gold>
                             <darkgreen>---</darkgreen>
                             Tip: Type <click>
                                 <suggest cmd='/city go '/>
@@ -880,8 +895,7 @@
                             </click> to go to the city
                         </green>
                     </msg>
-                    <msg id="last-page">
-                        <green>Page <gold>${page}</gold>/<gold>${page}</gold>
+                    <msg id="last-page"><green>Page <gold>${page}</gold>/<gold>${page}</gold>
                             <darkgreen>---</darkgreen>
                             Tip: Type <click>
                             <suggest cmd='/city go '/>
@@ -892,8 +906,7 @@
                         </click> to go to the city
                         </green>
                     </msg>
-                    <msg id="more-pages">
-                        <green>Page <gold>${page}</gold>/<gold>${total}</gold>
+                    <msg id="more-pages"><green>Page <gold>${page}</gold>/<gold>${total}</gold>
                             <darkgreen>---</darkgreen>
                             Next page: <hover>
                             <tooltip><gold>${next-page}</gold></tooltip>

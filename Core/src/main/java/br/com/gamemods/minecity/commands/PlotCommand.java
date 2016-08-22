@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class PlotCommand
 {
-    @Command(value = "plot.info", console = false, args = @Arg(name = "plot name", sticky = true))
+    @Command(value = "plot.info", console = false, args = @Arg(name = "plot name", sticky = true, optional = true, type = Arg.Type.PLOT))
     public static Message info(CommandEvent cmd)
     {
         Plot plot;

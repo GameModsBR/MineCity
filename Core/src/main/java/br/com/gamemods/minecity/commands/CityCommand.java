@@ -6,6 +6,8 @@ import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.*;
+import br.com.gamemods.minecity.api.permission.OptionalPlayer;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
@@ -33,6 +35,75 @@ public class CityCommand
     public CityCommand(@NotNull MineCity mineCity)
     {
         this.mineCity = mineCity;
+    }
+
+    @Slow
+    @Async
+    @Command(value = "city.info", console = false, args = @Arg(name = "name", sticky = true, optional = true, type = Arg.Type.CITY))
+    public static Message info(CommandEvent cmd) throws DataSourceException
+    {
+        City city;
+        if(cmd.args.isEmpty())
+        {
+            city = cmd.getChunk().getCity().orElse(null);
+            if(city == null)
+                return new Message("cmd.city.info.not-inside-city", "You are not inside a city");
+        }
+        else
+        {
+            String name = String.join(" ", cmd.args);
+            city = cmd.mineCity.dataSource.getCityByName(name).orElse(null);
+            if(city == null)
+                return new Message("cmd.city.info.not-found", "There are not city named ${name}",
+                        new Object[]{"name", name}
+            );
+        }
+
+        BlockPos spawn = city.getSpawn();
+        OptionalPlayer owner = city.owner();
+        int sizeZ = city.getSizeZ();
+        int sizeX = city.getSizeX();
+        cmd.sender.send(new Message(
+                "cmd.city.info.page",
+                "<msg><darkgreen>---<yellow>-=[City: ${name}]=-</yellow>------------</darkgreen><br/>\n" +
+                "<aqua>Main location: </aqua><white>${spawn-world} X:${spawn-x} Y:${spawn-y} Z:${spawn-z}</white><br/>\n" +
+                "<aqua>Owner: </aqua><white>${owner}</white><br/>\n" +
+                "<aqua>Size: </aqua><white>${area-squared}m², X:${size-x}, Z:${size-z}</white>\n" +
+                "<aqua>Islands: </aqua><white>${island-count}</white><br/>\n" +
+                "<aqua>Plots: </aqua><white>${plot-count}</white><br/>\n" +
+                "<aqua>Groups: </aqua><white>${group-count}</white><br/>\n" +
+                "<br/><darkgreen>----------------------------------</darkgreen></msg>",
+                new Object[][]{
+                        {"name", city.getName()},
+                        {"spawn-world", spawn.world.name()},
+                        {"spawn-x", spawn.x},
+                        {"spawn-y", spawn.y},
+                        {"spawn-z", spawn.z},
+                        {"owner", owner.player() != null? owner.getName() : new Message(
+                                "cmd.city.info.admin", "<msg><i>The server administrators</i></msg>"
+                        )},
+                        {"area-squared", sizeX * sizeZ},
+                        {"size-x", sizeX},
+                        {"size-z", sizeZ},
+                        {"island-count", city.islands().size()},
+                        {"plot-count", city.plots().count()},
+                        {"group-count", city.getGroups().size()},
+                        {"location", city.can(cmd.sender, PermissionFlag.ENTER).isPresent()?
+                                new Message("cmd.city.info.hidden-location", "<msg><gray>Hidden</gray></msg>") :
+                                new Message("cmd.city.info.location",
+                                        "<msg>${spawn-world} <aqua>X:</aqua>${spawn-x} <aqua>Y:</aqua>${spawn-y} <aqua>Z:</aqua>${spawn-z}</msg>",
+                                        new Object[][]{
+                                                {"spawn-world", spawn.world.name()},
+                                                {"spawn-x", spawn.x},
+                                                {"spawn-y", spawn.y},
+                                                {"spawn-z", spawn.z}
+                                        }
+                                )
+                        }
+                }
+        ));
+
+        return null;
     }
 
     @Slow
