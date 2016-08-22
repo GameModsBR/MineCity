@@ -476,6 +476,28 @@ public class EntityProtections extends AbstractProtection
         else if(entity instanceof Horse)
         {
             Horse horse = (Horse) entity;
+            if(hand.isPresent())
+            {
+                switch(hand.get().getType())
+                {
+                    case GOLDEN_CARROT:
+                    case GOLDEN_APPLE:
+                        if(!horse.isAdult())
+                            return;
+
+                        if(check(horse.getLocation(), event.getPlayer(), PVC))
+                            event.setCancelled(true);
+                        return;
+
+                    case APPLE:
+                    case HAY_BLOCK:
+                    case WHEAT:
+                    case SUGAR:
+                        if(!horse.isAdult() || horse.getHealth() < horse.getMaxHealth())
+                            return;
+                }
+            }
+
             if(horse.isAdult())
             {
                 Material m = hand.map(ItemStack::getType).orElse(Material.AIR);
@@ -547,10 +569,19 @@ public class EntityProtections extends AbstractProtection
         else if(entity instanceof Sheep)
         {
             Sheep sheep = (Sheep) entity;
-            if(!sheep.isSheared() && hand.map(ItemStack::getType).filter(Material.SHEARS::equals).isPresent())
+            if(hand.isPresent())
             {
-                if(check(entity.getLocation(), player, PermissionFlag.HARVEST))
-                    event.setCancelled(true);
+                switch(hand.get().getType())
+                {
+                    case SHEARS:
+                        if(!sheep.isSheared() && check(entity.getLocation(), player, HARVEST))
+                            event.setCancelled(true);
+                        return;
+
+                    case WHEAT:
+                        if(check(entity.getLocation(), player, PVC))
+                            event.setCancelled(true);
+                }
             }
         }
         else if(entity instanceof Minecart)
@@ -585,7 +616,12 @@ public class EntityProtections extends AbstractProtection
             {
                 Material item = hand.get().getType();
                 EntityType type = entity.getType();
-                if(item == Material.BUCKET && type == EntityType.COW ||
+                if(item == Material.WHEAT)
+                {
+                    if(check(entity.getLocation(), player, PVC))
+                        event.setCancelled(true);
+                }
+                else if(item == Material.BUCKET && type == EntityType.COW ||
                         item == Material.BOWL && type == EntityType.MUSHROOM_COW)
                 {
                     if(check(entity.getLocation(), player, PermissionFlag.HARVEST))
@@ -596,6 +632,19 @@ public class EntityProtections extends AbstractProtection
         else if(entity instanceof Pig)
         {
             Pig pig = (Pig) entity;
+            if(hand.isPresent())
+            {
+                switch(hand.get().getType())
+                {
+                    case CARROT_ITEM:
+                    case POTATO_ITEM:
+                    case BEETROOT:
+                        if(check(pig.getLocation(), player, PVC))
+                            event.setCancelled(true);
+                        break;
+                }
+            }
+
             if(pig.isAdult())
             {
                 if(!pig.hasSaddle())
@@ -643,8 +692,69 @@ public class EntityProtections extends AbstractProtection
             Tameable tameable = (Tameable) entity;
             if(!tameable.isTamed())
             {
-                if(check(entity.getLocation(), player, PermissionFlag.MODIFY))
+                if(check(entity.getLocation(), player, PermissionFlag.PVC))
                     event.setCancelled(true);
+            }
+            else
+            {
+                if(hand.isPresent())
+                {
+                    Material type = hand.get().getType();
+                    switch(entity.getType())
+                    {
+                        case OCELOT:
+                            if(type == Material.RAW_FISH && check(entity.getLocation(), player, PVC))
+                                event.setCancelled(true);
+                            break;
+                        case WOLF:
+                            switch(type)
+                            {
+                                case RAW_BEEF:
+                                case RAW_CHICKEN:
+                                case PORK:
+                                case RABBIT:
+                                case MUTTON:
+                                case ROTTEN_FLESH:
+                                case COOKED_BEEF:
+                                case GRILLED_PORK:
+                                case COOKED_CHICKEN:
+                                case COOKED_RABBIT:
+                                case COOKED_MUTTON:
+                                    Wolf wolf = (Wolf) entity;
+                                    if(wolf.getHealth() < wolf.getMaxHealth() && check(entity.getLocation(), player, PVC))
+                                        event.setCancelled(true);
+                            }
+                    }
+                }
+            }
+        }
+        else if(entity instanceof Rabbit)
+        {
+            if(hand.isPresent())
+            {
+                switch(hand.get().getType())
+                {
+                    case YELLOW_FLOWER:
+                    case CARROT_ITEM:
+                    case GOLDEN_CARROT:
+                        if(check(entity.getLocation(), player, PVC))
+                            event.setCancelled(true);
+                }
+            }
+        }
+        else if(entity instanceof Chicken)
+        {
+            if(hand.isPresent())
+            {
+                switch(hand.get().getType())
+                {
+                    case SEEDS:
+                    case BEETROOT_SEEDS:
+                    case MELON_SEEDS:
+                    case PUMPKIN_SEEDS:
+                        if(check(entity.getLocation(), player, PVC))
+                            event.setCancelled(true);
+                }
             }
         }
         else if(entity instanceof EnderCrystal)
