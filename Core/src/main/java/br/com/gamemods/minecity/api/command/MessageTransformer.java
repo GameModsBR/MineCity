@@ -883,18 +883,17 @@ public class MessageTransformer
         {
             sb.append("{\"text\":\"").append(escapeJson(literalValue())).append("\"");
             if(color != null && color != RESET)
-            {
                 sb.append(",\"color\":\"").append(color.name().toLowerCase()).append('"');
-                for(LegacyFormat format: style)
-                    switch(format)
-                    {
-                        case BOLD: sb.append(",\"bold\":true"); break;
-                        case ITALIC: sb.append(",\"italic\":true"); break;
-                        case UNDERLINE: sb.append(",\"underlined\":true"); break;
-                        case STRIKE: sb.append(",\"strikethrough\":true"); break;
-                        case MAGIC: sb.append(",\"obfuscated\":true"); break;
-                    }
-            }
+
+            for(LegacyFormat format: style)
+                switch(format)
+                {
+                    case BOLD: sb.append(",\"bold\":true"); break;
+                    case ITALIC: sb.append(",\"italic\":true"); break;
+                    case UNDERLINE: sb.append(",\"underlined\":true"); break;
+                    case STRIKE: sb.append(",\"strikethrough\":true"); break;
+                    case MAGIC: sb.append(",\"obfuscated\":true"); break;
+                }
 
             if(click != null)
             {
