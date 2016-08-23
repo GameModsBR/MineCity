@@ -17,20 +17,21 @@ import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
+import org.bukkit.command.*;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.mcstats.Metrics;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -122,42 +123,170 @@ public class MineCityPlugin extends JavaPlugin
             }
 
             transformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages-en.xml"));
+            String str = config.locale.toLanguageTag();
+            if(!str.equals("en"))
+            {
+                try
+                {
+                    InputStream resource = MineCity.class.getResourceAsStream("/assets/minecity/messages-"+str +".xml");
+                    if(resource != null)
+                    {
+                        try
+                        {
+                            transformer.parseXML(resource);
+                        }
+                        finally
+                        {
+                            resource.close();
+                        }
+                    }
+                    else
+                    {
+                        getLogger().log(Level.SEVERE, "There're no translations to "+str+" available.");
+                        str = "en";
+                    }
+                }
+                catch(Exception e)
+                {
+                    getLogger().log(Level.SEVERE, "Failed to load the "+str+" translations", e);
+                }
+            }
+            final String lang = str;
+
             instance = new MineCityBukkit(this, config, transformer);
             instance.mineCity.dataSource.initDB();
-            instance.mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands-en.xml"));
+            instance.mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands-"+lang+".xml"));
 
-            instance.mineCity.commands.getRootCommands().stream().forEachOrdered(name ->
+            Set<String> rootCommands = instance.mineCity.commands.getRootCommands();
+            try(InputStream is = MineCityPlugin.class.getResourceAsStream("/plugin.yml"))
+            {
+                YamlConfiguration plugin = YamlConfiguration.loadConfiguration(new InputStreamReader(is, "UTF-8"));
+                ConfigurationSection commands = plugin.getConfigurationSection("commands");
+                if(commands != null)
+                {
+                    commands.getKeys(false).stream().filter(key -> !instance.mineCity.commands.get(key).isPresent())
+                            .forEach(key ->
+                            {
+                                PluginCommand command = getCommand(key);
+                                if(command == null)
+                                    return;
+
+                                getLogger().info("The command /"+key+" is declared in plugin.yml but is not declared in commands-"+lang+".xml, " +
+                                        "trying to unregister it by reflection!"
+                                );
+
+                                try
+                                {
+                                    Field field = SimplePluginManager.class.getDeclaredField("commandMap");
+                                    field.setAccessible(true);
+                                    SimpleCommandMap commandMap = (SimpleCommandMap) field.get(getServer().getPluginManager());
+                                    if(commandMap == null)
+                                        throw new NullPointerException();
+
+                                    if(!command.unregister(commandMap))
+                                        throw new IllegalStateException("The command has failed to unregister itself");
+
+                                    field = SimpleCommandMap.class.getDeclaredField("knownCommands");
+                                    field.setAccessible(true);
+                                    Map knownCommands = (Map) field.get(commandMap);
+                                    knownCommands.remove(command.getName());
+                                    knownCommands.remove("minecity:"+command.getName());
+                                    command.getAliases().forEach(s -> {knownCommands.remove("minecity:"+s); knownCommands.remove(s);});
+
+                                    getLogger().info("The command /"+key+" was successfully unregistered");
+                                }
+                                catch(Exception e)
+                                {
+                                    getLogger().severe("Failed to unregister the /"+key+" command, it will be present in the game but will do nothing! "
+                                            + e.getClass().getSimpleName()+": "+e.getMessage()
+                                    );
+                                }
+                            });
+                }
+            }
+
+
+            rootCommands.stream().forEachOrdered(name ->
                     {
                         CommandInfo<?> info = instance.mineCity.commands.get(name).get().command;
-                        PluginCommand cmd = getCommand(info.getName());
+                        Command cmd = getCommand(info.getName());
                         if(cmd == null)
-                            getLogger().severe("Unable to register the command /"+info.getName()+" because it's not declared in plugin.yml!");
-                        else
                         {
-                            cmd.setDescription(info.description);
-                            if(info.args != null && info.args.length > 0)
+                            getLogger().info("Unable to register the command /" + info.getName() +
+                                    " normally because it's not declared in plugin.yml! Attempting to register using reflections");
+
+                            try
                             {
-                                StringBuilder sb = new StringBuilder();
-                                for(Arg arg : info.args)
+                                Field field = SimplePluginManager.class.getDeclaredField("commandMap");
+                                field.setAccessible(true);
+                                CommandMap commandMap = (CommandMap) field.get(getServer().getPluginManager());
+                                ArrayList<String> aliases = new ArrayList<>(info.aliases);
+                                aliases.remove(0);
+                                commandMap.register("minecity", cmd = new Command(name, "", "", aliases)
                                 {
-                                    if(arg.optional())
-                                        sb.append('[');
-                                    else
-                                        sb.append('<');
-                                    sb.append(instance.mineCity.messageTransformer.toSimpleText(new Message(
-                                            "cmd."+info.commandId+".arg."+arg.name().toLowerCase().replaceAll("\\s+","-"),
-                                            arg.name()
-                                    )));
-                                    if(arg.sticky())
-                                        sb.append("...");
-                                    if(arg.optional())
-                                        sb.append(']');
-                                    else
-                                        sb.append('>');
-                                    sb.append(' ');
-                                }
-                                cmd.setUsage(sb.toString());
+                                    @Override
+                                    public boolean execute(CommandSender sender, String commandLabel, String[] args)
+                                    {
+                                        boolean success;
+
+                                        if(!isEnabled())
+                                            return false;
+
+                                        if(!testPermission(sender))
+                                            return true;
+
+                                        try
+                                        {
+                                            success = onCommand(sender, this, commandLabel, args);
+                                        }
+                                        catch (Throwable ex)
+                                        {
+                                            throw new CommandException("Unhandled exception executing command '"+commandLabel+
+                                                    "' in plugin "+MineCityPlugin.this.getDescription().getFullName(), ex
+                                            );
+                                        }
+
+                                        if(!success && usageMessage.length() > 0)
+                                            for(String line : usageMessage.replace("<command>", commandLabel).split("\n"))
+                                                sender.sendMessage(line);
+
+                                        return success;
+                                    }
+                                });
+
+                                getLogger().info("The command /"+info.getName()+" was successfully registered by reflection");
                             }
+                            catch(Exception e)
+                            {
+                                getLogger().severe("Failed to register the command /"+info.getName()+" using reflections. " +
+                                        "The command will not be available. "+e.getClass().getSimpleName()+": "+e.getMessage());
+                                return;
+                            }
+                        }
+
+                        cmd.setDescription(info.description);
+                        if(info.args != null && info.args.length > 0)
+                        {
+                            StringBuilder sb = new StringBuilder();
+                            for(Arg arg : info.args)
+                            {
+                                if(arg.optional())
+                                    sb.append('[');
+                                else
+                                    sb.append('<');
+                                sb.append(instance.mineCity.messageTransformer.toSimpleText(new Message(
+                                        "cmd."+info.commandId+".arg."+arg.name().toLowerCase().replaceAll("\\s+","-"),
+                                        arg.name()
+                                )));
+                                if(arg.sticky())
+                                    sb.append("...");
+                                if(arg.optional())
+                                    sb.append(']');
+                                else
+                                    sb.append('>');
+                                sb.append(' ');
+                            }
+                            cmd.setUsage(sb.toString());
                         }
                     }
             );
