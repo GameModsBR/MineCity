@@ -352,7 +352,7 @@ public class PermissionCommands
         return new CommandResult<>(list(plot, flag, "cmd.plot.perms", plot.getName()), true);
     }
 
-    @Command(value = "nature.perms")
+    @Command(value = "nature.perms", console = false)
     public CommandResult<?> listNature(CommandEvent cmd)
     {
         Nature nature = cmd.mineCity.nature(cmd.position.world);
