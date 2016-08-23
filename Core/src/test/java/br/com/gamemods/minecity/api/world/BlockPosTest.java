@@ -13,7 +13,8 @@ public class BlockPosTest
     @Test
     public void testApply() throws Exception
     {
-        //TODO Make a test here
+        assertEquals(new BlockPos(world, 10, 10, -59879),   a.apply(b.x, b.y, b.z, Math::min));
+        assertEquals(new BlockPos(world, 5598, 64, 10),     a.apply(b.x, b.y, b.z, Math::max));
     }
 
     @Test
