@@ -21,6 +21,12 @@ public class BukkitCommandSender<S extends CommandSender> implements br.com.game
     }
 
     @Override
+    public boolean hasPermission(String perm)
+    {
+        return sender.hasPermission(perm);
+    }
+
+    @Override
     public EntityPos getPosition()
     {
         return null;

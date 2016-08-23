@@ -51,6 +51,8 @@ public interface CommandSender extends Permissible
     @NotNull
     Server getServer();
 
+    boolean hasPermission(String perm);
+
     /**
      * Checks if this sender has any confirmation pending
      */

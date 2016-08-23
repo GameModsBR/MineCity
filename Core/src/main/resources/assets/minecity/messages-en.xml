@@ -2,6 +2,8 @@
 <!DOCTYPE minecity-messages SYSTEM "https://raw.githubusercontent.com/GameModsBR/MineCity/master/Core/src/main/resources/assets/minecity/messages.dtd">
 <minecity-messages modified="false" add-missing="true">
     <cmd>
+        <msg id="players-only">Only players can execute this command.</msg>
+        <msg id="no-permission">You don't have permission to execute this command.</msg>
         <msg id="not-found">Unknown command: /${base}</msg>
         <result>
             <msg id="success"><blue>MineCity> </blue><gray>${msg}</gray></msg>

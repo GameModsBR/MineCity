@@ -59,6 +59,14 @@ public final class CommandTree
             ));
 
         Result result = resultOpt.get();
+
+        if(result.command.commandId != null && !sender.hasPermission("minecity.cmd."+result.command.commandId))
+        {
+            CommandResult fail = CommandResult.noPermission();
+            sender.send(CommandFunction.messageFailed(fail.message));
+            return fail;
+        }
+
         if(result.command.async)
         {
             scheduler.accept( ()-> result.run(sender) );
@@ -504,7 +512,7 @@ public final class CommandTree
                             Message.list(
                                     Arrays.stream(info.args).map(arg ->
                                         new Message("cmd.help.info.args.details.body",
-                                                "<msg><yellow>${short}</yellow><darkgray: : </darkgray>${type}. ${optional}. ${sticky}.</msg>",
+                                                "<msg><yellow>${short}</yellow><darkgray> : </darkgray>${type}. ${optional}. ${sticky}.</msg>",
                                                 new Object[][]{
                                                         {"type",
                                                                 arg.type() != Arg.Type.PREDEFINED || arg.options().length == 0?

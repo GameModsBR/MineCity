@@ -558,6 +558,18 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
         return groups == null? Collections.emptySet() : groups;
     }
 
+    private boolean isOp()
+    {
+        return mod.server.getConfigurationManager().func_152596_g(sender.getGameProfile());
+    }
+
+    @Override
+    public boolean hasPermission(String perm)
+    {
+        //TODO Mini permission system for forge and attempt to integrate to Cauldron or ForgeEssentials
+        return isOp() || !perm.contains("reload");
+    }
+
     public void sendPacket(Packet packet)
     {
         sender.playerNetServerHandler.sendPacket(packet);

@@ -4,8 +4,11 @@ public class CommandResult<R>
 {
     public static final CommandResult SUCCESS = new CommandResult(null, true);
     public static final CommandResult FAILED = new CommandResult(null, false);
-    public static final CommandResult ONLY_PLAYERS = new CommandResult(new Message("cmd.err.players-only",
+    public static final CommandResult ONLY_PLAYERS = new CommandResult(new Message("cmd.players-only",
             "Only players can execute this command."
+    ));
+    public static final CommandResult NO_PERMISSION = new CommandResult(new Message("cmd.no-permission",
+            "You don't have permission to execute this command."
     ));
 
     public final Message message;
@@ -48,6 +51,12 @@ public class CommandResult<R>
     public static <T> CommandResult<T> failed()
     {
         return FAILED;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> CommandResult<T> noPermission()
+    {
+        return NO_PERMISSION;
     }
 
     @SuppressWarnings("SimplifiableIfStatement")

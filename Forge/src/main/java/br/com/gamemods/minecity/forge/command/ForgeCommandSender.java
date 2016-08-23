@@ -48,6 +48,12 @@ public class ForgeCommandSender<S extends ICommandSender> implements CommandSend
     }
 
     @Override
+    public boolean hasPermission(String perm)
+    {
+        return true;
+    }
+
+    @Override
     public void send(Message[] message)
     {
         /*  /tellraw ["a/nb"] does not work in 1.7.10

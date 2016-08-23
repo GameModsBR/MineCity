@@ -23,6 +23,12 @@ public class TestPlayer implements CommandSender
         this.position = position;
     }
 
+    @Override
+    public boolean hasPermission(String perm)
+    {
+        return true;
+    }
+
     @NotNull
     @Override
     public Server getServer()
