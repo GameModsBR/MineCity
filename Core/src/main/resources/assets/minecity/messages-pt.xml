@@ -10,6 +10,101 @@
             <msg id="failed"><darkred>MineCity> </darkred><red>${msg}</red></msg>
         </result>
         <msg id="exception">Oops.. Ocorreu um erro ao executar este comando: ${error}</msg>
+        <nature>
+            <perms>
+                <nobody>
+                    <msg id="enter.no-exception"><red><b>Ninguém</b></red> pode entrar em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                    <msg id="pickup.no-exception"><red><b>Ninguém</b></red> pode coletar itens em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                    <msg id="harvest.no-exception"><red><b>Ninguém</b></red> pode colher produções de ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                    <msg id="pvp.no-exception"><red><b>Ninguém</b></red> pode atacar jogadores em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                    <msg id="pvc.no-exception"><red><b>Ninguém</b></red> pode atacar criaturas em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                    <msg id="modify.no-exception"><red><b>Ninguém</b></red> pode modificar ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                    <msg id="click.no-exception"><red><b>Ninguém</b></red> pode clicar em coisas em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                    <msg id="open.no-exception"><red><b>Ninguém</b></red> pode abrir contêiners em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                    <msg id="vehicle.no-exception"><red><b>Ninguém</b></red> pode colocar veículos em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                    <msg id="ride.no-exception"><red><b>Ninguém</b></red> pode utilizar veículos de ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                </nobody>
+                <everybody>
+                    <msg id="enter.no-exception"><green><b>Todos</b></green> podem entrar em ${name}</msg>
+                    <msg id="pickup.no-exception"><green><b>Todos</b></green> podem coletar itens em ${name}</msg>
+                    <msg id="harvest.no-exception"><green><b>Todos</b></green> podem colher produções de ${name}</msg>
+                    <msg id="pvp.no-exception"><green><b>Todos</b></green> podem atacar jogadores em ${name}</msg>
+                    <msg id="pvc.no-exception"><green><b>Todos</b></green> podem atacar criaturas em ${name}</msg>
+                    <msg id="modify.no-exception"><green><b>Todos</b></green> podem modificar ${name}</msg>
+                    <msg id="click.no-exception"><green><b>Todos</b></green> podem clicar em coisas em ${name}</msg>
+                    <msg id="open.no-exception"><green><b>Todos</b></green> podem abrir contêiners em ${name}</msg>
+                    <msg id="vehicle.no-exception"><green><b>Todos</b></green> podem colocar veículos em ${name}</msg>
+                    <msg id="ride.no-exception"><green><b>Todos</b></green> podem utilizar veículos de ${name}</msg>
+                </everybody>
+                <msg id="header"><darkgreen>----[Permissões de ${name}]---------------------</darkgreen></msg>
+                <msg id="footer"><darkgreen>--------------------------------------------------</darkgreen></msg>
+                <perm>
+                    <msg id="allowed">
+                        <green>${perm}</green>
+                    </msg>
+                    <msg id="denied">
+                        <hover>
+                            <tooltip>Esta mensagem será exibida quando isto acontecer:<br/>
+                                <red>${reason}</red>
+                            </tooltip>
+                            <red>${perm}</red>
+                        </hover>
+                    </msg>
+                    <enter>
+                        <msg id="name">ENTRAR</msg>
+                        <msg id="info">Entrar na cidade</msg>
+                    </enter>
+                    <msg id="click.name">CLICAR</msg>
+                    <msg id="click.info">Clicar em blocos clicáveis, como botões, alavancas e portas</msg>
+                    <pickup>
+                        <msg id="name">PEGAR</msg>
+                        <msg id="info">Pegar itens soltos</msg>
+                    </pickup>
+                    <enter>
+                        <msg id="name">COLHER</msg>
+                        <msg id="info">Colher plantações, lãs e leite das vacas</msg>
+                    </enter>
+                    <msg id="open.name">ABRIR</msg>
+                    <msg id="open.info">Abrir contêiners como baús, molduras e fornalhas</msg>
+                    <pvp>
+                        <msg id="name">PVP</msg>
+                        <msg id="info">Atacar outros jogadores</msg>
+                    </pvp>
+                    <pvc>
+                        <msg id="name">PVC</msg>
+                        <msg id="info">Atacar criaturas</msg>
+                    </pvc>
+                    <modify>
+                        <msg id="name">MODIFICAR</msg>
+                        <msg id="info">Fazer modificações estruturais e decorativas</msg>
+                    </modify>
+                    <vehicle>
+                        <msg id="name">VEICULOS</msg>
+                        <msg id="info">Colocar veículos</msg>
+                    </vehicle>
+                    <ride>
+                        <msg id="name">MONTAR</msg>
+                        <msg id="info">Usar veículos da cidade</msg>
+                    </ride>
+                </perm>
+            </perms>
+            <deny>
+                <msg id="enter.arg.reason">motivo</msg>
+                <msg id="click.arg.reason">motivo</msg>
+                <msg id="pickup.arg.reason">motivo</msg>
+                <msg id="harvest.arg.reason">motivo</msg>
+                <msg id="open.arg.reason">motivo</msg>
+                <msg id="pvp.arg.reason">motivo</msg>
+                <msg id="pvc.arg.reason">motivo</msg>
+                <msg id="vehicle.arg.reason">motivo</msg>
+                <msg id="ride.arg.reason">motivo</msg>
+                <msg id="success.custom">A permissão foi negada com a seguinte mensagem: <red>${msg}</red></msg>
+                <msg id="success">A permissão foi negada com sucesso</msg>
+            </deny>
+            <allow>
+                <msg id="success">A permissão foi concedida por padrão com sucesso</msg>
+            </allow>
+        </nature>
         <city>
             <info>
                 <msg id="not-inside-city">Você não está dentro de uma cidade</msg>
@@ -69,6 +164,20 @@
                             <yellow>Excessões:</yellow><br/>${exceptions}
                         </msg>
                     </modify>
+                    <vehicle>
+                        <msg id="no-exception"><red><b>Ninguém</b></red> pode colocar veículos em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode colocar veículos em ${name}, isto será mostrado quando alguém tentar:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </vehicle>
+                    <ride>
+                        <msg id="no-exception"><red><b>Ninguém</b></red> pode utilizar veículos de ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode utilizar veículos de ${name}, isto será mostrado quando alguém tentar:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </ride>
                     <msg id="click.no-exception"><red><b>Ninguém</b></red> pode clicar em coisas em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
                     <msg id="click.except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode clicar em coisas em ${name}, isto será mostrado quando alguém tentar:
                         <br/><red>${msg}</red><br/><br/>
@@ -123,6 +232,20 @@
                             <yellow>Excessões:</yellow><br/>${exceptions}
                         </msg>
                     </modify>
+                    <vehicle>
+                        <msg id="no-exception"><green><b>Todos</b></green> podem colocar veículos em ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem colocar veículos em ${name}
+                            <br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </vehicle>
+                    <ride>
+                        <msg id="no-exception"><green><b>Todos</b></green> podem utilizar veículos de ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem utilizar veículos de ${name}
+                            <br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </ride>
                     <msg id="click.no-exception"><green><b>Todos</b></green> podem clicar em coisas em ${name}</msg>
                     <msg id="click.except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem clicar em coisas em ${name}
                         <br/><br/>
@@ -490,6 +613,17 @@
                         <msg id="group-name">grupo</msg>
                     </arg>
                 </ride>
+                <all>
+                    <msg id="enter.arg.reason">motivo</msg>
+                    <msg id="click.arg.reason">motivo</msg>
+                    <msg id="pickup.arg.reason">motivo</msg>
+                    <msg id="harvest.arg.reason">motivo</msg>
+                    <msg id="open.arg.reason">motivo</msg>
+                    <msg id="pvp.arg.reason">motivo</msg>
+                    <msg id="pvc.arg.reason">motivo</msg>
+                    <msg id="vehicle.arg.reason">motivo</msg>
+                    <msg id="ride.arg.reason">motivo</msg>
+                </all>
             </allow>
             <clear>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
@@ -550,6 +684,17 @@
                         <msg id="group-name">grupo</msg>
                     </arg>
                 </ride>
+                <all>
+                    <msg id="enter.arg.reason">motivo</msg>
+                    <msg id="click.arg.reason">motivo</msg>
+                    <msg id="pickup.arg.reason">motivo</msg>
+                    <msg id="harvest.arg.reason">motivo</msg>
+                    <msg id="open.arg.reason">motivo</msg>
+                    <msg id="pvp.arg.reason">motivo</msg>
+                    <msg id="pvc.arg.reason">motivo</msg>
+                    <msg id="vehicle.arg.reason">motivo</msg>
+                    <msg id="ride.arg.reason">motivo</msg>
+                </all>
             </clear>
         </city>
         <group>
@@ -789,6 +934,20 @@
                         <br/><red>${msg}</red><br/><br/>
                         <yellow>Excessões:</yellow><br/>${exceptions}
                     </msg>
+                    <vehicle>
+                        <msg id="no-exception"><red><b>Ninguém</b></red> pode colocar veículos em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode colocar veículos em ${name}, isto será mostrado quando alguém tentar:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </vehicle>
+                    <ride>
+                        <msg id="no-exception"><red><b>Ninguém</b></red> pode utilizar veículos de ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
+                        <msg id="except"><red><b>Ninguém</b></red> <yellow>(${count} excessões)</yellow> pode utilizar veículos de ${name}, isto será mostrado quando alguém tentar:
+                            <br/><red>${msg}</red><br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </ride>
                 </nobody>
                 <everybody>
                     <enter>
@@ -843,6 +1002,20 @@
                         <br/><br/>
                         <yellow>Excessões:</yellow><br/>${exceptions}
                     </msg>
+                    <vehicle>
+                        <msg id="no-exception"><green><b>Todos</b></green> podem colocar veículos em ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem colocar veículos em ${name}
+                            <br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </vehicle>
+                    <ride>
+                        <msg id="no-exception"><green><b>Todos</b></green> podem utilizar veículos de ${name}</msg>
+                        <msg id="except"><green><b>Todos</b></green> <yellow>(${count} excessões)</yellow> podem utilizar veículos de ${name}
+                            <br/><br/>
+                            <yellow>Excessões:</yellow><br/>${exceptions}
+                        </msg>
+                    </ride>
                 </everybody>
                 <msg id="type-city">Digite um nome de cidade</msg>
                 <msg id="not-claimed">Você não está dentro de um lote</msg>
@@ -1185,6 +1358,17 @@
                         <msg id="group-name">grupo</msg>
                     </arg>
                 </ride>
+                <all>
+                    <msg id="enter.arg.reason">motivo</msg>
+                    <msg id="click.arg.reason">motivo</msg>
+                    <msg id="pickup.arg.reason">motivo</msg>
+                    <msg id="harvest.arg.reason">motivo</msg>
+                    <msg id="open.arg.reason">motivo</msg>
+                    <msg id="pvp.arg.reason">motivo</msg>
+                    <msg id="pvc.arg.reason">motivo</msg>
+                    <msg id="vehicle.arg.reason">motivo</msg>
+                    <msg id="ride.arg.reason">motivo</msg>
+                </all>
             </allow>
             <clear>
                 <msg id="not-claimed">Você não está dentro de um lote</msg>
@@ -1249,6 +1433,17 @@
                         <msg id="group-name">grupo</msg>
                     </arg>
                 </ride>
+                <all>
+                    <msg id="enter.arg.reason">motivo</msg>
+                    <msg id="click.arg.reason">motivo</msg>
+                    <msg id="pickup.arg.reason">motivo</msg>
+                    <msg id="harvest.arg.reason">motivo</msg>
+                    <msg id="open.arg.reason">motivo</msg>
+                    <msg id="pvp.arg.reason">motivo</msg>
+                    <msg id="pvc.arg.reason">motivo</msg>
+                    <msg id="vehicle.arg.reason">motivo</msg>
+                    <msg id="ride.arg.reason">motivo</msg>
+                </all>
             </clear>
         </plot>
         <help>

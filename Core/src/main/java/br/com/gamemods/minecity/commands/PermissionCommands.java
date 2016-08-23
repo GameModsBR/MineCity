@@ -9,12 +9,10 @@ import br.com.gamemods.minecity.api.permission.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
+import br.com.gamemods.minecity.structure.Nature;
 import br.com.gamemods.minecity.structure.Plot;
 
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class PermissionCommands
 {
@@ -24,6 +22,7 @@ public class PermissionCommands
             PermissionFlag.VEHICLE, PermissionFlag.RIDE
     );
     private static final EnumSet<PermissionFlag> PLOT_FLAGS = EnumSet.copyOf(CITY_FLAGS);
+    private static final EnumSet<PermissionFlag> NATURE_FLAGS = EnumSet.copyOf(CITY_FLAGS);
 
     private final MineCity mineCity;
 
@@ -77,6 +76,17 @@ public class PermissionCommands
                 tree.registerCommand("plot.allowAll."+name, allowAll, true, (PlayerCommand) cmd-> allowAllPlot(cmd, flag));
                 tree.registerCommand("plot.resetAll."+name, resetAll, true, (PlayerCommand) cmd-> resetAllPlot(cmd, flag));
             }
+
+            list = PermissionCommands.class.getDeclaredMethod("listNature", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+            deny = PermissionCommands.class.getDeclaredMethod("denyNature", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+            allow = PermissionCommands.class.getDeclaredMethod("allowNature", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
+            for(PermissionFlag flag: NATURE_FLAGS)
+            {
+                String name = flag.name().toLowerCase();
+                tree.registerCommand("nature.perms."+name, list, false, (PlayerCommand) cmd-> listNature(cmd, flag));
+                tree.registerCommand("nature.deny."+name, deny, true, (PlayerCommand) cmd-> denyNature(cmd, flag));
+                tree.registerCommand("nature.allow."+name, allow, true, (PlayerCommand) cmd-> allowNature(cmd, flag));
+            }
         }
         catch(ReflectiveOperationException e)
         {
@@ -84,10 +94,14 @@ public class PermissionCommands
         }
     }
 
-    private Message list(ExceptFlagHolder holder, PermissionFlag flag, String prefix, String name)
+    private Message list(SimpleFlagHolder holder, PermissionFlag flag, String prefix, String name)
     {
         Optional<Message> def = holder.can(flag);
-        Map<Identity<?>, Message> exceptions = holder.getDirectPermissions(flag);
+        Map<Identity<?>, Message> exceptions = holder instanceof ExceptFlagHolder?
+                ((ExceptFlagHolder)holder).getDirectPermissions(flag) :
+                Collections.emptyMap()
+                ;
+
         String flagKey = flag.name().toLowerCase().replace('_', '-');
         if(exceptions.isEmpty() || exceptions.values().stream().noneMatch(
                 m->
@@ -167,7 +181,7 @@ public class PermissionCommands
             );
     }
 
-    private Message[] list(ExceptFlagHolder holder, Set<PermissionFlag> filter, String prefix, String name)
+    private Message[] list(SimpleFlagHolder holder, Set<PermissionFlag> filter, String prefix, String name)
     {
         Message[] lines = new Message[2 + filter.size()];
         lines[0] = new Message(prefix+".header", "<msg><darkgreen>----[${name}'s Permissions]---------------------</darkgreen></msg>",
@@ -178,7 +192,11 @@ public class PermissionCommands
         for(PermissionFlag flag: filter)
         {
             Optional<Message> def = holder.can(flag);
-            Map<Identity<?>, Message> exceptions = holder.getDirectPermissions(flag);
+            Map<Identity<?>, Message> exceptions = holder instanceof ExceptFlagHolder?
+                    ((ExceptFlagHolder) holder).getDirectPermissions(flag) :
+                    Collections.emptyMap()
+                    ;
+
             String key = flag.name().toLowerCase().replace('_', '-');
             Message permName = new Message(prefix+".perm."+key+".name", key.toLowerCase().replace('_',' '));
             lines[i++] = new Message("",
@@ -254,6 +272,13 @@ public class PermissionCommands
         return lines;
     }
 
+    @Command(value = "#model:nature.perms", console = false)
+    private CommandResult<?> listNature(CommandEvent cmd, PermissionFlag flag)
+    {
+        Nature nature = cmd.mineCity.nature(cmd.position.world);
+        return new CommandResult<>(list(nature, flag, "cmd.nature.perms", nature.world.name()));
+    }
+
     @Slow
     @Async
     @Command(value = "#model:city.perms", args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
@@ -325,6 +350,14 @@ public class PermissionCommands
         }
 
         return new CommandResult<>(list(plot, flag, "cmd.plot.perms", plot.getName()), true);
+    }
+
+    @Command(value = "nature.perms")
+    public CommandResult<?> listNature(CommandEvent cmd)
+    {
+        Nature nature = cmd.mineCity.nature(cmd.position.world);
+        cmd.sender.send(list(nature, NATURE_FLAGS, "cmd.nature.perms", nature.world.name()));
+        return CommandResult.success();
     }
 
     @Slow
@@ -400,6 +433,32 @@ public class PermissionCommands
 
         cmd.sender.send(list(plot, PLOT_FLAGS, "cmd.plot.perms", plot.getName()));
         return CommandResult.success();
+    }
+
+    @Slow
+    @Async
+    @Command(value = "#model:nature.deny", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
+    private CommandResult<Boolean> denyNature(CommandEvent cmd, PermissionFlag flag)
+    {
+        Nature nature = cmd.mineCity.nature(cmd.position.world);
+
+        if(cmd.args.isEmpty())
+        {
+            nature.deny(flag);
+
+            return new CommandResult<>(new Message("cmd.nature.deny.success",
+                    "The permission was denied successfully"
+            ), false, true);
+        }
+        else
+        {
+            String msg = String.join(" ", cmd.args);
+            nature.deny(flag, Message.string(msg));
+
+            return new CommandResult<>(new Message("cmd.nature.deny.success.custom",
+                    "<msg>The permission was prohibited with the message: <red>${msg}</red></msg>", new Object[]{"msg",msg}
+            ), false, true);
+        }
     }
 
     @Slow
@@ -506,6 +565,20 @@ public class PermissionCommands
                     "<msg>The permission was prohibited by default with the message: <red>${msg}</red></msg>", new Object[]{"msg",msg}
             ), false, true);
         }
+    }
+
+    @Slow
+    @Async
+    @Command(value = "#model:nature.allow", console = false)
+    private CommandResult<?> allowNature(CommandEvent cmd, PermissionFlag flag)
+    {
+        Nature nature = cmd.mineCity.nature(cmd.position.world);
+
+        nature.allow(flag);
+
+        return new CommandResult<>(new Message("cmd.city.allow.success",
+                "The permission was granted successfully"
+        ), true, true);
     }
 
     @Slow

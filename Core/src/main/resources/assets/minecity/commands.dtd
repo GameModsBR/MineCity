@@ -14,6 +14,10 @@
         cmd CDATA #REQUIRED
         parent CDATA #IMPLIED>
 
+<!ENTITY % NatureManageCommands "asd">
+<!ENTITY % NatureDenyCommands "nature.deny.enter|nature.deny.click|nature.deny.pickup|nature.deny.harvest|nature.deny.open|nature.deny.pvp|nature.deny.pvc|nature.deny.modify|nature.deny.vehicle|nature.deny.ride">
+<!ENTITY % NatureAllowCommands "nature.allow.enter|nature.allow.click|nature.allow.pickup|nature.allow.harvest|nature.allow.open|nature.allow.pvp|nature.allow.pvc|nature.allow.modify|nature.allow.vehicle|nature.allow.ride">
+<!ENTITY % NaturePermListCommands "nature.perms.enter|nature.perms.click|nature.perms.pickup|nature.perms.harvest|nature.perms.open|nature.perms.pvp|nature.perms.pvc|nature.perms.modify|nature.perms.vehicle|nature.perms.ride|nature.perms">
 <!ENTITY % CityManageCommands "city.create|city.claim|city.disclaim|city.spawn|city.rename|city.transfer|city.setspawn|city.map|city.delete|city.info|city.list">
 <!ENTITY % CityDenyCommands "city.deny.enter|city.deny.click|city.deny.pickup|city.deny.harvest|city.deny.open|city.deny.pvp|city.deny.pvc|city.deny.modify|city.deny.vehicle|city.deny.ride">
 <!ENTITY % CityAllowCommands "city.allow.enter|city.allow.click|city.allow.pickup|city.allow.harvest|city.allow.open|city.allow.pvp|city.allow.pvc|city.allow.modify|city.allow.vehicle|city.allow.ride">
@@ -33,11 +37,13 @@
 <!ENTITY % GroupCommands "group.create|group.add|group.remove|group.list|group.info|group.delete|group.add.manager|group.remove.manager">
 <!ENTITY % GeneralCommands "confirm|help|reload">
 
+<!ENTITY % NaturePermCommands "%NatureAllowCommands;|%NatureDenyCommands;|%NaturePermListCommands;">
 <!ENTITY % PlotPermCommands "%PlotAllowCommands;|%PlotDenyCommands;|%PlotAllowAllCommands;|%PlotDenyAllCommands;|%PlotPermListCommands;|%CityResetCommands;|%CityResetAllCommands;">
 <!ENTITY % CityPermCommands "%CityAllowCommands;|%CityDenyCommands;|%CityAllowAllCommands;|%CityDenyAllCommands;|%CityPermListCommands;|%PlotResetCommands;|%PlotResetAllCommands;">
 <!ENTITY % PlotCommands "%PlotManageCommands;|%PlotPermCommands;">
 <!ENTITY % CityCommands "%CityManageCommands;|%CityPermCommands;">
-<!ENTITY % Commands "%CityCommands;|%GroupCommands;|%GeneralCommands;|%PlotCommands;">
+<!ENTITY % NatureCommands "%NatureManageCommands;|%NaturePermCommands;">
+<!ENTITY % Commands "%NatureCommands;|%CityCommands;|%GroupCommands;|%GeneralCommands;|%PlotCommands;">
 
 <!ATTLIST command
         id (%Commands;) #REQUIRED

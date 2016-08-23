@@ -18,6 +18,10 @@ commands:
   plot:
     description: All plot related commands
     permission: minecity.cmd.plot
+  nature:
+    description: All nature related commands
+    permission: minecity.cmd.nature
+    aliases: [world]
 
 permissions:
   # Root commands
@@ -33,14 +37,19 @@ permissions:
   minecity.cmd.plot:
     description: Gives access to the /plot command
     default: true
+  minecity.cmd.nature:
+    description: Gives access to the /nature command
+    default: true
 
   # Simplified permissions
   minecity.admin:
     description: Grants all permissions, including permissions to execute administrative commands and all bypasses
     children:
       minecity.user: true
-      minecity.cmd.reload: true
       minecity.bypass.*: true
+      minecity.cmd.reload: true
+      minecity.cmd.nature.deny.*: true
+      minecity.cmd.nature.allow.*: true
 
   minecity.user:
     description: Grants basic permissions for normal players
@@ -54,6 +63,8 @@ permissions:
       minecity.cmd.group.*: true
       minecity.cmd.plot: true
       minecity.cmd.plot.*: true
+      minecity.cmd.nature.perms: true
+      minecity.cmd.nature.perms.*: true
 
   # Bypasses
   minecity.bypass.*:
@@ -304,7 +315,108 @@ permissions:
       minecity.cmd.plot.perms.vehicle: true
       minecity.cmd.plot.perms.ride: true
 
+  minecity.cmd.nature.deny.*:
+    children:
+      minecity.cmd.nature.deny.enter: true
+      minecity.cmd.nature.deny.click: true
+      minecity.cmd.nature.deny.pickup: true
+      minecity.cmd.nature.deny.harvest: true
+      minecity.cmd.nature.deny.open: true
+      minecity.cmd.nature.deny.pvp: true
+      minecity.cmd.nature.deny.pvc: true
+      minecity.cmd.nature.deny.modify: true
+      minecity.cmd.nature.deny.vehicle: true
+      minecity.cmd.nature.deny.ride: true
+
+  minecity.cmd.nature.allow.*:
+    children:
+      minecity.cmd.nature.allow.enter: true
+      minecity.cmd.nature.allow.click: true
+      minecity.cmd.nature.allow.pickup: true
+      minecity.cmd.nature.allow.harvest: true
+      minecity.cmd.nature.allow.open: true
+      minecity.cmd.nature.allow.pvp: true
+      minecity.cmd.nature.allow.pvc: true
+      minecity.cmd.nature.allow.modify: true
+      minecity.cmd.nature.allow.vehicle: true
+      minecity.cmd.nature.allow.ride: true
+
+  minecity.cmd.nature.perms.*:
+    children:
+      minecity.cmd.nature.perms.enter: true
+      minecity.cmd.nature.perms.click: true
+      minecity.cmd.nature.perms.pickup: true
+      minecity.cmd.nature.perms.harvest: true
+      minecity.cmd.nature.perms.open: true
+      minecity.cmd.nature.perms.pvp: true
+      minecity.cmd.nature.perms.pvc: true
+      minecity.cmd.nature.perms.modify: true
+      minecity.cmd.nature.perms.vehicle: true
+      minecity.cmd.nature.perms.ride: true
+
   # Command Functions
+  minecity.cmd.nature.deny.enter:
+    default: op
+  minecity.cmd.nature.deny.click:
+    default: op
+  minecity.cmd.nature.deny.pickup:
+    default: op
+  minecity.cmd.nature.deny.harvest:
+    default: op
+  minecity.cmd.nature.deny.open:
+    default: op
+  minecity.cmd.nature.deny.pvp:
+    default: op
+  minecity.cmd.nature.deny.pvc:
+    default: op
+  minecity.cmd.nature.deny.modify:
+    default: op
+  minecity.cmd.nature.deny.vehicle:
+    default: op
+  minecity.cmd.nature.deny.ride:
+    default: op
+  minecity.cmd.nature.allow.enter:
+    default: op
+  minecity.cmd.nature.allow.click:
+    default: op
+  minecity.cmd.nature.allow.pickup:
+    default: op
+  minecity.cmd.nature.allow.harvest:
+    default: op
+  minecity.cmd.nature.allow.open:
+    default: op
+  minecity.cmd.nature.allow.pvp:
+    default: op
+  minecity.cmd.nature.allow.pvc:
+    default: op
+  minecity.cmd.nature.allow.modify:
+    default: op
+  minecity.cmd.nature.allow.vehicle:
+    default: op
+  minecity.cmd.nature.allow.ride:
+    default: op
+  minecity.cmd.nature.perms.enter:
+    default: op
+  minecity.cmd.nature.perms.click:
+    default: op
+  minecity.cmd.nature.perms.pickup:
+    default: op
+  minecity.cmd.nature.perms.harvest:
+    default: op
+  minecity.cmd.nature.perms.open:
+    default: op
+  minecity.cmd.nature.perms.pvp:
+    default: op
+  minecity.cmd.nature.perms.pvc:
+    default: op
+  minecity.cmd.nature.perms.modify:
+    default: op
+  minecity.cmd.nature.perms.vehicle:
+    default: op
+  minecity.cmd.nature.perms.ride:
+    default: op
+  minecity.cmd.nature.perms:
+    default: op
   minecity.cmd.city.create:
     default: op
   minecity.cmd.city.claim:

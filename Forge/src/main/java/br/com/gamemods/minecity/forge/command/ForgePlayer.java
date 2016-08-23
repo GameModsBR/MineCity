@@ -566,7 +566,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
     public boolean hasPermission(String perm)
     {
         //TODO Mini permission system for forge and attempt to integrate to Cauldron or ForgeEssentials
-        return isOp() || !perm.contains("reload");
+        return isOp() || !perm.contains("reload") && !perm.contains("nature.deny") && !perm.contains("nature.allow") && !perm.contains("bypass");
     }
 
     public void sendPacket(Packet packet)

@@ -144,7 +144,7 @@ public class CommandTreeTest
         assertEquals("[c, create]", tree.get("c create a").get().path.toString());
 
         assertEquals("[city]", tree.complete(new String[]{"cit"}).toString());
-        assertEquals("[city, group, minecity, plot]", tree.complete(new String[]{""}).toString());
+        assertEquals("[city, group, minecity, nature, plot]", tree.complete(new String[]{""}).toString());
         assertEquals("[c, city]", tree.complete(new String[]{"c"}).toString());
 
         assertEquals("[]", tree.complete(new String[]{"c","map","big","b"}).toString());

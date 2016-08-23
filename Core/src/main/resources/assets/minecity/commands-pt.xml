@@ -17,6 +17,18 @@
         <group id="plot" parent=",city,root" cmd="lotes">
             <desc>Todos os comandos relacionados aos lotes</desc>
         </group>
+        <group id="nature" parent=",root" cmd="natureza,mundo">
+            <desc>Todos os comandos relacionados à natureza</desc>
+        </group>
+        <group id="nature.allow" parent="nature" cmd="permitir">
+            <desc>Concede permissões</desc>
+        </group>
+        <group id="nature.deny" parent="nature" cmd="proibir">
+            <desc>Aplica proibições</desc>
+        </group>
+        <group id="nature.check" parent="nature" cmd="ver,checar">
+            <desc>Mostra detalhes sobre as permissões</desc>
+        </group>
         <group id="city.allow" parent="city" cmd="permitir">
             <desc>Concede permissões</desc>
         </group>
@@ -159,6 +171,104 @@
             <desc>Lista todos os lotes na cidade</desc>
         </command>
 
+        <!-- ========== Permissões de naturezas ========== -->
+        <!-- Listar permissões -->
+        <command id="nature.perms.enter" parent="nature.check" cmd="entrar">
+            <desc>Ver quem tem permissão para entrar na natureza</desc>
+        </command>
+        <command id="nature.perms.click" parent="nature.check" cmd="clicar">
+            <desc>Ver quem pode clicar em blocos clicáveis na natureza</desc>
+        </command>
+        <command id="nature.perms.pickup" parent="nature.check" cmd="pegar">
+            <desc>Ver quem pode pegar itens soltos na natureza</desc>
+        </command>
+        <command id="nature.perms.harvest" parent="nature.check" cmd="colher">
+            <desc>Ver quem pode colher produções da natureza</desc>
+        </command>
+        <command id="nature.perms.open" parent="nature.check" cmd="abrir">
+            <desc>Ver quem pode abrir contêiners na natureza</desc>
+        </command>
+        <command id="nature.perms.pvp" parent="nature.check" cmd="pvp">
+            <desc>Ver quem pode atacar outros jogadores na natureza</desc>
+        </command>
+        <command id="nature.perms.pvc" parent="nature.check" cmd="pvc">
+            <desc>Ver quem pode atacar criaturas na natureza</desc>
+        </command>
+        <command id="nature.perms.modify" parent="nature.check" cmd="modificar">
+            <desc>Ver quem pode fazer modificações estruturais na natureza</desc>
+        </command>
+        <command id="nature.perms.vehicle" parent="nature.check" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Ver quem pode colocar veículos na natureza</desc>
+        </command>
+        <command id="nature.perms.ride" parent="nature.check" cmd="montar">
+            <desc>Ver quem pode montar em veículos da natureza</desc>
+        </command>
+
+        <!-- Permissões padrões -->
+        <command id="nature.perms" parent="nature" cmd="perms,permissões,perm">
+            <desc>Exibe todas as permissões da natureza</desc>
+        </command>
+        <command id="nature.allow.enter" parent="nature.allow" cmd="entrar">
+            <desc>Permite que jogaores entrem na natureza</desc>
+        </command>
+        <command id="nature.allow.click" parent="nature.allow" cmd="clicar">
+            <desc>Permite que jogadores cliquem em blocos clicaveis, como portas, botões e alavancas</desc>
+        </command>
+        <command id="nature.allow.pickup" parent="nature.allow" cmd="pegar">
+            <desc>Permite que jogadores peguem itens soltos</desc>
+        </command>
+        <command id="nature.allow.harvest" parent="nature.allow" cmd="colher">
+            <desc>Permite que jogadores colham produções como plantações e lãs</desc>
+        </command>
+        <command id="nature.allow.open" parent="nature.allow" cmd="abrir">
+            <desc>Permite que jogadores abram contêiner como baús, molduras e fornalhas</desc>
+        </command>
+        <command id="nature.allow.pvp" parent="nature.allow" cmd="pvp">
+            <desc>Permite que jogadores ataquem outros jogadores</desc>
+        </command>
+        <command id="nature.allow.pvc" parent="nature.allow" cmd="pvc">
+            <desc>Permite que jogadores ataquem criaturas</desc>
+        </command>
+        <command id="nature.allow.modify" parent="nature.allow" cmd="modificar">
+            <desc>Permite que jogadores façam modificações estruturais na natureza</desc>
+        </command>
+        <command id="nature.allow.vehicle" parent="nature.allow" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Permite que jogadores coloquem veículos na natureza</desc>
+        </command>
+        <command id="nature.allow.ride" parent="nature.allow" cmd="montar">
+            <desc>Permite que jogadores usem veículos da natureza</desc>
+        </command>
+        <command id="nature.deny.enter" parent="nature.deny" cmd="entrar">
+            <desc>Proíbe que jogadores entrem na natureza, não irá expulsar jogadores que já estão dentro.</desc>
+        </command>
+        <command id="nature.deny.click" parent="nature.deny" cmd="clicar">
+            <desc>Proíbe que jogadores cliquem em blocos clicáveis como portas, botões e alavancas</desc>
+        </command>
+        <command id="nature.deny.pickup" parent="nature.deny" cmd="pegar">
+            <desc>Proíbe que jogadores peguem itens soltos</desc>
+        </command>
+        <command id="nature.deny.harvest" parent="nature.deny" cmd="colher">
+            <desc>Proíbe que jogadores colham produções como plantações e lãs</desc>
+        </command>
+        <command id="nature.deny.open" parent="nature.deny" cmd="abrir">
+            <desc>Proíbe que jogadores abram contêiner como baús, molduras e fornalhas</desc>
+        </command>
+        <command id="nature.deny.pvp" parent="nature.deny" cmd="pvp">
+            <desc>Proíbe que jogadores ataquem outros jogadores</desc>
+        </command>
+        <command id="nature.deny.pvc" parent="nature.deny" cmd="pvc">
+            <desc>Proíbe que jogadores ataquem criaturas</desc>
+        </command>
+        <command id="nature.deny.modify" parent="nature.deny" cmd="modificar">
+            <desc>Proíbe que jogadores façam modificações estruturais na natureza</desc>
+        </command>
+        <command id="nature.deny.vehicle" parent="nature.deny" cmd="veiculos,veiculo,veículos,veículo">
+            <desc>Proíbe que jogadores coloquem veículos na natureza</desc>
+        </command>
+        <command id="nature.deny.ride" parent="nature.deny" cmd="montar">
+            <desc>Proíbe que jogadores usem veículos da natureza</desc>
+        </command>
+
         <!-- ========== Permissões de Cidades ========== -->
         <!-- Listar permissões -->
         <command id="city.perms.enter" parent="city.check" cmd="entrar">
@@ -177,7 +287,7 @@
             <desc>Ver quem pode abrir contêiners na cidade</desc>
         </command>
         <command id="city.perms.pvp" parent="city.check" cmd="pvp">
-            <desc>Ver quem pode atacar outros jogadnores na cidade</desc>
+            <desc>Ver quem pode atacar outros jogadores na cidade</desc>
         </command>
         <command id="city.perms.pvc" parent="city.check" cmd="pvc">
             <desc>Ver quem pode atacar criaturas na cidade</desc>
