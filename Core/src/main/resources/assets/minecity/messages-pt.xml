@@ -1572,6 +1572,7 @@
         <msg id="give.tool.inventory-full">Você não recebeu a ferramenta porque seu inventário está cheio.</msg>
         <msg id="portal.create.failed">Não foi possível criar um portal na outra dimensão.</msg>
         <msg id="harvest-on-creative">Você não pode colher plantas no modo criativo, isso apenas reiniciar o estado de crescimento da planta sem dar nenhum produto.</msg>
+        <msg id="enter.nature"><green>Natureza</green></msg>
     </action>
     <tool>
         <selection>

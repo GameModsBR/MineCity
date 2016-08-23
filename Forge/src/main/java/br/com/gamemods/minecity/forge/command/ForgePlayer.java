@@ -247,7 +247,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
 
                 if(!message.isPresent())
                 {
-                    Message title = new Message("enter.nature", LegacyFormat.GREEN+"Nature");
+                    Message title = new Message("action.enter.nature", LegacyFormat.GREEN+"Nature");
                     Message subtitle = new Message("","${name}", new Object[]{"name", chunk.world.name()});
                     sendTitle(title, subtitle);
                 }

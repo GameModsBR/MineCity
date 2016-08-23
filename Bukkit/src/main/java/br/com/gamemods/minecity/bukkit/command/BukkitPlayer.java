@@ -325,7 +325,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
             }
             else
             {
-                title = new Message("enter.nature", LegacyFormat.GREEN+"Nature");
+                title = new Message("action.enter.nature", LegacyFormat.GREEN+"Nature");
                 subtitle = Message.string(mov.lastClaim.chunk.world.name());
             }
             sendTitle(title, subtitle);
