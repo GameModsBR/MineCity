@@ -46,6 +46,7 @@ public class MineCityPluginTest
         when(joserobjr.getName()).thenReturn("joserobjr");
         when(joserobjr.getUniqueId()).thenReturn(UUID.fromString("185e2176-0095-4ff8-a201-6f2aed9a032a"));
         when(joserobjr.getLocation()).thenReturn(new Location(world, 100,64,250));
+        when(joserobjr.hasPermission(anyString())).thenReturn(true);
 
         BukkitTransformer transformer = new BukkitTransformer();
         transformer.useTellRaw = false;
