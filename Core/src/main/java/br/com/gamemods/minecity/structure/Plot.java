@@ -226,10 +226,24 @@ public final class Plot extends ExceptStoredHolder
             throw new IllegalStateException();
 
         Shape old = this.shape;
-        storage.setShape(this, shape, spawn);
+        City city = island.getCity();
+        Island oldIsland = this.island;
+        Island newIsland = city.mineCity
+                .getChunk(spawn.getChunk()).orElseThrow(()-> new IllegalStateException("The spawn chunk is not loaded"))
+                .getIsland().filter(island-> island.getCity().equals(city))
+                .orElseThrow(()-> new IllegalArgumentException("The spawn chunk is not claimed by this city"))
+                ;
+        storage.setShape(this, shape, spawn, newIsland);
         this.shape = shape;
+        this.island = newIsland;
 
-        Stream.concat(this.shape.chunks(island.world), old.chunks(island.world))
+        if(oldIsland != newIsland)
+        {
+            newIsland.plots.put(identityName, this);
+            oldIsland.plots.remove(identityName, this);
+        }
+
+        Stream.concat(shape.chunks(newIsland.world), old.chunks(oldIsland.world))
                 .distinct().forEach(getCity().mineCity::reloadChunkSlowly);
     }
 

@@ -194,4 +194,18 @@ public class IslandArea
         if(!pos.world.equals(world)) throw new IllegalArgumentException("Different world");
         setClaimed(pos.x, pos.z, val);
     }
+
+    public boolean contains(ChunkPos pos)
+    {
+        if(pos.x < x || pos.z < z)
+            return false;
+
+        int rx = pos.x - x;
+        if(rx >= claims.length)
+            return false;
+
+        boolean[] az = claims[pos.x - x];
+        int rz = pos.z - z;
+        return rz >= az.length && az[rz];
+    }
 }

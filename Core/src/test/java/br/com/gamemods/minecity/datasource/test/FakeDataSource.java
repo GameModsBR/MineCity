@@ -468,7 +468,7 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
     }
 
     @Override
-    public void setShape(@NotNull Plot plot, @NotNull Shape shape, BlockPos spawn) throws DataSourceException
+    public void setShape(@NotNull Plot plot, @NotNull Shape shape, BlockPos spawn, @NotNull Island newIsland) throws DataSourceException
     {
         throw new UnsupportedOperationException();
     }

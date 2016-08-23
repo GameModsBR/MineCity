@@ -102,7 +102,7 @@ public interface ICityStorage
     void setOwner(@NotNull Plot plot, @Nullable PlayerID owner) throws DataSourceException, IllegalStateException;
 
     @Slow
-    void setShape(@NotNull Plot plot, @NotNull Shape shape, BlockPos spawn) throws DataSourceException;
+    void setShape(@NotNull Plot plot, @NotNull Shape shape, BlockPos spawn, @NotNull Island newIsland) throws DataSourceException;
 
     @Slow
     void setName(@NotNull Plot plot, @NotNull String identity, @NotNull String name) throws DataSourceException;

@@ -1022,18 +1022,19 @@ public class SQLCityStorage implements ICityStorage
 
     @Slow
     @Override
-    public void setShape(@NotNull Plot plot, @NotNull Shape shape, BlockPos spawn) throws DataSourceException
+    public void setShape(@NotNull Plot plot, @NotNull Shape shape, BlockPos spawn, @NotNull Island newIsland) throws DataSourceException
     {
         try(Connection transaction = connection.transaction())
         {
             try
             {
                 try(PreparedStatement pst = transaction.prepareStatement(
-                        "UPDATE minecity_plots SET shape=? WHERE plot_id=?"
+                        "UPDATE minecity_plots SET shape=?, island_id=? WHERE plot_id=?"
                 ))
                 {
                     pst.setBytes(1, shape.serializeBytes());
-                    pst.setInt(2, plot.id);
+                    pst.setInt(2, newIsland.id);
+                    pst.setInt(3, plot.id);
                     source.executeUpdate(pst, 1);
                 }
 

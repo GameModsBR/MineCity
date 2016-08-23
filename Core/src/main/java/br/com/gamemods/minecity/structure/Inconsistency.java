@@ -349,7 +349,7 @@ public class Inconsistency implements ChunkOwner
         }
 
         @Override
-        public void setShape(@NotNull Plot plot, @NotNull Shape shape, BlockPos spawn) throws DataSourceException
+        public void setShape(@NotNull Plot plot, @NotNull Shape shape, BlockPos spawn, @NotNull Island newIsland) throws DataSourceException
         {
             throw new DataSourceException("Inconsistent city!");
         }
