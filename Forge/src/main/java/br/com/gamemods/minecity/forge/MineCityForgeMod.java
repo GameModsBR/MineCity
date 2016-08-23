@@ -52,6 +52,7 @@ import org.mcstats.Metrics;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
@@ -152,6 +153,35 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
 
         transformer = new ForgeTransformer();
         transformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages-en.xml"));
+
+        String lang = this.config.locale.toLanguageTag();
+        if(!lang.equals("en"))
+        {
+            try
+            {
+                InputStream resource = MineCity.class.getResourceAsStream("/assets/minecity/messages-"+lang+".xml");
+                if(resource != null)
+                {
+                    try
+                    {
+                        transformer.parseXML(resource);
+                    }
+                    finally
+                    {
+                        resource.close();
+                    }
+                }
+                else
+                {
+                    logger.error("There're no translations to "+lang+" available.");
+                    this.config.locale = Locale.ENGLISH;
+                }
+            }
+            catch(Exception e)
+            {
+                logger.error("Failed to load the "+lang+" translations", e);
+            }
+        }
     }
 
     @EventHandler
@@ -210,8 +240,8 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         FMLCommonHandler.instance().bus().register(this);
         mineCity = new MineCity(this, config, transformer);
         mineCity.worldProvider = Optional.of(this);
-        mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands-en.xml"));
-        mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages-en.xml"));
+        String lang = config.locale.toLanguageTag();
+        mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands-"+lang+".xml"));
         mineCity.dataSource.initDB();
     }
 
