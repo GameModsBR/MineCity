@@ -595,9 +595,10 @@ public final class CommandTree
     public CommandResult<Void> groupExecutor(CommandEvent cmd)
     {
         List<String> path = cmd.path instanceof ArrayList? cmd.path : new ArrayList<>(cmd.path);
-        path.add("help");
+        String helpToken = get("minecity help").map(result -> result.command.getName()).orElse("help");
+        path.add(helpToken);
         List<String> args = cmd.args instanceof ArrayList? cmd.args : new ArrayList<>(cmd.args);
-        if(!args.isEmpty() && args.get(0).equals("help"))
+        if(!args.isEmpty() && args.get(0).equals(helpToken))
             args.remove(0);
         help(path == cmd.path && args == cmd.args? cmd : new CommandEvent(cmd.sender, path, args));
         return CommandResult.failed();
