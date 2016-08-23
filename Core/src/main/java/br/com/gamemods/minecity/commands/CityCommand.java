@@ -111,6 +111,12 @@ public class CityCommand
     @Command(value = "city.create", console = false, args = @Arg(name = "name", sticky = true))
     public CommandResult<City> create(CommandEvent cmd) throws DataSourceException
     {
+        if(cmd.mineCity.nature(cmd.position.world).isCityCreationDenied() && !cmd.sender.hasPermission("minecity.bypass.nature.city-creation"))
+            return new CommandResult<>(new Message("cmd.city.create.disabled", "City creations are disabled in ${nature}",
+                    new Object[][]{
+                            {"nature", cmd.position.world.name()}
+                    }));
+
         String name = String.join(" ", cmd.args);
         String identity = identity(name);
 
@@ -199,6 +205,12 @@ public class CityCommand
     {
         PlayerID playerId = cmd.sender.getPlayerId();
         ChunkPos chunk = cmd.position.getChunk();
+
+        if(cmd.mineCity.nature(chunk.world).isCityCreationDenied() && !cmd.sender.hasPermission("minecity.bypass.nature.city-creation"))
+            return new CommandResult<>(new Message("cmd.city.claim.disabled", "You can't claim chunks from ${nature}",
+                    new Object[][]{
+                            {"nature", cmd.position.world.name()}
+                    }));
 
         Optional<ClaimedChunk> claimOpt = mineCity.getChunk(chunk);
         City city = claimOpt.flatMap(ClaimedChunk::getCity).orElse(null);

@@ -272,6 +272,7 @@
             </delete>
             <create>
                 <msg id="arg.name">name</msg>
+                <msg id="disabled">City creations are disabled in ${nature}</msg>
                 <name>
                     <msg id="empty">Please type a city name</msg>
                     <msg id="short">The name ${name} is not valid, try a bigger name</msg>
@@ -288,6 +289,7 @@
             </create>
             <claim>
                 <msg id="arg.city">city</msg>
+                <msg id="disabled">You can't claim chunks from ${nature}</msg>
                 <msg id="already-claimed">This chunk is already claimed in name of ${city}</msg>
                 <msg id="reserved">This chunk is reserved for ${name}</msg>
                 <msg id="ambiguous">Both cities ${1} and ${2} are touching this chunk, repeat the command specifying the city name.</msg>

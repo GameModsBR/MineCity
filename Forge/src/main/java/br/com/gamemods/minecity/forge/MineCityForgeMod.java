@@ -137,6 +137,9 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         if(!defaultMsg.isEmpty())
             this.config.defaultCityFlags.setDefaultMessage(Message.string(defaultMsg));
 
+        this.config.defaultNatureDisableCities = !config.getBoolean("enable-city-creation", "permissions.default.nature", true,
+                "Allow cities to be created in new dimensions");
+
         for(PermissionFlag flag: PermissionFlag.values())
         {
             adjustDefaultFlag(config, "permissions.default.nature.", flag, flag.defaultNature, this.config.defaultNatureFlags);

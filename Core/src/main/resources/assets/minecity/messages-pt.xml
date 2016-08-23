@@ -265,6 +265,7 @@
             </delete>
             <create>
                 <msg id="arg.name">nome</msg>
+                <msg id="disabled">Não é permitido criar cidades em ${nature}</msg>
                 <name>
                     <msg id="empty">Por favor digite o nome de uma cidade</msg>
                     <msg id="short">O nome ${name} não é válido, tente um nome maior</msg>
@@ -279,6 +280,7 @@
             </create>
             <claim>
                 <msg id="arg.city">cidade</msg>
+                <msg id="disabled">Não é permitido reinvindicar chunks de ${nature}</msg>
                 <msg id="already-claimed">Este chunk já foi reinvindicado por ${city}</msg>
                 <msg id="reserved">Este chunk está reservado para ${name}</msg>
                 <msg id="ambiguous">Ambas as cidades ${1} e ${2} estão tocando este chunk, repita o comando especificando o nome da cidade desejada.</msg>

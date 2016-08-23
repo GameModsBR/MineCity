@@ -35,6 +35,13 @@ permissions:
     default: true
 
   # Simplified permissions
+  minecity.admin:
+    description: Grants all permissions, including permissions to execute administrative commands and all bypasses
+    children:
+      minecity.user: true
+      minecity.cmd.reload: true
+      minecity.bypass.*: true
+
   minecity.user:
     description: Grants basic permissions for normal players
     default: true
@@ -47,6 +54,16 @@ permissions:
       minecity.cmd.group.*: true
       minecity.cmd.plot: true
       minecity.cmd.plot.*: true
+
+  # Bypasses
+  minecity.bypass.*:
+    description: Allows to bypass all bypassable restrictions
+    children:
+      minecity.bypass.nature.city-creation: true
+
+  minecity.bypass.nature.city-creation:
+    description: Allows the player to create cities in worlds where city creations are disabled
+    default: op
 
   # Grouped permissions
   minecity.cmd.city.*:

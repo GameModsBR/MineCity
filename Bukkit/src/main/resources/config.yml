@@ -7,6 +7,7 @@ database:
 permissions:
   default:
     nature:
+      enable-city-creation: true
       ENTER:
         allow: true
         message:
