@@ -846,7 +846,7 @@ public class EntityProtections extends AbstractProtection
             }
         }
 
-        // TODO Skeleton shooting, creeper, tnt, crystal explosions...
+        // Skeleton shooting, creeper, tnt, crystal explosions...
         if(!(remover instanceof Player))
         {
             event.setCancelled(true);
