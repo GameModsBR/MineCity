@@ -19,10 +19,7 @@ import br.com.gamemods.minecity.structure.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -51,6 +48,7 @@ public class MineCity
     public SimpleFlagHolder defaultReserveFlags = new SimpleFlagHolder();
     private Queue<ChunkPos> reloadQueue = new DistinctQueue<>();
     public boolean lazyReloads = true;
+    public Locale locale;
 
     @SuppressWarnings("LanguageMismatch")
     public MineCity(@NotNull Server server, @NotNull MineCityConfig config, @Nullable IDataSource dataSource,
@@ -60,6 +58,7 @@ public class MineCity
         defaultNatureFlags = config.defaultNatureFlags;
         defaultPlotFlags = config.defaultPlotFlags;
         defaultReserveFlags = config.defaultReserveFlags;
+        locale = config.locale;
 
         this.server = server;
         this.messageTransformer = messageTransformer;

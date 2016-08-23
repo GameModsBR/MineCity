@@ -29,7 +29,8 @@ public class GeneralCommands
     @Command(value = "reload", console = false)
     public static CommandResult<?> reload(CommandEvent cmd) throws IOException, SAXException
     {
-        cmd.mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages-en.xml"));
+        String lang = cmd.mineCity.locale.toLanguageTag();
+        cmd.mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages-"+lang+".xml"));
         return CommandResult.success();
     }
 }
