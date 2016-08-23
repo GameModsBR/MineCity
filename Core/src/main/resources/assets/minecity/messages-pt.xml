@@ -361,19 +361,19 @@
                 <footer>
                     <msg id="last-page"><darkgreen>--</darkgreen>
                         <green>Página <gold>${page}</gold>/<gold>${page}</gold>
-                            <darkgreen>---</darkgreen>
+                            <darkgreen>--</darkgreen>
                             Dica: Digite <click><suggest cmd='/cidade ir '/><hover><tooltip><gold>/cidade ir</gold></tooltip><gold>/cidade ir</gold></hover></click> para ir para a cidade
                         </green>
                     </msg>
                     <msg id="one-page"><darkgreen>--</darkgreen>
                         <green>Página <gold>1</gold>/<gold>1</gold>
-                            <darkgreen>---</darkgreen>
+                            <darkgreen>--</darkgreen>
                             Dica: Digite <click><suggest cmd='/cidade ir '/><hover><tooltip><gold>/cidade ir</gold></tooltip><gold>/cidade ir</gold></hover></click> para ir para a cidade
                         </green>
                     </msg>
                     <msg id="more-pages"><darkgreen>--</darkgreen>
                         <green>Página <gold>${page}</gold>/<gold>${total}</gold>
-                            <darkgreen>---</darkgreen>
+                            <darkgreen>--</darkgreen>
                             Próxima página: <hover>
                             <tooltip><gold>${next-page}</gold></tooltip>
                             <click>
@@ -1175,7 +1175,7 @@
                 <footer>
                     <msg id="one-page"><darkgreen>--</darkgreen>
                         <green>Página <gold>1</gold>/<gold>1</gold>
-                            <darkgreen>---</darkgreen>
+                            <darkgreen>--</darkgreen>
                             Dica: Digite <click>
                                 <suggest cmd='/cidade ir '/>
                                 <hover>
@@ -1187,7 +1187,7 @@
                     </msg>
                     <msg id="last-page"><darkgreen>--</darkgreen>
                         <green>Página <gold>${page}</gold>/<gold>${page}</gold>
-                            <darkgreen>---</darkgreen>
+                            <darkgreen>--</darkgreen>
                             Dica: Digite <click>
                             <suggest cmd='/cidade ir '/>
                             <hover>
