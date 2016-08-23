@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.api.world;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public enum Direction
 {
@@ -24,6 +25,44 @@ public enum Direction
     public static final List<Direction> block = Arrays.asList(UP, DOWN, NORTH, EAST, SOUTH, WEST);
     public static final List<Direction> intermediate = Arrays.asList(NORTH_EAST, SOUTH_EAST, SOUTH_WEST, NORTH_WEST);
     public static final List<Direction> cardinal8 = Arrays.asList(NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST);
+
+    public static Direction get(int x, int y, int z) throws NoSuchElementException
+    {
+        if(y < 0)
+        {
+            if(x != 0 || z != 0)
+                throw new NoSuchElementException();
+            return DOWN;
+        }
+        else if(y > 0)
+        {
+            if(x != 0 || z != 0)
+                throw new NoSuchElementException();
+            return UP;
+        }
+        if(z < 0)
+        {
+            if(x == 0)
+                return NORTH;
+            else if(x < 0)
+                return NORTH_WEST;
+            else
+                return NORTH_EAST;
+        }
+        else if(z > 0)
+        {
+            if(x == 0)
+                return SOUTH;
+            else if(x < 0)
+                return SOUTH_WEST;
+            else
+                return SOUTH_EAST;
+        }
+        else if(x < 0)
+            return WEST;
+        else
+            return EAST;
+    }
 
     Direction(int x, int y, int z, int oppositeIndex)
     {

@@ -68,6 +68,14 @@ final class SQLIsland extends Island
         chunkCount++;
     }
 
+    void relocate(Plot plot, SQLIsland to)
+    {
+        String id = plot.getIdentityName();
+        plots.remove(id, plot);
+        to.plots.put(id, plot);
+        plot.relocate(to);
+    }
+
     @NotNull
     @Override
     public City getCity()

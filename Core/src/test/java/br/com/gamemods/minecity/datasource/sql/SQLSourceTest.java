@@ -8,13 +8,11 @@ import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.Group;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.shape.Cuboid;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.test.TestData;
-import br.com.gamemods.minecity.structure.City;
-import br.com.gamemods.minecity.structure.ClaimedChunk;
-import br.com.gamemods.minecity.structure.Island;
-import br.com.gamemods.minecity.structure.Nature;
+import br.com.gamemods.minecity.structure.*;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -174,6 +172,48 @@ public class SQLSourceTest
         assertNotNull(netherNature);
         assertNotNull(customNature);
         assertNotEquals(overNature, customNature);
+    }
+
+    @Test
+    public void testSplitPlot() throws Exception
+    {
+        BlockPos spawnPos = new BlockPos(overworld, 44, 55, 32);
+        City city = new City(mineCity, "Split", joserobjr, spawnPos);
+        Island initialIsland = city.islands().iterator().next();
+        ChunkPos initialChunk = spawnPos.getChunk();
+        Map<Direction, Plot> plotMap = new HashMap<>(4);
+        for(Direction dir: Direction.cardinal)
+        {
+            ChunkPos chunk = initialChunk.add(dir);
+            Island island = city.claim(chunk, false);
+
+            Cuboid cuboid = new Cuboid(chunk.getMinBlock().add(5, 32, 7), chunk.getMaxBlock().subtract(3, 200, 2));
+            plotMap.put(dir, island.createPlot(dir.name(), null, (BlockPos) cuboid.min.add(2,2,2), cuboid));
+
+            if(dir == Direction.NORTH)
+                city.setSpawn((BlockPos) cuboid.min.add(-1, 1, 0));
+        }
+
+        Cuboid cuboid = new Cuboid(initialChunk.getMinBlock().add(5, 32, 7), initialChunk.getMaxBlock().subtract(3, 200, 2));
+        Plot initialPlot = initialIsland.createPlot("spawn", null, (BlockPos) cuboid.min.add(2, 2, 2), cuboid);
+
+        assertThrown(()-> city.disclaim(initialChunk, true))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("because it contains plots");
+
+        initialPlot.delete();
+        Collection<Island> newIslands = city.disclaim(initialChunk, true);
+        for(Island island: newIslands)
+        {
+            ChunkPos chunk = island.getArea().claims().findFirst().get();
+            int rx = chunk.x - initialChunk.x;
+            int rz = chunk.z - initialChunk.z;
+            Direction dir = Direction.get(rx, 0, rz);
+
+            Plot plot = plotMap.remove(dir);
+            assertEquals(island, plot.getIsland());
+            assertEquals(Optional.of(plot), island.getPlot(plot.getName()));
+        }
     }
 
     @Test

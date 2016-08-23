@@ -229,7 +229,7 @@ public final class Plot extends ExceptStoredHolder
         City city = island.getCity();
         Island oldIsland = this.island;
         Island newIsland = city.mineCity
-                .getChunk(spawn.getChunk()).orElseThrow(()-> new IllegalStateException("The spawn chunk is not loaded"))
+                .getOrFetchChunk(spawn.getChunk()).orElseThrow(()-> new IllegalStateException("The spawn chunk is not claimed"))
                 .getIsland().filter(island-> island.getCity().equals(city))
                 .orElseThrow(()-> new IllegalArgumentException("The spawn chunk is not claimed by this city"))
                 ;
@@ -245,6 +245,20 @@ public final class Plot extends ExceptStoredHolder
 
         Stream.concat(shape.chunks(newIsland.world), old.chunks(oldIsland.world))
                 .distinct().forEach(getCity().mineCity::reloadChunkSlowly);
+    }
+
+    public void relocate(Island to)
+    {
+        if(invalid)
+            throw new IllegalStateException("This plot is invalid");
+
+        if(island.getPlot(identityName).isPresent())
+            throw new IllegalStateException("This plot is still in the original island");
+
+        if(!to.getPlot(identityName).isPresent())
+            throw new IllegalStateException("This plot is not in the new island");
+
+        island = to;
     }
 
     @Slow

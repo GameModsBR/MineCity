@@ -353,8 +353,8 @@ public class SQLCityStorage implements ICityStorage
                                   "WHERE world_id="+worldId+" AND island_id="+sqlIsland.id+" AND reserve=0 AND ("+sb+");"
                     );
 
-                    //TODO Split plots
                     SQLIsland newIsland = new SQLIsland(this, permStorage, islandId, minX, maxX, minZ, maxZ, group.size(), sqlIsland.world, Collections.emptySet());
+                    newIsland.city = sqlIsland.city;
                     expected[i++] = newIsland.chunkCount;
                     islands.add(newIsland);
                 }
@@ -366,9 +366,60 @@ public class SQLCityStorage implements ICityStorage
                             "Expected: "+Arrays.toString(expected)+" Result: "+Arrays.toString(result));
                 }
 
-                transaction.commit();
+                Collection<Plot> plots = sqlIsland.getPlots();
+                List<Runnable> afterCommit = new ArrayList<>(plots.size());
+                if(!plots.isEmpty())
+                {
+                    try(PreparedStatement select = transaction.prepareStatement(
+                            "SELECT island_id FROM minecity_chunks WHERE world_id=? AND x=? AND z=? AND reserve=0"
+                    ); PreparedStatement update = transaction.prepareStatement(
+                            "UPDATE minecity_plots SET island_id=? WHERE plot_id=?"
+                    ))
+                    {
+                        for(Plot plot: plots)
+                        {
+                            ChunkPos spawn = plot.getSpawn().getChunk();
+                            select.setInt(1, worldId);
+                            select.setInt(2, spawn.x);
+                            select.setInt(3, spawn.z);
+                            ResultSet selectRes = select.executeQuery();
+                            if(!selectRes.next())
+                                throw new DataSourceException("The plot id:"+plot.id+" name:"+plot.getIdentityName()+" is not in an island!");
+                            int newIslandId = selectRes.getInt(1);
+                            selectRes.close();
+
+                            if(plot.getIsland().id == newIslandId)
+                                continue;
+
+                            SQLIsland newIsland = null;
+                            for(Island possible : islands)
+                            {
+                                if(possible.id == newIslandId)
+                                {
+                                    newIsland = (SQLIsland) possible;
+                                    break;
+                                }
+                            }
+
+                            if(newIsland == null)
+                                throw new DataSourceException("The plot id:"+plot.id+" name:"+plot.getIdentityName()+
+                                        " would be moved to the island:"+newIslandId+" but that island wasn't created by " +
+                                        "this disclaim!");
+
+                            update.setInt(1, newIslandId);
+                            update.setInt(2, plot.id);
+                            source.executeUpdate(update, 1);
+
+                            SQLIsland finalNewIsland = newIsland;
+                            afterCommit.add(()-> sqlIsland.relocate(plot, finalNewIsland));
+                        }
+                    }
+                }
 
                 updateCount(transaction, sqlIsland);
+                transaction.commit();
+                afterCommit.forEach(Runnable::run);
+
                 return islands;
             }
             catch(Exception e)
