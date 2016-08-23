@@ -31,7 +31,6 @@ import net.minecraftforge.fluids.IFluidBlock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -595,7 +594,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements M
             empty.readPacketData(buf);
             sendPacket(empty);
         }
-        catch(IOException e)
+        catch(Exception e)
         {
             e.printStackTrace();
         }

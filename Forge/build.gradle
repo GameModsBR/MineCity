@@ -27,6 +27,7 @@ project(':Forge') {
 minecraft {
     version = "1.7.10-10.13.4.1566-1.7.10"
     runDir = "eclipse"
+    srgExtra "PK: org/mcstats br/com/gamemods/minecity/forge/mcstats"
 }
 
 configurations {
@@ -36,6 +37,7 @@ configurations {
 
 dependencies {
     shade project(':Core')
+    shade "org.mcstats.forge:metrics:R8-SNAPSHOT"
 }
 
 jar {
@@ -48,7 +50,7 @@ jar {
 
     configurations.shade.each { dep ->
         from(project.zipTree(dep)){
-            include 'br/**', '*.yml', '*.info', 'assets/minecity/**'
+            include 'br/**', '*.yml', '*.info', 'assets/minecity/**', 'org/mcstats/**'
         }
     }
 }

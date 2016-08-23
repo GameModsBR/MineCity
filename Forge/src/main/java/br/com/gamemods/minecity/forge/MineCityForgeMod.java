@@ -24,10 +24,7 @@ import br.com.gamemods.minecity.structure.Inconsistency;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppedEvent;
+import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -51,6 +48,7 @@ import net.minecraftforge.event.world.WorldEvent;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mcstats.Metrics;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -83,7 +81,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         );
 
         if(!msg.isEmpty())
-            flags.getDefaultMessages().put(flag, new Message("", msg));
+            flags.getDefaultMessages().put(flag, Message.string(msg));
 
         if(!allow)
             flags.deny(flag);
@@ -132,12 +130,12 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
                 "The default message to be displayed when a permission is denied, leave blank for a translatable default message.");
 
         if(!defaultMsg.isEmpty())
-            this.config.defaultNatureFlags.setDefaultMessage(new Message("", defaultMsg));
+            this.config.defaultNatureFlags.setDefaultMessage(Message.string(defaultMsg));
 
         defaultMsg = config.getString("default-message", "permissions.default.city", "",
                 "The default message to be displayed when a permission is denied, leave blank for a translatable default message.");
         if(!defaultMsg.isEmpty())
-            this.config.defaultCityFlags.setDefaultMessage(new Message("", defaultMsg));
+            this.config.defaultCityFlags.setDefaultMessage(Message.string(defaultMsg));
 
         for(PermissionFlag flag: PermissionFlag.values())
         {
@@ -151,6 +149,20 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
 
         transformer = new ForgeTransformer();
         transformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages-en.xml"));
+    }
+
+    @EventHandler
+    public void onPostInit(FMLPostInitializationEvent event)
+    {
+        try
+        {
+            Metrics metrics = new Metrics("MineCity", "forge-1.0-SNAPSHOT");
+            metrics.start();
+        }
+        catch(Throwable e)
+        {
+            logger.warn("MCStats metrics failed to start", e);
+        }
     }
 
     @SuppressWarnings("unchecked")

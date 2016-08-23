@@ -25,6 +25,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
+import org.mcstats.Metrics;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +46,7 @@ public class MineCityPlugin extends JavaPlugin
         String msg = yaml.getString(prefix+flag+".message", "");
 
         if(!msg.isEmpty())
-            holder.getDefaultMessages().put(flag, new Message("", msg));
+            holder.getDefaultMessages().put(flag, Message.string(msg));
 
         if(!allow)
             holder.deny(flag);
@@ -55,6 +56,16 @@ public class MineCityPlugin extends JavaPlugin
     @Override
     public void onEnable()
     {
+        try
+        {
+            Metrics metrics = new Metrics(this);
+            metrics.start();
+        }
+        catch(Throwable e)
+        {
+            getLogger().log(Level.WARNING, "MCStats metrics failed to start", e);
+        }
+
         BukkitTransformer transformer;
         try
         {

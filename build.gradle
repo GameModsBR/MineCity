@@ -1,3 +1,12 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+    }
+}
+
 allprojects {
     apply plugin: "java"
     group= "br.com.gamemods.minecity"
@@ -20,6 +29,10 @@ subprojects {
         maven {
             url = 'https://oss.sonatype.org/content/groups/public/'
         }
+        maven {
+            name = 'Plugin Metrics'
+            url = 'http://repo.mcstats.org/content/repositories/public'
+        }
     }
 
     dependencies {
@@ -35,6 +48,7 @@ subprojects {
 }
 
 project(':Bukkit') {
+    apply plugin: 'com.github.johnrengelman.shadow'
 
     configurations {
         shade
@@ -46,6 +60,7 @@ project(':Bukkit') {
         //compile files("run/BuildTools/Spigot/Spigot-Server/target/original-spigot-1.10.2-R0.1-SNAPSHOT.jar")
         //compile files("run/BuildTools/spigot-1.10.2.jar")
         compile "org.spigotmc:spigot-api:1.10.2-R0.1-SNAPSHOT"
+        compile "org.mcstats.bukkit:metrics:R8-SNAPSHOT"
     }
 
     jar {
@@ -55,6 +70,22 @@ project(':Bukkit') {
             }
         }
     }
+
+    shadowJar {
+        dependencies {
+            //noinspection GroovyAssignabilityCheck
+            include(dependency("org.mcstats.bukkit:metrics:R8-SNAPSHOT"))
+            include(project(':Core'))
+        }
+
+        baseName = 'MineCity-Bukkit-MC-1.10.2'
+        classifier = null
+        relocate 'org.mcstats', 'br.com.gamemods.minecity.bukkit.mcstats'
+    }
+
+    jar.enabled = false
+
+    build.finalizedBy shadowJar
 }
 
 project(':UnitTest') {
