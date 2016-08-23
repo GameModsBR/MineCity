@@ -447,10 +447,10 @@ public final class CommandTree
                     else
                     {
                         int length = messageTransformer.get().toSimpleText(message).length();
-                        if(length < 58)
+                        if(length < 57)
                             repeat = false;
                         else
-                            limit = Math.max(20, 58-(length-shortInfo.length()));
+                            limit = Math.max(20, 57-(length-shortInfo.length()));
                     }
                     lines[i] = message;
                 }while(repeat);

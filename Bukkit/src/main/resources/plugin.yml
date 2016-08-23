@@ -95,7 +95,7 @@ permissions:
       minecity.cmd.city.perms.*: true
       minecity.cmd.city.deny.*: true
       minecity.cmd.city.allow.*: true
-      minecity.cmd.city.reset.*: true
+      minecity.cmd.city.clear.*: true
 
   minecity.cmd.plot.*:
     description: Grants all permissions necessary to completely use the /plot command as a normal player
@@ -112,7 +112,7 @@ permissions:
       minecity.cmd.plot.perms.*: true
       minecity.cmd.plot.deny.*: true
       minecity.cmd.plot.allow.*: true
-      minecity.cmd.plot.reset.*: true
+      minecity.cmd.plot.clear.*: true
 
   minecity.cmd.group.*:
     description: Grants all permissions necessary to completely use the /group command as a normal player
@@ -155,19 +155,19 @@ permissions:
       minecity.cmd.city.allow.ride: true
       minecity.cmd.city.allow.all.*: true
 
-  minecity.cmd.city.reset.*:
+  minecity.cmd.city.clear.*:
     children:
-      minecity.cmd.city.reset.enter: true
-      minecity.cmd.city.reset.click: true
-      minecity.cmd.city.reset.pickup: true
-      minecity.cmd.city.reset.harvest: true
-      minecity.cmd.city.reset.open: true
-      minecity.cmd.city.reset.pvp: true
-      minecity.cmd.city.reset.pvc: true
-      minecity.cmd.city.reset.modify: true
-      minecity.cmd.city.reset.vehicle: true
-      minecity.cmd.city.reset.ride: true
-      minecity.cmd.city.reset.all.*: true
+      minecity.cmd.city.clear.enter: true
+      minecity.cmd.city.clear.click: true
+      minecity.cmd.city.clear.pickup: true
+      minecity.cmd.city.clear.harvest: true
+      minecity.cmd.city.clear.open: true
+      minecity.cmd.city.clear.pvp: true
+      minecity.cmd.city.clear.pvc: true
+      minecity.cmd.city.clear.modify: true
+      minecity.cmd.city.clear.vehicle: true
+      minecity.cmd.city.clear.ride: true
+      minecity.cmd.city.clear.all.*: true
 
   minecity.cmd.city.deny.all.*:
     children:
@@ -195,18 +195,18 @@ permissions:
       minecity.cmd.city.allow.all.vehicle: true
       minecity.cmd.city.allow.all.ride: true
 
-  minecity.cmd.city.reset.all.*:
+  minecity.cmd.city.clear.all.*:
     children:
-      minecity.cmd.city.reset.all.enter: true
-      minecity.cmd.city.reset.all.click: true
-      minecity.cmd.city.reset.all.pickup: true
-      minecity.cmd.city.reset.all.harvest: true
-      minecity.cmd.city.reset.all.open: true
-      minecity.cmd.city.reset.all.pvp: true
-      minecity.cmd.city.reset.all.pvc: true
-      minecity.cmd.city.reset.all.modify: true
-      minecity.cmd.city.reset.all.vehicle: true
-      minecity.cmd.city.reset.all.ride: true
+      minecity.cmd.city.clear.all.enter: true
+      minecity.cmd.city.clear.all.click: true
+      minecity.cmd.city.clear.all.pickup: true
+      minecity.cmd.city.clear.all.harvest: true
+      minecity.cmd.city.clear.all.open: true
+      minecity.cmd.city.clear.all.pvp: true
+      minecity.cmd.city.clear.all.pvc: true
+      minecity.cmd.city.clear.all.modify: true
+      minecity.cmd.city.clear.all.vehicle: true
+      minecity.cmd.city.clear.all.ride: true
 
   minecity.cmd.city.perms.*:
     children:
@@ -249,19 +249,19 @@ permissions:
       minecity.cmd.plot.allow.ride: true
       minecity.cmd.plot.allow.all.*: true
 
-  minecity.cmd.plot.reset.*:
+  minecity.cmd.plot.clear.*:
     children:
-      minecity.cmd.plot.reset.enter: true
-      minecity.cmd.plot.reset.click: true
-      minecity.cmd.plot.reset.pickup: true
-      minecity.cmd.plot.reset.harvest: true
-      minecity.cmd.plot.reset.open: true
-      minecity.cmd.plot.reset.pvp: true
-      minecity.cmd.plot.reset.pvc: true
-      minecity.cmd.plot.reset.modify: true
-      minecity.cmd.plot.reset.vehicle: true
-      minecity.cmd.plot.reset.ride: true
-      minecity.cmd.plot.reset.all.*: true
+      minecity.cmd.plot.clear.enter: true
+      minecity.cmd.plot.clear.click: true
+      minecity.cmd.plot.clear.pickup: true
+      minecity.cmd.plot.clear.harvest: true
+      minecity.cmd.plot.clear.open: true
+      minecity.cmd.plot.clear.pvp: true
+      minecity.cmd.plot.clear.pvc: true
+      minecity.cmd.plot.clear.modify: true
+      minecity.cmd.plot.clear.vehicle: true
+      minecity.cmd.plot.clear.ride: true
+      minecity.cmd.plot.clear.all.*: true
 
   minecity.cmd.plot.deny.all.*:
     children:
@@ -289,18 +289,18 @@ permissions:
       minecity.cmd.plot.allow.all.vehicle: true
       minecity.cmd.plot.allow.all.ride: true
 
-  minecity.cmd.plot.reset.all.*:
+  minecity.cmd.plot.clear.all.*:
     children:
-      minecity.cmd.plot.reset.all.enter: true
-      minecity.cmd.plot.reset.all.click: true
-      minecity.cmd.plot.reset.all.pickup: true
-      minecity.cmd.plot.reset.all.harvest: true
-      minecity.cmd.plot.reset.all.open: true
-      minecity.cmd.plot.reset.all.pvp: true
-      minecity.cmd.plot.reset.all.pvc: true
-      minecity.cmd.plot.reset.all.modify: true
-      minecity.cmd.plot.reset.all.vehicle: true
-      minecity.cmd.plot.reset.all.ride: true
+      minecity.cmd.plot.clear.all.enter: true
+      minecity.cmd.plot.clear.all.click: true
+      minecity.cmd.plot.clear.all.pickup: true
+      minecity.cmd.plot.clear.all.harvest: true
+      minecity.cmd.plot.clear.all.open: true
+      minecity.cmd.plot.clear.all.pvp: true
+      minecity.cmd.plot.clear.all.pvc: true
+      minecity.cmd.plot.clear.all.modify: true
+      minecity.cmd.plot.clear.all.vehicle: true
+      minecity.cmd.plot.clear.all.ride: true
 
   minecity.cmd.plot.perms.*:
     children:
@@ -477,25 +477,25 @@ permissions:
     default: op
   minecity.cmd.city.allow.ride:
     default: op
-  minecity.cmd.city.reset.enter:
+  minecity.cmd.city.clear.enter:
     default: op
-  minecity.cmd.city.reset.click:
+  minecity.cmd.city.clear.click:
     default: op
-  minecity.cmd.city.reset.pickup:
+  minecity.cmd.city.clear.pickup:
     default: op
-  minecity.cmd.city.reset.harvest:
+  minecity.cmd.city.clear.harvest:
     default: op
-  minecity.cmd.city.reset.open:
+  minecity.cmd.city.clear.open:
     default: op
-  minecity.cmd.city.reset.pvp:
+  minecity.cmd.city.clear.pvp:
     default: op
-  minecity.cmd.city.reset.pvc:
+  minecity.cmd.city.clear.pvc:
     default: op
-  minecity.cmd.city.reset.modify:
+  minecity.cmd.city.clear.modify:
     default: op
-  minecity.cmd.city.reset.vehicle:
+  minecity.cmd.city.clear.vehicle:
     default: op
-  minecity.cmd.city.reset.ride:
+  minecity.cmd.city.clear.ride:
     default: op
   minecity.cmd.city.deny.all.enter:
     default: op
@@ -537,25 +537,25 @@ permissions:
     default: op
   minecity.cmd.city.allow.all.ride:
     default: op
-  minecity.cmd.city.reset.all.enter:
+  minecity.cmd.city.clear.all.enter:
     default: op
-  minecity.cmd.city.reset.all.click:
+  minecity.cmd.city.clear.all.click:
     default: op
-  minecity.cmd.city.reset.all.pickup:
+  minecity.cmd.city.clear.all.pickup:
     default: op
-  minecity.cmd.city.reset.all.harvest:
+  minecity.cmd.city.clear.all.harvest:
     default: op
-  minecity.cmd.city.reset.all.open:
+  minecity.cmd.city.clear.all.open:
     default: op
-  minecity.cmd.city.reset.all.pvp:
+  minecity.cmd.city.clear.all.pvp:
     default: op
-  minecity.cmd.city.reset.all.pvc:
+  minecity.cmd.city.clear.all.pvc:
     default: op
-  minecity.cmd.city.reset.all.modify:
+  minecity.cmd.city.clear.all.modify:
     default: op
-  minecity.cmd.city.reset.all.vehicle:
+  minecity.cmd.city.clear.all.vehicle:
     default: op
-  minecity.cmd.city.reset.all.ride:
+  minecity.cmd.city.clear.all.ride:
     default: op
   minecity.cmd.plot.deny.enter:
     default: op
@@ -597,25 +597,25 @@ permissions:
     default: op
   minecity.cmd.plot.allow.ride:
     default: op
-  minecity.cmd.plot.reset.enter:
+  minecity.cmd.plot.clear.enter:
     default: op
-  minecity.cmd.plot.reset.click:
+  minecity.cmd.plot.clear.click:
     default: op
-  minecity.cmd.plot.reset.pickup:
+  minecity.cmd.plot.clear.pickup:
     default: op
-  minecity.cmd.plot.reset.harvest:
+  minecity.cmd.plot.clear.harvest:
     default: op
-  minecity.cmd.plot.reset.open:
+  minecity.cmd.plot.clear.open:
     default: op
-  minecity.cmd.plot.reset.pvp:
+  minecity.cmd.plot.clear.pvp:
     default: op
-  minecity.cmd.plot.reset.pvc:
+  minecity.cmd.plot.clear.pvc:
     default: op
-  minecity.cmd.plot.reset.modify:
+  minecity.cmd.plot.clear.modify:
     default: op
-  minecity.cmd.plot.reset.vehicle:
+  minecity.cmd.plot.clear.vehicle:
     default: op
-  minecity.cmd.plot.reset.ride:
+  minecity.cmd.plot.clear.ride:
     default: op
   minecity.cmd.plot.deny.all.enter:
     default: op
@@ -657,25 +657,25 @@ permissions:
     default: op
   minecity.cmd.plot.allow.all.ride:
     default: op
-  minecity.cmd.plot.reset.all.enter:
+  minecity.cmd.plot.clear.all.enter:
     default: op
-  minecity.cmd.plot.reset.all.click:
+  minecity.cmd.plot.clear.all.click:
     default: op
-  minecity.cmd.plot.reset.all.pickup:
+  minecity.cmd.plot.clear.all.pickup:
     default: op
-  minecity.cmd.plot.reset.all.harvest:
+  minecity.cmd.plot.clear.all.harvest:
     default: op
-  minecity.cmd.plot.reset.all.open:
+  minecity.cmd.plot.clear.all.open:
     default: op
-  minecity.cmd.plot.reset.all.pvp:
+  minecity.cmd.plot.clear.all.pvp:
     default: op
-  minecity.cmd.plot.reset.all.pvc:
+  minecity.cmd.plot.clear.all.pvc:
     default: op
-  minecity.cmd.plot.reset.all.modify:
+  minecity.cmd.plot.clear.all.modify:
     default: op
-  minecity.cmd.plot.reset.all.vehicle:
+  minecity.cmd.plot.clear.all.vehicle:
     default: op
-  minecity.cmd.plot.reset.all.ride:
+  minecity.cmd.plot.clear.all.ride:
     default: op
   minecity.cmd.plot.perms.enter:
     default: op

@@ -51,10 +51,10 @@ public class PermissionCommands
                 tree.registerCommand("city.perms."+name, list, true, (CommandFunction) cmd-> list(cmd, flag));
                 tree.registerCommand("city.deny."+name, deny, true, (PlayerCommand) cmd-> deny(cmd, flag));
                 tree.registerCommand("city.allow."+name, allow, true, (PlayerCommand) cmd-> allow(cmd, flag));
-                tree.registerCommand("city.reset."+name, reset, true, (PlayerCommand) cmd-> reset(cmd, flag));
-                tree.registerCommand("city.denyAll."+name, denyAll, true, (PlayerCommand) cmd-> denyAll(cmd, flag));
-                tree.registerCommand("city.allowAll."+name, allowAll, true, (PlayerCommand) cmd-> allowAll(cmd, flag));
-                tree.registerCommand("city.resetAll."+name, resetAll, true, (PlayerCommand) cmd-> resetAll(cmd, flag));
+                tree.registerCommand("city.clear."+name, reset, true, (PlayerCommand) cmd-> reset(cmd, flag));
+                tree.registerCommand("city.deny.all."+name, denyAll, true, (PlayerCommand) cmd-> denyAll(cmd, flag));
+                tree.registerCommand("city.allow.all."+name, allowAll, true, (PlayerCommand) cmd-> allowAll(cmd, flag));
+                tree.registerCommand("city.clear.all."+name, resetAll, true, (PlayerCommand) cmd-> resetAll(cmd, flag));
             }
 
             list = PermissionCommands.class.getDeclaredMethod("listPlot", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
@@ -71,10 +71,10 @@ public class PermissionCommands
                 tree.registerCommand("plot.perms."+name, list, true, (CommandFunction) cmd-> listPlot(cmd, flag));
                 tree.registerCommand("plot.deny."+name, deny, true, (PlayerCommand) cmd-> denyPlot(cmd, flag));
                 tree.registerCommand("plot.allow."+name, allow, true, (PlayerCommand) cmd-> allowPlot(cmd, flag));
-                tree.registerCommand("plot.reset."+name, reset, true, (PlayerCommand) cmd-> resetPlot(cmd, flag));
-                tree.registerCommand("plot.denyAll."+name, denyAll, true, (PlayerCommand) cmd-> denyAllPlot(cmd, flag));
-                tree.registerCommand("plot.allowAll."+name, allowAll, true, (PlayerCommand) cmd-> allowAllPlot(cmd, flag));
-                tree.registerCommand("plot.resetAll."+name, resetAll, true, (PlayerCommand) cmd-> resetAllPlot(cmd, flag));
+                tree.registerCommand("plot.clear."+name, reset, true, (PlayerCommand) cmd-> resetPlot(cmd, flag));
+                tree.registerCommand("plot.deny.all."+name, denyAll, true, (PlayerCommand) cmd-> denyAllPlot(cmd, flag));
+                tree.registerCommand("plot.allow.all."+name, allowAll, true, (PlayerCommand) cmd-> allowAllPlot(cmd, flag));
+                tree.registerCommand("plot.clear.all."+name, resetAll, true, (PlayerCommand) cmd-> resetAllPlot(cmd, flag));
             }
 
             list = PermissionCommands.class.getDeclaredMethod("listNature", CommandEvent.class, PermissionFlag.class).getAnnotation(Command.class).args();
@@ -670,7 +670,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:city.reset", console = false,
+    @Command(value = "#model:city.clear", console = false,
             args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })

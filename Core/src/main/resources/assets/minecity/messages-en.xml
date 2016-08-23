@@ -96,6 +96,7 @@
             </perms>
             <deny>
                 <msg id="enter.arg.reason">reason</msg>
+                <msg id="modify.arg.reason">reason</msg>
                 <msg id="click.arg.reason">reason</msg>
                 <msg id="pickup.arg.reason">reason</msg>
                 <msg id="harvest.arg.reason">reason</msg>
@@ -113,6 +114,7 @@
         </nature>
         <city>
             <info>
+                <msg id="arg.name">name</msg>
                 <msg id="not-inside-city">You are not inside a city</msg>
                 <msg id="not-found">There are not city named ${name}</msg>
                 <msg id="admin"><gray>The server administrators</gray></msg>
@@ -128,6 +130,7 @@
                 </msg>
             </info>
             <perms>
+                <msg id="arg.city">city</msg>
                 <nobody>
                     <enter>
                         <msg id="no-exception"><red><b>Nobody</b></red> can enter on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
@@ -510,6 +513,13 @@
                         <msg id="reason">reason</msg>
                     </arg>
                 </enter>
+                <modify>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </modify>
                 <msg id="click.arg.player-or-city">player or city</msg>
                 <msg id="click.arg.group-name">group name</msg>
                 <msg id="click.arg.reason">reason</msg>
@@ -594,6 +604,12 @@
                         <msg id="group-name">group name</msg>
                     </arg>
                 </enter>
+                <modify>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </modify>
                 <msg id="click.arg.player-or-city">player or city</msg>
                 <msg id="click.arg.group-name">group name</msg>
                 <pickup>
@@ -873,6 +889,7 @@
         </confirm>
         <plot>
             <readjust>
+                <msg id="arg.plot-name">plot-name</msg>
                 <msg id="no-selection">Select the new area and then execute this command again.</msg>
                 <msg id="not-inside-plot">You are not inside a plot</msg>
                 <msg id="not-inside-city">You are not inside a city</msg>
@@ -906,6 +923,44 @@
                 </msg>
             </info>
             <perms>
+                <msg id="arg.city-or-plot">city</msg>
+                <msg id="arg.city">city</msg>
+                <enter>
+                    <msg id="arg.city-or-plot">city</msg>
+                    <msg id="arg.city">city</msg>
+                </enter>
+                <pickup>
+                    <msg id="arg.city-or-plot">city</msg>
+                    <msg id="arg.city">city</msg>
+                </pickup>
+                <harvest>
+                    <msg id="arg.city-or-plot">city</msg>
+                    <msg id="arg.city">city</msg>
+                </harvest>
+                <pvp>
+                    <msg id="arg.city-or-plot">city</msg>
+                    <msg id="arg.city">city</msg>
+                </pvp>
+                <pvc>
+                    <msg id="arg.city-or-plot">city</msg>
+                    <msg id="arg.city">city</msg>
+                </pvc>
+                <modify>
+                    <msg id="arg.city-or-plot">city</msg>
+                    <msg id="arg.city">city</msg>
+                </modify>
+                <vehicle>
+                    <msg id="arg.city-or-plot">city</msg>
+                    <msg id="arg.city">city</msg>
+                </vehicle>
+                <ride>
+                    <msg id="arg.city-or-plot">city</msg>
+                    <msg id="arg.city">city</msg>
+                </ride>
+                <msg id="click.arg.city-or-plot">city</msg>
+                <msg id="click.arg.city">city</msg>
+                <msg id="open.arg.city-or-plot">city</msg>
+                <msg id="open.arg.city">city</msg>
                 <nobody>
                     <enter>
                         <msg id="no-exception"><red><b>Nobody</b></red> can enter on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>
@@ -1127,6 +1182,8 @@
                 </perm>
             </perms>
             <list>
+                <msg id="arg.city">city</msg>
+                <msg id="arg.page">page</msg>
                 <msg id="not-claimed">You are not inside a city</msg>
                 <msg id="not-found">No city were found named ${name}</msg>
                 <msg id="no-plots">The city ${city} does not have plots.</msg>
@@ -1241,6 +1298,7 @@
             <deny>
                 <all>
                     <msg id="enter.arg.reason">reason</msg>
+                    <msg id="modify.arg.reason">reason</msg>
                     <msg id="click.arg.reason">reason</msg>
                     <msg id="pickup.arg.reason">reason</msg>
                     <msg id="harvest.arg.reason">reason</msg>
@@ -1257,6 +1315,13 @@
                         <msg id="reason">reason</msg>
                     </arg>
                 </enter>
+                <modify>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                        <msg id="reason">reason</msg>
+                    </arg>
+                </modify>
                 <msg id="click.arg.player-or-city">player or city</msg>
                 <msg id="click.arg.group-name">group name</msg>
                 <msg id="click.arg.reason">reason</msg>
@@ -1333,6 +1398,12 @@
                         <msg id="group-name">group name</msg>
                     </arg>
                 </enter>
+                <modify>
+                    <arg>
+                        <msg id="player-or-city">player or city</msg>
+                        <msg id="group-name">group name</msg>
+                    </arg>
+                </modify>
                 <msg id="click.arg.player-or-city">player or city</msg>
                 <msg id="click.arg.group-name">group name</msg>
                 <pickup>
@@ -1482,6 +1553,8 @@
                             <msg id="group">A group name</msg>
                             <msg id="group-or-city">A city name or a group name from the city you that are now</msg>
                             <msg id="player-or-city">A city or player name</msg>
+                            <msg id="plot-or-city">A plot or city name</msg>
+                            <msg id="plot">A plot name</msg>
                             <msg id="help">A command name or page number</msg>
                             <msg id="predefined">A predefined value</msg>
                             <msg id="single-predefinition">Can only be "${val}"</msg>

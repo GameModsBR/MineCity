@@ -90,6 +90,7 @@
             </perms>
             <deny>
                 <msg id="enter.arg.reason">motivo</msg>
+                <msg id="modify.arg.reason">motivo</msg>
                 <msg id="click.arg.reason">motivo</msg>
                 <msg id="pickup.arg.reason">motivo</msg>
                 <msg id="harvest.arg.reason">motivo</msg>
@@ -107,6 +108,7 @@
         </nature>
         <city>
             <info>
+                <msg id="arg.name">nome</msg>
                 <msg id="not-inside-city">Você não está dentro de uma cidade</msg>
                 <msg id="not-found">Não há nenhuma cidade chamada ${name}</msg>
                 <msg id="admin"><gray>Os administradores do servidor</gray></msg>
@@ -121,6 +123,16 @@
                 </msg>
             </info>
             <perms>
+                <msg id="arg.city">cidade</msg>
+                <msg id="enter.arg.city">cidade</msg>
+                <msg id="click.arg.city">cidade</msg>
+                <msg id="pickup.arg.city">cidade</msg>
+                <msg id="harvest.arg.city">cidade</msg>
+                <msg id="open.arg.city">cidade</msg>
+                <msg id="pvp.arg.city">cidade</msg>
+                <msg id="pvc.arg.city">cidade</msg>
+                <msg id="vehicle.arg.city">cidade</msg>
+                <msg id="ride.arg.city">cidade</msg>
                 <nobody>
                     <enter>
                         <msg id="no-exception"><red><b>Ninguém</b></red> pode entrar em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
@@ -347,23 +359,20 @@
                 <msg id="header"><green>---<yellow>-=[Cidades]=-</yellow>--------------------</green></msg>
                 <msg id="city"><darkgray><![CDATA[ * ]]></darkgray><white>${city}</white></msg>
                 <footer>
-                    <msg id="last-page">
-                        <green>
-                            Página <gold>${page}</gold>/<gold>${page}</gold>
+                    <msg id="last-page"><darkgreen>--</darkgreen>
+                        <green>Página <gold>${page}</gold>/<gold>${page}</gold>
                             <darkgreen>---</darkgreen>
                             Dica: Digite <click><suggest cmd='/cidade ir '/><hover><tooltip><gold>/cidade ir</gold></tooltip><gold>/cidade ir</gold></hover></click> para ir para a cidade
                         </green>
                     </msg>
-                    <msg id="one-page">
-                        <green>
-                            Página <gold>1</gold>/<gold>1</gold>
+                    <msg id="one-page"><darkgreen>--</darkgreen>
+                        <green>Página <gold>1</gold>/<gold>1</gold>
                             <darkgreen>---</darkgreen>
                             Dica: Digite <click><suggest cmd='/cidade ir '/><hover><tooltip><gold>/cidade ir</gold></tooltip><gold>/cidade ir</gold></hover></click> para ir para a cidade
                         </green>
                     </msg>
-                    <msg id="more-pages">
-                        <green>
-                            Página <gold>${page}</gold>/<gold>${total}</gold>
+                    <msg id="more-pages"><darkgreen>--</darkgreen>
+                        <green>Página <gold>${page}</gold>/<gold>${total}</gold>
                             <darkgreen>---</darkgreen>
                             Próxima página: <hover>
                             <tooltip><gold>${next-page}</gold></tooltip>
@@ -466,7 +475,7 @@
                     <msg id="big">grande</msg>
                     <msg id="big.option.big">grande</msg>
                 </arg>
-                <msg id="header"><darkgray>---------------<gray>-=[Mapa]=-</gray>-------------¬-<gray>-=[Cidades]=----</gray></darkgray></msg>
+                <msg id="header"><darkgray>---------------<gray>-=[Mapa]=-</gray>-------------¬-<gray>-=[Cidades]=---</gray></darkgray></msg>
                 <you>
                     <city>
                         <msg id="no-plot"><red>Isto é você dentro de ${city}</red></msg>
@@ -497,6 +506,13 @@
                         <msg id="reason">motivo</msg>
                     </arg>
                 </enter>
+                <modify>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
+                    </arg>
+                </modify>
                 <msg id="click.arg.player-or-city">jogador ou cidade</msg>
                 <msg id="click.arg.group-name">grupo</msg>
                 <msg id="click.arg.reason">motivo</msg>
@@ -573,6 +589,12 @@
                         <msg id="group-name">grupo</msg>
                     </arg>
                 </enter>
+                <modify>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </modify>
                 <msg id="click.arg.player-or-city">jogador ou cidade</msg>
                 <msg id="click.arg.group-name">grupo</msg>
                 <pickup>
@@ -840,7 +862,7 @@
             </delete>
         </group>
         <confirm>
-            <msg id="arg.confirmation-code">código-de-confirmação</msg>
+            <msg id="arg.confirmation-code">código</msg>
             <msg id="args">Digite o código de confirmação para confirmar a ação ou apenas ignore se você não quiser mais continuar.</msg>
             <msg id="invalid">Você digitou um código incorreto, se você quiser abortar a operção basta não digitar o comando de confirmação.</msg>
             <msg id="expired"><darkred>MineCity> </darkred><red>A ação não foi confirmada a tempo e o código de confirmação expirou.</red></msg>
@@ -848,6 +870,7 @@
         </confirm>
         <plot>
             <readjust>
+                <msg id="arg.plot-name">lote</msg>
                 <msg id="no-selection">Selecione a nova área e execute este comando novamente.</msg>
                 <msg id="not-inside-plot">Você não está dentro de um lote</msg>
                 <msg id="not-inside-city">Você não está dentro de uma cidade</msg>
@@ -881,6 +904,44 @@
                 </msg>
             </info>
             <perms>
+                <msg id="arg.city-or-plot">cidade-ou-lote</msg>
+                <msg id="arg.plot">lote</msg>
+                <enter>
+                    <msg id="arg.city-or-plot">cidade-ou-lote</msg>
+                    <msg id="arg.plot">lote</msg>
+                </enter>
+                <pickup>
+                    <msg id="arg.city-or-plot">cidade-ou-lote</msg>
+                    <msg id="arg.plot">lote</msg>
+                </pickup>
+                <harvest>
+                    <msg id="arg.city-or-plot">cidade-ou-lote</msg>
+                    <msg id="arg.plot">lote</msg>
+                </harvest>
+                <pvp>
+                    <msg id="arg.city-or-plot">cidade-ou-lote</msg>
+                    <msg id="arg.plot">lote</msg>
+                </pvp>
+                <pvc>
+                    <msg id="arg.city-or-plot">cidade-ou-lote</msg>
+                    <msg id="arg.plot">lote</msg>
+                </pvc>
+                <modify>
+                    <msg id="arg.city-or-plot">cidade-ou-lote</msg>
+                    <msg id="arg.plot">lote</msg>
+                </modify>
+                <vehicle>
+                    <msg id="arg.city-or-plot">cidade-ou-lote</msg>
+                    <msg id="arg.plot">lote</msg>
+                </vehicle>
+                <ride>
+                    <msg id="arg.city-or-plot">cidade-ou-lote</msg>
+                    <msg id="arg.plot">lote</msg>
+                </ride>
+                <msg id="click.arg.city-or-plot">cidade-ou-lote</msg>
+                <msg id="click.arg.plot">lote</msg>
+                <msg id="open.arg.city-or-plot">cidade-ou-lote</msg>
+                <msg id="open.arg.plot">lote</msg>
                 <nobody>
                     <enter>
                         <msg id="no-exception"><red><b>Ninguém</b></red> pode entrar em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>
@@ -1104,13 +1165,16 @@
                 </perm>
             </perms>
             <list>
+                <msg id="arg.city">cidade</msg>
+                <msg id="arg.page">página</msg>
                 <msg id="not-claimed">Você não está dentro de uma cidade</msg>
                 <msg id="not-found">Nenhuma cidade foi encontrada com o nome ${name}</msg>
                 <msg id="no-plots">A cidade ${city} não possui lotes.</msg>
                 <msg id="header"><green>---<yellow>-=[Lotes em ${city}]=-</yellow>---</green></msg>
                 <msg id="plot"><darkgray><![CDATA[ * ]]></darkgray><white>${plot}</white> <gray>${size-x}x${size-z}x${size-y} ~${owner}</gray></msg>
                 <footer>
-                    <msg id="one-page"><green>Página <gold>1</gold>/<gold>1</gold>
+                    <msg id="one-page"><darkgreen>--</darkgreen>
+                        <green>Página <gold>1</gold>/<gold>1</gold>
                             <darkgreen>---</darkgreen>
                             Dica: Digite <click>
                                 <suggest cmd='/cidade ir '/>
@@ -1121,7 +1185,8 @@
                             </click> para ir para a cidade
                         </green>
                     </msg>
-                    <msg id="last-page"><green>Página <gold>${page}</gold>/<gold>${page}</gold>
+                    <msg id="last-page"><darkgreen>--</darkgreen>
+                        <green>Página <gold>${page}</gold>/<gold>${page}</gold>
                             <darkgreen>---</darkgreen>
                             Dica: Digite <click>
                             <suggest cmd='/cidade ir '/>
@@ -1132,7 +1197,8 @@
                         </click> para ir para uma cidade
                         </green>
                     </msg>
-                    <msg id="more-pages"><green>Página <gold>${page}</gold>/<gold>${total}</gold>
+                    <msg id="more-pages"><darkgreen>--</darkgreen>
+                        <green>Página <gold>${page}</gold>/<gold>${total}</gold>
                             <darkgreen>---</darkgreen>
                             Próxima página: <hover>
                             <tooltip><gold>${next-page}</gold></tooltip>
@@ -1218,6 +1284,7 @@
             <deny>
                 <all>
                     <msg id="enter.arg.reason">motivo</msg>
+                    <msg id="modify.arg.reason">motivo</msg>
                     <msg id="click.arg.reason">motivo</msg>
                     <msg id="pickup.arg.reason">motivo</msg>
                     <msg id="harvest.arg.reason">motivo</msg>
@@ -1234,6 +1301,13 @@
                         <msg id="reason">motivo</msg>
                     </arg>
                 </enter>
+                <modify>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                        <msg id="reason">motivo</msg>
+                    </arg>
+                </modify>
                 <msg id="click.arg.player-or-city">jogador ou cidade</msg>
                 <msg id="click.arg.group-name">grupo</msg>
                 <msg id="click.arg.reason">motivo</msg>
@@ -1318,6 +1392,12 @@
                         <msg id="group-name">grupo</msg>
                     </arg>
                 </enter>
+                <modify>
+                    <arg>
+                        <msg id="player-or-city">jogador ou cidade</msg>
+                        <msg id="group-name">grupo</msg>
+                    </arg>
+                </modify>
                 <msg id="click.arg.player-or-city">jogador ou cidade</msg>
                 <msg id="click.arg.group-name">grupo</msg>
                 <pickup>
@@ -1471,6 +1551,8 @@
                             <msg id="group">Um nome de grupo</msg>
                             <msg id="group-or-city">Um nome de cidade ou um grupo da cidade em que você está agora</msg>
                             <msg id="player-or-city">Um nome de jogador ou de cidade</msg>
+                            <msg id="plot-or-city">Um nome de lote ou de cidade</msg>
+                            <msg id="plot">Um nome de lote</msg>
                             <msg id="help">Um comando ou número de página</msg>
                             <msg id="predefined">Um valor pré-definido</msg>
                             <msg id="single-predefinition">Só pode ser "${val}"</msg>
@@ -1501,27 +1583,24 @@
                 </msg>
             </info>
             <group>
-                <msg id="header"><darkgreen>---<yellow>-=[Ajuda do MineCity]=-</yellow>- <green>Clique para mais informações</green> -</darkgreen></msg>
+                <msg id="header"><darkgreen>---<yellow>-=[Ajuda do MineCity]=-</yellow>-- <green>Clique para mais informações</green> --</darkgreen></msg>
                 <footer>
-                    <msg id="one-page">
-                        <green>
-                            Página <gold>1</gold>/<gold>1</gold>
-                            <darkgreen>---</darkgreen>
-                            Dica: Clique nos comandos para mais informações
+                    <msg id="one-page"><darkgreen>--</darkgreen>
+                        <green>Página <gold>1</gold>/<gold>1</gold>
+                            <darkgreen>--</darkgreen>
+                            Dica: Clique nos comandos para informações
                         </green>
                     </msg>
-                    <msg id="last-page">
-                        <green>
-                            Página <gold>${page}</gold>/<gold>${total}</gold>
-                            <darkgreen>---</darkgreen>
-                            Dica: Clique nos comandos para mais informações
+                    <msg id="last-page"><darkgreen>--</darkgreen>
+                        <green>Página <gold>${page}</gold>/<gold>${total}</gold>
+                            <darkgreen>--</darkgreen>
+                            Dica: Clique nos comandos para informações
                         </green>
                     </msg>
-                    <msg id="more-pages">
-                        <green>
-                            Página <gold>${page}</gold>/<gold>${total}</gold>
+                    <msg id="more-pages"><darkgreen>--</darkgreen>
+                        <green>Página <gold>${page}</gold>/<gold>${total}</gold>
                             <darkgreen>---</darkgreen>
-                            Prósima página: <hover>
+                            Próxima página: <hover>
                             <tooltip><gold>${next-page}</gold></tooltip>
                             <click>
                                 <suggest cmd="${next-page}"/>

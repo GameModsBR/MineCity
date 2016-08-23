@@ -14,7 +14,7 @@
         <group id="group.manager" parent="group" cmd="gerente,gerentes">
             <desc>Todos os comandos relacionados aos gerentes de grupos</desc>
         </group>
-        <group id="plot" parent=",city,root" cmd="lotes">
+        <group id="plot" parent=",city,root" cmd="lote">
             <desc>Todos os comandos relacionados aos lotes</desc>
         </group>
         <group id="nature" parent=",root" cmd="natureza,mundo">
@@ -44,7 +44,7 @@
         <group id="city.deny.all" parent="city.deny" cmd="todos">
             <desc>Aplica proibições a todos, incluindo jogadores que foram diretamente permitidos</desc>
         </group>
-        <group id="city.reset.all" parent="city.reset" cmd="all">
+        <group id="city.reset.all" parent="city.reset" cmd="todos">
             <desc>Remove permissões e restrições diretas de todos</desc>
         </group>
         <group id="city.check" parent="city" cmd="ver,checar">
@@ -149,7 +149,7 @@
         <command id="plot.info" parent="plot" cmd="info">
             <desc>Exibe informações sobre o lote</desc>
         </command>
-        <command id="plot.readjust" parent="plot" cmd="readjust">
+        <command id="plot.readjust" parent="plot" cmd="reajustar">
             <desc>Reajusta o formato do lote. Pode ser usado para reposicionar o lote completamente.</desc>
         </command>
         <command id="plot.create" parent="plot" cmd="criar,novo">
@@ -368,34 +368,34 @@
         </command>
 
         <!-- Resetar -->
-        <command id="city.reset.enter" parent="city.reset" cmd="entrar">
+        <command id="city.clear.enter" parent="city.reset" cmd="entrar">
             <desc>Remove uma permissão ou restrição direta para entrar na cidade</desc>
         </command>
-        <command id="city.reset.click" parent="city.reset" cmd="clicar">
+        <command id="city.clear.click" parent="city.reset" cmd="clicar">
             <desc>Remove uma permissão ou restrição direta para clicar em blocos clicaveis, como portas, botões e alavancas</desc>
         </command>
-        <command id="city.reset.pickup" parent="city.reset" cmd="pegar">
+        <command id="city.clear.pickup" parent="city.reset" cmd="pegar">
             <desc>Remove uma permissão ou restrição direta para pegar itens soltos</desc>
         </command>
-        <command id="city.reset.harvest" parent="city.reset" cmd="colher">
+        <command id="city.clear.harvest" parent="city.reset" cmd="colher">
             <desc>Remove uma permissão ou restrição direta para colher produções como plantações e lãs</desc>
         </command>
-        <command id="city.reset.open" parent="city.reset" cmd="abrir">
+        <command id="city.clear.open" parent="city.reset" cmd="abrir">
             <desc>Remove uma permissão ou restrição direta para abrir contêiner como baús, molduras e fornalhas</desc>
         </command>
-        <command id="city.reset.pvp" parent="city.reset" cmd="pvp">
+        <command id="city.clear.pvp" parent="city.reset" cmd="pvp">
             <desc>Remove uma permissão ou restrição direta para ataques aos outros jogadores</desc>
         </command>
-        <command id="city.reset.pvc" parent="city.reset" cmd="pvc">
+        <command id="city.clear.pvc" parent="city.reset" cmd="pvc">
             <desc>Remove uma permissão ou restrição direta para ataques à criaturas</desc>
         </command>
-        <command id="city.reset.modify" parent="city.reset" cmd="modificar">
+        <command id="city.clear.modify" parent="city.reset" cmd="modificar">
             <desc>Remove uma permissão ou restrição direta para modificações estruturais na cidade</desc>
         </command>
-        <command id="city.reset.vehicle" parent="city.reset" cmd="veiculos,veiculo,veículos,veículo">
+        <command id="city.clear.vehicle" parent="city.reset" cmd="veiculos,veiculo,veículos,veículo">
             <desc>Remove uma permissão ou restrição direta para colocação de veículos na cidade</desc>
         </command>
-        <command id="city.reset.ride" parent="city.reset" cmd="montar">
+        <command id="city.clear.ride" parent="city.reset" cmd="montar">
             <desc>Remove uma permissão ou restrição direta para a utilização de veículos da cidade</desc>
         </command>
 
@@ -462,34 +462,34 @@
         </command>
 
         <!-- Resetar tudo -->
-        <command id="city.reset.all.enter" parent="city.reset.all" cmd="entrar">
+        <command id="city.clear.all.enter" parent="city.reset.all" cmd="entrar">
             <desc>Remove todas as permissões ou restrições diretas para entrar na cidade</desc>
         </command>
-        <command id="city.reset.all.click" parent="city.reset.all" cmd="clicar">
+        <command id="city.clear.all.click" parent="city.reset.all" cmd="clicar">
             <desc>Remove todas as permissões ou restrições diretas para clicar em blocos clicaveis, como portas, botões e alavancas</desc>
         </command>
-        <command id="city.reset.all.pickup" parent="city.reset.all" cmd="pegar">
+        <command id="city.clear.all.pickup" parent="city.reset.all" cmd="pegar">
             <desc>Remove todas as permissões ou restrições diretas para pegar itens soltos</desc>
         </command>
-        <command id="city.reset.all.harvest" parent="city.reset.all" cmd="colher">
+        <command id="city.clear.all.harvest" parent="city.reset.all" cmd="colher">
             <desc>Remove todas as permissões ou restrições diretas para colher produções como plantações e lãs</desc>
         </command>
-        <command id="city.reset.all.open" parent="city.reset.all" cmd="abrir">
+        <command id="city.clear.all.open" parent="city.reset.all" cmd="abrir">
             <desc>Remove todas as permissões ou restrições diretas para abrir contêiner como baús, molduras e fornalhas</desc>
         </command>
-        <command id="city.reset.all.pvp" parent="city.reset.all" cmd="pvp">
+        <command id="city.clear.all.pvp" parent="city.reset.all" cmd="pvp">
             <desc>Remove todas as permissões ou restrições diretas para ataques aos outros jogadores</desc>
         </command>
-        <command id="city.reset.all.pvc" parent="city.reset.all" cmd="pvc">
+        <command id="city.clear.all.pvc" parent="city.reset.all" cmd="pvc">
             <desc>Remove todas as permissões ou restrições diretas para ataques à criaturas</desc>
         </command>
-        <command id="city.reset.all.modify" parent="city.reset.all" cmd="modificar">
+        <command id="city.clear.all.modify" parent="city.reset.all" cmd="modificar">
             <desc>Remove todas as permissões ou restrições diretas para modificações estruturais na cidade</desc>
         </command>
-        <command id="city.reset.all.vehicle" parent="city.reset.all" cmd="veiculos,veiculo,veículos,veículo">
+        <command id="city.clear.all.vehicle" parent="city.reset.all" cmd="veiculos,veiculo,veículos,veículo">
             <desc>Remove todas as permissões ou restrições diretas para a colocação de veículos na cidade</desc>
         </command>
-        <command id="city.reset.all.ride" parent="city.reset.all" cmd="montar">
+        <command id="city.clear.all.ride" parent="city.reset.all" cmd="montar">
             <desc>Remove todas as permissões ou restrições diretas para a utlização de veículos da cidade</desc>
         </command>
 
@@ -592,34 +592,34 @@
         </command>
 
         <!-- Resetar permissões -->
-        <command id="plot.reset.enter" parent="plot.reset" cmd="entrar">
+        <command id="plot.clear.enter" parent="plot.reset" cmd="entrar">
             <desc>Remove uma permissão ou restrição direta para entrar no lote</desc>
         </command>
-        <command id="plot.reset.click" parent="plot.reset" cmd="clicar">
+        <command id="plot.clear.click" parent="plot.reset" cmd="clicar">
             <desc>Remove uma permissão ou restrição direta para clicar em blocos clicaveis, como portas, botões e alavancas</desc>
         </command>
-        <command id="plot.reset.pickup" parent="plot.reset" cmd="pegar">
+        <command id="plot.clear.pickup" parent="plot.reset" cmd="pegar">
             <desc>Remove uma permissão ou restrição direta para pegar itens soltos</desc>
         </command>
-        <command id="plot.reset.harvest" parent="plot.reset" cmd="colher">
+        <command id="plot.clear.harvest" parent="plot.reset" cmd="colher">
             <desc>Remove uma permissão ou restrição direta para colher produções como plantações e lãs</desc>
         </command>
-        <command id="plot.reset.open" parent="plot.reset" cmd="abrir">
+        <command id="plot.clear.open" parent="plot.reset" cmd="abrir">
             <desc>Remove uma permissão ou restrição direta para abrir contêiner como baús, molduras e fornalhas</desc>
         </command>
-        <command id="plot.reset.pvp" parent="plot.reset" cmd="pvp">
+        <command id="plot.clear.pvp" parent="plot.reset" cmd="pvp">
             <desc>Remove uma permissão ou restrição direta para ataques aos outros jogadores</desc>
         </command>
-        <command id="plot.reset.pvc" parent="plot.reset" cmd="pvc">
+        <command id="plot.clear.pvc" parent="plot.reset" cmd="pvc">
             <desc>Remove uma permissão ou restrição direta para ataques à criaturas</desc>
         </command>
-        <command id="plot.reset.modify" parent="plot.reset" cmd="modificar">
+        <command id="plot.clear.modify" parent="plot.reset" cmd="modificar">
             <desc>Remove uma permissão ou restrição direta para modificações estruturais no lote</desc>
         </command>
-        <command id="plot.reset.vehicle" parent="plot.reset" cmd="veiculos,veiculo,veículos,veículo">
+        <command id="plot.clear.vehicle" parent="plot.reset" cmd="veiculos,veiculo,veículos,veículo">
             <desc>Remove uma permissão ou restrição direta para a colocação de veículos no lote</desc>
         </command>
-        <command id="plot.reset.ride" parent="plot.reset" cmd="montar">
+        <command id="plot.clear.ride" parent="plot.reset" cmd="montar">
             <desc>Remove uma permissão ou restrição direta para utilização de veículos da cidade</desc>
         </command>
 
@@ -686,34 +686,34 @@
         </command>
 
         <!-- Resetar tudo -->
-        <command id="plot.reset.all.enter" parent="plot.reset.all" cmd="entrar">
+        <command id="plot.clear.all.enter" parent="plot.reset.all" cmd="entrar">
             <desc>Remove todas as permissões ou restrições diretas para entrar no lote</desc>
         </command>
-        <command id="plot.reset.all.click" parent="plot.reset.all" cmd="clicar">
+        <command id="plot.clear.all.click" parent="plot.reset.all" cmd="clicar">
             <desc>Remove todas as permissões ou restrições diretas para clicar em blocos clicaveis, como portas, botões e alavancas</desc>
         </command>
-        <command id="plot.reset.all.pickup" parent="plot.reset.all" cmd="pegar">
+        <command id="plot.clear.all.pickup" parent="plot.reset.all" cmd="pegar">
             <desc>Remove todas as permissões ou restrições diretas para pegar itens soltos</desc>
         </command>
-        <command id="plot.reset.all.harvest" parent="plot.reset.all" cmd="colher">
+        <command id="plot.clear.all.harvest" parent="plot.reset.all" cmd="colher">
             <desc>Remove todas as permissões ou restrições diretas para colher produções como plantações e lãs</desc>
         </command>
-        <command id="plot.reset.all.open" parent="plot.reset.all" cmd="abrir">
+        <command id="plot.clear.all.open" parent="plot.reset.all" cmd="abrir">
             <desc>Remove todas as permissões ou restrições diretas para abrir contêiner como baús, molduras e fornalhas</desc>
         </command>
-        <command id="plot.reset.all.pvp" parent="plot.reset.all" cmd="pvp">
+        <command id="plot.clear.all.pvp" parent="plot.reset.all" cmd="pvp">
             <desc>Remove todas as permissões ou restrições diretas para ataques aos outros jogadores</desc>
         </command>
-        <command id="plot.reset.all.pvc" parent="plot.reset.all" cmd="pvc">
+        <command id="plot.clear.all.pvc" parent="plot.reset.all" cmd="pvc">
             <desc>Remove todas as permissões ou restrições diretas para ataques à criaturas</desc>
         </command>
-        <command id="plot.reset.all.modify" parent="plot.reset.all" cmd="modificar">
+        <command id="plot.clear.all.modify" parent="plot.reset.all" cmd="modificar">
             <desc>Remove todas as permissões ou restrições diretas para modificações estruturais no lote</desc>
         </command>
-        <command id="plot.reset.all.vehicle" parent="plot.reset.all" cmd="veiculos,veiculo,veículos,veículo">
+        <command id="plot.clear.all.vehicle" parent="plot.reset.all" cmd="veiculos,veiculo,veículos,veículo">
             <desc>Remove todas as permissões ou restrições diretas para a colocação de veículos no lote</desc>
         </command>
-        <command id="plot.reset.all.ride" parent="plot.reset.all" cmd="montar">
+        <command id="plot.clear.all.ride" parent="plot.reset.all" cmd="montar">
             <desc>Remove todas as permissões ou restrições diretas para a utlização de veículos do lote</desc>
         </command>
     </commands>
