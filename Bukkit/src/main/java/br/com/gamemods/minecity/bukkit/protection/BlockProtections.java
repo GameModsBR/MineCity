@@ -994,7 +994,6 @@ public class BlockProtections extends AbstractProtection
                             {
                                 if(check(block.getRelative(BlockFace.UP).getLocation(), event.getPlayer(), PermissionFlag.MODIFY))
                                     event.setCancelled(true);
-                                //TODO Check around
                                 return;
                             }
                     }
