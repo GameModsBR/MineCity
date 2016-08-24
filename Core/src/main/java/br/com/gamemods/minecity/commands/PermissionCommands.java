@@ -276,7 +276,7 @@ public class PermissionCommands
     private CommandResult<?> listNature(CommandEvent cmd, PermissionFlag flag)
     {
         Nature nature = cmd.mineCity.nature(cmd.position.world);
-        return new CommandResult<>(list(nature, flag, "cmd.nature.perms", nature.world.name()));
+        return new CommandResult<>(list(nature, flag, "cmd.nature.perms", nature.world.name()), true);
     }
 
     @Slow
