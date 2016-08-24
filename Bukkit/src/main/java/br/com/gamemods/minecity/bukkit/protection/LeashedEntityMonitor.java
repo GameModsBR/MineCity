@@ -17,9 +17,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class LeashedEntityMonitor extends BukkitRunnable implements MovementListener
+public class LeashedEntityMonitor extends BukkitRunnable implements BukkitMovementListener
 {
-    private final MovementMonitor mov;
+    private final BukkitMovementMonitor mov;
     private final BukkitPlayer player;
     private final MineCityBukkit plugin;
     private final Location location, vehicleLocation;
@@ -29,7 +29,7 @@ public class LeashedEntityMonitor extends BukkitRunnable implements MovementList
         this.plugin = bukkit;
         location = entity.getLocation();
         vehicleLocation = location.clone();
-        mov = new MovementMonitor(bukkit, entity, this);
+        mov = new BukkitMovementMonitor(bukkit, entity, this);
     }
 
     private void teleport(BlockPos pos)

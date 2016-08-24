@@ -1,42 +1,41 @@
-package br.com.gamemods.minecity.bukkit.protection;
+package br.com.gamemods.minecity.protection;
 
+import br.com.gamemods.minecity.MineCity;
+import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
-import br.com.gamemods.minecity.bukkit.MineCityBukkit;
 import br.com.gamemods.minecity.structure.*;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public class MovementMonitor
+public class MovementMonitor<Entity, S extends Server>
 {
-    public final MineCityBukkit plugin;
+    public final S server;
+    private final MineCity mineCity;
+    private final MovementListener<Entity,S> listener;
     public final Entity entity;
-    private final MovementListener listener;
     public ClaimedChunk lastClaim;
     public int lastX, lastY, lastZ;
     public City lastCity;
     public Plot lastPlot;
     public byte messageWait;
 
-    public MovementMonitor(MineCityBukkit plugin, Entity entity, MovementListener listener)
+    public MovementMonitor(S server, Entity entity, BlockPos pos, MovementListener<Entity,S> listener)
     {
-        this.plugin = plugin;
-        this.entity = entity;
+        this.server = server;
+        this.mineCity = server.getMineCity();
         this.listener = listener;
-        Location location = entity.getLocation();
-        lastX = location.getBlockX();
-        lastY = location.getBlockY();
-        lastZ = location.getBlockZ();
-        ChunkPos chunk = new ChunkPos(plugin.world(location.getWorld()), lastX >> 4, lastZ >> 4);
-        lastClaim = plugin.mineCity.provideChunk(chunk);
+        this.entity = entity;
+        lastX = pos.x;
+        lastY = pos.y;
+        lastZ = pos.z;
+        ChunkPos chunk = pos.getChunk();
+        lastClaim = mineCity.provideChunk(chunk);
         lastCity = lastClaim.getCity().orElse(null);
         lastPlot = lastClaim.getPlotAt(lastX, lastY, lastZ).orElse(null);
     }
@@ -47,30 +46,25 @@ public class MovementMonitor
     {
         return lastPlot != null? lastPlot :
                 lastCity != null? lastCity :
-                        lastClaim.nature().orElseGet(()-> plugin.mineCity.nature(lastClaim.chunk.world))
+                        lastClaim.nature().orElseGet(()-> mineCity.nature(lastClaim.chunk.world))
                 ;
     }
 
-    public Optional<Message> checkPosition(Location location)
+    public Optional<Message> checkPosition(WorldDim worldDim, int posX, int posY, int posZ)
     {
         if(lastClaim.isInvalid())
         {
-            lastClaim = plugin.mineCity.provideChunk(lastClaim.chunk);
+            lastClaim = mineCity.provideChunk(lastClaim.chunk);
             lastCity = lastClaim.getCity().orElse(null);
             lastPlot = lastClaim.getPlotAt(lastX, lastY, lastZ).orElse(null);
         }
 
-        int posX = location.getBlockX();
-        int posY = location.getBlockY();
-        int posZ = location.getBlockZ();
         int chunkX = posX >> 4;
         int chunkZ = posZ >> 4;
-        World worldObj = location.getWorld();
-        WorldDim worldDim = plugin.world(worldObj);
         if(lastClaim.chunk.x != chunkX || lastClaim.chunk.z != chunkZ || !lastClaim.chunk.world.equals(worldDim))
         {
             ChunkPos chunk = new ChunkPos(worldDim, chunkX, chunkZ);
-            ClaimedChunk claim = plugin.mineCity.getChunk(chunk).orElseGet(() -> Inconsistency.claim(chunk));
+            ClaimedChunk claim = mineCity.getChunk(chunk).orElseGet(() -> Inconsistency.claim(chunk));
             City city = claim.getCity().orElse(null);
             Plot plot = null;
             Optional<Message> denial;
@@ -96,14 +90,14 @@ public class MovementMonitor
             }
             else if(lastCity != null)
             {
-                Nature nature = plugin.mineCity.nature(chunk.world);
+                Nature nature = mineCity.nature(chunk.world);
                 denial = listener.onCityLeave(nature);
                 if(denial.isPresent())
                     return denial;
             }
             else if(!lastClaim.chunk.world.equals(chunk.world))
             {
-                Nature nature = plugin.mineCity.nature(chunk.world);
+                Nature nature = mineCity.nature(chunk.world);
                 denial = listener.onNatureChange(nature);
                 if(denial.isPresent())
                     return denial;
@@ -139,7 +133,7 @@ public class MovementMonitor
             messageWait--;
         else if(lastX != posX || lastZ != posZ || lastY < posY)
         {
-            if(listener.isSafeToStep(entity, entity.getWorld().getBlockAt(posX, posY - 1, posZ)))
+            if(listener.isSafeToStep(server, entity, worldDim, posX, posY - 1, posZ))
             {
                 lastX = posX;
                 lastY = posY;
@@ -150,10 +144,8 @@ public class MovementMonitor
         return Optional.empty();
     }
 
-    public Location lastLocation()
+    public BlockPos lastPosition()
     {
-        return plugin.location(new BlockPos(lastClaim.chunk.world, lastX, lastY, lastZ)).orElseGet(()->
-                new Location(entity.getWorld(), lastX+0.5, lastY+0.5, lastZ+0.5)
-        );
+        return new BlockPos(lastClaim.chunk.world, lastX, lastY, lastZ);
     }
 }

@@ -22,12 +22,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 @SuppressWarnings("deprecation")
-public class SafeHorseRideMonitor extends BukkitRunnable implements MovementListener
+public class SafeHorseRideMonitor extends BukkitRunnable implements BukkitMovementListener
 {
     public static final String KEY = "SafeHorse";
     private final MineCityBukkit bukkit;
     public final BukkitPlayer player;
-    private final MovementMonitor mov;
+    private final BukkitMovementMonitor mov;
     public final Horse horse;
     private double lastHealth;
     private byte unregisterTimer = Byte.MIN_VALUE;
@@ -42,7 +42,7 @@ public class SafeHorseRideMonitor extends BukkitRunnable implements MovementList
         this.player = player;
         this.lastHealth = horse.getHealth();
         this.horse = horse;
-        this.mov = new MovementMonitor(plugin, horse, this);
+        this.mov = new BukkitMovementMonitor(plugin, horse, this);
         location = horse.getLocation();
         horse.setMetadata(KEY, new FixedMetadataValue(plugin.plugin, this));
     }
@@ -186,7 +186,7 @@ public class SafeHorseRideMonitor extends BukkitRunnable implements MovementList
                     case MAGMA:
                         return false;
                     default:
-                        if(!MovementListener.super.isSafeToStep(entity, block))
+                        if(!BukkitMovementListener.super.isSafeToStep(entity, block))
                             return false;
                 }
             }

@@ -1,26 +1,21 @@
 package br.com.gamemods.minecity.bukkit.protection;
 
-import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.structure.City;
-import br.com.gamemods.minecity.structure.Nature;
-import br.com.gamemods.minecity.structure.Plot;
+import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.bukkit.MineCityBukkit;
+import br.com.gamemods.minecity.protection.MovementListener;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
-public interface MovementListener
+public interface BukkitMovementListener extends MovementListener<Entity, MineCityBukkit>
 {
-    Optional<Message> onCityChange(@NotNull City city, @Nullable Plot plot);
-    Optional<Message> onPlotEnter(@NotNull Plot plot);
-    Optional<Message> onPlotLeave(@NotNull City city);
-    Optional<Message> onCityLeave(@NotNull Nature nature);
-    Optional<Message> onNatureChange(@NotNull Nature nature);
+    @Override
+    default boolean isSafeToStep(MineCityBukkit bukkit, Entity entity, WorldDim world, int x, int y, int z)
+    {
+        return isSafeToStep(entity, bukkit.world(world).get().getBlockAt(x, y, z));
+    }
 
     default boolean isSafeToStep(Entity entity, Block block)
     {

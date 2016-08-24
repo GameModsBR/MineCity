@@ -8,8 +8,8 @@ import br.com.gamemods.minecity.api.permission.GroupID;
 import br.com.gamemods.minecity.api.unchecked.UFunction;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.bukkit.MineCityBukkit;
-import br.com.gamemods.minecity.bukkit.protection.MovementListener;
-import br.com.gamemods.minecity.bukkit.protection.MovementMonitor;
+import br.com.gamemods.minecity.bukkit.protection.BukkitMovementListener;
+import br.com.gamemods.minecity.bukkit.protection.BukkitMovementMonitor;
 import br.com.gamemods.minecity.structure.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -36,7 +36,7 @@ import static br.com.gamemods.minecity.api.permission.FlagHolder.can;
 import static br.com.gamemods.minecity.api.permission.PermissionFlag.*;
 
 @SuppressWarnings("deprecation")
-public class BukkitPlayer extends BukkitLocatableSender<Player> implements MinecraftEntity, MovementListener
+public class BukkitPlayer extends BukkitLocatableSender<Player> implements MinecraftEntity, BukkitMovementListener
 {
     public final PlayerID playerId;
     private BukkitSelection selection;
@@ -44,7 +44,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     private String confirmCode;
     @Nullable
     private Set<GroupID> groups;
-    private final MovementMonitor mov;
+    private final BukkitMovementMonitor mov;
     private final Location location, vehicleLocation;
     public byte pickupRandomDelay;
     public byte pickupHarvestDelay;
@@ -58,7 +58,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
         this.playerId = new PlayerID(player.getUniqueId(), player.getName());
         location = player.getLocation();
         vehicleLocation = location.clone();
-        mov = new MovementMonitor(plugin, player, this);
+        mov = new BukkitMovementMonitor(plugin, player, this);
         plugin.runAsynchronously(() ->
         {
             try

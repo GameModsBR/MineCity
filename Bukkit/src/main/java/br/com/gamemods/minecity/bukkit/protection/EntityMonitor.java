@@ -22,14 +22,14 @@ import java.util.Map;
 import java.util.Optional;
 
 @SuppressWarnings("serial")
-public class EntityMonitor extends BukkitRunnable implements MovementListener
+public class EntityMonitor extends BukkitRunnable implements BukkitMovementListener
 {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private static final Optional<Message> COMMON_DENIAL = Optional.of(new Message("Entity movement denied"));
     public static final String KEY = "EntityMonitor";
     private final MineCityBukkit bukkit;
     private final Entity entity;
-    private final MovementMonitor mov;
+    private final BukkitMovementMonitor mov;
     private final Location location;
     private final Location valid;
     private final Location previous;
@@ -42,7 +42,7 @@ public class EntityMonitor extends BukkitRunnable implements MovementListener
     public EntityMonitor(@NotNull MineCityBukkit bukkit, @NotNull Entity entity)
     {
         this.bukkit = bukkit;
-        this.mov = new MovementMonitor(bukkit, entity, this);
+        this.mov = new BukkitMovementMonitor(bukkit, entity, this);
         this.entity = entity;
         this.location = entity.getLocation();
         this.valid = location.clone();
