@@ -1,10 +1,14 @@
-package br.com.gamemods.minecity.forge.mc_1_7_10.command;
+package br.com.gamemods.minecity.forge.base.command;
 
 import br.com.gamemods.minecity.api.command.CommandInfo;
-import br.com.gamemods.minecity.forge.mc_1_7_10.MineCityForgeMod;
+import br.com.gamemods.minecity.forge.base.MineCityForge;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,11 +16,11 @@ import java.util.List;
 
 public class RootCommand<T> implements ICommand
 {
-    public final MineCityForgeMod mod;
+    public final MineCityForge mod;
     public final String name;
     public final CommandInfo<T> info;
 
-    public RootCommand(MineCityForgeMod mod, CommandInfo<T> info)
+    public RootCommand(MineCityForge mod, CommandInfo<T> info)
     {
         this.mod = mod;
         this.info = info;
@@ -24,27 +28,23 @@ public class RootCommand<T> implements ICommand
     }
 
     @NotNull
-    @Override
     public String getCommandName()
     {
         return name;
     }
 
     @NotNull
-    @Override
     public String getCommandUsage(@NotNull ICommandSender sender)
     {
         return info.syntax;
     }
 
     @NotNull
-    @Override
-    public List getCommandAliases()
+    public List<String> getCommandAliases()
     {
         return new ArrayList<>(info.aliases);
     }
 
-    @Override
     public void processCommand(@NotNull ICommandSender sender, @NotNull String[] args)
     {
         List<String> path = new ArrayList<>(args.length + 1);
@@ -53,16 +53,24 @@ public class RootCommand<T> implements ICommand
         mod.mineCity.commands.invoke(mod.sender(sender), path);
     }
 
-    @Override
+    public void execute(@Nullable MinecraftServer server, @NotNull ICommandSender sender, @NotNull String[] args) throws CommandException
+    {
+        processCommand(sender, args);
+    }
+
     public boolean canCommandSenderUseCommand(@NotNull ICommandSender sender)
     {
         return true;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
+    public boolean checkPermission(@Nullable MinecraftServer server, @NotNull ICommandSender sender)
+    {
+        return true;
+    }
+
     @NotNull
-    public List addTabCompletionOptions(@NotNull ICommandSender sender, @NotNull String[] args)
+    @SuppressWarnings("unchecked")
+    public List<String> addTabCompletionOptions(@NotNull ICommandSender sender, @NotNull String[] args)
     {
         String[] path = new String[args.length+1];
         path[0] = name;
@@ -70,15 +78,20 @@ public class RootCommand<T> implements ICommand
         return mod.mineCity.commands.complete(path);
     }
 
-    @Override
+    @NotNull
+    public List<String> getTabCompletionOptions(@NotNull MinecraftServer server, @NotNull ICommandSender sender, @NotNull String[] args,
+                                                @Nullable BlockPos pos)
+    {
+        return addTabCompletionOptions(sender, args);
+    }
+
     public boolean isUsernameIndex(@NotNull String[] p_82358_1_, int p_82358_2_)
     {
         return false;
     }
 
-    @Override
-    public int compareTo(@NotNull Object o)
+    public int compareTo(@NotNull ICommand o)
     {
-        return this.getCommandName().compareTo(((ICommand)o).getCommandName());
+        return this.getCommandName().compareTo(o.getCommandName());
     }
 }

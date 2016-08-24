@@ -37,9 +37,7 @@ configurations {
 
 dependencies {
     shade project(':Core')
-    compile(project(':Forge:Base')) {
-        exclude module: "start"
-    }
+    shade project(':Forge:Base')
     shade "org.mcstats.forge:metrics:R8-SNAPSHOT"
     compile "mysql:mysql-connector-java:5.1.32"
 }

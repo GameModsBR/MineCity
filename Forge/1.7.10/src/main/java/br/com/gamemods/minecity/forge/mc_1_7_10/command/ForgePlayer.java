@@ -372,7 +372,7 @@ public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements I
         ItemStack stack = new ItemStack(Items.wooden_hoe);
         stack.setTagInfo("MineCity", new NBTTagByte((byte)1));
         stack.setStackDisplayName(mod.transformer.toLegacy(new Message("tool.selection.title", LegacyFormat.AQUA+"Selection Tool")));
-        stack.setTagInfo("Lore", mod.transformer.toLore(new Message("tool.selection.lore", "Selects an area in the world")));
+        //stack.setTagInfo("Lore", mod.transformer.toLore(new Message("tool.selection.lore", "Selects an area in the world")));
         if(!sender.inventory.addItemStackToInventory(stack))
             send(CommandFunction.messageFailed(new Message(
                     "action.give.tool.inventory-full",

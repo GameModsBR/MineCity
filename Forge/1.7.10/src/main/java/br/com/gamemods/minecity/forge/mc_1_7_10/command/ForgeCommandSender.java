@@ -1,56 +1,15 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.command;
 
-import br.com.gamemods.minecity.api.PlayerID;
-import br.com.gamemods.minecity.api.Server;
-import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.world.Direction;
-import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.forge.mc_1_7_10.MineCityForgeMod;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.IChatComponent;
-import org.jetbrains.annotations.NotNull;
 
-public class ForgeCommandSender<S extends ICommandSender> implements CommandSender
+public class ForgeCommandSender<S extends ICommandSender> extends br.com.gamemods.minecity.forge.base.command.ForgeCommandSender<S>
 {
-    public final MineCityForgeMod mod;
-    public final S sender;
-
     public ForgeCommandSender(MineCityForgeMod mod, S sender)
     {
-        this.mod = mod;
-        this.sender = sender;
-    }
-
-    @NotNull
-    @Override
-    public Server getServer()
-    {
-        return mod;
-    }
-
-    @Override
-    public EntityPos getPosition()
-    {
-        return null;
-    }
-
-    @Override
-    public boolean isPlayer()
-    {
-        return false;
-    }
-
-    @Override
-    public PlayerID getPlayerId()
-    {
-        return null;
-    }
-
-    @Override
-    public boolean hasPermission(String perm)
-    {
-        return true;
+        super(mod, sender);
     }
 
     @Override
@@ -77,13 +36,7 @@ public class ForgeCommandSender<S extends ICommandSender> implements CommandSend
     @Override
     public void send(Message message)
     {
-        for(IChatComponent msg: mod.transformer.toMultilineForge(message))
+        for(IChatComponent msg: ((ForgeTransformer) mod.transformer).toMultilineForge(message))
             sender.addChatMessage(msg);
-    }
-
-    @Override
-    public Direction getCardinalDirection()
-    {
-        return null;
     }
 }
