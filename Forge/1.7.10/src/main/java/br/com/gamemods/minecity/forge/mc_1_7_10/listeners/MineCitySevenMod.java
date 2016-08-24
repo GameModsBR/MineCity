@@ -6,7 +6,7 @@ import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.ModConstants;
 import br.com.gamemods.minecity.forge.base.command.RootCommand;
-import br.com.gamemods.minecity.forge.mc_1_7_10.MineCityForge7;
+import br.com.gamemods.minecity.forge.mc_1_7_10.MineCitySeven;
 import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenTransformer;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -27,7 +27,7 @@ public class MineCitySevenMod
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) throws IOException, SAXException
     {
-        forge = new MineCityForge7();
+        forge = new MineCitySeven();
 
         LegacyFormat.BLACK.server = EnumChatFormatting.BLACK;
         LegacyFormat.DARK_BLUE.server = EnumChatFormatting.DARK_BLUE;

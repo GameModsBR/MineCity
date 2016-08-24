@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.command;
 
+import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.CommandFunction;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
@@ -7,7 +8,7 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayerSender;
-import br.com.gamemods.minecity.forge.mc_1_7_10.MineCityForge7;
+import br.com.gamemods.minecity.forge.mc_1_7_10.MineCitySeven;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -22,11 +23,17 @@ import net.minecraft.world.WorldServer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SevenPlayerSender extends ForgePlayerSender<EntityPlayerMP, MineCityForge7>
+public class SevenPlayerSender extends ForgePlayerSender<EntityPlayerMP, MineCitySeven>
 {
-    public SevenPlayerSender(MineCityForge7 mod, EntityPlayerMP sender)
+    public SevenPlayerSender(MineCitySeven mod, EntityPlayerMP sender)
     {
         super(mod, sender);
+    }
+
+    @Override
+    protected PlayerID createId(EntityPlayerMP player)
+    {
+        return new PlayerID(player.getUniqueID(), player.getCommandSenderName());
     }
 
     @Override

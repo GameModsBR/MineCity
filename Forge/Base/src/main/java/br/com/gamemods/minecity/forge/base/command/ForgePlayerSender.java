@@ -37,7 +37,12 @@ public abstract class ForgePlayerSender<P extends EntityPlayer, F extends MineCi
     public ForgePlayerSender(F mod, P sender)
     {
         super(mod, sender);
-        this.id = new PlayerID(sender.getUniqueID(), sender.getName());
+        this.id = createId(sender);
+    }
+
+    protected PlayerID createId(P player)
+    {
+        return new PlayerID(sender.getUniqueID(), sender.getName());
     }
 
     public void tick()

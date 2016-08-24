@@ -404,4 +404,11 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
     {
         return entity.getRidingEntity();
     }
+
+    public br.com.gamemods.minecity.api.world.BlockPos block(Entity entity)
+    {
+        return new br.com.gamemods.minecity.api.world.BlockPos(
+                world(entity.worldObj), (int)entity.posX, (int)entity.posY, (int)entity.posZ
+        );
+    }
 }

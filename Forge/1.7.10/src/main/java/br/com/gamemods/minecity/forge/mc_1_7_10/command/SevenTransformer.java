@@ -30,7 +30,7 @@ public class SevenTransformer extends ForgeTransformer
     public void send(Message[] messages, ICommandSender commandSender)
     {
         for(Message message: messages)
-            send(messages, commandSender);
+            send(message, commandSender);
     }
 
     public IChatComponent toForge(Message message)

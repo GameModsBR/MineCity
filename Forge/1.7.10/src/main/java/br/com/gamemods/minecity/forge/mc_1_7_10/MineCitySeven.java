@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class MineCityForge7 extends MineCityForge
+public class MineCitySeven extends MineCityForge
 {
     @Override
     @SuppressWarnings("unchecked")
