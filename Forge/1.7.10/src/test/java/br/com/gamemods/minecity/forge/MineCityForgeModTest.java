@@ -5,7 +5,7 @@ import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.command.CommandResult;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
-import br.com.gamemods.minecity.forge.command.RootCommand;
+import br.com.gamemods.minecity.forge.mc_1_7_10.command.RootCommand;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;

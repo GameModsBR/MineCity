@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge.core.transformer.forge;
+package br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.*;
@@ -6,7 +6,7 @@ import org.objectweb.asm.*;
 import java.util.Arrays;
 
 /**
- * Makes {@link net.minecraft.world.WorldServer} implements {@link br.com.gamemods.minecity.forge.accessors.IWorldServer}
+ * Makes {@link net.minecraft.world.WorldServer} implements {@link br.com.gamemods.minecity.forge.base.accessors.IWorldServer}
  * <pre><code>
  *     public class WorldServer extends World
  *         implements IWorldServer // <- Added
@@ -28,7 +28,7 @@ public class WorldServerTransformer implements IClassTransformer
             ClassReader reader = new ClassReader(bytes);
             ClassWriter writer = new ClassWriter(reader, Opcodes.ASM4);
             String worldDim = "br/com/gamemods/minecity/api/world/WorldDim";
-            String iWorldServer = "br/com/gamemods/minecity/forge/accessors/IWorldServer";
+            String iWorldServer = "br/com/gamemods/minecity/forge/base/accessors/IWorldServer";
             String worldServer = "net/minecraft/world/WorldServer";
 
             ClassVisitor visitor = new ClassVisitor(Opcodes.ASM4, writer)

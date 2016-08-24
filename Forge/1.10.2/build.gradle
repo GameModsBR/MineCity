@@ -29,7 +29,7 @@ project(':Forge:1.10.2') {
 
 minecraft {
     version = "1.10.2-12.18.1.2011"
-    runDir = "run/1.10.2"
+    runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
@@ -47,12 +47,14 @@ configurations {
 
 dependencies {
     shade project(':Core')
+    shade project(':Forge:Base')
+    compile "mysql:mysql-connector-java:6.0.3"
 }
 
 jar {
     manifest {
         attributes (
-                'FMLCorePlugin': 'br.com.gamemods.minecity.forge.core.MineCityCoreMod',
+                'FMLCorePlugin': 'br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityCoreMod',
                 'FMLCorePluginContainsFMLMod': 'true'
         )
     }

@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge.core.transformer.forge;
+package br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.*;
@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 /**
  * Makes {@link net.minecraft.entity.player.EntityPlayerMP EntityPlayerMP}
- * implements {@link br.com.gamemods.minecity.forge.accessors.IEntityPlayerMP IEntityPlayerMP}
+ * implements {@link br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP IEntityPlayerMP}
  * <pre><code>
  *     public class EntityPlayerMP extends EntityPlayer
  *         implements IEntityPlayerMP // <- Added
@@ -28,8 +28,8 @@ public class EntityPlayerMPTransformer implements IClassTransformer
         {
             ClassReader reader = new ClassReader(bytes);
             ClassWriter writer = new ClassWriter(reader, Opcodes.ASM4);
-            String forgePlayer = "br/com/gamemods/minecity/forge/command/ForgePlayer";
-            String iEntityPlayerMP = "br/com/gamemods/minecity/forge/accessors/IEntityPlayerMP";
+            String forgePlayer = "br/com/gamemods/minecity/forge/base/command/IForgePlayer";
+            String iEntityPlayerMP = "br/com/gamemods/minecity/forge/base/accessors/IEntityPlayerMP";
             String entityPlayerMP = "net/minecraft/entity/player/EntityPlayerMP";
 
             ClassVisitor visitor = new ClassVisitor(Opcodes.ASM4, writer)

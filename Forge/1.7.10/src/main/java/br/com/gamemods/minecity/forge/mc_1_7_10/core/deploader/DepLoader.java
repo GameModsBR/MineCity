@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge.core.deploader;
+package br.com.gamemods.minecity.forge.mc_1_7_10.core.deploader;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

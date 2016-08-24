@@ -12,13 +12,13 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
-import br.com.gamemods.minecity.forge.accessors.IChunk;
-import br.com.gamemods.minecity.forge.accessors.IEntityPlayerMP;
-import br.com.gamemods.minecity.forge.accessors.IWorldServer;
-import br.com.gamemods.minecity.forge.command.ForgeCommandSender;
-import br.com.gamemods.minecity.forge.command.ForgePlayer;
-import br.com.gamemods.minecity.forge.command.ForgeTransformer;
-import br.com.gamemods.minecity.forge.command.RootCommand;
+import br.com.gamemods.minecity.forge.base.accessors.IChunk;
+import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.IWorldServer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.command.ForgeCommandSender;
+import br.com.gamemods.minecity.forge.mc_1_7_10.command.ForgePlayer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.command.ForgeTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.command.RootCommand;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Inconsistency;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -418,7 +418,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
         if(player instanceof IEntityPlayerMP)
         {
             IEntityPlayerMP cast = ((IEntityPlayerMP) player);
-            ForgePlayer cache = cast.getMineCityPlayer();
+            ForgePlayer cache = (ForgePlayer) cast.getMineCityPlayer();
             if(cache != null)
                 return cache;
 

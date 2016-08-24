@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge.command;
+package br.com.gamemods.minecity.forge.mc_1_7_10.command;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
@@ -8,6 +8,7 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.unchecked.UFunction;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
+import br.com.gamemods.minecity.forge.base.command.IForgePlayer;
 import br.com.gamemods.minecity.structure.*;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
@@ -38,7 +39,7 @@ import java.util.concurrent.ExecutionException;
 import static br.com.gamemods.minecity.api.CollectionUtil.optionalStream;
 import static br.com.gamemods.minecity.api.permission.FlagHolder.can;
 
-public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements MinecraftEntity
+public class ForgePlayer extends ForgeCommandSender<EntityPlayerMP> implements IForgePlayer
 {
     private final PlayerID identity;
     public ChunkPos lastChunk;

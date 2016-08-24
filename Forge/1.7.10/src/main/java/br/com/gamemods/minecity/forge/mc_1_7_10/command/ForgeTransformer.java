@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge.command;
+package br.com.gamemods.minecity.forge.mc_1_7_10.command;
 
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;

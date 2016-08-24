@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge.accessors;
+package br.com.gamemods.minecity.forge.base.accessors;
 
 import br.com.gamemods.minecity.api.world.WorldDim;
 import net.minecraft.world.WorldServer;

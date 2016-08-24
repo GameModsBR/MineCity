@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge.accessors;
+package br.com.gamemods.minecity.forge.base.accessors;
 
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
@@ -25,7 +25,7 @@ public interface IChunk
 
     default IWorldServer getForgeWorldServer()
     {
-        return (IWorldServer) getForgeChunk().worldObj;
+        return (IWorldServer) getForgeChunk().getWorld();
     }
 
     default boolean isMineCityChunkValid()

@@ -26,7 +26,7 @@ project(':Forge:1.7.10') {
 
 minecraft {
     version = "1.7.10-10.13.4.1566-1.7.10"
-    runDir = "run/1.7.10"
+    runDir = "run"
     srgExtra "PK: org/mcstats br/com/gamemods/minecity/forge/mcstats"
 }
 
@@ -37,14 +37,17 @@ configurations {
 
 dependencies {
     shade project(':Core')
-    shade project(':Forge:Base')
+    compile(project(':Forge:Base')) {
+        exclude module: "start"
+    }
     shade "org.mcstats.forge:metrics:R8-SNAPSHOT"
+    compile "mysql:mysql-connector-java:5.1.32"
 }
 
 jar {
     manifest {
         attributes (
-                'FMLCorePlugin': 'br.com.gamemods.minecity.forge.core.MineCityCoreMod',
+                'FMLCorePlugin': 'br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCityCoreMod',
                 'FMLCorePluginContainsFMLMod': 'true'
         )
     }

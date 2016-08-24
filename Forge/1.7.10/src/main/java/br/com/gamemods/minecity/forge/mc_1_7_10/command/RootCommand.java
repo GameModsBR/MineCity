@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge.command;
+package br.com.gamemods.minecity.forge.mc_1_7_10.command;
 
 import br.com.gamemods.minecity.api.command.CommandInfo;
 import br.com.gamemods.minecity.forge.MineCityForgeMod;
@@ -23,18 +23,21 @@ public class RootCommand<T> implements ICommand
         name = info.getName();
     }
 
+    @NotNull
     @Override
     public String getCommandName()
     {
         return name;
     }
 
+    @NotNull
     @Override
-    public String getCommandUsage(ICommandSender sender)
+    public String getCommandUsage(@NotNull ICommandSender sender)
     {
         return info.syntax;
     }
 
+    @NotNull
     @Override
     public List getCommandAliases()
     {
@@ -42,7 +45,7 @@ public class RootCommand<T> implements ICommand
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args)
+    public void processCommand(@NotNull ICommandSender sender, @NotNull String[] args)
     {
         List<String> path = new ArrayList<>(args.length + 1);
         path.add(name);
@@ -51,14 +54,15 @@ public class RootCommand<T> implements ICommand
     }
 
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender)
+    public boolean canCommandSenderUseCommand(@NotNull ICommandSender sender)
     {
         return true;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public List addTabCompletionOptions(ICommandSender sender, String[] args)
+    @NotNull
+    public List addTabCompletionOptions(@NotNull ICommandSender sender, @NotNull String[] args)
     {
         String[] path = new String[args.length+1];
         path[0] = name;
@@ -67,7 +71,7 @@ public class RootCommand<T> implements ICommand
     }
 
     @Override
-    public boolean isUsernameIndex(String[] p_82358_1_, int p_82358_2_)
+    public boolean isUsernameIndex(@NotNull String[] p_82358_1_, int p_82358_2_)
     {
         return false;
     }

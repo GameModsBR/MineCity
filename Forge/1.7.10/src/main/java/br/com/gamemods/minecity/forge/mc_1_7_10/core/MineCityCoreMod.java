@@ -1,6 +1,7 @@
-package br.com.gamemods.minecity.forge.core;
+package br.com.gamemods.minecity.forge.mc_1_7_10.core;
 
-import br.com.gamemods.minecity.forge.core.deploader.DepLoader;
+import br.com.gamemods.minecity.forge.base.accessors.IChunk;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.deploader.DepLoader;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.IFMLCallHook;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
@@ -14,7 +15,7 @@ import java.io.File;
 import java.util.Map;
 
 @MCVersion("1.7.10")
-@TransformerExclusions("br.com.gamemods.minecity.forge.core")
+@TransformerExclusions("br.com.gamemods.minecity.forge.mc_1_7_10.core")
 @Name("MineCityCore")
 @SortingIndex(value = 1001)
 public class MineCityCoreMod implements IFMLLoadingPlugin, IFMLCallHook
@@ -23,7 +24,7 @@ public class MineCityCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     public Void call() throws Exception
     {
         File mcDir = (File) FMLInjectionData.data()[6];
-        new DepLoader(new File(mcDir, "MineCity/libs"), (LaunchClassLoader) DepLoader.class.getClassLoader()).load();
+        new DepLoader(new File(mcDir, "MineCity/libs"), (LaunchClassLoader) IChunk.class.getClassLoader()).load();
 
         return null;
     }
@@ -32,9 +33,9 @@ public class MineCityCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     public String[] getASMTransformerClass()
     {
         return new String[]{
-                "br.com.gamemods.minecity.forge.core.transformer.forge.WorldServerTransformer",
-                "br.com.gamemods.minecity.forge.core.transformer.forge.ChunkTransformer",
-                "br.com.gamemods.minecity.forge.core.transformer.forge.EntityPlayerMPTransformer"
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.WorldServerTransformer",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.ChunkTransformer",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.EntityPlayerMPTransformer"
         };
     }
 
