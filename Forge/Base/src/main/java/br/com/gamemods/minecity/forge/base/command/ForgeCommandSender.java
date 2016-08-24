@@ -10,12 +10,12 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import net.minecraft.command.ICommandSender;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class ForgeCommandSender<S extends ICommandSender> implements CommandSender
+public abstract class ForgeCommandSender<S extends ICommandSender, F extends MineCityForge> implements CommandSender
 {
-    public final MineCityForge mod;
+    public final F mod;
     public final S sender;
 
-    public ForgeCommandSender(MineCityForge mod, S sender)
+    public ForgeCommandSender(F mod, S sender)
     {
         this.mod = mod;
         this.sender = sender;
@@ -53,15 +53,14 @@ public abstract class ForgeCommandSender<S extends ICommandSender> implements Co
     }
 
     @Override
-    public void send(Message[] message)
-    {
-        for(Message msg : message)
-            send(msg);
-    }
-
-    @Override
     public Direction getCardinalDirection()
     {
         return null;
     }
+
+    @Override
+    public abstract void send(Message message);
+
+    @Override
+    public abstract void send(Message[] messages);
 }

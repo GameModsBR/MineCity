@@ -21,6 +21,8 @@ public class Message
     @Language(value = "XML", prefix = XML_PREFIX)
     private static final String XML_SUFFIX = "</minecity-messages>";
 
+    public static final Message LINE_BREAK = new Message("\n");
+
     @NotNull
     private final String id;
 
