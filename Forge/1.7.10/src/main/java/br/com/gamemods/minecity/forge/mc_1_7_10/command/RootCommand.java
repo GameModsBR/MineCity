@@ -1,7 +1,7 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.command;
 
 import br.com.gamemods.minecity.api.command.CommandInfo;
-import br.com.gamemods.minecity.forge.MineCityForgeMod;
+import br.com.gamemods.minecity.forge.mc_1_7_10.MineCityForgeMod;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import org.jetbrains.annotations.NotNull;

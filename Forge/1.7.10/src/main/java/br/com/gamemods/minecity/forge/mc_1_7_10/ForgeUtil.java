@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge;
+package br.com.gamemods.minecity.forge.mc_1_7_10;
 
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import net.minecraft.util.ChatComponentText;

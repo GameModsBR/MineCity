@@ -29,7 +29,7 @@ project(':Forge:Base') {
 
 minecraft {
     version = "1.10.2-12.18.1.2011"
-    runDir = "run/1.10.2"
+    runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.

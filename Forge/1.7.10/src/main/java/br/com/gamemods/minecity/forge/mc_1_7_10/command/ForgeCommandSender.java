@@ -6,7 +6,7 @@ import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
-import br.com.gamemods.minecity.forge.MineCityForgeMod;
+import br.com.gamemods.minecity.forge.mc_1_7_10.MineCityForgeMod;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.IChatComponent;
 import org.jetbrains.annotations.NotNull;
