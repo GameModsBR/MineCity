@@ -7,7 +7,7 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.ModConstants;
 import br.com.gamemods.minecity.forge.base.command.RootCommand;
 import br.com.gamemods.minecity.forge.mc_1_7_10.MineCityForge7;
-import br.com.gamemods.minecity.forge.mc_1_7_10.command.Forge7Transformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenTransformer;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.*;
@@ -20,7 +20,7 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 
 @Mod(modid = ModConstants.MOD_ID, name = ModConstants.MOD_NAME, version = ModConstants.MOD_VERSION, acceptableRemoteVersions = "*")
-public class Forge7MineCityMod
+public class MineCitySevenMod
 {
     private MineCityForge forge;
 
@@ -52,7 +52,7 @@ public class Forge7MineCityMod
         LegacyFormat.UNDERLINE.server = EnumChatFormatting.UNDERLINE;
         LegacyFormat.ITALIC.server = EnumChatFormatting.ITALIC;
 
-        forge.onPreInit(new Configuration(event.getSuggestedConfigurationFile()), event.getModLog(), new Forge7Transformer());
+        forge.onPreInit(new Configuration(event.getSuggestedConfigurationFile()), event.getModLog(), new SevenTransformer());
     }
 
     @Mod.EventHandler
@@ -68,9 +68,9 @@ public class Forge7MineCityMod
             forge.logger.warn("MCStats metrics failed to start", e);
         }
 
-        FMLCommonHandler.instance().bus().register(new Forge7TickListener(forge));
-        MinecraftForge.EVENT_BUS.register(new Forge7ToolListener(forge));
-        MinecraftForge.EVENT_BUS.register(new Forge7WorldListener(forge));
+        FMLCommonHandler.instance().bus().register(new SevenTickListener(forge));
+        MinecraftForge.EVENT_BUS.register(new SevenToolListener(forge));
+        MinecraftForge.EVENT_BUS.register(new SevenWorldListener(forge));
     }
 
     @Slow

@@ -45,7 +45,7 @@ dependencies {
 jar {
     manifest {
         attributes (
-                'FMLCorePlugin': 'br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCityForge7CoreMod',
+                'FMLCorePlugin': 'br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod',
                 'FMLCorePluginContainsFMLMod': 'true'
         )
     }

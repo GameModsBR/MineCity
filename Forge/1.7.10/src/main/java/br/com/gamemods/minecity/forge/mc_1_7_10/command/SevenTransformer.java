@@ -3,7 +3,7 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.command;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.forge.base.command.ForgeTransformer;
-import br.com.gamemods.minecity.forge.mc_1_7_10.Forge7Util;
+import br.com.gamemods.minecity.forge.mc_1_7_10.SevenUtil;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class Forge7Transformer extends ForgeTransformer
+public class SevenTransformer extends ForgeTransformer
 {
     @Override
     public void send(Message message, ICommandSender commandSender)
@@ -67,7 +67,7 @@ public class Forge7Transformer extends ForgeTransformer
         if(component instanceof TextComponent)
             chat = toForge((TextComponent) component);
         else
-            return Forge7Util.chatComponentFromLegacyText(component.toString());
+            return SevenUtil.chatComponentFromLegacyText(component.toString());
 
         component.extra.forEach((c)-> chat.appendSibling(toForge(c)));
         return chat;

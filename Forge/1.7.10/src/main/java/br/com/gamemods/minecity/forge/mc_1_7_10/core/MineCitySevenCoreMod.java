@@ -22,7 +22,7 @@ import java.util.Map;
     "br.com.gamemods.minecity.forge.base.core",
 })
 @SortingIndex(value = 1001)
-public class MineCityForge7CoreMod implements IFMLLoadingPlugin, IFMLCallHook
+public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
 {
     @Override
     public Void call() throws Exception
@@ -30,7 +30,7 @@ public class MineCityForge7CoreMod implements IFMLLoadingPlugin, IFMLCallHook
         File mcDir = (File) FMLInjectionData.data()[6];
         new DepLoader(
                 new File(mcDir, "MineCity/libs"),
-                (LaunchClassLoader) MineCityForge7CoreMod.class.getClassLoader(),
+                (LaunchClassLoader) MineCitySevenCoreMod.class.getClassLoader(),
                 FMLInjectionData.data(),
                 Loader.class,
                 ComparableVersion::new

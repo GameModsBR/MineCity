@@ -22,9 +22,9 @@ import net.minecraft.world.WorldServer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class Forge7PlayerSender extends ForgePlayerSender<EntityPlayerMP, MineCityForge7>
+public class SevenPlayerSender extends ForgePlayerSender<EntityPlayerMP, MineCityForge7>
 {
-    public Forge7PlayerSender(MineCityForge7 mod, EntityPlayerMP sender)
+    public SevenPlayerSender(MineCityForge7 mod, EntityPlayerMP sender)
     {
         super(mod, sender);
     }

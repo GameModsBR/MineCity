@@ -6,11 +6,11 @@ import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.MineCityForge7;
 import net.minecraft.entity.player.EntityPlayerMP;
 
-public class Forge7Player extends ForgePlayer<MineCityForge7, EntityPlayerMP, Forge7PlayerSender>
+public class SevenPlayer extends ForgePlayer<MineCityForge7, EntityPlayerMP, SevenPlayerSender>
 {
-    public Forge7Player(MineCityForge7 mod, EntityPlayerMP player)
+    public SevenPlayer(MineCityForge7 mod, EntityPlayerMP player)
     {
-        super(new Forge7PlayerSender(mod, player));
+        super(new SevenPlayerSender(mod, player));
     }
 
     @Override

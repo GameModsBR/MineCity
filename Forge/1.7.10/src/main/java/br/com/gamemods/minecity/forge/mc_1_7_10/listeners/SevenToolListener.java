@@ -4,9 +4,9 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
-public class Forge7ToolListener extends br.com.gamemods.minecity.forge.base.listeners.ToolListener
+public class SevenToolListener extends br.com.gamemods.minecity.forge.base.listeners.ToolListener
 {
-    public Forge7ToolListener(MineCityForge forge)
+    public SevenToolListener(MineCityForge forge)
     {
         super(forge);
     }

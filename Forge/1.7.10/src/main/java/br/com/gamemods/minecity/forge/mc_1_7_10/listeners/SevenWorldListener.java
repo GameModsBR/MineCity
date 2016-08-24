@@ -14,11 +14,11 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
-public class Forge7WorldListener
+public class SevenWorldListener
 {
     private MineCityForge forge;
 
-    public Forge7WorldListener(MineCityForge forge)
+    public SevenWorldListener(MineCityForge forge)
     {
         this.forge = forge;
     }

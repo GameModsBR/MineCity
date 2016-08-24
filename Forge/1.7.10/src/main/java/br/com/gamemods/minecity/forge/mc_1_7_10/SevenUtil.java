@@ -8,7 +8,7 @@ import net.minecraft.util.EnumChatFormatting;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Forge7Util
+public class SevenUtil
 {
     /**
      * Maps chat formatting by it's code

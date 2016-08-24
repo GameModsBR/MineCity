@@ -5,11 +5,11 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
 
-public class Forge7TickListener
+public class SevenTickListener
 {
     private MineCityForge forge;
 
-    public Forge7TickListener(MineCityForge forge)
+    public SevenTickListener(MineCityForge forge)
     {
         this.forge = forge;
     }

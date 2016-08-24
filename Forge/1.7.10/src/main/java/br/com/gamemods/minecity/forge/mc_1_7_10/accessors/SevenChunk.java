@@ -6,7 +6,7 @@ import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.Forge7Chu
 import net.minecraft.world.World;
 
 @Referenced(at = Forge7ChunkTransformer.class)
-public interface IChunk7 extends br.com.gamemods.minecity.forge.base.accessors.IChunk
+public interface SevenChunk extends br.com.gamemods.minecity.forge.base.accessors.IChunk
 {
     default World getWorld()
     {
