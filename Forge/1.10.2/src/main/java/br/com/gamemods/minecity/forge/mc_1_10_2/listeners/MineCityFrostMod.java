@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.forge.base.ModConstants;
 import br.com.gamemods.minecity.forge.base.command.RootCommand;
 import br.com.gamemods.minecity.forge.mc_1_10_2.MineCityFrost;
 import br.com.gamemods.minecity.forge.mc_1_10_2.command.FrostTransformer;
+import br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla.FrostBlockProtections;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -17,7 +18,7 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 
 @Mod(modid = ModConstants.MOD_ID, name = ModConstants.MOD_ID, version = ModConstants.MOD_VERSION, acceptableRemoteVersions = "*")
-public class FrostMineCityMod
+public class MineCityFrostMod
 {
     private MineCityFrost forge;
 
@@ -58,6 +59,7 @@ public class FrostMineCityMod
         MinecraftForge.EVENT_BUS.register(new FrostTickListener(forge));
         MinecraftForge.EVENT_BUS.register(new FrostToolListener(forge));
         MinecraftForge.EVENT_BUS.register(new FrostWorldListener(forge));
+        MinecraftForge.EVENT_BUS.register(new FrostBlockProtections(forge));
     }
 
     @Slow

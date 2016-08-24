@@ -3,11 +3,11 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.listeners;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
-import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.ModConstants;
 import br.com.gamemods.minecity.forge.base.command.RootCommand;
 import br.com.gamemods.minecity.forge.mc_1_7_10.MineCitySeven;
 import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenBlockProtections;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.*;
@@ -22,7 +22,7 @@ import java.io.IOException;
 @Mod(modid = ModConstants.MOD_ID, name = ModConstants.MOD_NAME, version = ModConstants.MOD_VERSION, acceptableRemoteVersions = "*")
 public class MineCitySevenMod
 {
-    private MineCityForge forge;
+    private MineCitySeven forge;
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) throws IOException, SAXException
@@ -71,6 +71,7 @@ public class MineCitySevenMod
         FMLCommonHandler.instance().bus().register(new SevenTickListener(forge));
         MinecraftForge.EVENT_BUS.register(new SevenToolListener(forge));
         MinecraftForge.EVENT_BUS.register(new SevenWorldListener(forge));
+        MinecraftForge.EVENT_BUS.register(new SevenBlockProtections(forge));
     }
 
     @Slow

@@ -6,7 +6,6 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IChunk;
 import br.com.gamemods.minecity.forge.base.accessors.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgeCommandSender;
-import br.com.gamemods.minecity.forge.base.command.IForgePlayer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.command.FrostPlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.command.ICommandSender;
@@ -14,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -54,7 +54,7 @@ public class MineCityFrost extends MineCityForge
     }
 
     @Override
-    protected IForgePlayer createPlayer(EntityPlayerMP player)
+    protected FrostPlayer createPlayer(EntityPlayerMP player)
     {
         return new FrostPlayer(this, player);
     }
@@ -63,6 +63,12 @@ public class MineCityFrost extends MineCityForge
     protected CommandSender createSender(ICommandSender sender)
     {
         return new ForgeCommandSender<>(this, sender);
+    }
+
+    @Override
+    public FrostPlayer player(EntityPlayer player)
+    {
+        return (FrostPlayer) super.player(player);
     }
 
     @NotNull
@@ -100,5 +106,20 @@ public class MineCityFrost extends MineCityForge
     public boolean isTopSolid(World world, int x, int y, int z)
     {
         return world.isSideSolid(new BlockPos(x, y, z), EnumFacing.UP);
+    }
+
+    public br.com.gamemods.minecity.api.world.BlockPos block(World world, Vec3i pos)
+    {
+        return new br.com.gamemods.minecity.api.world.BlockPos(
+                world(world), pos.getX(), pos.getY(), pos.getZ()
+        );
+    }
+
+    public br.com.gamemods.minecity.api.world.BlockPos block(
+                br.com.gamemods.minecity.api.world.BlockPos base, Vec3i pos)
+    {
+        return new br.com.gamemods.minecity.api.world.BlockPos(
+                base, pos.getX(), pos.getY(), pos.getZ()
+        );
     }
 }

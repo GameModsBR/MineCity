@@ -6,7 +6,6 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IChunk;
 import br.com.gamemods.minecity.forge.base.accessors.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgeCommandSender;
-import br.com.gamemods.minecity.forge.base.command.IForgePlayer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenPlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.block.Block;
@@ -60,9 +59,15 @@ public class MineCitySeven extends MineCityForge
     }
 
     @Override
-    protected IForgePlayer createPlayer(EntityPlayerMP player)
+    protected SevenPlayer createPlayer(EntityPlayerMP player)
     {
         return new SevenPlayer(this, player);
+    }
+
+    @Override
+    public SevenPlayer player(EntityPlayer player)
+    {
+        return (SevenPlayer) super.player(player);
     }
 
     @Override
