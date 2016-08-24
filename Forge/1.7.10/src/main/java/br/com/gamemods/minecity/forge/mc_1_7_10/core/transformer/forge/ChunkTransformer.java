@@ -28,7 +28,7 @@ public class ChunkTransformer implements IClassTransformer
             ClassReader reader = new ClassReader(bytes);
             ClassWriter writer = new ClassWriter(reader, Opcodes.ASM4);
             String claimedChunk = "br/com/gamemods/minecity/structure/ClaimedChunk";
-            String iChunk = "br/com/gamemods/minecity/forge/base/accessors/IChunk";
+            String iChunk = "br/com/gamemods/minecity/forge/mc_1_7_10/accessors/IChunk";
             String chunk = "net/minecraft/world/chunk/Chunk";
 
             ClassVisitor visitor = new ClassVisitor(Opcodes.ASM4, writer)

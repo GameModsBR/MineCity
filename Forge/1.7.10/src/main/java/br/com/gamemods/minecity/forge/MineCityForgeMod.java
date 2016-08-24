@@ -295,7 +295,7 @@ public class MineCityForgeMod implements Server, WorldProvider, ChunkProvider
             {
                 mineCity.loadChunk(pos);
             }
-            catch(DataSourceException e)
+            catch(Exception e)
             {
                 logger.error("Failed to load the chunk: "+pos, e);
             }

@@ -12,4 +12,4 @@ dependency-reduced-pom.xml
 build
 .gradle
 externalLibs
-run/*
+*/run/*
