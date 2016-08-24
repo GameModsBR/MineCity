@@ -5,11 +5,13 @@ import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IChunk;
 import br.com.gamemods.minecity.forge.base.accessors.IWorldServer;
+import br.com.gamemods.minecity.forge.base.command.ForgeCommandSender;
 import br.com.gamemods.minecity.forge.base.command.IForgePlayer;
-import br.com.gamemods.minecity.forge.mc_1_7_10.command.Forge7CommandSender;
 import br.com.gamemods.minecity.forge.mc_1_7_10.command.Forge7Player;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
+import net.minecraft.block.Block;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -17,6 +19,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.ForgeDirection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,7 +68,7 @@ public class MineCityForge7 extends MineCityForge
     @Override
     protected CommandSender createSender(ICommandSender sender)
     {
-        return new Forge7CommandSender<>(this, sender);
+        return new ForgeCommandSender<>(this, sender);
     }
 
     @NotNull
@@ -103,5 +106,23 @@ public class MineCityForge7 extends MineCityForge
     public int dimension(World world)
     {
         return world.provider.dimensionId;
+    }
+
+    @Override
+    public Block block(World world, int x, int y, int z)
+    {
+        return world.getBlock(x, y, z);
+    }
+
+    @Override
+    public boolean isTopSolid(World world, int x, int y, int z)
+    {
+        return world.isSideSolid(x, y, z, ForgeDirection.UP);
+    }
+
+    @Override
+    public Entity vehicle(Entity entity)
+    {
+        return entity.ridingEntity;
     }
 }

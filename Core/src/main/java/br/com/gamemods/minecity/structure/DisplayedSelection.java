@@ -12,13 +12,13 @@ import java.util.Map;
 public abstract class DisplayedSelection<B> extends Selection
 {
     public Map<BlockPos, B> display = new HashMap<>();
-    protected B cornerA;
-    protected B cornerB;
-    protected B corners;
-    protected B linesA;
-    protected B linesB;
-    protected B lines;
-    protected B extension;
+    public B cornerA;
+    public B cornerB;
+    public B corners;
+    public B linesA;
+    public B linesB;
+    public B lines;
+    public B extension;
 
     protected DisplayedSelection(@NotNull WorldDim world)
     {

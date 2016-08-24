@@ -10,7 +10,7 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import net.minecraft.command.ICommandSender;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class ForgeCommandSender<S extends ICommandSender, F extends MineCityForge> implements CommandSender
+public class ForgeCommandSender<S extends ICommandSender, F extends MineCityForge> implements CommandSender
 {
     public final F mod;
     public final S sender;
@@ -59,8 +59,14 @@ public abstract class ForgeCommandSender<S extends ICommandSender, F extends Min
     }
 
     @Override
-    public abstract void send(Message message);
+    public void send(Message message)
+    {
+        mod.transformer.send(message, sender);
+    }
 
     @Override
-    public abstract void send(Message[] messages);
+    public void send(Message[] messages)
+    {
+        mod.transformer.send(messages, sender);
+    }
 }

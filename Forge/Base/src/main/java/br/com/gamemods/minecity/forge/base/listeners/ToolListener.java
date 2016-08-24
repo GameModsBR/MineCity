@@ -3,7 +3,6 @@ package br.com.gamemods.minecity.forge.base.listeners;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.structure.DisplayedSelection;
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -23,7 +22,7 @@ public class ToolListener
             return false;
 
         BlockPos block = new BlockPos(forge.world(world), x, y, z);
-        DisplayedSelection<Block> selection = forge.player(player).getSelection(forge.world(world));
+        DisplayedSelection<?> selection = forge.player(player).getSelection(forge.world(world));
 
         if(player.isSneaking())
         {

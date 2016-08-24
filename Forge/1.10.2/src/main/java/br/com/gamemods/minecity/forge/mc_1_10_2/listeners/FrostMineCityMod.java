@@ -2,11 +2,11 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.listeners;
 
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
-import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.forge.base.ModConstants;
 import br.com.gamemods.minecity.forge.base.command.RootCommand;
 import br.com.gamemods.minecity.forge.mc_1_10_2.MineCityFrost;
+import br.com.gamemods.minecity.forge.mc_1_10_2.command.FrostTransformer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -49,7 +49,7 @@ public class FrostMineCityMod
         LegacyFormat.UNDERLINE.server = TextFormatting.UNDERLINE;
         LegacyFormat.ITALIC.server = TextFormatting.ITALIC;
 
-        forge.onPreInit(new Configuration(event.getSuggestedConfigurationFile()), event.getModLog(), new MessageTransformer());
+        forge.onPreInit(new Configuration(event.getSuggestedConfigurationFile()), event.getModLog(), new FrostTransformer());
     }
 
     @Mod.EventHandler

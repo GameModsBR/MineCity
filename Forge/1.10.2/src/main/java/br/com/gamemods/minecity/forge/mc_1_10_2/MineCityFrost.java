@@ -5,13 +5,16 @@ import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IChunk;
 import br.com.gamemods.minecity.forge.base.accessors.IWorldServer;
+import br.com.gamemods.minecity.forge.base.command.ForgeCommandSender;
 import br.com.gamemods.minecity.forge.base.command.IForgePlayer;
-import br.com.gamemods.minecity.forge.mc_1_10_2.command.FrostCommandSender;
 import br.com.gamemods.minecity.forge.mc_1_10_2.command.FrostPlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
@@ -59,7 +62,7 @@ public class MineCityFrost extends MineCityForge
     @Override
     protected CommandSender createSender(ICommandSender sender)
     {
-        return new FrostCommandSender<>(this, sender);
+        return new ForgeCommandSender<>(this, sender);
     }
 
     @NotNull
@@ -91,5 +94,11 @@ public class MineCityFrost extends MineCityForge
     public Chunk getLoadedChunk(WorldServer world, int x, int z)
     {
         return world.getChunkProvider().getLoadedChunk(x, z);
+    }
+
+    @Override
+    public boolean isTopSolid(World world, int x, int y, int z)
+    {
+        return world.isSideSolid(new BlockPos(x, y, z), EnumFacing.UP);
     }
 }

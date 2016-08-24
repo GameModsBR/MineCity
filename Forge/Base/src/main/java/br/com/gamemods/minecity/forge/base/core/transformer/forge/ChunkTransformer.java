@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge;
 
+import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertInterfaceTransformer;
 
 /**
@@ -15,6 +16,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.InsertInterfaceTrans
  *     }
  * </code></pre>
  */
+@Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
 public class ChunkTransformer extends InsertInterfaceTransformer
 {
     public ChunkTransformer(String interfaceClass)

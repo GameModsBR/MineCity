@@ -1,9 +1,12 @@
 package br.com.gamemods.minecity.forge.base.accessors;
 
 import br.com.gamemods.minecity.api.world.ChunkPos;
+import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.ChunkTransformer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.world.chunk.Chunk;
 
+@Referenced(at = ChunkTransformer.class)
 public interface IChunk
 {
     ClaimedChunk getMineCityClaim();

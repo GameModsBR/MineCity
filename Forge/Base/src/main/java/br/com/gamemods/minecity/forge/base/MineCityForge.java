@@ -5,7 +5,6 @@ import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.command.MessageTransformer;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.*;
@@ -13,12 +12,16 @@ import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.forge.base.accessors.IChunk;
 import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.IWorldServer;
+import br.com.gamemods.minecity.forge.base.command.ForgeTransformer;
 import br.com.gamemods.minecity.forge.base.command.IForgePlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
+import net.minecraft.block.Block;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -46,7 +49,7 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
     private ExecutorService executors;
     private MineCityConfig config;
     private Path worldContainer;
-    public MessageTransformer transformer;
+    public ForgeTransformer transformer;
     public MineCity mineCity;
 
     private void adjustDefaultFlag(Configuration config, String prefix, PermissionFlag flag, boolean def, SimpleFlagHolder flags)
@@ -63,7 +66,7 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
             flags.deny(flag);
     }
 
-    public void onPreInit(Configuration config, Logger logger, MessageTransformer transformer) throws IOException, SAXException
+    public void onPreInit(Configuration config, Logger logger, ForgeTransformer transformer) throws IOException, SAXException
     {
         this.transformer = transformer;
         this.config = new MineCityConfig();
@@ -388,5 +391,17 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
         pos = new ChunkPos(dim, x, z);
         pos.instance = chunk;
         return pos;
+    }
+
+    public Block block(World world, int x, int y, int z)
+    {
+        return world.getBlockState(new BlockPos(x, y, z)).getBlock();
+    }
+
+    public abstract boolean isTopSolid(World world, int x, int y, int z);
+
+    public Entity vehicle(Entity entity)
+    {
+        return entity.getRidingEntity();
     }
 }
