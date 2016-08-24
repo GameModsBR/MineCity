@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayerSender;
 import br.com.gamemods.minecity.forge.mc_1_10_2.MineCityFrost;
+import io.netty.buffer.Unpooled;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -14,6 +15,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
@@ -114,10 +116,24 @@ public class FrostPlayerSender extends ForgePlayerSender<EntityPlayerMP, MineCit
     }
 
     @Override
-    public void sendFakeBlock(int x, int y, int z, Object block)
+    public void sendFakeBlock(int x, int y, int z, Object state)
     {
-        SPacketBlockChange packet = new SPacketBlockChange(sender.worldObj, new BlockPos(x, y, z));
-        packet.blockState = (IBlockState) block;
+        PacketBuffer buffer = new PacketBuffer(Unpooled.buffer(8 + 4));
+        buffer.writeBlockPos(new BlockPos(x, y, z));
+        buffer.writeVarIntToBuffer(0);
+
+        try
+        {
+            SPacketBlockChange packet = new SPacketBlockChange();
+            packet.readPacketData(buffer);
+
+            packet.blockState = (IBlockState) state;
+            sendPacket(packet);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @NotNull
@@ -130,6 +146,7 @@ public class FrostPlayerSender extends ForgePlayerSender<EntityPlayerMP, MineCit
         selection.corners = Blocks.SEA_LANTERN.getDefaultState();
         selection.linesA = Blocks.GOLD_BLOCK.getDefaultState();
         selection.linesB = Blocks.LAPIS_BLOCK.getDefaultState();
+        selection.lines = Blocks.PRISMARINE.getDefaultState();
         selection.extension = Blocks.GLOWSTONE.getDefaultState();
         return selection;
     }
