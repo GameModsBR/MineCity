@@ -19,4 +19,7 @@ public interface IWorldServer
     {
         return getMineCityWorld() != null;
     }
+
+    IBlock getIBlock(int x, int y, int z);
+    IState getIState(int x, int y, int z);
 }

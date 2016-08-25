@@ -17,10 +17,11 @@ import br.com.gamemods.minecity.forge.base.core.transformer.InsertSetterGetterTr
  *     }
  * </code></pre>
  */
-@Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCityForge7CoreMod")
-@Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
+@Referenced
 public class EntityPlayerMPTransformer extends InsertSetterGetterTransformer
 {
+    @Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCityForge7CoreMod")
+    @Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
     public EntityPlayerMPTransformer()
     {
         super(

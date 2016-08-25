@@ -6,7 +6,7 @@ import org.objectweb.asm.*;
 import java.util.Arrays;
 
 /**
- * Makes a class implements a interface with a setter and getter.
+ * Makes a class implements an interface with a setter and getter.
  * <p>Example:</p>
  * <pre><code>
  *     public class WorldServer extends World
@@ -69,9 +69,9 @@ public class InsertSetterGetterTransformer implements IClassTransformer
         {
             ClassReader reader = new ClassReader(bytes);
             ClassWriter writer = new ClassWriter(reader, Opcodes.ASM4);
-            String worldDim = fieldClass.replace('.','/');
-            String iWorldServer = interfaceClass.replace('.','/');
-            String worldServer = className.replace('.','/');
+            String fieldClassName = fieldClass.replace('.','/');
+            String interfaceClassName = interfaceClass.replace('.','/');
+            String thisClassName = className.replace('.','/');
 
             ClassVisitor visitor = new ClassVisitor(Opcodes.ASM4, writer)
             {
@@ -79,28 +79,28 @@ public class InsertSetterGetterTransformer implements IClassTransformer
                 public void visit(int version, int access, String name, String signature, String superName, String[] interfaces)
                 {
                     interfaces = Arrays.copyOf(interfaces, interfaces.length + 1);
-                    interfaces[interfaces.length-1] = iWorldServer;
+                    interfaces[interfaces.length-1] = interfaceClassName;
                     super.visit(version, access, name, signature, superName, interfaces);
                 }
             };
 
             reader.accept(visitor, ClassReader.EXPAND_FRAMES);
 
-            writer.visitField(Opcodes.ACC_PUBLIC, fieldName, "L"+worldDim+";", null, null).visitEnd();
+            writer.visitField(Opcodes.ACC_PUBLIC, fieldName, "L"+fieldClassName+";", null, null).visitEnd();
 
-            MethodVisitor methodVisitor = visitor.visitMethod(Opcodes.ACC_PUBLIC, getterMethodName, "()L"+worldDim+";", null, null);
+            MethodVisitor methodVisitor = visitor.visitMethod(Opcodes.ACC_PUBLIC, getterMethodName, "()L"+fieldClassName+";", null, null);
             methodVisitor.visitCode();
             methodVisitor.visitVarInsn(Opcodes.ALOAD, 0);
-            methodVisitor.visitFieldInsn(Opcodes.GETFIELD, worldServer, fieldName, "L"+worldDim+";");
+            methodVisitor.visitFieldInsn(Opcodes.GETFIELD, thisClassName, fieldName, "L"+fieldClassName+";");
             methodVisitor.visitInsn(Opcodes.ARETURN);
             methodVisitor.visitMaxs(1, 2);
             methodVisitor.visitEnd();
 
-            methodVisitor = visitor.visitMethod(Opcodes.ACC_PUBLIC, setterMethodName, "(L"+worldDim+";)V", null, null);
+            methodVisitor = visitor.visitMethod(Opcodes.ACC_PUBLIC, setterMethodName, "(L"+fieldClassName+";)V", null, null);
             methodVisitor.visitCode();
             methodVisitor.visitVarInsn(Opcodes.ALOAD, 0);
             methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
-            methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, worldServer, fieldName, "L"+worldDim+";");
+            methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, thisClassName, fieldName, "L"+fieldClassName+";");
             methodVisitor.visitInsn(Opcodes.RETURN);
             methodVisitor.visitMaxs(2, 2);
             methodVisitor.visitEnd();

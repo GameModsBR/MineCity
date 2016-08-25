@@ -6,7 +6,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.forge.EntityPlayerMP
 import net.minecraft.entity.player.EntityPlayerMP;
 
 @Referenced(at = EntityPlayerMPTransformer.class)
-public interface IEntityPlayerMP
+public interface IEntityPlayerMP extends IEntity
 {
     void setMineCityPlayer(IForgePlayer player);
     IForgePlayer getMineCityPlayer();

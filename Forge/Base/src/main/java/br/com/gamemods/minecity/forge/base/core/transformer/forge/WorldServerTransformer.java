@@ -1,6 +1,5 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge;
 
-import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertSetterGetterTransformer;
 
 /**
@@ -16,17 +15,19 @@ import br.com.gamemods.minecity.forge.base.core.transformer.InsertSetterGetterTr
  *     }
  * </code></pre>
  */
-@Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCityForge7CoreMod")
-@Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
 public class WorldServerTransformer extends InsertSetterGetterTransformer
 {
-    public WorldServerTransformer()
+    public WorldServerTransformer(String interfaceClass)
     {
         super(
                 "net.minecraft.world.WorldServer",
                 "br.com.gamemods.minecity.api.world.WorldDim", "mineCity",
-                "br.com.gamemods.minecity.forge.base.accessors.IWorldServer",
-                "setMineCityWorld", "getMineCityWorld"
+                interfaceClass, "setMineCityWorld", "getMineCityWorld"
         );
+    }
+
+    public WorldServerTransformer()
+    {
+        this("br.com.gamemods.minecity.forge.base.accessors.IWorldServer");
     }
 }

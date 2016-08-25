@@ -16,7 +16,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.InsertSetterGetterTr
  *     }
  * </code></pre>
  */
-@Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
+@Referenced
 public class ChunkTransformer extends InsertSetterGetterTransformer
 {
     public ChunkTransformer(String interfaceClass)
@@ -28,6 +28,7 @@ public class ChunkTransformer extends InsertSetterGetterTransformer
         );
     }
 
+    @Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
     public ChunkTransformer()
     {
         this("br.com.gamemods.minecity.forge.base.accessors.IChunk");
