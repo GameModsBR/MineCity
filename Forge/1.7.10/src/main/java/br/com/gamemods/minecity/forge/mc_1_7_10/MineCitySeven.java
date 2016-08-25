@@ -3,13 +3,13 @@ package br.com.gamemods.minecity.forge.mc_1_7_10;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IChunk;
+import br.com.gamemods.minecity.forge.base.accessors.ICommander;
+import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgeCommandSender;
 import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenPlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 public class MineCitySeven extends MineCityForge
 {
     @Override
-    protected SevenPlayer createPlayer(EntityPlayerMP player)
+    protected SevenPlayer createPlayer(IEntityPlayerMP player)
     {
         return new SevenPlayer(this, player);
     }
@@ -35,7 +35,7 @@ public class MineCitySeven extends MineCityForge
     }
 
     @Override
-    protected CommandSender createSender(ICommandSender sender)
+    protected CommandSender createSender(ICommander sender)
     {
         return new ForgeCommandSender<>(this, sender);
     }

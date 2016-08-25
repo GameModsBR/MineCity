@@ -2,18 +2,18 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.command;
 
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.MineCitySeven;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.SevenMovementListener;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.SevenMovementMonitor;
 import br.com.gamemods.minecity.protection.MovementMonitor;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
 
-public class SevenPlayer extends ForgePlayer<MineCitySeven, EntityPlayerMP, SevenPlayerSender, Entity>
+public class SevenPlayer extends ForgePlayer<MineCitySeven, IEntityPlayerMP, SevenPlayerSender, Entity>
         implements SevenMovementListener
 {
-    public SevenPlayer(MineCitySeven mod, EntityPlayerMP player)
+    public SevenPlayer(MineCitySeven mod, IEntityPlayerMP player)
     {
         super(new SevenPlayerSender(mod, player));
     }
@@ -34,12 +34,5 @@ public class SevenPlayer extends ForgePlayer<MineCitySeven, EntityPlayerMP, Seve
                     {"sub", subtitle},
                     {"title", title}
             }));
-    }
-
-    @Override
-    public boolean kick(Message message)
-    {
-        cmd.sender.playerNetServerHandler.kickPlayerFromServer(cmd.mod.transformer.toLegacy(message));
-        return true;
     }
 }

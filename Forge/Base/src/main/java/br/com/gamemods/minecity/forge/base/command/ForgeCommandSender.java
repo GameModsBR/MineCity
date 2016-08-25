@@ -7,10 +7,10 @@ import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
-import net.minecraft.command.ICommandSender;
+import br.com.gamemods.minecity.forge.base.accessors.ICommander;
 import org.jetbrains.annotations.NotNull;
 
-public class ForgeCommandSender<S extends ICommandSender, F extends MineCityForge> implements CommandSender
+public class ForgeCommandSender<S extends ICommander, F extends MineCityForge> implements CommandSender
 {
     public final F mod;
     public final S sender;

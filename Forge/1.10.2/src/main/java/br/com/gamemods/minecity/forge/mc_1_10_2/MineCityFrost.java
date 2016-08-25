@@ -3,13 +3,13 @@ package br.com.gamemods.minecity.forge.mc_1_10_2;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IChunk;
+import br.com.gamemods.minecity.forge.base.accessors.ICommander;
+import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgeCommandSender;
 import br.com.gamemods.minecity.forge.mc_1_10_2.command.FrostPlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -23,13 +23,13 @@ import java.util.stream.Stream;
 public class MineCityFrost extends MineCityForge
 {
     @Override
-    protected FrostPlayer createPlayer(EntityPlayerMP player)
+    protected FrostPlayer createPlayer(IEntityPlayerMP player)
     {
         return new FrostPlayer(this, player);
     }
 
     @Override
-    protected CommandSender createSender(ICommandSender sender)
+    protected CommandSender createSender(ICommander sender)
     {
         return new ForgeCommandSender<>(this, sender);
     }

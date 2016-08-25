@@ -4,8 +4,10 @@ import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.IPlayerList;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostPlayerListTransformer;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.management.PlayerList;
+import net.minecraft.world.Teleporter;
 
 import java.util.List;
 
@@ -28,5 +30,17 @@ public interface FrostPlayerList extends IPlayerList
     default List<IEntityPlayerMP> getIPlayers()
     {
         return (List) ((PlayerList) this).getPlayerList();
+    }
+
+    @Override
+    default void transferToDimension(IEntityPlayerMP player, int dimension, Teleporter teleporter)
+    {
+        ((PlayerList) this).transferPlayerToDimension((EntityPlayerMP) player, dimension, teleporter);
+    }
+
+    @Override
+    default boolean isOp(GameProfile profile)
+    {
+        return ((PlayerList) this).canSendCommands(profile);
     }
 }

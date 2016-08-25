@@ -12,6 +12,7 @@ import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.EntityUpdate;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.protection.MovementListener;
 import br.com.gamemods.minecity.protection.MovementMonitor;
 import br.com.gamemods.minecity.structure.City;
@@ -21,7 +22,7 @@ import br.com.gamemods.minecity.structure.Plot;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
@@ -35,12 +36,12 @@ import static br.com.gamemods.minecity.api.permission.FlagHolder.can;
 import static br.com.gamemods.minecity.api.permission.PermissionFlag.*;
 
 public abstract class ForgePlayer
-        <F extends MineCityForge, P extends EntityPlayer, S extends ForgePlayerSender<P, F>, E>
+        <F extends MineCityForge, P extends IEntityPlayerMP, S extends ForgePlayerSender<P, F>, E>
         implements IForgePlayer, MovementListener<E, F>
 {
     protected final S cmd;
     protected final F mod;
-    protected final P player;
+    protected final EntityPlayerMP player;
     private final MovementMonitor<Entity, F> mov;
     @Nullable
     private Set<GroupID> groups;
@@ -49,7 +50,7 @@ public abstract class ForgePlayer
     public ForgePlayer(S cmd)
     {
         this.cmd = cmd;
-        player = cmd.sender;
+        player = cmd.sender.getEntityPlayerMP();
         mod = cmd.mod;
         this.mov = createMonitor();
         mod.runAsynchronously(() ->
@@ -82,7 +83,7 @@ public abstract class ForgePlayer
 
     public void checkStepOnFakeBlock()
     {
-        P sender = cmd.sender;
+        EntityPlayerMP sender = player;
         DisplayedSelection<?> selection = cmd.getSelection();
         F mod = cmd.mod;
         if(selection == null || selection.a == null || selection.display.isEmpty()
@@ -430,12 +431,19 @@ public abstract class ForgePlayer
     @Override
     public void send(Message message)
     {
-        mod.transformer.send(message, player);
+        mod.transformer.send(message, cmd.sender);
     }
 
     @Override
     public void send(Message[] messages)
     {
-        mod.transformer.send(messages, player);
+        mod.transformer.send(messages, cmd.sender);
+    }
+
+    @Override
+    public boolean kick(Message message)
+    {
+        cmd.sender.kick(mod.transformer.toLegacy(message));
+        return true;
     }
 }

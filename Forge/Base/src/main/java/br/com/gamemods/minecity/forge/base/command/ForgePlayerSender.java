@@ -11,10 +11,8 @@ import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.structure.DisplayedSelection;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-public abstract class ForgePlayerSender<P extends EntityPlayer, F extends MineCityForge> extends ForgeCommandSender<P, F>
+public abstract class ForgePlayerSender<P extends IEntityPlayerMP, F extends MineCityForge> extends ForgeCommandSender<P, F>
 {
     public final PlayerID id;
     private UFunction<CommandSender, CommandResult<?>> confirmAction;
@@ -120,15 +118,13 @@ public abstract class ForgePlayerSender<P extends EntityPlayer, F extends MineCi
     @Override
     public EntityPos getPosition()
     {
-        return new EntityPos(mod.world(sender.worldObj), sender.posX, sender.posY, sender.posZ, sender.rotationPitch, sender.rotationYaw);
+        return sender.getEntityPos(mod);
     }
 
     @Override
     public Direction getCardinalDirection()
     {
-        return Direction.cardinal8.get(
-                MathHelper.floor_double((double)((sender.rotationYaw + 180.0F) * 8.0F / 360.0F) + 0.5D) & 7
-        );
+        return sender.getCardinalDirection();
     }
 
     @Override
@@ -208,8 +204,7 @@ public abstract class ForgePlayerSender<P extends EntityPlayer, F extends MineCi
             display.remove(pos.add(Direction.UP));
             mod.callSyncMethod(() ->
             {
-                World worldObj = sender.worldObj;
-                if(!mod.world(worldObj).equals(world))
+                if(!mod.world(sender.getIWorld()).equals(world))
                     return;
 
                 Set<BlockPos> removed = last.keySet();

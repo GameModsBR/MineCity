@@ -2,9 +2,9 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.command;
 
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.forge.base.accessors.ICommander;
 import br.com.gamemods.minecity.forge.base.command.ForgeTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.SevenUtil;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.nbt.NBTTagList;
@@ -20,17 +20,17 @@ import java.util.Locale;
 public class SevenTransformer extends ForgeTransformer
 {
     @Override
-    public void send(Message message, ICommandSender commandSender)
+    public void send(Message message, ICommander commander)
     {
         for(IChatComponent msg: toMultilineForge(message))
-            commandSender.addChatMessage(msg);
+            commander.getCommandSender().addChatMessage(msg);
     }
 
     @Override
-    public void send(Message[] messages, ICommandSender commandSender)
+    public void send(Message[] messages, ICommander commander)
     {
         for(Message message: messages)
-            send(message, commandSender);
+            send(message, commander);
     }
 
     public IChatComponent toForge(Message message)

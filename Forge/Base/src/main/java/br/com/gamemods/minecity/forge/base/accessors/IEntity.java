@@ -1,11 +1,13 @@
 package br.com.gamemods.minecity.forge.base.accessors;
 
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.EntityTransformer;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldServer;
 
 import java.util.List;
@@ -41,7 +43,7 @@ public interface IEntity
         return getForgeEntity().getName();
     }
 
-    default UUID getUniqueId()
+    default UUID getUniqueID()
     {
         return getForgeEntity().getUniqueID();
     }
@@ -66,5 +68,12 @@ public interface IEntity
     {
         Entity entity = (Entity) this;
         return new BlockPos(mod.world(entity.worldObj), (int) entity.posX, (int) entity.posY, (int) entity.posZ);
+    }
+
+    default Direction getCardinalDirection()
+    {
+        return Direction.cardinal8.get(
+                MathHelper.floor_double((double)((((Entity)this).rotationYaw + 180.0F) * 8.0F / 360.0F) + 0.5D) & 7
+        );
     }
 }

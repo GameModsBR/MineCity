@@ -17,7 +17,6 @@ import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -232,9 +231,13 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
         return server.getIPlayerList().getIPlayers().stream().map(IEntity::getName);
     }
 
-    public WorldDim world(World inst)
+    public WorldDim world(World world)
     {
-        IWorldServer world = (IWorldServer) inst;
+        return world((IWorldServer) world);
+    }
+
+    public WorldDim world(IWorldServer world)
+    {
         WorldDim cached = world.getMineCityWorld();
         if(cached != null)
             return cached;
@@ -292,8 +295,8 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
 
     public abstract Chunk getLoadedChunk(WorldServer world, int x, int z);
 
-    protected abstract IForgePlayer createPlayer(EntityPlayerMP player);
-    protected abstract CommandSender createSender(ICommandSender sender);
+    protected abstract IForgePlayer createPlayer(IEntityPlayerMP player);
+    protected abstract CommandSender createSender(ICommander sender);
 
     public IForgePlayer player(EntityPlayer player)
     {
@@ -302,7 +305,7 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
         if(cache != null)
             return cache;
 
-        cache = createPlayer((EntityPlayerMP) player);
+        cache = createPlayer(cast);
         cast.setMineCityPlayer(cache);
         return cache;
     }
@@ -311,7 +314,7 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
     {
         if(sender instanceof EntityPlayer)
             return player((EntityPlayer) sender).getCommandSender();
-        return createSender(sender);
+        return createSender((ICommander) sender);
     }
 
     @Nullable
