@@ -8,6 +8,8 @@ import br.com.gamemods.minecity.forge.base.command.RootCommand;
 import br.com.gamemods.minecity.forge.mc_1_10_2.MineCityFrost;
 import br.com.gamemods.minecity.forge.mc_1_10_2.command.FrostTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla.FrostBlockProtections;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -26,6 +28,16 @@ public class MineCityFrostMod
     public void onPreInit(FMLPreInitializationEvent event) throws IOException, SAXException
     {
         forge = new MineCityFrost();
+        forge.selectionTool = Items.WOODEN_HOE;
+        forge.selectionPallet = selection -> {
+            selection.cornerA = Blocks.GLOWSTONE.getDefaultState();
+            selection.cornerB = Blocks.LIT_REDSTONE_LAMP.getDefaultState();
+            selection.corners = Blocks.SEA_LANTERN.getDefaultState();
+            selection.linesA = Blocks.GOLD_BLOCK.getDefaultState();
+            selection.linesB = Blocks.LAPIS_BLOCK.getDefaultState();
+            selection.lines = Blocks.PRISMARINE.getDefaultState();
+            selection.extension = Blocks.GLOWSTONE.getDefaultState();
+        };
 
         LegacyFormat.BLACK.server = TextFormatting.BLACK;
         LegacyFormat.DARK_BLUE.server = TextFormatting.DARK_BLUE;

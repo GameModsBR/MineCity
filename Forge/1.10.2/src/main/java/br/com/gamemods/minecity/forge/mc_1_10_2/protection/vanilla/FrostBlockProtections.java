@@ -4,9 +4,9 @@ import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protections.vanilla.ForgeProtections;
 import br.com.gamemods.minecity.forge.mc_1_10_2.MineCityFrost;
-import br.com.gamemods.minecity.forge.mc_1_10_2.command.FrostPlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAnvil;
@@ -46,7 +46,7 @@ public class FrostBlockProtections extends ForgeProtections
         ClaimedChunk chunk = mod.mineCity.provideChunk(pos.getChunk());
         FlagHolder holder = chunk.getFlagHolder(pos);
 
-        FrostPlayer player = mod.player(event.getPlayer());
+        ForgePlayer player = mod.player(event.getPlayer());
         Optional<Message> denial = holder.can(player, PermissionFlag.MODIFY);
         if(denial.isPresent())
         {
@@ -65,7 +65,7 @@ public class FrostBlockProtections extends ForgeProtections
         ClaimedChunk chunk = mod.mineCity.provideChunk(pos.getChunk());
         FlagHolder holder = chunk.getFlagHolder(pos);
 
-        FrostPlayer player = mod.player(event.getPlayer());
+        ForgePlayer player = mod.player(event.getPlayer());
         Optional<Message> denial = holder.can(player, PermissionFlag.MODIFY);
         if(denial.isPresent())
         {
@@ -80,7 +80,7 @@ public class FrostBlockProtections extends ForgeProtections
         if(event.getWorld().isRemote)
             return;
 
-        FrostPlayer player = mod.player(event.getPlayer());
+        ForgePlayer player = mod.player(event.getPlayer());
         BlockPos blockPos = mod.block(event.getWorld(), event.getPos());
         ClaimedChunk chunk = null;
         for(BlockSnapshot state : event.getReplacedBlockSnapshots())

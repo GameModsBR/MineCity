@@ -4,9 +4,9 @@ import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protections.vanilla.ForgeProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.MineCitySeven;
-import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenPlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -42,7 +42,7 @@ public class SevenBlockProtections extends ForgeProtections
         ClaimedChunk chunk = mod.mineCity.provideChunk(pos.getChunk());
         FlagHolder holder = chunk.getFlagHolder(pos);
 
-        SevenPlayer player = mod.player(event.player);
+        ForgePlayer player = mod.player(event.player);
         Optional<Message> denial = holder.can(player, PermissionFlag.MODIFY);
         if(denial.isPresent())
         {
@@ -61,7 +61,7 @@ public class SevenBlockProtections extends ForgeProtections
         ClaimedChunk chunk = mod.mineCity.provideChunk(pos.getChunk());
         FlagHolder holder = chunk.getFlagHolder(pos);
 
-        SevenPlayer player = mod.player(event.getPlayer());
+        ForgePlayer player = mod.player(event.getPlayer());
         Optional<Message> denial = holder.can(player, PermissionFlag.MODIFY);
         if(denial.isPresent())
         {
@@ -76,7 +76,7 @@ public class SevenBlockProtections extends ForgeProtections
         if(event.world.isRemote)
             return;
 
-        SevenPlayer player = mod.player(event.player);
+        ForgePlayer player = mod.player(event.player);
         BlockPos blockPos = new BlockPos(mod.world(event.world), event.x, event.y, event.z);
         ClaimedChunk chunk = null;
         for(BlockSnapshot state : event.getReplacedBlockSnapshots())

@@ -6,7 +6,7 @@ import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
-import br.com.gamemods.minecity.forge.base.command.IForgePlayer;
+import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.player.EntityPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +30,7 @@ public class ForgeProtections
 
     protected boolean check(@NotNull BlockPos pos, @NotNull EntityPlayer player, @NotNull PermissionFlag... flags)
     {
-        IForgePlayer user = mod.player(player);
+        ForgePlayer user = mod.player(player);
         Optional<Message> denial = silentCheck(pos, user, flags);
 
         if(denial.isPresent())
@@ -47,7 +47,7 @@ public class ForgeProtections
         return silentCheck(location, mod.player(player), flags);
     }
 
-    protected Optional<Message> silentCheck(@NotNull BlockPos blockPos, @NotNull IForgePlayer user, @NotNull PermissionFlag... flags)
+    protected Optional<Message> silentCheck(@NotNull BlockPos blockPos, @NotNull ForgePlayer user, @NotNull PermissionFlag... flags)
     {
         ClaimedChunk chunk = mod.mineCity.provideChunk(blockPos.getChunk());
         FlagHolder holder = chunk.getFlagHolder(blockPos);

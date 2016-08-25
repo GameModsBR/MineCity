@@ -2,7 +2,6 @@ package br.com.gamemods.minecity.forge.base.command;
 
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
-import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
@@ -10,10 +9,10 @@ import br.com.gamemods.minecity.api.permission.GroupID;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.EntityUpdate;
-import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
-import br.com.gamemods.minecity.protection.MovementListener;
+import br.com.gamemods.minecity.forge.base.protection.ForgeMovementListener;
 import br.com.gamemods.minecity.protection.MovementMonitor;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.DisplayedSelection;
@@ -35,14 +34,14 @@ import static br.com.gamemods.minecity.api.CollectionUtil.optionalStream;
 import static br.com.gamemods.minecity.api.permission.FlagHolder.can;
 import static br.com.gamemods.minecity.api.permission.PermissionFlag.*;
 
-public abstract class ForgePlayer
-        <F extends MineCityForge, P extends IEntityPlayerMP, S extends ForgePlayerSender<P, F>, E>
-        implements IForgePlayer, MovementListener<E, F>
+public class ForgePlayer
+        <F extends MineCityForge, P extends IEntityPlayerMP, S extends ForgePlayerSender<P, F>>
+        implements MinecraftEntity, ForgeMovementListener<IEntityPlayerMP, F>
 {
     protected final S cmd;
     protected final F mod;
     protected final EntityPlayerMP player;
-    private final MovementMonitor<Entity, F> mov;
+    private final MovementMonitor<IEntityPlayerMP, F> mov;
     @Nullable
     private Set<GroupID> groups;
     public Set<EntityLiving> leashedEntities = new HashSet<>(1);
@@ -70,9 +69,11 @@ public abstract class ForgePlayer
         });
     }
 
-    protected abstract MovementMonitor<Entity, F> createMonitor();
+    protected MovementMonitor<IEntityPlayerMP, F> createMonitor()
+    {
+        return new MovementMonitor<>(mod, cmd.sender, cmd.sender.getBlockPos(mod), this);
+    }
 
-    @Override
     public void tick()
     {
         checkStepOnFakeBlock();
@@ -379,12 +380,6 @@ public abstract class ForgePlayer
         return cmd.id;
     }
 
-    @Override
-    public PlayerID getPlayerId()
-    {
-        return cmd.id;
-    }
-
     @NotNull
     @Override
     public UUID getUniqueId()
@@ -399,18 +394,11 @@ public abstract class ForgePlayer
         return cmd.id.getName();
     }
 
-    @Nullable
-    @Override
-    public CommandSender getCommandSender()
-    {
-        return cmd;
-    }
-
     @NotNull
     @Override
-    public DisplayedSelection<?> getSelection(WorldDim world)
+    public S getCommandSender()
     {
-        return cmd.getSelection(world);
+        return cmd;
     }
 
     @Override

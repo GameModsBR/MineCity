@@ -22,7 +22,7 @@ public class ToolListener
             return false;
 
         BlockPos block = new BlockPos(forge.world(world), x, y, z);
-        DisplayedSelection<?> selection = forge.player(player).getSelection(forge.world(world));
+        DisplayedSelection<?> selection = forge.player(player).getCommandSender().getSelection(forge.world(world));
 
         if(player.isSneaking())
         {

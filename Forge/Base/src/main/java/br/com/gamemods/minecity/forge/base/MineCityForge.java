@@ -11,12 +11,14 @@ import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.forge.base.accessors.*;
+import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
+import br.com.gamemods.minecity.forge.base.command.ForgePlayerSender;
 import br.com.gamemods.minecity.forge.base.command.ForgeTransformer;
-import br.com.gamemods.minecity.forge.base.command.IForgePlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -37,6 +39,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public abstract class MineCityForge implements Server, ChunkProvider, WorldProvider
@@ -49,6 +52,8 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
     private Path worldContainer;
     public ForgeTransformer transformer;
     public MineCity mineCity;
+    public Item selectionTool;
+    public Consumer<ForgePlayerSender.ForgeSelection> selectionPallet;
 
     private void adjustDefaultFlag(Configuration config, String prefix, PermissionFlag flag, boolean def, SimpleFlagHolder flags)
     {
@@ -223,7 +228,7 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
     @SuppressWarnings("unchecked")
     public Stream<PlayerID> getOnlinePlayers()
     {
-        return server.getIPlayerList().getPlayerEntities().stream().map(e-> player(e).getPlayerId());
+        return server.getIPlayerList().getPlayerEntities().stream().map(e-> player(e).identity());
     }
 
     @Override
@@ -322,13 +327,19 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
         return ((IWorldServer) world).getLoadedChunk(x, z);
     }
 
-    protected abstract IForgePlayer createPlayer(IEntityPlayerMP player);
+    protected
+        ForgePlayer <MineCityForge, IEntityPlayerMP, ForgePlayerSender<IEntityPlayerMP, MineCityForge>>
+            createPlayer(IEntityPlayerMP player)
+    {
+        return new ForgePlayer<>(new ForgePlayerSender<>(this, player));
+    }
+
     protected abstract CommandSender createSender(ICommander sender);
 
-    public IForgePlayer player(EntityPlayer player)
+    public ForgePlayer player(EntityPlayer player)
     {
         IEntityPlayerMP cast = ((IEntityPlayerMP) player);
-        IForgePlayer cache = cast.getMineCityPlayer();
+        ForgePlayer cache = cast.getMineCityPlayer();
         if(cache != null)
             return cache;
 

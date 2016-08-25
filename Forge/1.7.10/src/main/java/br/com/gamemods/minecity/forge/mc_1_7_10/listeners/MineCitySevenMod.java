@@ -11,6 +11,8 @@ import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenBlockPro
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.*;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -28,6 +30,16 @@ public class MineCitySevenMod
     public void onPreInit(FMLPreInitializationEvent event) throws IOException, SAXException
     {
         forge = new MineCitySeven();
+        forge.selectionTool = Items.wooden_hoe;
+        forge.selectionPallet = selection -> {
+            selection.cornerA = Blocks.glowstone;
+            selection.cornerB = Blocks.lit_redstone_lamp;
+            selection.corners = Blocks.lit_furnace;
+            selection.linesA = Blocks.gold_block;
+            selection.linesB = Blocks.lapis_block;
+            selection.lines = Blocks.sponge;
+            selection.extension = Blocks.glowstone;
+        };
 
         LegacyFormat.BLACK.server = EnumChatFormatting.BLACK;
         LegacyFormat.DARK_BLUE.server = EnumChatFormatting.DARK_BLUE;

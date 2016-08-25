@@ -2,19 +2,19 @@ package br.com.gamemods.minecity.forge.base.command;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
-import br.com.gamemods.minecity.api.command.CommandResult;
-import br.com.gamemods.minecity.api.command.CommandSender;
-import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.unchecked.UFunction;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.IChunk;
 import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.IState;
 import br.com.gamemods.minecity.structure.DisplayedSelection;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagByte;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-public abstract class ForgePlayerSender<P extends IEntityPlayerMP, F extends MineCityForge> extends ForgeCommandSender<P, F>
+public class ForgePlayerSender<P extends IEntityPlayerMP, F extends MineCityForge> extends ForgeCommandSender<P, F>
 {
     public final PlayerID id;
     private UFunction<CommandSender, CommandResult<?>> confirmAction;
@@ -36,12 +36,7 @@ public abstract class ForgePlayerSender<P extends IEntityPlayerMP, F extends Min
     public ForgePlayerSender(F mod, P sender)
     {
         super(mod, sender);
-        this.id = createId(sender);
-    }
-
-    protected PlayerID createId(P player)
-    {
-        return new PlayerID(sender.getUniqueID(), sender.getName());
+        this.id = new PlayerID(sender.getUniqueID(), sender.getName());
     }
 
     public void tick()
@@ -78,9 +73,6 @@ public abstract class ForgePlayerSender<P extends IEntityPlayerMP, F extends Min
             }
         }
     }
-
-    @Override
-    public abstract void giveSelectionTool();
 
     @Nullable
     @Override
@@ -172,6 +164,20 @@ public abstract class ForgePlayerSender<P extends IEntityPlayerMP, F extends Min
         }
     }
 
+    @Override
+    public void giveSelectionTool()
+    {
+        ItemStack stack = new ItemStack(mod.selectionTool);
+        stack.setTagInfo("MineCity", new NBTTagByte((byte)1));
+        stack.setStackDisplayName(mod.transformer.toLegacy(new Message("tool.selection.title", LegacyFormat.AQUA+"Selection Tool")));
+        //stack.setTagInfo("Lore", mod.transformer.toLore(new Message("tool.selection.lore", "Selects an area in the world")));
+        if(!sender.getEntityPlayerMP().inventory.addItemStackToInventory(stack))
+            send(CommandFunction.messageFailed(new Message(
+                    "action.give.tool.inventory-full",
+                    "You haven't received the tool because your inventory is full."
+            )));
+    }
+
     @NotNull
     @Override
     public ForgeSelection<?> getSelection(@NotNull WorldDim world)
@@ -182,7 +188,12 @@ public abstract class ForgePlayerSender<P extends IEntityPlayerMP, F extends Min
     }
 
     @NotNull
-    public abstract ForgeSelection<?> createSelection(@NotNull WorldDim world);
+    public ForgeSelection<IState> createSelection(@NotNull WorldDim world)
+    {
+        ForgeSelection<IState> selection = new ForgeSelection<>(world);
+        mod.selectionPallet.accept(selection);
+        return selection;
+    }
 
     public class ForgeSelection<B extends IState> extends DisplayedSelection<B>
     {
@@ -214,7 +225,7 @@ public abstract class ForgePlayerSender<P extends IEntityPlayerMP, F extends Min
                 removed.removeAll(display.keySet());
                 for(BlockPos p : removed)
                 {
-                    Chunk chunk = mod.chunk(p.getChunk());
+                    IChunk chunk = mod.chunk(p.getChunk());
                     if(chunk != null)
                     {
                         // This method loads the chunk when it's unloaded,
@@ -226,7 +237,7 @@ public abstract class ForgePlayerSender<P extends IEntityPlayerMP, F extends Min
                 for(Map.Entry<BlockPos, B> entry : display.entrySet())
                 {
                     BlockPos p = entry.getKey();
-                    Chunk chunk = mod.chunk(p.getChunk());
+                    IChunk chunk = mod.chunk(p.getChunk());
                     if(chunk != null)
                     {
                         sender.sendFakeBlock(p.x, p.y, p.z, entry.getValue());

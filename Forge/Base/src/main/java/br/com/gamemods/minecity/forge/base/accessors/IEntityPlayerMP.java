@@ -7,7 +7,7 @@ import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
-import br.com.gamemods.minecity.forge.base.command.IForgePlayer;
+import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.EntityPlayerMPTransformer;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.Entity;
@@ -16,10 +16,10 @@ import net.minecraft.network.Packet;
 import net.minecraft.world.WorldServer;
 
 @Referenced(at = EntityPlayerMPTransformer.class)
-public interface IEntityPlayerMP extends IEntity, ICommander
+public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
 {
-    void setMineCityPlayer(IForgePlayer player);
-    IForgePlayer getMineCityPlayer();
+    void setMineCityPlayer(ForgePlayer player);
+    ForgePlayer getMineCityPlayer();
 
     default EntityPlayerMP getEntityPlayerMP()
     {
@@ -28,9 +28,9 @@ public interface IEntityPlayerMP extends IEntity, ICommander
 
     default PlayerID getIdentity()
     {
-        IForgePlayer player = getMineCityPlayer();
+        ForgePlayer player = getMineCityPlayer();
         if(player != null)
-            return player.getPlayerId();
+            return player.identity();
 
         return new PlayerID(getUniqueID(), getName());
     }
@@ -93,7 +93,7 @@ public interface IEntityPlayerMP extends IEntity, ICommander
     @Override
     default String getName()
     {
-        return IEntity.super.getName();
+        return IEntityLivingBase.super.getName();
     }
 
     void sendBlock(int x, int y, int z);
@@ -123,5 +123,10 @@ public interface IEntityPlayerMP extends IEntity, ICommander
     default void kick(String reason)
     {
         ((EntityPlayerMP) this).connection.kickPlayerFromServer(reason);
+    }
+
+    default boolean isFlying()
+    {
+        return ((EntityPlayerMP) this).capabilities.isFlying;
     }
 }
