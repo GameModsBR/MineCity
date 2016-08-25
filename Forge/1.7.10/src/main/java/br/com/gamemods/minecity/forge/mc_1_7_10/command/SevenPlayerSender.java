@@ -4,25 +4,16 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.CommandFunction;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.world.BlockPos;
-import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayerSender;
 import br.com.gamemods.minecity.forge.mc_1_7_10.MineCitySeven;
-import io.netty.buffer.Unpooled;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayerMP;
+import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.SevenBlock;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagByte;
-import net.minecraft.network.Packet;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.S23PacketBlockChange;
-import net.minecraft.world.WorldServer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class SevenPlayerSender extends ForgePlayerSender<IEntityPlayerMP, MineCitySeven>
 {
@@ -51,124 +42,18 @@ public class SevenPlayerSender extends ForgePlayerSender<IEntityPlayerMP, MineCi
             )));
     }
 
-    @Nullable
-    @Override
-    public Message teleport(@NotNull BlockPos pos)
-    {
-        EntityPlayerMP sender = this.sender.getEntityPlayerMP();
-        WorldDim current = mod.world(sender.worldObj);
-        double x = pos.x+0.5, y = pos.y+0.5, z = pos.z+0.5;
-        if(current.equals(pos.world))
-        {
-            sender.mountEntity(null);
-            sender.setPositionAndUpdate(x, y, z);
-            return null;
-        }
-
-        WorldServer worldServer = mod.world(pos.world);
-        if(worldServer == null)
-            return new Message("action.teleport.world-not-found",
-                    "The destiny world ${name} was not found or is not loaded",
-                    new Object[]{"name", pos.world.name()}
-            );
-
-        sender.mountEntity(null);
-        mod.server.getIPlayerList().transferToDimension(this.sender, pos.world.dim, worldServer.getDefaultTeleporter());
-        sender.setPositionAndUpdate(x, y, z);
-
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public Message teleport(@NotNull EntityPos pos)
-    {
-        EntityPlayerMP sender = this.sender.getEntityPlayerMP();
-        WorldDim current = mod.world(sender.worldObj);
-        if(current.equals(pos.world))
-        {
-            sender.mountEntity(null);
-            sender.setPositionAndRotation(pos.x, pos.y, pos.z, pos.yaw, pos.pitch);
-            sender.setPositionAndUpdate(pos.x, pos.y, pos.z);
-            return null;
-        }
-
-        WorldServer worldServer = mod.world(pos.world);
-        if(worldServer == null)
-            return new Message("action.teleport.world-not-found",
-                    "The destiny world ${name} was not found or is not loaded",
-                    new Object[]{"name", pos.world.name()}
-            );
-
-        sender.mountEntity(null);
-        mod.server.getIPlayerList().transferToDimension(this.sender, pos.world.dim, worldServer.getDefaultTeleporter());
-        sender.setPositionAndRotation(pos.x, pos.y, pos.z, pos.yaw, pos.pitch);
-        sender.setPositionAndUpdate(pos.x, pos.y, pos.z);
-
-        return null;
-    }
-
-    @Override
-    public boolean isOp()
-    {
-        return mod.server.getIPlayerList().isOp(sender.getGameProfile());
-    }
-
     @NotNull
     @Override
-    public ForgeSelection<Block> createSelection(@NotNull WorldDim world)
+    public ForgeSelection<SevenBlock> createSelection(@NotNull WorldDim world)
     {
-        ForgeSelection<Block> selection = new ForgeSelection<>(world);
-        selection.cornerA = Blocks.glowstone;
-        selection.cornerB = Blocks.lit_redstone_lamp;
-        selection.corners = Blocks.lit_furnace;
-        selection.linesA = Blocks.gold_block;
-        selection.linesB = Blocks.lapis_block;
-        selection.lines = Blocks.sponge;
-        selection.extension = Blocks.glowstone;
+        ForgeSelection<SevenBlock> selection = new ForgeSelection<>(world);
+        selection.cornerA = (SevenBlock) Blocks.glowstone;
+        selection.cornerB = (SevenBlock) Blocks.lit_redstone_lamp;
+        selection.corners = (SevenBlock) Blocks.lit_furnace;
+        selection.linesA = (SevenBlock) Blocks.gold_block;
+        selection.linesB = (SevenBlock) Blocks.lapis_block;
+        selection.lines = (SevenBlock) Blocks.sponge;
+        selection.extension = (SevenBlock) Blocks.glowstone;
         return selection;
-    }
-
-    public void sendPacket(Packet packet)
-    {
-        sender.send(packet);
-    }
-
-    @Override
-    public void sendBlock(int x, int y, int z)
-    {
-        sendPacket(new S23PacketBlockChange(x, y, z, sender.getWorld()));
-    }
-
-    @Override
-    public void sendFakeBlock(int x, int y, int z, Object block)
-    {
-        sendFakeBlock(x, y, z, (Block) block, 0);
-    }
-
-    public void sendFakeBlock(int x, int y, int z, Block block, int metadata)
-    {
-        sendFakeBlock(x, y, z, Block.getIdFromBlock(block), metadata);
-    }
-
-    public void sendFakeBlock(int x, int y, int z, int block, int metadata)
-    {
-        PacketBuffer buf = new PacketBuffer(Unpooled.buffer(4 + 1 + 4 + 4 + 1));
-        buf.writeInt(x);
-        buf.writeByte(y);
-        buf.writeInt(z);
-        buf.writeVarIntToBuffer(block);
-        buf.writeByte(metadata);
-
-        S23PacketBlockChange empty = new S23PacketBlockChange();
-        try
-        {
-            empty.readPacketData(buf);
-            sendPacket(empty);
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
     }
 }

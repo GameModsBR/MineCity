@@ -30,4 +30,10 @@ public interface SevenBlock extends IBlock, IState
     {
         return getForgeBlock().isOpaqueCube();
     }
+
+    @Override
+    default int getStateId()
+    {
+        return 0;
+    }
 }

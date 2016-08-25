@@ -13,5 +13,7 @@ public interface IPlayerList
 
     void transferToDimension(IEntityPlayerMP player, int dimension, Teleporter teleporter);
 
+    void transferToDimension(IEntity entity, int dimension, Teleporter teleporter);
+
     boolean isOp(GameProfile profile);
 }

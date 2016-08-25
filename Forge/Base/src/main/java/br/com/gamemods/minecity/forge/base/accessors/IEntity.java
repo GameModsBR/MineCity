@@ -1,8 +1,10 @@
 package br.com.gamemods.minecity.forge.base.accessors;
 
+import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
+import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.EntityTransformer;
@@ -62,6 +64,41 @@ public interface IEntity
     {
         Entity entity = (Entity) this;
         return new EntityPos(mod.world(entity.worldObj), entity.posX, entity.posY, entity.posZ, entity.rotationPitch, entity.rotationYaw);
+    }
+
+    default void dismount()
+    {
+        ((Entity) this).dismountRidingEntity();
+    }
+
+    default Message teleport(MineCityForge mod, EntityPos pos)
+    {
+        Entity sender = (Entity) this;
+        WorldDim current = mod.world(sender.worldObj);
+        if(current.equals(pos.world))
+        {
+            dismount();
+            sender.setPositionAndRotation(pos.x, pos.y, pos.z, pos.yaw, pos.pitch);
+            sender.setPositionAndUpdate(pos.x, pos.y, pos.z);
+            return null;
+        }
+
+        return new Message("action.teleport.unsupported-world-transfer", "The destiny is in a different world");
+    }
+
+    default Message teleport(MineCityForge mod, BlockPos pos)
+    {
+        Entity sender = (Entity) this;
+        WorldDim current = mod.world(sender.worldObj);
+        double x = pos.x + 0.5, y = pos.y + 0.5, z = pos.z + 0.5;
+        if(current.equals(pos.world))
+        {
+            dismount();
+            sender.setPositionAndUpdate(x, y, z);
+            return null;
+        }
+
+        return new Message("action.teleport.unsupported-world-transfer", "The destiny is in a different world");
     }
 
     default BlockPos getBlockPos(MineCityForge mod)

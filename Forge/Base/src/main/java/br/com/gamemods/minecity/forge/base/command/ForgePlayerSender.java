@@ -12,6 +12,7 @@ import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.IState;
 import br.com.gamemods.minecity.structure.DisplayedSelection;
 import net.minecraft.world.chunk.Chunk;
 import org.jetbrains.annotations.NotNull;
@@ -83,11 +84,17 @@ public abstract class ForgePlayerSender<P extends IEntityPlayerMP, F extends Min
 
     @Nullable
     @Override
-    public abstract Message teleport(@NotNull BlockPos pos);
+    public Message teleport(@NotNull BlockPos pos)
+    {
+        return sender.teleport(mod, pos);
+    }
 
     @Nullable
     @Override
-    public abstract Message teleport(@NotNull EntityPos pos);
+    public Message teleport(@NotNull EntityPos pos)
+    {
+        return sender.teleport(mod, pos);
+    }
 
     public ForgeSelection<?> getSelection()
     {
@@ -106,7 +113,10 @@ public abstract class ForgePlayerSender<P extends IEntityPlayerMP, F extends Min
         return id;
     }
 
-    public abstract boolean isOp();
+    public boolean isOp()
+    {
+        return mod.server.getIPlayerList().isOp(sender.getGameProfile());
+    }
 
     @Override
     public boolean hasPermission(String perm)
@@ -174,14 +184,7 @@ public abstract class ForgePlayerSender<P extends IEntityPlayerMP, F extends Min
     @NotNull
     public abstract ForgeSelection<?> createSelection(@NotNull WorldDim world);
 
-    public abstract void sendBlock(int x, int y, int z);
-
-    /**
-     * @throws ClassCastException if the block param type is not valid
-     */
-    public abstract void sendFakeBlock(int x, int y, int z, Object block);
-
-    public class ForgeSelection<B> extends DisplayedSelection<B>
+    public class ForgeSelection<B extends IState> extends DisplayedSelection<B>
     {
         public ForgeSelection(@NotNull WorldDim world)
         {
@@ -216,7 +219,7 @@ public abstract class ForgePlayerSender<P extends IEntityPlayerMP, F extends Min
                     {
                         // This method loads the chunk when it's unloaded,
                         // that's why we check if it's loaded before
-                        sendBlock(p.x, p.y, p.z);
+                        sender.sendBlock(p.x, p.y, p.z);
                     }
                 }
 
@@ -226,7 +229,7 @@ public abstract class ForgePlayerSender<P extends IEntityPlayerMP, F extends Min
                     Chunk chunk = mod.chunk(p.getChunk());
                     if(chunk != null)
                     {
-                        sendFakeBlock(p.x, p.y, p.z, entry.getValue());
+                        sender.sendFakeBlock(p.x, p.y, p.z, entry.getValue());
                     }
                 }
             });

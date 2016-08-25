@@ -11,4 +11,6 @@ public interface IState
     Block getForgeBlock();
 
     boolean isOpaqueCube();
+
+    int getStateId();
 }

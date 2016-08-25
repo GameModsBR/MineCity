@@ -29,21 +29,21 @@ public class FrostPlayer extends ForgePlayer<MineCityFrost, IEntityPlayerMP, Fro
     @Override
     public void sendTitle(Message title, Message subtitle)
     {
-        cmd.sendPacket(new SPacketTitle(SPacketTitle.Type.CLEAR, new TextComponentString("")));
+        cmd.sender.sendPacket(new SPacketTitle(SPacketTitle.Type.CLEAR, new TextComponentString("")));
         if(title != null)
         {
-            cmd.sendPacket(new SPacketTitle(SPacketTitle.Type.TITLE, ITextComponent.Serializer.jsonToComponent(
+            cmd.sender.sendPacket(new SPacketTitle(SPacketTitle.Type.TITLE, ITextComponent.Serializer.jsonToComponent(
                     cmd.mod.transformer.toJson(title)
             )));
         }
         else
         {
-            cmd.sendPacket(new SPacketTitle(SPacketTitle.Type.TITLE, new TextComponentString("")));
+            cmd.sender.sendPacket(new SPacketTitle(SPacketTitle.Type.TITLE, new TextComponentString("")));
         }
 
         if(subtitle != null)
         {
-            cmd.sendPacket(new SPacketTitle(SPacketTitle.Type.SUBTITLE, ITextComponent.Serializer.jsonToComponent(
+            cmd.sender.sendPacket(new SPacketTitle(SPacketTitle.Type.SUBTITLE, ITextComponent.Serializer.jsonToComponent(
                     cmd.mod.transformer.toJson(subtitle)
             )));
         }

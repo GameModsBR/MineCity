@@ -107,7 +107,7 @@ public abstract class ForgePlayer
                 if(pos.x == x && pos.y == y && pos.z == z)
                 {
                     selection.display.remove(pos);
-                    cmd.sendBlock(x, y, z);
+                    cmd.sender.sendBlock(x, y, z);
                     return;
                 }
             }

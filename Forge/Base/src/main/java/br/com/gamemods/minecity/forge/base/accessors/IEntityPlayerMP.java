@@ -1,12 +1,19 @@
 package br.com.gamemods.minecity.forge.base.accessors;
 
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.EntityPos;
+import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.command.IForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.EntityPlayerMPTransformer;
 import com.mojang.authlib.GameProfile;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
+import net.minecraft.world.WorldServer;
 
 @Referenced(at = EntityPlayerMPTransformer.class)
 public interface IEntityPlayerMP extends IEntity, ICommander
@@ -29,9 +36,76 @@ public interface IEntityPlayerMP extends IEntity, ICommander
     }
 
     @Override
+    default Message teleport(MineCityForge mod, EntityPos pos)
+    {
+        Entity sender = (Entity) this;
+        WorldDim current = mod.world(sender.worldObj);
+        if(current.equals(pos.world))
+        {
+            dismount();
+            sender.setPositionAndRotation(pos.x, pos.y, pos.z, pos.yaw, pos.pitch);
+            sender.setPositionAndUpdate(pos.x, pos.y, pos.z);
+            return null;
+        }
+
+        WorldServer worldServer = mod.world(pos.world);
+        if(worldServer == null)
+            return new Message("action.teleport.world-not-found",
+                    "The destiny world ${name} was not found or is not loaded",
+                    new Object[]{"name", pos.world.name()}
+            );
+
+        dismount();
+        mod.server.getIPlayerList().transferToDimension(this, pos.world.dim, worldServer.getDefaultTeleporter());
+        sender.setPositionAndRotation(pos.x, pos.y, pos.z, pos.yaw, pos.pitch);
+        sender.setPositionAndUpdate(pos.x, pos.y, pos.z);
+        return null;
+    }
+
+    @Override
+    default Message teleport(MineCityForge mod, BlockPos pos)
+    {
+        Entity sender = (Entity) this;
+        WorldDim current = mod.world(sender.worldObj);
+        double x = pos.x+0.5, y = pos.y+0.5, z = pos.z+0.5;
+        if(current.equals(pos.world))
+        {
+            dismount();
+            sender.setPositionAndUpdate(x, y, z);
+            return null;
+        }
+
+        WorldServer worldServer = mod.world(pos.world);
+        if(worldServer == null)
+            return new Message("action.teleport.world-not-found",
+                    "The destiny world ${name} was not found or is not loaded",
+                    new Object[]{"name", pos.world.name()}
+            );
+
+        dismount();
+        mod.server.getIPlayerList().transferToDimension(this, pos.world.dim, worldServer.getDefaultTeleporter());
+        sender.setPositionAndUpdate(x, y, z);
+        return null;
+    }
+
+    @Override
     default String getName()
     {
         return IEntity.super.getName();
+    }
+
+    void sendBlock(int x, int y, int z);
+
+    default void sendBlock(BlockPos pos)
+    {
+        sendBlock(pos.x, pos.y, pos.z);
+    }
+
+    void sendFakeBlock(int x, int y, int z, IState state);
+
+    default void sendFakeBlock(BlockPos pos, IState state)
+    {
+        sendFakeBlock(pos.x, pos.y, pos.z, state);
     }
 
     default GameProfile getGameProfile()
@@ -39,7 +113,7 @@ public interface IEntityPlayerMP extends IEntity, ICommander
         return getEntityPlayerMP().getGameProfile();
     }
 
-    default void send(Packet packet)
+    default void sendPacket(Packet packet)
     {
         ((EntityPlayerMP) this).connection.sendPacket(packet);
     }

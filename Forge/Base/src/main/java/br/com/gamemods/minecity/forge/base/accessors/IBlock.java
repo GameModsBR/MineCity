@@ -20,4 +20,9 @@ public interface IBlock
     {
         return this instanceof BlockLiquid || this instanceof BlockFluidBase;
     }
+
+    default int getId()
+    {
+        return Block.getIdFromBlock((Block) this);
+    }
 }

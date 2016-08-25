@@ -30,6 +30,12 @@ public interface SevenEntity extends IEntity
     }
 
     @Override
+    default void dismount()
+    {
+        ((Entity) this).mountEntity(null);
+    }
+
+    @Override
     default String getName()
     {
         return ((Entity) this).getCommandSenderName();
