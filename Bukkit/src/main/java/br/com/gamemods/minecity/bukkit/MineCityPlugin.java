@@ -112,6 +112,7 @@ public class MineCityPlugin extends JavaPlugin
             config.dbUser = Optional.ofNullable(yaml.getString("database.user")).filter(u-> !u.isEmpty()).orElse(null);
             config.dbPass = Optional.ofNullable(yaml.getString("database.pass")).filter(p-> !p.isEmpty()).map(String::getBytes).orElse(null);
             config.locale = Locale.forLanguageTag(Optional.ofNullable(yaml.getString("language")).filter(l->!l.isEmpty()).orElse("en"));
+            config.useTitle = yaml.getBoolean("use-titles", true);
             config.defaultNatureDisableCities = !yaml.getBoolean("permissions.default.nature.enable-city-creation", true);
 
             for(PermissionFlag flag: PermissionFlag.values())

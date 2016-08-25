@@ -69,6 +69,7 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
         this.transformer = transformer;
         this.config = new MineCityConfig();
         this.config.locale = Locale.forLanguageTag(config.get("general", "language", "en").getString());
+        this.config.useTitle = config.get("general", "use-titles", true).getBoolean();
         this.config.dbUrl = config.get("database", "url", this.config.dbUrl).getString();
         this.config.dbUser = Optional.of(config.get("database", "user", "").getString())
                 .filter(u->!u.isEmpty()).orElse(null);

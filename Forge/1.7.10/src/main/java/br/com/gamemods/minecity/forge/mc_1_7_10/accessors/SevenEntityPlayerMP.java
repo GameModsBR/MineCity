@@ -1,5 +1,7 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.accessors;
 
+import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.IState;
 import io.netty.buffer.Unpooled;
@@ -53,5 +55,11 @@ public interface SevenEntityPlayerMP extends IEntityPlayerMP
         {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    default void sendTitle(MineCityForge mod, Message title, Message subTitle)
+    {
+        // Not supported
     }
 }

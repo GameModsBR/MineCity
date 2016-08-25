@@ -328,19 +328,45 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
                 title = new Message("action.enter.nature", LegacyFormat.GREEN+"Nature");
                 subtitle = Message.string(mov.lastClaim.chunk.world.name());
             }
-            sendTitle(title, subtitle);
+            sendNotification(title, subtitle);
         }
         else if(mov.lastPlot != lastPlot)
         {
             if(mov.lastPlot != null)
             {
-                sendTitle(null, Message.string(mov.lastPlot.getName()));
+                sendNotification(null, Message.string(mov.lastPlot.getName()));
             }
             else
             {
-                sendTitle(Message.string(mov.lastCity.getName()), null);
+                sendNotification(Message.string(mov.lastCity.getName()), null);
             }
         }
+    }
+
+    public void sendNotification(Message title, Message subtitle)
+    {
+        if(plugin.mineCity.useTitles)
+            try
+            {
+                sendTitle(title, subtitle);
+                return;
+            }
+            catch(NoSuchMethodError e)
+            {
+                plugin.mineCity.useTitles = false;
+                plugin.logger.severe(
+                        "This server implementation does not provide support to send titles, " +
+                        "the 'use-titles' option was automatically disabled. "
+                );
+            }
+
+        if(subtitle == null)
+            send(new Message("",LegacyFormat.DARK_GRAY+" ~ "+LegacyFormat.GRAY+"${name}", new Object[]{"name", title}));
+        else
+            send(new Message("",LegacyFormat.DARK_GRAY+" ~ ${title} :"+LegacyFormat.GRAY+" ${sub}", new Object[][]{
+                    {"sub", subtitle},
+                    {"title", title}
+            }));
     }
 
     public void sendTitle(Message title, Message subtitle)

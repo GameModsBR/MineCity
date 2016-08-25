@@ -15,4 +15,5 @@ public class MineCityConfig
     public SimpleFlagHolder defaultPlotFlags = new SimpleFlagHolder();
     public SimpleFlagHolder defaultReserveFlags = new SimpleFlagHolder();
     public boolean defaultNatureDisableCities;
+    public boolean useTitle = true;
 }

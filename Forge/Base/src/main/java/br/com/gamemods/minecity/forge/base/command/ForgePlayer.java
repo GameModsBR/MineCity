@@ -190,19 +190,32 @@ public abstract class ForgePlayer
                 title = new Message("action.enter.nature", LegacyFormat.GREEN+"Nature");
                 subtitle = Message.string(mov.lastClaim.chunk.world.name());
             }
-            sendTitle(title, subtitle);
+            sendNotification(title, subtitle);
         }
         else if(mov.lastPlot != lastPlot)
         {
             if(mov.lastPlot != null)
             {
-                sendTitle(null, Message.string(mov.lastPlot.getName()));
+                sendNotification(null, Message.string(mov.lastPlot.getName()));
             }
             else
             {
-                sendTitle(Message.string(mov.lastCity.getName()), null);
+                sendNotification(Message.string(mov.lastCity.getName()), null);
             }
         }
+    }
+
+    private void sendNotification(Message title, Message subtitle)
+    {
+        if(mod.mineCity.useTitles)
+            cmd.sender.sendTitle(mod, title, subtitle);
+        else if(subtitle == null)
+            send(new Message("",LegacyFormat.DARK_GRAY+" ~ "+LegacyFormat.GRAY+"${name}", new Object[]{"name", title}));
+        else
+            send(new Message("",LegacyFormat.DARK_GRAY+" ~ ${title} :"+LegacyFormat.GRAY+" ${sub}", new Object[][]{
+                    {"sub", subtitle},
+                    {"title", title}
+            }));
     }
 
     private void removeUnleashedEntities()
@@ -358,8 +371,6 @@ public abstract class ForgePlayer
                 can(this, LEAVE, mov.lastHolder())
         ).findFirst();
     }
-
-    public abstract void sendTitle(Message title, Message subtitle);
 
     @NotNull
     @Override

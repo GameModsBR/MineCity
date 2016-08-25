@@ -1,5 +1,7 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.accessors;
 
+import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.IState;
@@ -8,7 +10,10 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketBlockChange;
+import net.minecraft.network.play.server.SPacketTitle;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 
 @Referenced(at = FrostEntityPlayerMPTransformer.class)
 public interface FrostEntityPlayerMP extends IEntityPlayerMP
@@ -37,6 +42,29 @@ public interface FrostEntityPlayerMP extends IEntityPlayerMP
         catch(Exception e)
         {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    default void sendTitle(MineCityForge mod, Message title, Message subtitle)
+    {
+        sendPacket(new SPacketTitle(SPacketTitle.Type.CLEAR, new TextComponentString("")));
+        if(title != null)
+        {
+            sendPacket(new SPacketTitle(SPacketTitle.Type.TITLE, ITextComponent.Serializer.jsonToComponent(
+                    mod.transformer.toJson(title)
+            )));
+        }
+        else
+        {
+            sendPacket(new SPacketTitle(SPacketTitle.Type.TITLE, new TextComponentString("")));
+        }
+
+        if(subtitle != null)
+        {
+            sendPacket(new SPacketTitle(SPacketTitle.Type.SUBTITLE, ITextComponent.Serializer.jsonToComponent(
+                    mod.transformer.toJson(subtitle)
+            )));
         }
     }
 }

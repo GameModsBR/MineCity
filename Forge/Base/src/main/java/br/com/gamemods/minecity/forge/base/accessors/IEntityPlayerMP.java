@@ -88,6 +88,8 @@ public interface IEntityPlayerMP extends IEntity, ICommander
         return null;
     }
 
+    void sendTitle(MineCityForge mod, Message title, Message subTitle);
+
     @Override
     default String getName()
     {

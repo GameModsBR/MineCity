@@ -84,6 +84,7 @@ public class MineCitySevenMod
     @Mod.EventHandler
     public void onServerStart(FMLServerStartingEvent event)
     {
+        forge.mineCity.useTitles = false;
         forge.mineCity.commands.getRootCommands().stream()
                 .map(name->forge.mineCity.commands.get(name).get())
                 .map(r->r.command).distinct()
