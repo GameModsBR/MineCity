@@ -19,7 +19,7 @@ import java.util.Arrays;
  *     }
  * </code></pre>
  */
-public class InsertInterfaceTransformer implements IClassTransformer
+public class InsertSetterGetterTransformer implements IClassTransformer
 {
     /**
      * The SRG name of the class that will be transformed
@@ -51,8 +51,8 @@ public class InsertInterfaceTransformer implements IClassTransformer
      */
     private String getterMethodName = "getMineCityWorld";
 
-    public InsertInterfaceTransformer(String className, String fieldClass, String fieldName,
-                                      String interfaceClass, String setterMethodName, String getterMethodName)
+    public InsertSetterGetterTransformer(String className, String fieldClass, String fieldName,
+                                         String interfaceClass, String setterMethodName, String getterMethodName)
     {
         this.className = className;
         this.fieldClass = fieldClass;
