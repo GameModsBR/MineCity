@@ -5,7 +5,10 @@ import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.WorldServerTransformer;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
 
 @Referenced(at = WorldServerTransformer.class)
 public interface IWorldServer
@@ -36,5 +39,21 @@ public interface IWorldServer
     default int getDimensionId()
     {
         return ((WorldServer) this).provider.getDimension();
+    }
+
+    default IChunk getLoadedChunk(int x, int z)
+    {
+        return (IChunk) ((WorldServer) this).getChunkProvider().getLoadedChunk(x, z);
+    }
+
+    @SuppressWarnings("unchecked")
+    default Collection<IChunk> getLoadedIChunks()
+    {
+        return (Collection) getLoadedChunks();
+    }
+
+    default Collection<Chunk> getLoadedChunks()
+    {
+        return ((WorldServer) this).getChunkProvider().getLoadedChunks();
     }
 }

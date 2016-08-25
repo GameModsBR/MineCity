@@ -5,8 +5,12 @@ import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IWorldServer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.SevenUtil;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenWorldServerTransformer;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import java.util.Collection;
 
 @Referenced(at = SevenWorldServerTransformer.class)
 public interface SevenWorldServer extends IWorldServer
@@ -38,5 +42,20 @@ public interface SevenWorldServer extends IWorldServer
     default int getDimensionId()
     {
         return ((WorldServer) this).provider.dimensionId;
+    }
+
+    @Override
+    default SevenChunk getLoadedChunk(int x, int z)
+    {
+        return (SevenChunk) ((WorldServer) this).theChunkProviderServer.loadedChunkHashMap.getValueByKey(
+                ChunkCoordIntPair.chunkXZ2Int(x, z)
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default Collection<Chunk> getLoadedChunks()
+    {
+        return ((WorldServer) this).theChunkProviderServer.loadedChunks;
     }
 }

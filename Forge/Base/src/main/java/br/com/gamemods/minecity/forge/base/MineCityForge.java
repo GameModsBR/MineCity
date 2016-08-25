@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Optional;
@@ -293,7 +294,32 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
         return pos;
     }
 
-    public abstract Chunk getLoadedChunk(WorldServer world, int x, int z);
+    @NotNull
+    @Override
+    public Stream<ClaimedChunk> loadedChunks()
+    {
+        IWorldServer overWorld = (IWorldServer) DimensionManager.getWorld(0);
+        if(overWorld == null)
+            return Stream.empty();
+
+        Collection<IChunk> overWorldChunks = overWorld.getLoadedIChunks();
+        if(overWorldChunks.isEmpty())
+            return Stream.empty();
+
+        Stream<IChunk> composite = overWorldChunks.stream();
+        for(WorldServer worldServer : DimensionManager.getWorlds())
+        {
+            if(worldServer == overWorld) continue;
+            composite = Stream.concat(composite, ((IWorldServer) worldServer).getLoadedIChunks().stream());
+        }
+
+        return composite.map(IChunk::getMineCityClaim);
+    }
+
+    public IChunk getLoadedChunk(WorldServer world, int x, int z)
+    {
+        return ((IWorldServer) world).getLoadedChunk(x, z);
+    }
 
     protected abstract IForgePlayer createPlayer(IEntityPlayerMP player);
     protected abstract CommandSender createSender(ICommander sender);
@@ -324,11 +350,11 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
         if(world == null)
             return null;
 
-        Chunk chunk = getLoadedChunk(world, x, z);
-        if(!(chunk instanceof IChunk))
+        IChunk chunk = getLoadedChunk(world, x, z);
+        if(chunk == null)
             return null;
 
-        return ((IChunk) chunk).getMineCityClaim();
+        return chunk.getMineCityClaim();
     }
 
     @Nullable
@@ -346,7 +372,7 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
         if(world == null)
             return null;
 
-        chunk = (IChunk) getLoadedChunk(world, pos.x, pos.z);
+        chunk = getLoadedChunk(world, pos.x, pos.z);
         if(chunk == null)
             return null;
 
@@ -374,12 +400,12 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
         if(!(worldServer instanceof IWorldServer))
             return false;
 
-        Chunk forgeChunk = getLoadedChunk(worldServer, pos.x, pos.z);
-        if(!(forgeChunk instanceof IChunk))
+        IChunk forgeChunk = getLoadedChunk(worldServer, pos.x, pos.z);
+        if(forgeChunk == null)
             return false;
 
         pos.instance = forgeChunk;
-        ((IChunk) forgeChunk).setMineCityClaim(claim);
+        forgeChunk.setMineCityClaim(claim);
         return true;
     }
 
@@ -391,7 +417,7 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
     }
 
     @Nullable
-    public Chunk chunk(ChunkPos pos)
+    public IChunk chunk(ChunkPos pos)
     {
         return getLoadedChunk(world(pos.world), pos.x, pos.z);
     }
@@ -404,11 +430,11 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
         if(world == null)
             return null;
 
-        Chunk chunk = getLoadedChunk(world, x, z);
-        if(!(chunk instanceof IChunk))
+        IChunk chunk = getLoadedChunk(world, x, z);
+        if(chunk == null)
             return null;
 
-        ChunkPos pos = ((IChunk) chunk).getMineCityChunk();
+        ChunkPos pos = chunk.getMineCityChunk();
         if(pos != null)
             return pos;
 
