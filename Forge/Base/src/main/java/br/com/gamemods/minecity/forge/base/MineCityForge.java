@@ -10,18 +10,17 @@ import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.forge.base.accessors.IChunk;
+import br.com.gamemods.minecity.forge.base.accessors.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgeTransformer;
 import br.com.gamemods.minecity.forge.base.command.IForgePlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
-import net.minecraft.block.Block;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -207,22 +206,18 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
         return future;
     }
 
-    public int dimension(World world)
+    public WorldDim world(World inst)
     {
-        return world.provider.getDimension();
-    }
-
-    public WorldDim world(World world)
-    {
-        WorldDim cached = ((IWorldServer) world).getMineCityWorld();
+        IWorldServer world = (IWorldServer) inst;
+        WorldDim cached = world.getMineCityWorld();
         if(cached != null)
             return cached;
 
-        Path worldPath = worldContainer.resolve(Optional.ofNullable(world.provider.getSaveFolder()).orElse(""));
-        WorldDim worldDim = new WorldDim(dimension(world), worldPath.toString());
+        Path worldPath = worldContainer.resolve(Optional.ofNullable(world.getFolder()).orElse(""));
+        WorldDim worldDim = new WorldDim(world.getDimensionId(), worldPath.toString());
         worldDim.instance = world;
 
-        ((IWorldServer) world).setMineCityWorld(worldDim);
+        world.setMineCityWorld(worldDim);
 
         return worldDim;
     }
@@ -393,22 +388,21 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
         return pos;
     }
 
-    public Block block(World world, int x, int y, int z)
+    @Deprecated
+    public boolean isTopSolid(World world, int x, int y, int z)
     {
-        return world.getBlockState(new BlockPos(x, y, z)).getBlock();
+        return ((IWorldServer) world).isTopSolid(x, y, z);
     }
 
-    public abstract boolean isTopSolid(World world, int x, int y, int z);
-
+    @Deprecated
     public Entity vehicle(Entity entity)
     {
-        return entity.getRidingEntity();
+        return ((IEntity) entity).getVehicle();
     }
 
+    @Deprecated
     public br.com.gamemods.minecity.api.world.BlockPos block(Entity entity)
     {
-        return new br.com.gamemods.minecity.api.world.BlockPos(
-                world(entity.worldObj), (int)entity.posX, (int)entity.posY, (int)entity.posZ
-        );
+        return ((IEntity) entity).getBlockPos(this);
     }
 }

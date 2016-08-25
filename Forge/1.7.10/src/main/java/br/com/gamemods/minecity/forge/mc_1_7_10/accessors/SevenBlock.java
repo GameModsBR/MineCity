@@ -10,7 +10,7 @@ import net.minecraft.block.Block;
 public interface SevenBlock extends IBlock, IState
 {
     @Override
-    default IBlock getIBlock()
+    default SevenBlock getIBlock()
     {
         return this;
     }
@@ -19,5 +19,15 @@ public interface SevenBlock extends IBlock, IState
     default Block getForgeBlock()
     {
         return (Block) this;
+    }
+
+    default SevenBlock getDefaultIState()
+    {
+        return this;
+    }
+
+    default boolean isOpaqueCube()
+    {
+        return getForgeBlock().isOpaqueCube();
     }
 }

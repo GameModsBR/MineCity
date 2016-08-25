@@ -28,7 +28,7 @@ public interface IChunk
 
     default IWorldServer getForgeWorldServer()
     {
-        return (IWorldServer) getForgeChunk().getWorld();
+        return (IWorldServer) ((Chunk) this).getWorld();
     }
 
     default boolean isMineCityChunkValid()

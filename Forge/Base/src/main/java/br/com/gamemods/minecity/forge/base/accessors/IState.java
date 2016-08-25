@@ -9,4 +9,6 @@ public interface IState
 {
     IBlock getIBlock();
     Block getForgeBlock();
+
+    boolean isOpaqueCube();
 }

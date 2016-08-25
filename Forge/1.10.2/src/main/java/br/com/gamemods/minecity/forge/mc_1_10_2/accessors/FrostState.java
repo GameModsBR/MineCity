@@ -9,6 +9,11 @@ import net.minecraft.block.state.IBlockState;
 @Referenced(at = FrostIBlockStateTransformer.class)
 public interface FrostState extends IState
 {
+    default IBlockState getForgeState()
+    {
+        return (IBlockState) this;
+    }
+
     default Block getForgeBlock()
     {
         return ((IBlockState) this).getBlock();
@@ -19,8 +24,8 @@ public interface FrostState extends IState
         return (FrostBlock) ((IBlockState) this).getBlock();
     }
 
-    default IBlockState getForgeState()
+    default boolean isOpaqueCube()
     {
-        return (IBlockState) this;
+        return getForgeState().isOpaqueCube();
     }
 }

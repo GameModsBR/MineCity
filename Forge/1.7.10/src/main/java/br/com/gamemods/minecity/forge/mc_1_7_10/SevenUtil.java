@@ -1,9 +1,12 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10;
 
 import br.com.gamemods.minecity.api.command.LegacyFormat;
+import br.com.gamemods.minecity.api.world.Direction;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.common.util.ForgeDirection;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +21,21 @@ public class SevenUtil
     {
         for(EnumChatFormatting formatting : EnumChatFormatting.values())
             formattingMap.put(formatting.getFormattingCode(), formatting);
+    }
+
+    @NotNull
+    public static ForgeDirection toForgeDirection(Direction direction)
+    {
+        switch(direction)
+        {
+            case NORTH: return ForgeDirection.NORTH;
+            case SOUTH: return ForgeDirection.SOUTH;
+            case EAST: return ForgeDirection.EAST;
+            case WEST: return ForgeDirection.WEST;
+            case UP: return ForgeDirection.UP;
+            case DOWN: return ForgeDirection.DOWN;
+            default: return ForgeDirection.UNKNOWN;
+        }
     }
 
     /**

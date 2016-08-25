@@ -8,7 +8,6 @@ import br.com.gamemods.minecity.forge.base.accessors.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgeCommandSender;
 import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenPlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
-import net.minecraft.block.Block;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -107,25 +106,16 @@ public class MineCitySeven extends MineCityForge
         );
     }
 
-    @Override
-    public int dimension(World world)
-    {
-        return world.provider.dimensionId;
-    }
 
     @Override
-    public Block block(World world, int x, int y, int z)
-    {
-        return world.getBlock(x, y, z);
-    }
-
-    @Override
+    @Deprecated
     public boolean isTopSolid(World world, int x, int y, int z)
     {
         return world.isSideSolid(x, y, z, ForgeDirection.UP);
     }
 
     @Override
+    @Deprecated
     public Entity vehicle(Entity entity)
     {
         return entity.ridingEntity;
