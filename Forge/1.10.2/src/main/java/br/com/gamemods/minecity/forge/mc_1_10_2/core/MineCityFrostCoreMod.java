@@ -18,7 +18,7 @@ import java.util.Map;
 @Name("MineCityCore")
 @MCVersion("1.10.2")
 @TransformerExclusions({
-        "br.com.gamemods.minecity.forge.mc_1_7_10.core",
+        "br.com.gamemods.minecity.forge.mc_1_10_2.core",
         "br.com.gamemods.minecity.forge.base.core",
 })
 @SortingIndex(value = 1001)
