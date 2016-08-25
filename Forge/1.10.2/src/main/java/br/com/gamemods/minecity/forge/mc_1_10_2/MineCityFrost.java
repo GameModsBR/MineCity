@@ -1,6 +1,5 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2;
 
-import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IChunk;
@@ -11,8 +10,6 @@ import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -21,38 +18,10 @@ import net.minecraftforge.common.DimensionManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 public class MineCityFrost extends MineCityForge
 {
-    @Override
-    public Optional<PlayerID> getPlayerId(String name)
-    {
-        for(EntityPlayer player : server.getPlayerList().getPlayerList())
-        {
-            String playerName = player.getName();
-            if(name.equals(playerName))
-                return Optional.of(new PlayerID(player.getUniqueID(), playerName));
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
-    public Stream<PlayerID> getOnlinePlayers()
-    {
-        return server.getPlayerList().getPlayerList().stream()
-                .map(e-> this.player(e).getPlayerId());
-    }
-
-    @Override
-    public Stream<String> getOnlinePlayerNames()
-    {
-        return server.getPlayerList().getPlayerList().stream()
-                .map(EntityPlayer::getName);
-    }
-
     @Override
     protected FrostPlayer createPlayer(EntityPlayerMP player)
     {
@@ -100,12 +69,6 @@ public class MineCityFrost extends MineCityForge
     public Chunk getLoadedChunk(WorldServer world, int x, int z)
     {
         return world.getChunkProvider().getLoadedChunk(x, z);
-    }
-
-    @Override
-    public boolean isTopSolid(World world, int x, int y, int z)
-    {
-        return world.isSideSolid(new BlockPos(x, y, z), EnumFacing.UP);
     }
 
     public br.com.gamemods.minecity.api.world.BlockPos block(World world, Vec3i pos)

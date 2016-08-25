@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.forge.base;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
+import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
@@ -9,10 +10,7 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
-import br.com.gamemods.minecity.forge.base.accessors.IChunk;
-import br.com.gamemods.minecity.forge.base.accessors.IEntity;
-import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
-import br.com.gamemods.minecity.forge.base.accessors.IWorldServer;
+import br.com.gamemods.minecity.forge.base.accessors.*;
 import br.com.gamemods.minecity.forge.base.command.ForgeTransformer;
 import br.com.gamemods.minecity.forge.base.command.IForgePlayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
@@ -39,12 +37,13 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.*;
+import java.util.stream.Stream;
 
 public abstract class MineCityForge implements Server, ChunkProvider, WorldProvider
 {
     private final ConcurrentLinkedQueue<FutureTask> syncTasks = new ConcurrentLinkedQueue<>();
     public Logger logger;
-    public MinecraftServer server;
+    public IMinecraftServer server;
     private ExecutorService executors;
     private MineCityConfig config;
     private Path worldContainer;
@@ -136,7 +135,7 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
     public void onServerAboutToStart(MinecraftServer server) throws IOException, SAXException, DataSourceException
     {
         executors = Executors.newCachedThreadPool();
-        this.server = server;
+        this.server = (IMinecraftServer) server;
 
 
         worldContainer = Paths.get(server.getFolderName());
@@ -204,6 +203,33 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
         FutureTask<R> future = new FutureTask<>(callable);
         syncTasks.add(future);
         return future;
+    }
+
+    @Override
+    public Optional<PlayerID> getPlayerId(String name)
+    {
+        for(IEntityPlayerMP player : server.getIPlayerList().getIPlayers())
+        {
+            String playerName = player.getName();
+            if(name.equals(playerName))
+                return Optional.of(player.getIdentity());
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Stream<PlayerID> getOnlinePlayers()
+    {
+        return server.getIPlayerList().getPlayerEntities().stream().map(e-> player(e).getPlayerId());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Stream<String> getOnlinePlayerNames()
+    {
+        return server.getIPlayerList().getIPlayers().stream().map(IEntity::getName);
     }
 
     public WorldDim world(World inst)

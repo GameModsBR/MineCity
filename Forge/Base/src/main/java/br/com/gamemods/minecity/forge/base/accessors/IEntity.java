@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.world.WorldServer;
 
 import java.util.List;
+import java.util.UUID;
 
 @Referenced(at = EntityTransformer.class)
 public interface IEntity
@@ -37,8 +38,12 @@ public interface IEntity
 
     default String getName()
     {
-        Entity entity = (Entity) this;
-        return entity.getName();
+        return getForgeEntity().getName();
+    }
+
+    default UUID getUniqueId()
+    {
+        return getForgeEntity().getUniqueID();
     }
 
     default WorldServer getWorld()
