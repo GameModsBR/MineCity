@@ -1,5 +1,7 @@
 package br.com.gamemods.minecity.forge.base.accessors;
 
+import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.Teleporter;

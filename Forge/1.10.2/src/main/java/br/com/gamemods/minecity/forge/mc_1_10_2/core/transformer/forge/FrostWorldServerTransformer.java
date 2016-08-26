@@ -1,7 +1,7 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge;
 
 import br.com.gamemods.minecity.forge.base.Referenced;
-import br.com.gamemods.minecity.forge.base.core.transformer.forge.WorldServerTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.world.WorldServerTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod;
 
 @Referenced

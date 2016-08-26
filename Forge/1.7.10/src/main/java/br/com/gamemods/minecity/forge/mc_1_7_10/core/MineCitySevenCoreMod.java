@@ -43,27 +43,27 @@ public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     public String[] getASMTransformerClass()
     {
         return new String[]{
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenWorldServerTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenChunkTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenEntityPlayerMPTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenEntityTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockTransformer",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.world.SevenWorldServerTransformer",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.world.SevenChunkTransformer",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPlayerMPTransformer",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityTransformer",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.block.SevenBlockTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.ServerConfigurationManagerTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenMinecraftServerTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockSnapshotTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.ItemTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenItemBlockTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.ItemSnowTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.ItemDyeTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.BlockOpenReactorTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.BlockClickReactorTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.BlockClickExtendsOpenTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.BlockModifyExtendsOpenTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.BlockNoReactExtendsOpenTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenItemStackTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.ItemModifyOppositeReactorTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.BlockTNTTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.BlockDoorTransformer"
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.block.SevenBlockSnapshotTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemTransformer",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.item.SevenItemBlockTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemSnowTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemDyeTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockOpenReactorTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockClickReactorTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockClickExtendsOpenTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockModifyExtendsOpenTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockNoReactExtendsOpenTransformer",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.item.SevenItemStackTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemModifyOppositeReactorTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockDoorTransformer"
         };
     }
 

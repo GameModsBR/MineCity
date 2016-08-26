@@ -4,7 +4,7 @@ import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
-import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,10 +2,10 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla;
 
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
-import br.com.gamemods.minecity.forge.base.accessors.IState;
+import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.protections.vanilla.BlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.SevenUtil;
-import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.SevenBlockState;
+import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;

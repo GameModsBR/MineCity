@@ -11,7 +11,7 @@ import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.EntityUpdate;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
-import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.protection.ForgeMovementListener;
 import br.com.gamemods.minecity.protection.MovementMonitor;
 import br.com.gamemods.minecity.structure.City;

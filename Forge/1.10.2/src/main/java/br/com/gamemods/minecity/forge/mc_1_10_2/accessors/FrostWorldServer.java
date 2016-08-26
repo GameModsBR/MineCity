@@ -2,8 +2,10 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.accessors;
 
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.Referenced;
-import br.com.gamemods.minecity.forge.base.accessors.IWorldServer;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.FrostUtil;
+import br.com.gamemods.minecity.forge.mc_1_10_2.accessors.block.FrostBlock;
+import br.com.gamemods.minecity.forge.mc_1_10_2.accessors.block.FrostState;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostWorldServerTransformer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;

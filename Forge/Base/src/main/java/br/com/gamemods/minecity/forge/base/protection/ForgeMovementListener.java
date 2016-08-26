@@ -2,7 +2,11 @@ package br.com.gamemods.minecity.forge.base.protection;
 
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
-import br.com.gamemods.minecity.forge.base.accessors.*;
+import br.com.gamemods.minecity.forge.base.accessors.block.IState;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityLivingBase;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.protection.MovementListener;
 
 public interface ForgeMovementListener<E extends IEntity, F extends MineCityForge> extends MovementListener<E, F>
