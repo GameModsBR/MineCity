@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.forge.base.protection.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.SingleBlockReaction;
 import net.minecraft.block.BlockCrops;
+import net.minecraft.block.BlockOldLog;
 import net.minecraft.block.BlockTallGrass;
 
 @Referenced(at = ItemDyeTransformer.class)
@@ -34,8 +35,7 @@ public interface IItemDye extends IItem
         if(meta != 3)
             return NoReaction.INSTANCE;
 
-        IBlock block = state.getIBlock();
-        if(!"log".equals(block.getUnlocalizedName()) || block.getId() != 17)
+        if(!(state.getIBlock() instanceof BlockOldLog))
             return NoReaction.INSTANCE;
 
         if(state.getEnumOrdinalOrMeta("variant", m-> m&3) != 3)
