@@ -1,10 +1,11 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.listeners;
 
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.listeners.ToolListener;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
-public class SevenToolListener extends br.com.gamemods.minecity.forge.base.listeners.ToolListener
+public class SevenToolListener extends ToolListener
 {
     public SevenToolListener(MineCityForge forge)
     {

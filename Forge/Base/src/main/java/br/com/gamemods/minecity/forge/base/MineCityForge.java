@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.forge.base.accessors.*;
+import br.com.gamemods.minecity.forge.base.command.ForgeCommandSender;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayerSender;
 import br.com.gamemods.minecity.forge.base.command.ForgeTransformer;
@@ -19,12 +20,14 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.util.BlockSnapshot;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +45,7 @@ import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public abstract class MineCityForge implements Server, ChunkProvider, WorldProvider
+public class MineCityForge implements Server, ChunkProvider, WorldProvider
 {
     private final ConcurrentLinkedQueue<FutureTask> syncTasks = new ConcurrentLinkedQueue<>();
     public Logger logger;
@@ -334,7 +337,10 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
         return new ForgePlayer<>(new ForgePlayerSender<>(this, player));
     }
 
-    protected abstract CommandSender createSender(ICommander sender);
+    protected ForgeCommandSender<ICommander, MineCityForge> createSender(ICommander sender)
+    {
+        return new ForgeCommandSender<>(this, sender);
+    }
 
     public ForgePlayer player(EntityPlayer player)
     {
@@ -471,5 +477,15 @@ public abstract class MineCityForge implements Server, ChunkProvider, WorldProvi
     public br.com.gamemods.minecity.api.world.BlockPos block(Entity entity)
     {
         return ((IEntity) entity).getBlockPos(this);
+    }
+
+    public BlockPos block(BlockSnapshot snapshot)
+    {
+        return ((IBlockSnapshot) snapshot).getPosition(this);
+    }
+
+    public IItemStack stack(ItemStack stack)
+    {
+        return (IItemStack) (Object) stack;
     }
 }

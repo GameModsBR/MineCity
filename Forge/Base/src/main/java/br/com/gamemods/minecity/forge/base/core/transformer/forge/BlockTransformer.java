@@ -6,11 +6,11 @@ public class BlockTransformer extends InsertInterfaceTransformer
 {
     public BlockTransformer()
     {
-        super("net.minecraft.block", "br.com.gamemods.minecity.forge.base.accessors.IBlock");
+        super("net.minecraft.block.Block", "br.com.gamemods.minecity.forge.base.accessors.IBlock");
     }
 
     public BlockTransformer(String interfaceName)
     {
-        super("net.minecraft.block", interfaceName);
+        super("net.minecraft.block.Block", interfaceName);
     }
 }

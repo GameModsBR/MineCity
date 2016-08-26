@@ -1,6 +1,5 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge;
 
-import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertSetterGetterTransformer;
 
 /**
@@ -17,19 +16,17 @@ import br.com.gamemods.minecity.forge.base.core.transformer.InsertSetterGetterTr
  *     }
  * </code></pre>
  */
-@Referenced
 public class EntityPlayerMPTransformer extends InsertSetterGetterTransformer
 {
     public EntityPlayerMPTransformer(String interfaceName)
     {
         super(
                 "net.minecraft.entity.player.EntityPlayerMP",
-                "br/com/gamemods/minecity/forge/base/command/IForgePlayer", "mineCity",
+                "br/com/gamemods/minecity/forge/base/command/ForgePlayer", "mineCity",
                 interfaceName, "setMineCityPlayer", "getMineCityPlayer"
         );
     }
 
-    @Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCityForge7CoreMod")
     public EntityPlayerMPTransformer()
     {
         this("br/com/gamemods/minecity/forge/base/accessors/IEntityPlayerMP");

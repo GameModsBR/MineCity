@@ -1,7 +1,11 @@
 package br.com.gamemods.minecity.forge.base.accessors;
 
+import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.BlockTransformer;
+import br.com.gamemods.minecity.forge.base.protection.NoReaction;
+import br.com.gamemods.minecity.forge.base.protection.Reaction;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraftforge.fluids.BlockFluidBase;
@@ -24,5 +28,10 @@ public interface IBlock
     default int getId()
     {
         return Block.getIdFromBlock((Block) this);
+    }
+
+    default Reaction reactRightClick(BlockPos pos, IState state, IEntityPlayerMP player, IItemStack stack, boolean offHand, Direction face)
+    {
+        return NoReaction.INSTANCE;
     }
 }

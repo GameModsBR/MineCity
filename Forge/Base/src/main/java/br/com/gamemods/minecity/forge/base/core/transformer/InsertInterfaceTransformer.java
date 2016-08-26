@@ -5,6 +5,9 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Makes a class implements an interface.
  * <p>Example:</p>
@@ -19,9 +22,9 @@ import org.objectweb.asm.tree.ClassNode;
 public class InsertInterfaceTransformer implements IClassTransformer
 {
     /**
-     * The SRG name of the class that will be transformed
+     * The SRG name of the classes that will be transformed
      */
-    private String className;
+    private Collection<String> classNames;
 
     /**
      * The class name of the interface that will be injected to the class
@@ -30,14 +33,20 @@ public class InsertInterfaceTransformer implements IClassTransformer
 
     public InsertInterfaceTransformer(String className, String interfaceClass)
     {
-        this.className = className;
+        this.classNames = Collections.singleton(className);
+        this.interfaceClass = interfaceClass;
+    }
+
+    public InsertInterfaceTransformer(String interfaceClass, Collection<String> classNames)
+    {
+        this.classNames = classNames;
         this.interfaceClass = interfaceClass;
     }
 
     @Override
     public byte[] transform(String s, String srgName, byte[] bytes)
     {
-        if(!srgName.equals(className))
+        if(!classNames.contains(srgName))
             return bytes;
 
         ClassNode classNode = new ClassNode();

@@ -21,7 +21,7 @@ import static br.com.gamemods.minecity.api.permission.FlagHolder.wrapDeny;
 
 public class ForgeProtections
 {
-    private final MineCityForge mod;
+    public final MineCityForge mod;
 
     public ForgeProtections(MineCityForge mod)
     {

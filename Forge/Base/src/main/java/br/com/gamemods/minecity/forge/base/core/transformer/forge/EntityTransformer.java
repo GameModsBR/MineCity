@@ -6,11 +6,11 @@ public class EntityTransformer extends InsertInterfaceTransformer
 {
     public EntityTransformer()
     {
-        super("net.minecraft.entity.entity", "br.com.gamemods.minecity.forge.base.accessors.IEntity");
+        super("net.minecraft.entity.Entity", "br.com.gamemods.minecity.forge.base.accessors.IEntity");
     }
 
     public EntityTransformer(String interfaceClass)
     {
-        super("net.minecraft.entity.entity", interfaceClass);
+        super("net.minecraft.entity.Entity", interfaceClass);
     }
 }

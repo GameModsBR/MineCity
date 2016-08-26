@@ -5,7 +5,7 @@ import br.com.gamemods.minecity.forge.base.accessors.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenEntityLivingBaseTransformer;
 
 @Referenced(at = SevenEntityLivingBaseTransformer.class)
-public interface SevenEntityLivingBase extends IEntityLivingBase
+public interface SevenEntityLivingBase extends IEntityLivingBase, SevenEntity
 {
     @Override
     default boolean isElytraFlying()

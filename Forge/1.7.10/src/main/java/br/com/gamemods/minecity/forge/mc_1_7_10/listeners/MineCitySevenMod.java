@@ -3,9 +3,9 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.listeners;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.ModConstants;
 import br.com.gamemods.minecity.forge.base.command.RootCommand;
-import br.com.gamemods.minecity.forge.mc_1_7_10.MineCitySeven;
 import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenBlockProtections;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -24,12 +24,12 @@ import java.io.IOException;
 @Mod(modid = ModConstants.MOD_ID, name = ModConstants.MOD_NAME, version = ModConstants.MOD_VERSION, acceptableRemoteVersions = "*")
 public class MineCitySevenMod
 {
-    private MineCitySeven forge;
+    private MineCityForge forge;
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) throws IOException, SAXException
     {
-        forge = new MineCitySeven();
+        forge = new MineCityForge();
         forge.selectionTool = Items.wooden_hoe;
         forge.selectionPallet = selection -> {
             selection.cornerA = Blocks.glowstone;

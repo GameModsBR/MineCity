@@ -1,32 +1,23 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla;
 
-import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.permission.FlagHolder;
-import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
-import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
-import br.com.gamemods.minecity.forge.base.protections.vanilla.ForgeProtections;
-import br.com.gamemods.minecity.forge.mc_1_7_10.MineCitySeven;
-import br.com.gamemods.minecity.structure.ClaimedChunk;
+import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.IState;
+import br.com.gamemods.minecity.forge.base.protections.vanilla.BlockProtections;
+import br.com.gamemods.minecity.forge.mc_1_7_10.SevenUtil;
+import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.SevenBlockState;
+import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockAnvil;
-import net.minecraft.block.BlockContainer;
-import net.minecraft.block.IGrowable;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 
-import java.util.Optional;
-
-public class SevenBlockProtections extends ForgeProtections
+public class SevenBlockProtections extends BlockProtections
 {
-    private final MineCitySeven mod;
+    private final MineCityForge mod;
 
-    public SevenBlockProtections(MineCitySeven mod)
+    public SevenBlockProtections(MineCityForge mod)
     {
         super(mod);
         this.mod = mod;
@@ -38,35 +29,23 @@ public class SevenBlockProtections extends ForgeProtections
         if(event.world.isRemote)
             return;
 
-        BlockPos pos = new BlockPos(mod.world(event.world), event.x, event.y, event.z);
-        ClaimedChunk chunk = mod.mineCity.provideChunk(pos.getChunk());
-        FlagHolder holder = chunk.getFlagHolder(pos);
-
-        ForgePlayer player = mod.player(event.player);
-        Optional<Message> denial = holder.can(player, PermissionFlag.MODIFY);
-        if(denial.isPresent())
-        {
+        if(onBlockPlace(event.player, event.blockSnapshot))
             event.setCanceled(true);
-            player.send(FlagHolder.wrapDeny(denial.get()));
-        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onBlockPlace(BlockEvent.BreakEvent event)
+    public void onBlockBreak(BlockEvent.BreakEvent event)
     {
         if(event.world.isRemote)
             return;
 
-        BlockPos pos = new BlockPos(mod.world(event.world), event.x, event.y, event.z);
-        ClaimedChunk chunk = mod.mineCity.provideChunk(pos.getChunk());
-        FlagHolder holder = chunk.getFlagHolder(pos);
-
-        ForgePlayer player = mod.player(event.getPlayer());
-        Optional<Message> denial = holder.can(player, PermissionFlag.MODIFY);
-        if(denial.isPresent())
+        if(onBlockBreak(
+                event.getPlayer(),
+                state(event.block, event.blockMetadata),
+                new BlockPos(mod.world(event.world), event.x, event.y, event.z)
+        ))
         {
             event.setCanceled(true);
-            player.send(FlagHolder.wrapDeny(denial.get()));
         }
     }
 
@@ -76,21 +55,13 @@ public class SevenBlockProtections extends ForgeProtections
         if(event.world.isRemote)
             return;
 
-        ForgePlayer player = mod.player(event.player);
-        BlockPos blockPos = new BlockPos(mod.world(event.world), event.x, event.y, event.z);
-        ClaimedChunk chunk = null;
-        for(BlockSnapshot state : event.getReplacedBlockSnapshots())
+        if(onBlockMultiPlace(
+                event.player,
+                new BlockPos(mod.world(event.world), event.x, event.y, event.z),
+                event.getReplacedBlockSnapshots()
+        ))
         {
-            blockPos = new BlockPos(blockPos, state.x, state.y, state.z);
-            chunk = mod.mineCity.provideChunk(blockPos.getChunk(), chunk);
-            FlagHolder holder = chunk.getFlagHolder(blockPos);
-            Optional<Message> denial = holder.can(player, PermissionFlag.MODIFY);
-            if(denial.isPresent())
-            {
-                event.setCanceled(true);
-                player.send(FlagHolder.wrapDeny(denial.get()));
-                return;
-            }
+            event.setCanceled(true);
         }
     }
 
@@ -102,23 +73,27 @@ public class SevenBlockProtections extends ForgeProtections
 
         if(event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK)
         {
-            Block block = event.world.getBlock(event.x, event.y, event.z);
-            ItemStack item = event.entityPlayer.getHeldItem();
-            if(item != null && item.getItem() == Items.dye && item.getItemDamage() == 15)
-            {
-                if(block instanceof IGrowable)
-                {
-                    if(check(new BlockPos(mod.world(event.world), event.x, event.y, event.z), event.entityPlayer, PermissionFlag.MODIFY))
-                        event.setCanceled(true);
-                    return;
-                }
-            }
+            int result = onPlayerRightClickBlock(
+                    event.entityPlayer, false, event.entityPlayer.getHeldItem(),
+                    state(event.world.getBlock(event.x, event.y, event.z), event.world.getBlockMetadata(event.x, event.y, event.z)),
+                    new BlockPos(mod.world(event.world), event.x, event.y, event.z),
+                    SevenUtil.toDirection(event.face)
+            );
 
-            if(block instanceof BlockContainer || block instanceof BlockAnvil)
-            {
-                if(check(new BlockPos(mod.world(event.world), event.x, event.y, event.z), event.entityPlayer, PermissionFlag.OPEN))
-                    event.setCanceled(true);
-            }
+            if(result == 3)
+                event.setCanceled(true);
+            else if(result == 1)
+                event.useItem = Event.Result.DENY;
+            else if(result == 2)
+                event.useBlock = Event.Result.DENY;
         }
+    }
+
+    private IState state(Block block, int meta)
+    {
+        if(meta == 0)
+            return (IState) block;
+
+        return new SevenBlockState(block, meta);
     }
 }

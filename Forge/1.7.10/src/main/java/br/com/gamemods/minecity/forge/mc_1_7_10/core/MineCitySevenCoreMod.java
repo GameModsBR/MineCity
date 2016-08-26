@@ -45,11 +45,16 @@ public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
         return new String[]{
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenWorldServerTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenChunkTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.EntityPlayerMPTransformer",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenEntityPlayerMPTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenEntityTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.ServerConfigurationManagerTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenMinecraftServerTransformer"
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenMinecraftServerTransformer",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockSnapshotTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.ItemTransformer",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenItemDyeTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.OpenReactorsTransformer",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenItemStackTransformer"
         };
     }
 

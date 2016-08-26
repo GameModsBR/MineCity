@@ -32,8 +32,7 @@ public class SevenWorldListener
         Chunk chunk = event.getChunk();
         ChunkPos pos = new ChunkPos(forge.world(chunk.worldObj), chunk.xPosition, chunk.zPosition);
         pos.instance = chunk;
-        if(chunk instanceof IChunk)
-            ((IChunk) chunk).setMineCityClaim(new ClaimedChunk(Inconsistency.INSTANCE, pos));
+        ((IChunk) chunk).setMineCityClaim(new ClaimedChunk(Inconsistency.INSTANCE, pos));
 
         forge.runAsynchronously(() ->
         {
@@ -75,7 +74,6 @@ public class SevenWorldListener
 
         forge.mineCity.unloadNature(forge.world(event.world));
 
-        if(event.world instanceof IWorldServer)
-            ((IWorldServer) event.world).setMineCityWorld(null);
+        ((IWorldServer) event.world).setMineCityWorld(null);
     }
 }

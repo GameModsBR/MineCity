@@ -14,10 +14,15 @@ public class SevenBlockState implements IState
         this.meta = meta;
     }
 
+    public SevenBlockState(Block block, int meta)
+    {
+        this((SevenBlock) block, meta);
+    }
+
     @Override
     public SevenBlock getIBlock()
     {
-        return null;
+        return block;
     }
 
     @Override

@@ -2,15 +2,18 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.accessors;
 
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.IState;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenEntityPlayerMPTransformer;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.S23PacketBlockChange;
 
-public interface SevenEntityPlayerMP extends IEntityPlayerMP
+@Referenced(at = SevenEntityPlayerMPTransformer.class)
+public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingBase
 {
     @Override
     default void sendPacket(Packet packet)
@@ -61,5 +64,11 @@ public interface SevenEntityPlayerMP extends IEntityPlayerMP
     default void sendTitle(MineCityForge mod, Message title, Message subTitle)
     {
         // Not supported
+    }
+
+    @Override
+    default String getName()
+    {
+        return SevenEntityLivingBase.super.getName();
     }
 }
