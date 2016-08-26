@@ -3,18 +3,18 @@ package br.com.gamemods.minecity.forge.base.core.transformer.forge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertInterfaceTransformer;
 
-@Referenced
-public class BlockTNTTransformer extends InsertInterfaceTransformer
-{
-    public BlockTNTTransformer(String interfaceClass)
-    {
-        super("net.minecraft.block.BlockTNT", interfaceClass);
-    }
+import java.util.Arrays;
 
+@Referenced
+public class BlockClickExtendsOpenTransformer extends InsertInterfaceTransformer
+{
     @Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod")
     @Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
-    public BlockTNTTransformer()
+    public BlockClickExtendsOpenTransformer()
     {
-        this("br.com.gamemods.minecity.forge.base.accessors.IBlockTNT");
+        super("br.com.gamemods.minecity.forge.base.accessors.IBlockClickExtendsOpen", Arrays.asList(
+                "net.minecraft.block.BlockEnderChest",
+                "net.minecraft.block.BlockEnchantmentTable"
+        ));
     }
 }

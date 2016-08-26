@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class SingleBlockReaction implements Reaction
+public class SingleBlockReaction extends TriggeredReaction
 {
     @NotNull
     private BlockPos pos;
@@ -33,6 +33,9 @@ public class SingleBlockReaction implements Reaction
     @Override
     public Optional<Message> can(MineCity mineCity, Permissible permissible)
     {
-        return mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).can(permissible, flag);
+        Optional<Message> denial = mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).can(permissible, flag);
+        if(denial.isPresent())
+            onDeny(permissible, flag, pos, denial.get());
+        return denial;
     }
 }

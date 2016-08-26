@@ -4,17 +4,17 @@ import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertInterfaceTransformer;
 
 @Referenced
-public class BlockTNTTransformer extends InsertInterfaceTransformer
+public class BlockDoorTransformer extends InsertInterfaceTransformer
 {
-    public BlockTNTTransformer(String interfaceClass)
+    public BlockDoorTransformer(String interfaceClass)
     {
-        super("net.minecraft.block.BlockTNT", interfaceClass);
+        super("net.minecraft.block.BlockDoor", interfaceClass);
     }
 
     @Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod")
     @Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
-    public BlockTNTTransformer()
+    public BlockDoorTransformer()
     {
-        this("br.com.gamemods.minecity.forge.base.accessors.IBlockTNT");
+        this("br.com.gamemods.minecity.forge.base.accessors.IBlockDoor");
     }
 }
