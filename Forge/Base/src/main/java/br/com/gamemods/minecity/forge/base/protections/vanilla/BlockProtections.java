@@ -87,24 +87,24 @@ public class BlockProtections extends ForgeProtections
 
         ForgePlayer player = mod.player(entity);
         IItemStack stack = mod.stack(itemStack);
+        Optional<Message> denial;
         if(stack != null)
         {
             Reaction reaction = stack.getIItem().react((IEntityPlayerMP) entity, stack, offHand, state, pos, face);
-            Optional<Message> denial = reaction.can(mod.mineCity, player);
+            denial = reaction.can(mod.mineCity, player);
             if(denial.isPresent())
-            {
-                player.send(denial.get());
                 result = 1;
-            }
         }
+        else denial = Optional.empty();
 
         Reaction reaction = state.getIBlock().reactRightClick(pos, state, (IEntityPlayerMP) entity, stack, offHand,face);
-        Optional<Message> denial = reaction.can(mod.mineCity, player);
-        if(denial.isPresent())
-        {
-            player.send(FlagHolder.wrapDeny(denial.get()));
-            return result | 2;
-        }
+        Optional<Message> denial2 = reaction.can(mod.mineCity, player);
+        if(denial2.isPresent())
+            result |= 2;
+
+        Message message = denial.orElse(denial2.orElse(null));
+        if(message != null)
+            player.send(FlagHolder.wrapDeny(message));
 
         return result;
     }

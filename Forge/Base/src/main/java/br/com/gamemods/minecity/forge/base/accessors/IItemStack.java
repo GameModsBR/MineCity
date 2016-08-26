@@ -27,4 +27,9 @@ public interface IItemStack
     {
         return getStack().getItem();
     }
+
+    default String getUnlocalizedName()
+    {
+        return getStack().getUnlocalizedName();
+    }
 }

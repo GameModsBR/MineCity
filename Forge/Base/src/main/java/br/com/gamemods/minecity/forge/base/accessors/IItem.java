@@ -17,4 +17,9 @@ public interface IItem
     {
         return NoReaction.INSTANCE;
     }
+
+    default String getUnlocalizedName()
+    {
+        return getForgeItem().getUnlocalizedName();
+    }
 }

@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.accessors;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.IItemDye;
 import br.com.gamemods.minecity.forge.base.accessors.IItemStack;
@@ -10,12 +11,14 @@ import br.com.gamemods.minecity.forge.base.accessors.IState;
 import br.com.gamemods.minecity.forge.base.protection.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.SingleBlockReaction;
+import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostItemDyeTransformer;
 import net.minecraft.block.BlockOldLog;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumDyeColor;
 
+@Referenced(at = FrostItemDyeTransformer.class)
 public interface FrostItemDye extends IItemDye
 {
     @Override
