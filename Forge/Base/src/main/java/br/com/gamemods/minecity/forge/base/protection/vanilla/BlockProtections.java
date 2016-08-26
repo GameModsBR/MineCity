@@ -29,12 +29,11 @@ public class BlockProtections extends ForgeProtections
 
     public boolean onBlockPlace(EntityPlayer entity, BlockSnapshot snapshot)
     {
+        IBlockSnapshot snap = (IBlockSnapshot) snapshot;
         ForgePlayer player = mod.player(entity);
-        BlockPos pos = mod.block(snapshot);
-        ClaimedChunk chunk = mod.mineCity.provideChunk(pos.getChunk());
-        FlagHolder holder = chunk.getFlagHolder(pos);
+        Reaction reaction = snap.getReplacedState().getIBlock().reactBlockPlace(player, snap);
 
-        Optional<Message> denial = holder.can(player, PermissionFlag.MODIFY);
+        Optional<Message> denial = reaction.can(mod.mineCity, player);
         if(denial.isPresent())
         {
             player.send(FlagHolder.wrapDeny(denial.get()));
@@ -47,10 +46,9 @@ public class BlockProtections extends ForgeProtections
     public boolean onBlockBreak(EntityPlayer entity, IState state, BlockPos pos)
     {
         ForgePlayer player = mod.player(entity);
-        ClaimedChunk chunk = mod.mineCity.provideChunk(pos.getChunk());
-        FlagHolder holder = chunk.getFlagHolder(pos);
+        Reaction reaction = state.getIBlock().reactBlockBreak(player, state, pos);
 
-        Optional<Message> denial = holder.can(player, PermissionFlag.MODIFY);
+        Optional<Message> denial = reaction.can(mod.mineCity, player);
         if(denial.isPresent())
         {
             player.send(FlagHolder.wrapDeny(denial.get()));
@@ -86,6 +84,7 @@ public class BlockProtections extends ForgeProtections
         byte result = 0;
 
         ForgePlayer player = mod.player(entity);
+        player.offHand = offHand;
         IItemStack stack = mod.stack(itemStack);
         Optional<Message> denial;
         if(stack != null)

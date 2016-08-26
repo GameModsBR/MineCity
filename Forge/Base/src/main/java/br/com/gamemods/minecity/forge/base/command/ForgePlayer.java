@@ -1,7 +1,6 @@
 package br.com.gamemods.minecity.forge.base.command;
 
 import br.com.gamemods.minecity.api.PlayerID;
-import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
@@ -38,13 +37,14 @@ public class ForgePlayer
         <F extends MineCityForge, P extends IEntityPlayerMP, S extends ForgePlayerSender<P, F>>
         implements MinecraftEntity, ForgeMovementListener<IEntityPlayerMP, F>
 {
-    protected final S cmd;
+    public final S cmd;
     protected final F mod;
-    protected final EntityPlayerMP player;
+    public final EntityPlayerMP player;
     private final MovementMonitor<IEntityPlayerMP, F> mov;
     @Nullable
     private Set<GroupID> groups;
     public Set<EntityLiving> leashedEntities = new HashSet<>(1);
+    public boolean offHand;
 
     public ForgePlayer(S cmd)
     {
@@ -402,7 +402,7 @@ public class ForgePlayer
     }
 
     @Override
-    public Server getServer()
+    public F getServer()
     {
         return cmd.mod;
     }
