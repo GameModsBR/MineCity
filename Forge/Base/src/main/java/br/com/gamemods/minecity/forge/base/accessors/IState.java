@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.IntUnaryOperator;
 
 @Referenced(at = IBlockStateTransformer.class)
@@ -35,6 +36,21 @@ public interface IState
                 return cast.apply(getValue(prop));
 
         return null;
+    }
+
+    default <T extends Comparable<T>> T getValueOrMeta(String key, Function<Object, T> cast, IntFunction<T> metaConverter)
+    {
+        for(IProp<?> prop: getPropertyKeys())
+        {
+            String name = prop.getName();
+            if(name.equals(key))
+                return cast.apply(getValue(prop));
+
+            if(name.equals("metadata"))
+                return metaConverter.apply( (Integer) getValue(prop));
+        }
+
+        throw new NoSuchElementException("The property neither "+key+" or metadata properties were found in "+this);
     }
 
     default int getIntValueOrMeta(String key, IntUnaryOperator metaConverter)
@@ -71,5 +87,15 @@ public interface IState
     default Integer getEnumOrdinalValue(String key)
     {
         return getValue(key, o -> Enum.class.cast(o).ordinal());
+    }
+
+    default int getEnumOrdinalOrMeta(String key, IntUnaryOperator metaConverter)
+    {
+        return getValueOrMeta(key, o -> Enum.class.cast(o).ordinal(), metaConverter::applyAsInt);
+    }
+
+    default int getEnumOrdinalOrMeta(String key)
+    {
+        return getEnumOrdinalOrMeta(key, IntUnaryOperator.identity());
     }
 }
