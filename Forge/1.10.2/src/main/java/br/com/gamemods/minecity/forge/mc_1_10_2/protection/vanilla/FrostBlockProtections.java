@@ -1,7 +1,7 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla;
 
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
-import br.com.gamemods.minecity.forge.base.protections.vanilla.BlockProtections;
+import br.com.gamemods.minecity.forge.base.protection.vanilla.BlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_10_2.FrostUtil;
 import br.com.gamemods.minecity.forge.mc_1_10_2.MineCityFrost;
 import net.minecraft.util.EnumHand;

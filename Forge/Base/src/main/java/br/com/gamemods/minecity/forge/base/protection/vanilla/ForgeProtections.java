@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge.base.protections.vanilla;
+package br.com.gamemods.minecity.forge.base.protection.vanilla;
 
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
