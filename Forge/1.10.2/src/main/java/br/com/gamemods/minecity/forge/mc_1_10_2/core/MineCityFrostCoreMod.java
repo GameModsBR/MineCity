@@ -57,6 +57,7 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemBlockTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemSnowTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemDyeTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemMinecartTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockOpenReactorTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockClickReactorTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockClickExtendsOpenTransformer",
