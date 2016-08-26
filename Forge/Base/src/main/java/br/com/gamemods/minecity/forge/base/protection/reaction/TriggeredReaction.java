@@ -12,12 +12,20 @@ import java.util.List;
 public abstract class TriggeredReaction implements Reaction
 {
     private List<ReactionListener> denialListeners;
+    private List<ReactionListener> allowListeners;
 
     public void addDenialListener(ReactionListener listener)
     {
         if(denialListeners == null)
-            denialListeners = new ArrayList<>(2);
+            denialListeners = new ArrayList<>(1);
         denialListeners.add(listener);
+    }
+
+    public void addAllowListener(ReactionListener listener)
+    {
+        if(allowListeners == null)
+            allowListeners = new ArrayList<>(1);
+        allowListeners.add(listener);
     }
 
     public void onDenyUpdateInventory()
@@ -37,5 +45,13 @@ public abstract class TriggeredReaction implements Reaction
             return;
 
         denialListeners.forEach(listener -> listener.postReaction(this, permissible, flag, pos, message));
+    }
+
+    protected void onAllow(Permissible permissible, PermissionFlag flag, BlockPos pos)
+    {
+        if(allowListeners == null)
+            return;
+
+        allowListeners.forEach(listener -> listener.postReaction(this, permissible, flag, pos, null));
     }
 }

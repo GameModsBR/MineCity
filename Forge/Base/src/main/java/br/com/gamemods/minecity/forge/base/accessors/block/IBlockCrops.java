@@ -1,9 +1,11 @@
 package br.com.gamemods.minecity.forge.base.accessors.block;
 
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockCropsTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
@@ -25,6 +27,11 @@ public interface IBlockCrops extends IBlock
         return (IItem) crops.getItemDropped(crops.getStateFromMeta(0), null, 0);
     }
 
+    default int getMaxAge()
+    {
+        return getForgeBlock().getMaxAge();
+    }
+
     @Override
     default Reaction reactBlockPlace(ForgePlayer<?, ?, ?> player, IBlockSnapshot snap)
     {
@@ -33,5 +40,25 @@ public interface IBlockCrops extends IBlock
             return new SingleBlockReaction(snap.getPosition(player.getServer()), PermissionFlag.HARVEST);
 
         return new SingleBlockReaction(snap.getPosition(player.getServer()), PermissionFlag.MODIFY);
+    }
+
+    @Override
+    default Reaction reactBlockBreak(ForgePlayer<?, ?, ?> player, IState state, BlockPos pos)
+    {
+        assert pos.world.instance != null;
+        //TODO: Notification message "action.harvest-on-creative"
+        if(!player.player.isCreative() && state.getIntValueOrMeta("age") == getMaxAge())
+        {
+            SingleBlockReaction reaction = new SingleBlockReaction(pos, PermissionFlag.HARVEST);
+            reaction.addAllowListener((r, permissible, flag, p, message) ->
+                    //TODO: Consume a seed
+                    player.getServer().callSyncMethod(()->
+                            ((IWorldServer) pos.world.instance).setBlock(pos, getDefaultIState())
+                    )
+            );
+            return reaction;
+        }
+
+        return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
     }
 }

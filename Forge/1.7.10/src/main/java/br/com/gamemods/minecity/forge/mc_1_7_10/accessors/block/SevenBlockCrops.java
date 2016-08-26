@@ -20,4 +20,10 @@ public interface SevenBlockCrops extends IBlockCrops, SevenBlock
     {
         return (IItem) ((BlockCrops) this).getItemDropped(0, null, 0);
     }
+
+    @Override
+    default int getMaxAge()
+    {
+        return 7;
+    }
 }

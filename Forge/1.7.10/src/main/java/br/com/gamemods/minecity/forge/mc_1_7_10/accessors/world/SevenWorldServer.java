@@ -2,9 +2,11 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.accessors.world;
 
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.SevenUtil;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlock;
+import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenMetadataProperty;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.world.SevenWorldServerTransformer;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.WorldServer;
@@ -58,5 +60,11 @@ public interface SevenWorldServer extends IWorldServer
     default Collection<Chunk> getLoadedChunks()
     {
         return ((WorldServer) this).theChunkProviderServer.loadedChunks;
+    }
+
+    @Override
+    default boolean setBlock(int x, int y, int z, IState state)
+    {
+        return ((WorldServer) this).setBlock(x, y, z, state.getForgeBlock(), state.getValue(SevenMetadataProperty.INSTANCE), 3);
     }
 }

@@ -2,11 +2,13 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.accessors;
 
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.FrostUtil;
 import br.com.gamemods.minecity.forge.mc_1_10_2.accessors.block.FrostBlock;
 import br.com.gamemods.minecity.forge.mc_1_10_2.accessors.block.FrostState;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostWorldServerTransformer;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
@@ -38,5 +40,11 @@ public interface FrostWorldServer extends IWorldServer
     default boolean isTopSolid(int x, int y, int z)
     {
         return ((WorldServer) this).isSideSolid(new BlockPos(x, y, z), EnumFacing.UP);
+    }
+
+    @Override
+    default boolean setBlock(int x, int y, int z, IState state)
+    {
+        return ((WorldServer) this).setBlockState(new BlockPos(x, y, z), (IBlockState) state);
     }
 }

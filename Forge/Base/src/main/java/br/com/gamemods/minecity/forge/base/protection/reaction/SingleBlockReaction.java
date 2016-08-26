@@ -36,6 +36,8 @@ public class SingleBlockReaction extends TriggeredReaction
         Optional<Message> denial = mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).can(permissible, flag);
         if(denial.isPresent())
             onDeny(permissible, flag, pos, denial.get());
+        else
+            onAllow(permissible, flag, pos);
         return denial;
     }
 }

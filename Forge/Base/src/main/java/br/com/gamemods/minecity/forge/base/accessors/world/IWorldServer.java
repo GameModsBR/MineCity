@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.base.accessors.world;
 
 import br.com.gamemods.minecity.api.shape.Point;
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.Referenced;
@@ -63,5 +64,12 @@ public interface IWorldServer
     default IState getIState(Point pos)
     {
         return getIState(pos.x, pos.y, pos.z);
+    }
+
+    boolean setBlock(int x, int y, int z, IState state);
+
+    default boolean setBlock(BlockPos pos, IState state)
+    {
+        return setBlock(pos.x, pos.y, pos.z, state);
     }
 }
