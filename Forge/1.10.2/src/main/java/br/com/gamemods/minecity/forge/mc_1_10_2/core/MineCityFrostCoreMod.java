@@ -43,6 +43,7 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     public String[] getASMTransformerClass()
     {
         return new String[]{
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.IPropertyTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostWorldServerTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.ChunkTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPlayerMPTransformer",
@@ -53,6 +54,8 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.MinecraftServerTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostBlockSnapshotTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.ItemTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.ItemBlockTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.ItemSnowTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.BlockOpenReactorTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.BlockClickReactorTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.BlockClickExtendsOpenTransformer",

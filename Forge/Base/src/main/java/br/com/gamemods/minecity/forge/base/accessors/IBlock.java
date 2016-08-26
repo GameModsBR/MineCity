@@ -34,4 +34,12 @@ public interface IBlock
     {
         return NoReaction.INSTANCE;
     }
+
+    boolean isReplaceable(IWorldServer world, int x, int y, int z);
+
+    default boolean isReplaceable(BlockPos pos)
+    {
+        assert pos.world.instance != null;
+        return isReplaceable((IWorldServer) pos.world.instance, pos.x, pos.y, pos.z);
+    }
 }

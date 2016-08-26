@@ -21,7 +21,8 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
     void setMineCityPlayer(ForgePlayer player);
     ForgePlayer getMineCityPlayer();
 
-    default EntityPlayerMP getEntityPlayerMP()
+    @Override
+    default EntityPlayerMP getForgeEntity()
     {
         return (EntityPlayerMP) this;
     }
@@ -112,7 +113,7 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
 
     default GameProfile getGameProfile()
     {
-        return getEntityPlayerMP().getGameProfile();
+        return getForgeEntity().getGameProfile();
     }
 
     default void sendPacket(Packet packet)
@@ -128,5 +129,11 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
     default boolean isFlying()
     {
         return ((EntityPlayerMP) this).capabilities.isFlying;
+    }
+
+    default void sendInventoryContents()
+    {
+        EntityPlayerMP player = (EntityPlayerMP) this;
+        player.sendContainerToPlayer(player.inventoryContainer);
     }
 }

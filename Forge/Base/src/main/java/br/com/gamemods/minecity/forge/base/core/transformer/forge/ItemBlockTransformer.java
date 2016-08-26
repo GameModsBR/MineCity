@@ -4,16 +4,16 @@ import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertInterfaceTransformer;
 
 @Referenced
-public class ItemStackTransformer extends InsertInterfaceTransformer
+public class ItemBlockTransformer extends InsertInterfaceTransformer
 {
-    public ItemStackTransformer(String interfaceClass)
+    public ItemBlockTransformer(String interfaceClass)
     {
-        super("net.minecraft.item.ItemStack", interfaceClass);
+        super("net.minecraft.item.ItemBlock", interfaceClass);
     }
 
     @Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
-    public ItemStackTransformer()
+    public ItemBlockTransformer()
     {
-        this("br.com.gamemods.minecity.forge.base.accessors.IItemStack");
+        this("br.com.gamemods.minecity.forge.base.accessors.IItemBlock");
     }
 }

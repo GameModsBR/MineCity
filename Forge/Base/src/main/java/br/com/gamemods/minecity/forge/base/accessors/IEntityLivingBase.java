@@ -7,13 +7,14 @@ import net.minecraft.entity.EntityLivingBase;
 @Referenced(at = EntityLivingBaseTransformer.class)
 public interface IEntityLivingBase extends IEntity
 {
-    default EntityLivingBase getEntityLivingBase()
+    @Override
+    default EntityLivingBase getForgeEntity()
     {
         return (EntityLivingBase) this;
     }
 
     default boolean isElytraFlying()
     {
-        return getEntityLivingBase().isElytraFlying();
+        return getForgeEntity().isElytraFlying();
     }
 }

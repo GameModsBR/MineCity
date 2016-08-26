@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.accessors;
 
+import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.Referenced;
@@ -55,5 +56,10 @@ public interface IWorldServer
     default Collection<Chunk> getLoadedChunks()
     {
         return ((WorldServer) this).getChunkProvider().getLoadedChunks();
+    }
+
+    default IState getIState(Point pos)
+    {
+        return getIState(pos.x, pos.y, pos.z);
     }
 }

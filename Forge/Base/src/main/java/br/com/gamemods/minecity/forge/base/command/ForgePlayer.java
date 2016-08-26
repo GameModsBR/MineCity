@@ -49,7 +49,7 @@ public class ForgePlayer
     public ForgePlayer(S cmd)
     {
         this.cmd = cmd;
-        player = cmd.sender.getEntityPlayerMP();
+        player = cmd.sender.getForgeEntity();
         mod = cmd.mod;
         this.mov = createMonitor();
         mod.runAsynchronously(() ->

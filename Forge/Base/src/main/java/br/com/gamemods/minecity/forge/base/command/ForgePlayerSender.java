@@ -171,7 +171,7 @@ public class ForgePlayerSender<P extends IEntityPlayerMP, F extends MineCityForg
         stack.setTagInfo("MineCity", new NBTTagByte((byte)1));
         stack.setStackDisplayName(mod.transformer.toLegacy(new Message("tool.selection.title", LegacyFormat.AQUA+"Selection Tool")));
         //stack.setTagInfo("Lore", mod.transformer.toLore(new Message("tool.selection.lore", "Selects an area in the world")));
-        if(!sender.getEntityPlayerMP().inventory.addItemStackToInventory(stack))
+        if(!sender.getForgeEntity().inventory.addItemStackToInventory(stack))
             send(CommandFunction.messageFailed(new Message(
                     "action.give.tool.inventory-full",
                     "You haven't received the tool because your inventory is full."

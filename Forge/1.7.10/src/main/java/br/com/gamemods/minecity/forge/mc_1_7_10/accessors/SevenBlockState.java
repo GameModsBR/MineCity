@@ -1,7 +1,13 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.accessors;
 
+import br.com.gamemods.minecity.forge.base.accessors.IProp;
 import br.com.gamemods.minecity.forge.base.accessors.IState;
 import net.minecraft.block.Block;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class SevenBlockState implements IState
 {
@@ -41,6 +47,26 @@ public class SevenBlockState implements IState
     public int getStateId()
     {
         return meta;
+    }
+
+    @Override
+    public Collection<IProp<?>> getPropertyKeys()
+    {
+        return Collections.singleton(SevenMetadataProperty.INSTANCE);
+    }
+
+    @Override
+    public <T extends Comparable<T>> T getValue(IProp<T> prop)
+    {
+        if(prop == SevenMetadataProperty.INSTANCE)
+            return prop.getValueClass().cast(meta);
+        throw new NoSuchElementException("Property: "+prop+" was not found in "+this);
+    }
+
+    @Override
+    public Map<IProp<?>, Comparable<?>> getProps()
+    {
+        return Collections.singletonMap(SevenMetadataProperty.INSTANCE, meta);
     }
 
     @Override
