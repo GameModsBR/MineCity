@@ -7,8 +7,8 @@ import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemModifyOppositeReactorTransformer;
-import br.com.gamemods.minecity.forge.base.protection.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.SingleBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 
 @Referenced(at = ItemModifyOppositeReactorTransformer.class)
 public interface IItemModifyOppositeReactor extends IItem

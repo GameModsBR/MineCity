@@ -9,9 +9,9 @@ import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemSnowTransformer;
-import br.com.gamemods.minecity.forge.base.protection.NoReaction;
-import br.com.gamemods.minecity.forge.base.protection.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.SingleBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 
 @Referenced(at = ItemSnowTransformer.class)
 public interface IItemSnow extends IItemBlock

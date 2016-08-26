@@ -6,8 +6,8 @@ import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockNoReactExtendsOpenTransformer;
-import br.com.gamemods.minecity.forge.base.protection.NoReaction;
-import br.com.gamemods.minecity.forge.base.protection.Reaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 
 @Referenced(at = BlockNoReactExtendsOpenTransformer.class)
 public interface IBlockNoReactionExtendsOpen extends IBlockOpenReactor

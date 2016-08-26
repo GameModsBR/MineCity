@@ -4,8 +4,8 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
-import br.com.gamemods.minecity.forge.base.protection.NoReaction;
-import br.com.gamemods.minecity.forge.base.protection.Reaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import net.minecraft.item.Item;
 
 public interface IItem

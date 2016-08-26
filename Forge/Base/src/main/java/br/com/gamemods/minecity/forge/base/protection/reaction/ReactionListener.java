@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge.base.protection;
+package br.com.gamemods.minecity.forge.base.protection.reaction;
 
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.Permissible;
