@@ -17,8 +17,8 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReacti
 public interface IItemSnow extends IItemBlock
 {
     @Override
-    default Reaction react(IEntityPlayerMP player, IItemStack stack, boolean offHand, IState state, BlockPos pos,
-                           Direction face)
+    default Reaction reactRightClickBlock(IEntityPlayerMP player, IItemStack stack, boolean offHand, IState state, BlockPos pos,
+                                          Direction face)
     {
         IBlock block = state.getIBlock();
         IBlock snow = this.getIBlock();

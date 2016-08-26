@@ -20,7 +20,7 @@ import net.minecraft.block.BlockTallGrass;
 public interface IItemDye extends IItem
 {
     @Override
-    default Reaction react(IEntityPlayerMP player, IItemStack stack, boolean offHand, IState state, BlockPos pos, Direction face)
+    default Reaction reactRightClickBlock(IEntityPlayerMP player, IItemStack stack, boolean offHand, IState state, BlockPos pos, Direction face)
     {
         assert pos.world.instance != null;
         int meta = stack.getMeta();

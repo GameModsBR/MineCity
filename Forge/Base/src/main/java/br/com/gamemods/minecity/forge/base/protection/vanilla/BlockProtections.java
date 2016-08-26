@@ -90,7 +90,7 @@ public class BlockProtections extends ForgeProtections
         Optional<Message> denial;
         if(stack != null)
         {
-            Reaction reaction = stack.getIItem().react((IEntityPlayerMP) entity, stack, offHand, state, pos, face);
+            Reaction reaction = stack.getIItem().reactRightClickBlock((IEntityPlayerMP) entity, stack, offHand, state, pos, face);
             denial = reaction.can(mod.mineCity, player);
             if(denial.isPresent())
                 result = 1;

@@ -14,8 +14,8 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReacti
 public interface IItemModifyOppositeReactor extends IItem
 {
     @Override
-    default Reaction react(IEntityPlayerMP player, IItemStack stack, boolean offHand, IState state, BlockPos pos,
-                           Direction face)
+    default Reaction reactRightClickBlock(IEntityPlayerMP player, IItemStack stack, boolean offHand, IState state, BlockPos pos,
+                                          Direction face)
     {
         return new SingleBlockReaction(pos.add(face.getOpposite()), PermissionFlag.MODIFY);
     }

@@ -15,7 +15,7 @@ public interface IItem
         return (Item) this;
     }
 
-    default Reaction react(IEntityPlayerMP player, IItemStack stack, boolean offHand, IState state, BlockPos pos, Direction face)
+    default Reaction reactRightClickBlock(IEntityPlayerMP player, IItemStack stack, boolean offHand, IState state, BlockPos pos, Direction face)
     {
         return NoReaction.INSTANCE;
     }
