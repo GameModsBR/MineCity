@@ -1,6 +1,12 @@
 package br.com.gamemods.minecity.api.shape;
 
-public class PrecisePoint
+import br.com.gamemods.minecity.api.world.Direction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.BiFunction;
+
+public class PrecisePoint implements Comparable<PrecisePoint>
 {
     public final double x, y, z;
 
@@ -11,9 +17,85 @@ public class PrecisePoint
         this.z = z;
     }
 
+    public PrecisePoint(Point point)
+    {
+        this.x = point.x;
+        this.y = point.y;
+        this.z = point.z;
+    }
+
+    @NotNull
+    public <T> PrecisePoint apply(@Nullable T x, @Nullable T y, @Nullable T z, @NotNull BiFunction<Double, T, Double> op)
+    {
+        return new PrecisePoint(op.apply(this.x, x), op.apply(this.y, y), op.apply(this.z, z));
+    }
+
+    @NotNull
+    public PrecisePoint apply(@NotNull Direction direction, double multiplier, @NotNull BiFunction<Double, Double, Double> op)
+    {
+        return apply(direction.x*multiplier, direction.y*multiplier, direction.z*multiplier, op);
+    }
+
+
+    @NotNull
+    public PrecisePoint add(@NotNull Direction direction, double multiplier)
+    {
+        return apply(direction, multiplier, (a,b)-> a+b);
+    }
+
+    @NotNull
+    public PrecisePoint subtract(@NotNull Direction direction, double multiplier)
+    {
+        return apply(direction, multiplier, (a,b)-> a-b);
+    }
+
+
+    @NotNull
+    public PrecisePoint add(@NotNull Direction direction)
+    {
+        return add(direction.x, direction.y, direction.z);
+    }
+
+    @NotNull
+    public PrecisePoint subtract(@NotNull Direction direction)
+    {
+        return subtract(direction.x, direction.y, direction.z);
+    }
+
+    @NotNull
     public PrecisePoint add(double x, double y, double z)
     {
-        return new PrecisePoint(this.x + x, this.y + y, this.z + z);
+        return new PrecisePoint(this.x+x, this.y+y, this.z+z);
+    }
+
+    @NotNull
+    public PrecisePoint subtract(double x, double y, double z)
+    {
+        return new PrecisePoint(this.x-x, this.y-y, this.z-z);
+    }
+
+    @NotNull
+    public PrecisePoint multiply(double x, double y, double z)
+    {
+        return new PrecisePoint(this.x*x, this.y*y, this.z*z);
+    }
+
+    @NotNull
+    public PrecisePoint divide(double x, double y, double z)
+    {
+        return new PrecisePoint(this.x/x, this.y/y, this.z/z);
+    }
+
+    @Override
+    public int compareTo(@NotNull PrecisePoint o)
+    {
+        int r = Double.compare(x, o.x);
+        if(r != 0)
+            return r;
+        r = Double.compare(y, o.y);
+        if(r != 0)
+            return r;
+        return Double.compare(z, o.z);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.base.accessors.world;
 
 import br.com.gamemods.minecity.api.shape.Point;
+import br.com.gamemods.minecity.api.shape.PreciseCuboid;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
@@ -9,12 +10,14 @@ import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.world.WorldServerTransformer;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.List;
 
 @Referenced(at = WorldServerTransformer.class)
 public interface IWorldServer
@@ -81,4 +84,8 @@ public interface IWorldServer
     }
 
     IRayTraceResult rayTraceBlocks(PrecisePoint start, PrecisePoint end, boolean stopOnLiquid);
+
+    List<PreciseCuboid> getCollisionBoxes(PreciseCuboid cuboid);
+
+    List<IEntity> getEntities(PreciseCuboid cuboid);
 }

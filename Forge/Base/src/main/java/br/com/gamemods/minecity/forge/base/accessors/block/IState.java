@@ -98,4 +98,6 @@ public interface IState
     {
         return getEnumOrdinalOrMeta(key, IntUnaryOperator.identity());
     }
+
+    boolean isSolid();
 }

@@ -50,6 +50,12 @@ public class SevenBlockState implements IState
     }
 
     @Override
+    public boolean isSolid()
+    {
+        return block.isSolid();
+    }
+
+    @Override
     public Collection<IProp<?>> getPropertyKeys()
     {
         return Collections.singleton(SevenMetadataProperty.INSTANCE);

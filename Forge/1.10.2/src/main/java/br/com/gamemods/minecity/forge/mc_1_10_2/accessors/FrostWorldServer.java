@@ -1,10 +1,12 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.accessors;
 
+import br.com.gamemods.minecity.api.shape.PreciseCuboid;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.FrostUtil;
 import br.com.gamemods.minecity.forge.mc_1_10_2.accessors.block.FrostBlock;
@@ -12,9 +14,13 @@ import br.com.gamemods.minecity.forge.mc_1_10_2.accessors.block.FrostState;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostWorldServerTransformer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Referenced(at = FrostWorldServerTransformer.class)
 public interface FrostWorldServer extends IWorldServer
@@ -59,5 +65,41 @@ public interface FrostWorldServer extends IWorldServer
                 new Vec3d(end.x, end.y, end.z),
                 stopOnLiquid
         );
+    }
+
+    @Override
+    default List<PreciseCuboid> getCollisionBoxes(PreciseCuboid cuboid)
+    {
+        AxisAlignedBB box = new AxisAlignedBB(
+                cuboid.min.x,
+                cuboid.min.y,
+                cuboid.min.z,
+                cuboid.max.x,
+                cuboid.max.y,
+                cuboid.max.z
+        );
+
+        return ((WorldServer) this).getCollisionBoxes(box).stream().map(bb->
+                new PreciseCuboid(
+                        new PrecisePoint(bb.minX, bb.minY, bb.minZ),
+                        new PrecisePoint(bb.maxX, bb.maxY, bb.maxZ)
+                )
+        ).collect(Collectors.toList());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default List<IEntity> getEntities(PreciseCuboid cuboid)
+    {
+        AxisAlignedBB box = new AxisAlignedBB(
+                cuboid.min.x,
+                cuboid.min.y,
+                cuboid.min.z,
+                cuboid.max.x,
+                cuboid.max.y,
+                cuboid.max.z
+        );
+
+        return (List) ((WorldServer) this).getEntitiesWithinAABBExcludingEntity(null, box);
     }
 }

@@ -61,4 +61,10 @@ public interface FrostState extends IState
     {
         return (Map) ((IBlockState) this).getProperties();
     }
+
+    @Override
+    default boolean isSolid()
+    {
+        return ((IBlockState) this).getMaterial().isSolid();
+    }
 }

@@ -62,4 +62,10 @@ public interface SevenBlock extends IBlock, IState
             return prop.getValueClass().cast(0);
         throw new NoSuchElementException("Property "+prop+" not found in "+this);
     }
+
+    @Override
+    default boolean isSolid()
+    {
+        return ((Block) this).getMaterial().isSolid();
+    }
 }
