@@ -40,4 +40,22 @@ public class SingleBlockReaction extends TriggeredReaction
             onAllow(permissible, flag, pos);
         return denial;
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if(this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+
+        SingleBlockReaction reaction = (SingleBlockReaction) o;
+        return pos.equals(reaction.pos) && flag == reaction.flag;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = pos.hashCode();
+        result = 31*result + flag.hashCode();
+        return result;
+    }
 }

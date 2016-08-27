@@ -15,4 +15,12 @@ public interface Reaction
     {
         return stream(mineCity, permissible).findFirst();
     }
+
+    default Reaction combine(Reaction other)
+    {
+        if(other instanceof NoReaction || other.equals(this))
+            return this;
+
+        return new CombinedReaction(this, other);
+    }
 }

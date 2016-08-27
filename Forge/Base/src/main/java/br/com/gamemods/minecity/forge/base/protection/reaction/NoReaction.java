@@ -14,6 +14,12 @@ public class NoReaction implements Reaction
     {}
 
     @Override
+    public Reaction combine(Reaction other)
+    {
+        return other;
+    }
+
+    @Override
     public Stream<Message> stream(MineCity mineCity, Permissible permissible)
     {
         return Stream.empty();

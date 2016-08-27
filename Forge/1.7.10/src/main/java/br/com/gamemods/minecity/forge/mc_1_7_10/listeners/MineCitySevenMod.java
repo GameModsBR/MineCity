@@ -8,6 +8,7 @@ import br.com.gamemods.minecity.forge.base.ModConstants;
 import br.com.gamemods.minecity.forge.base.command.RootCommand;
 import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenBlockProtections;
+import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenEntityProtections;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.*;
@@ -84,6 +85,7 @@ public class MineCitySevenMod
         MinecraftForge.EVENT_BUS.register(new SevenToolListener(forge));
         MinecraftForge.EVENT_BUS.register(new SevenWorldListener(forge));
         MinecraftForge.EVENT_BUS.register(new SevenBlockProtections(forge));
+        MinecraftForge.EVENT_BUS.register(new SevenEntityProtections(forge));
     }
 
     @Slow

@@ -8,6 +8,7 @@ import br.com.gamemods.minecity.forge.base.command.RootCommand;
 import br.com.gamemods.minecity.forge.mc_1_10_2.MineCityFrost;
 import br.com.gamemods.minecity.forge.mc_1_10_2.command.FrostTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla.FrostBlockProtections;
+import br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla.FrostEntityProtections;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.util.text.TextFormatting;
@@ -72,6 +73,7 @@ public class MineCityFrostMod
         MinecraftForge.EVENT_BUS.register(new FrostToolListener(forge));
         MinecraftForge.EVENT_BUS.register(new FrostWorldListener(forge));
         MinecraftForge.EVENT_BUS.register(new FrostBlockProtections(forge));
+        MinecraftForge.EVENT_BUS.register(new FrostEntityProtections(forge));
     }
 
     @Slow

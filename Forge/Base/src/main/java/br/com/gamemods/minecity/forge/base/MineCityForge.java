@@ -351,13 +351,17 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
 
     public ForgePlayer player(EntityPlayer player)
     {
-        IEntityPlayerMP cast = ((IEntityPlayerMP) player);
-        ForgePlayer cache = cast.getMineCityPlayer();
+        return player((IEntityPlayerMP) player);
+    }
+
+    public ForgePlayer player(IEntityPlayerMP player)
+    {
+        ForgePlayer cache = player.getMineCityPlayer();
         if(cache != null)
             return cache;
 
-        cache = createPlayer(cast);
-        cast.setMineCityPlayer(cache);
+        cache = createPlayer(player);
+        player.setMineCityPlayer(cache);
         return cache;
     }
 
