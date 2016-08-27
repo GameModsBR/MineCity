@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.accessors.block;
 
+import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
@@ -10,6 +11,7 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockCropsTransformer;
+import br.com.gamemods.minecity.forge.base.protection.reaction.DenyReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 import net.minecraft.block.BlockCrops;
@@ -48,9 +50,16 @@ public interface IBlockCrops extends IBlock
     default Reaction reactBlockBreak(ForgePlayer<?, ?, ?> player, IState state, BlockPos pos)
     {
         assert pos.world.instance != null;
-        //TODO: Notification message "action.harvest-on-creative"
         IEntityPlayerMP entity = (IEntityPlayerMP) player.player;
-        if(!entity.isCreative() && state.getIntValueOrMeta("age") == getMaxAge())
+        if(entity.isCreative())
+        {
+            if(!entity.isSneaking())
+                return new DenyReaction(new Message(
+                        "action.harvest-on-creative",
+                        "You can't harvest plants on creative mode, that would just reset the growth state without any drop."
+                ));
+        }
+        else if(state.getIntValueOrMeta("age") == getMaxAge())
         {
             SingleBlockReaction reaction = new SingleBlockReaction(pos, PermissionFlag.HARVEST);
             MineCityForge mod = player.getServer();

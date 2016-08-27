@@ -148,4 +148,9 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
     {
         return getForgeEntity().isCreative();
     }
+
+    default boolean isSneaking()
+    {
+        return getForgeEntity().isSneaking();
+    }
 }
