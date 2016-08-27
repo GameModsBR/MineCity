@@ -41,16 +41,14 @@ public interface IItemHangingEntity extends IItem
             mod.addPostSpawnListener(EntityPainting.class, 2, painting ->
                 {
                     EntityPainting.EnumArt currentArt = painting.art;
-                    BlockPos blockPos = ((IEntity) painting).getBlockPos(mod);
-                    double distance = blockPos.distance(pos);
-                    double sqrt = (Math.sqrt(currentArt.sizeX*currentArt.sizeX + currentArt.sizeY*currentArt.sizeY)/16)-1;
-                    if(distance < sqrt)
+                    if(currentArt.sizeX == 16 && currentArt.sizeY == 16)
+                        return true;
+
+                    double distance = ((IEntity) painting).getBlockPos(mod).distance(pos);
+                    double maxDistance = (Math.sqrt(currentArt.sizeX*currentArt.sizeX + currentArt.sizeY*currentArt.sizeY)/16)-1;
+                    if(distance < maxDistance)
                     {
-                        if(currentArt.sizeX == 16 && currentArt.sizeY == 16)
-                            return true;
-
                         ForgePlayer forgePlayer = player.getMineCityPlayer();
-
                         Direction right = face.right();
 
                         AtomicReference<ClaimedChunk> claim = new AtomicReference<>(mod.mineCity.provideChunk(pos.getChunk()));
