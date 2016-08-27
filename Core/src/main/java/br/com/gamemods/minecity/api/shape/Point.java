@@ -157,4 +157,9 @@ public class Point implements Serializable, Comparable<Point>
         int z = this.z - pos.z;
         return Math.sqrt(x*x + y*y + z*z);
     }
+
+    public PrecisePoint precise()
+    {
+        return new PrecisePoint(x, y, z);
+    }
 }

@@ -16,7 +16,7 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReacti
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.item.EntityPainting;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.World;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,82 +38,76 @@ public interface IItemHangingEntity extends IItem
         SingleBlockReaction reaction = new SingleBlockReaction(block.add(face), PermissionFlag.MODIFY);
         MineCityForge mod = player.getMineCityPlayer().getServer();
         reaction.addAllowListener((reaction1, permissible, flag, pos, message) ->
-            mod.addSpawnListener(entity -> {
-                if(entity instanceof EntityPainting)
+            mod.addPostSpawnListener(EntityPainting.class, 2, painting ->
                 {
-                    mod.callSyncMethod(()->{
-                        EntityPainting painting = (EntityPainting) entity;
-                        EntityPainting.EnumArt currentArt = painting.art;
-                        BlockPos blockPos = ((IEntity) painting).getBlockPos(mod);
-                        double distance = blockPos.distance(pos);
-                        double sqrt = (Math.sqrt(currentArt.sizeX*currentArt.sizeX + currentArt.sizeY*currentArt.sizeY)/16)-1;
-                        if(distance < sqrt)
+                    EntityPainting.EnumArt currentArt = painting.art;
+                    BlockPos blockPos = ((IEntity) painting).getBlockPos(mod);
+                    double distance = blockPos.distance(pos);
+                    double sqrt = (Math.sqrt(currentArt.sizeX*currentArt.sizeX + currentArt.sizeY*currentArt.sizeY)/16)-1;
+                    if(distance < sqrt)
+                    {
+                        if(currentArt.sizeX == 16 && currentArt.sizeY == 16)
+                            return true;
+
+                        ForgePlayer forgePlayer = player.getMineCityPlayer();
+
+                        Direction right = face.right();
+
+                        AtomicReference<ClaimedChunk> claim = new AtomicReference<>(mod.mineCity.provideChunk(pos.getChunk()));
+                        Predicate<EntityPainting.EnumArt> check = art ->
                         {
-                            if(currentArt.sizeX == 16 && currentArt.sizeY == 16)
-                                return;
-
-                            ForgePlayer forgePlayer = player.getMineCityPlayer();
-
-                            Direction right = face.right();
-
-                            AtomicReference<ClaimedChunk> claim = new AtomicReference<>(mod.mineCity.provideChunk(pos.getChunk()));
-                            Predicate<EntityPainting.EnumArt> check = art ->
+                            if(art != currentArt && (
+                                        art.sizeX > currentArt.sizeX || art.sizeY > currentArt.sizeY
+                                    ||  art.sizeX == currentArt.sizeX && art.sizeY == currentArt.sizeY
+                            ))
                             {
-                                if(art != currentArt && (
-                                            art.sizeX > currentArt.sizeX || art.sizeY > currentArt.sizeY
-                                        ||  art.sizeX == currentArt.sizeX && art.sizeY == currentArt.sizeY
-                                ))
+                                return false;
+                            }
+
+                            int width = art.sizeX/16;
+                            int height = art.sizeY/16;
+
+                            for(int w = 0; w < width; w++)
+                                for(int h = 0; h < height; h++)
                                 {
-                                    return false;
+                                    if(w == 0 && h == 0)
+                                        continue;
+
+                                    BlockPos extra = pos.add(right.x*w, h, right.z*w);
+                                    ClaimedChunk chunk = mod.mineCity.provideChunk(extra.getChunk(), claim.get());
+                                    claim.set(chunk);
+
+                                    if(chunk.getFlagHolder(extra).can(forgePlayer, PermissionFlag.MODIFY).isPresent())
+                                        return false;
                                 }
 
-                                int width = art.sizeX/16;
-                                int height = art.sizeY/16;
+                            return true;
+                        };
 
-                                for(int w = 0; w < width; w++)
-                                    for(int h = 0; h < height; h++)
-                                    {
-                                        if(w == 0 && h == 0)
-                                            continue;
+                        if(check.test(currentArt))
+                            return true;
 
-                                        BlockPos extra = pos.add(right.x*w, h, right.z*w);
-                                        ClaimedChunk chunk = mod.mineCity.provideChunk(extra.getChunk(), claim.get());
-                                        claim.set(chunk);
-
-                                        if(chunk.getFlagHolder(extra).can(forgePlayer, PermissionFlag.MODIFY).isPresent())
-                                            return false;
-                                    }
-
-                                return true;
-                            };
-
-                            if(check.test(currentArt))
-                                return;
-
-                            List<EntityPainting.EnumArt> arts = Arrays.asList(EntityPainting.EnumArt.values());
-                            Collections.shuffle(arts);
-                            Optional<EntityPainting.EnumArt> validArt = arts.stream().filter(check).findFirst();
-                            if(validArt.isPresent())
-                            {
-                                painting.art = validArt.get();
-                                NBTTagCompound nbt = new NBTTagCompound();
-                                entity.writeNBT(nbt);
-                                nbt.removeTag("UUIDLeast");
-                                nbt.removeTag("UUIDMost");
-                                WorldServer world = entity.getWorld();
-                                painting.setDead();
-                                painting = new EntityPainting(world);
-                                ((IEntity) painting).readNBT(nbt);
-                                world.spawnEntityInWorld(painting);
-                            }
+                        List<EntityPainting.EnumArt> arts = Arrays.asList(EntityPainting.EnumArt.values());
+                        Collections.shuffle(arts);
+                        Optional<EntityPainting.EnumArt> validArt = arts.stream().filter(check).findFirst();
+                        if(validArt.isPresent())
+                        {
+                            World world = painting.worldObj;
+                            painting.art = validArt.get();
+                            NBTTagCompound nbt = new NBTTagCompound();
+                            ((IEntity) painting).writeNBT(nbt);
+                            nbt.removeTag("UUIDLeast");
+                            nbt.removeTag("UUIDMost");
+                            painting.setDead();
+                            EntityPainting respawn = new EntityPainting(world);
+                            ((IEntity) respawn).readNBT(nbt);
+                            world.spawnEntityInWorld(respawn);
                         }
-                    });
+                    }
 
                     return true;
                 }
-
-                return false;
-            }, 2)
+            )
         );
 
         return reaction;

@@ -13,9 +13,6 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.entity.item.EntityMinecart;
-import net.minecraft.nbt.NBTTagCompound;
-
-import java.util.UUID;
 
 @Referenced(at = ItemMinecartTransformer.class)
 public interface IItemMinecart extends IItem
@@ -31,23 +28,9 @@ public interface IItemMinecart extends IItem
                 SingleBlockReaction reaction = new SingleBlockReaction(block, PermissionFlag.VEHICLE);
                 MineCityForge mod = player.getMineCityPlayer().getServer();
                 reaction.addAllowListener((reaction1, permissible, flag, pos, message) ->
-                        mod.addSpawnListener(spawned -> {
-                            if(spawned instanceof EntityMinecart && spawned.getEntityPos(mod).distance(pos) < 2)
-                                mod.callSyncMethod(()-> {
-                                    EntityMinecart cart = (EntityMinecart) spawned;
-                                    NBTTagCompound nbt = cart.getEntityData();
-                                    if(nbt.getLong("MineCityOwnerUUIDMost") == 0)
-                                    {
-                                        UUID uniqueID = player.getUniqueID();
-                                        nbt.setLong("MineCityOwnerUUIDMost", uniqueID.getMostSignificantBits());
-                                        nbt.setLong("MineCityOwnerUUIDLeast", uniqueID.getLeastSignificantBits());
-                                        nbt.setString("MineCityOwner", player.getName());
-                                    }
-                                });
-
-                            return false;
-                        }, 2)
-                );
+                    mod.addPostSpawnListener(pos.precise(), 2, EntityMinecart.class, 2, cart ->
+                            mod.setOwnerIfAbsent(cart, player.getIdentity())
+                ));
                 return reaction;
             }
             else

@@ -14,9 +14,6 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-
-import java.util.UUID;
 
 @Referenced(at = ItemBlockTransformer.class)
 public interface IItemBoat extends IItem
@@ -50,26 +47,9 @@ public interface IItemBoat extends IItem
 
         SingleBlockReaction reaction = new SingleBlockReaction(result.getHitBlockPos().toBlock(world.getMineCityWorld()), PermissionFlag.VEHICLE);
         reaction.addAllowListener((reaction1, permissible, flag, pos, message) ->
-            mod.addSpawnListener(spawned -> {
-                if(spawned instanceof EntityBoat)
-                    mod.callSyncMethod(()->{
-                        if(spawned.getEntityPos(mod).distance(pos) < 2)
-                        {
-                            EntityBoat boat = (EntityBoat) spawned;
-                            NBTTagCompound nbt = boat.getEntityData();
-                            if(nbt.getLong("MineCityOwnerUUIDMost") == 0)
-                            {
-                                UUID uniqueID = player.getUniqueID();
-                                nbt.setLong("MineCityOwnerUUIDMost", uniqueID.getMostSignificantBits());
-                                nbt.setLong("MineCityOwnerUUIDLeast", uniqueID.getLeastSignificantBits());
-                                nbt.setString("MineCityOwner", player.getName());
-                            }
-                        }
-                    });
-
-                return false;
-            }, 2)
-        );
+            mod.addPostSpawnListener(pos.precise(), 2, EntityBoat.class, 2, spawned ->
+                    mod.setOwnerIfAbsent(spawned, player.getIdentity())
+        ));
         return reaction;
     }
 }

@@ -2,7 +2,6 @@ package br.com.gamemods.minecity.forge.base.accessors.block;
 
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
-import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
@@ -14,13 +13,6 @@ import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockCro
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 import net.minecraft.block.BlockCrops;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
-import net.minecraftforge.common.util.Constants;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Referenced(at = BlockCropsTransformer.class)
 public interface IBlockCrops extends IBlock
@@ -64,48 +56,7 @@ public interface IBlockCrops extends IBlock
             MineCityForge mod = player.getServer();
             reaction.addAllowListener((r, permissible, flag, p, message) ->
             {
-                AtomicBoolean consume = new AtomicBoolean(true);
-                IItem seed = getISeed();
-
-                mod.addSpawnListener(e -> {
-                    if(e instanceof EntityItem)
-                        mod.callSyncMethod(()->
-                        {
-                            EntityPos entityPos = e.getEntityPos(mod);
-                            double distance = entityPos.distance(pos);
-                            if(distance <= 2)
-                            {
-                                EntityItem item = (EntityItem) e;
-                                if(consume.get())
-                                {
-                                    IItemStack stack = (IItemStack) (Object) item.getEntityItem();
-                                    if(stack.getIItem() == seed)
-                                    {
-                                        int size = stack.getSize();
-                                        if(size == 1)
-                                        {
-                                            consume.set(false);
-                                            item.setDead();
-                                            return;
-                                        }
-                                        else if(size > 1)
-                                        {
-                                            consume.set(false);
-                                            stack.setSize(size--);
-                                        }
-                                        else
-                                            item.setDead();
-                                    }
-                                }
-
-                                NBTTagCompound nbt = item.getEntityData();
-                                NBTTagList allow = nbt.getTagList("MineCityAllowPickup", Constants.NBT.TAG_STRING);
-                                allow.appendTag(new NBTTagString(player.getUniqueId().toString()));
-                                nbt.setTag("MineCityAllowPickup", allow);
-                            }
-                        });
-                    return false;
-                }, 2);
+                mod.consumeItemsOrAddOwner(p.precise(), 2, 1, 2, getISeed(), player.getUniqueId());
                 mod.callSyncMethod(() ->
                         ((IWorldServer) pos.world.instance).setBlock(pos, getDefaultIState())
                 );

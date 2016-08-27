@@ -8,6 +8,7 @@ import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
+import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.forge.base.accessors.ICommander;
@@ -15,6 +16,7 @@ import br.com.gamemods.minecity.forge.base.accessors.IMinecraftServer;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IChunk;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
@@ -25,9 +27,13 @@ import br.com.gamemods.minecity.forge.base.command.ForgeTransformer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.world.World;
@@ -36,6 +42,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.BlockSnapshot;
+import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,8 +54,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.ToIntBiFunction;
 import java.util.stream.Stream;
 
 public class MineCityForge implements Server, ChunkProvider, WorldProvider
@@ -65,10 +75,133 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
     public Consumer<ForgePlayerSender.ForgeSelection> selectionPallet;
     private final Queue<Predicate<IEntity>> entitySpawnListeners = new ConcurrentLinkedQueue<>();
 
-    public void addSpawnListener(Predicate<IEntity> listener, int howLong)
+    public void addSpawnListener(int howLong, Predicate<IEntity> listener)
     {
         entitySpawnListeners.add(listener);
         syncTasks.add(new Task(()-> entitySpawnListeners.remove(listener), howLong));
+    }
+
+    public void addPostSpawnListener(Predicate<IEntity> filter, int howLong, Predicate<IEntity> listener)
+    {
+        AtomicReference<Predicate<IEntity>> reference = new AtomicReference<>();
+        Predicate<IEntity> wrapper = entity ->
+        {
+            if(reference.get() == null)
+                return true;
+
+            callSyncMethod(() ->
+            {
+                if(listener.test(entity))
+                    entitySpawnListeners.remove(reference.getAndSet(null));
+            });
+
+            return false;
+        };
+
+        reference.set(wrapper);
+        addSpawnListener(howLong, filter.and(wrapper));
+    }
+
+    public <T> void addPostSpawnListener(Class<T> filter, int howLong, Predicate<T> listener)
+    {
+        addPostSpawnListener(filter::isInstance, howLong, entity -> listener.test(filter.cast(entity)));
+    }
+
+    public void addPostSpawnListener(int howLong, Predicate<IEntity> listener)
+    {
+        addPostSpawnListener(entity -> true, howLong, listener);
+    }
+
+    public void addPostSpawnListener(PrecisePoint point, double maxDistance, Predicate<IEntity> filter, int howLong, Predicate<IEntity> listener)
+    {
+        addPostSpawnListener(filter, howLong, entity ->
+            entity.getEntityPos(this).distance(point) <= maxDistance
+                    && listener.test(entity)
+        );
+    }
+
+    public <T> void addPostSpawnListener(PrecisePoint point, double maxDistance, Class<T> filter, int howLong, Predicate<T> listener)
+    {
+        addPostSpawnListener(point, maxDistance, filter::isInstance, howLong, entity -> listener.test(filter.cast(entity)));
+    }
+
+    public void addItemConsumer(PrecisePoint point, double maxDistance, int amount, int howLong, ToIntBiFunction<EntityItem, Integer> listener)
+    {
+        AtomicInteger consume = new AtomicInteger(amount);
+        addPostSpawnListener(point, maxDistance, EntityItem.class, howLong, entity ->
+        {
+            if(consume.get() <= 0)
+                return true;
+
+            IItemStack stack = (IItemStack) (Object) entity.getEntityItem();
+            if(stack.getSize() <= 0)
+                entity.setDead();
+            else
+            {
+                int remaining =  consume.addAndGet(-listener.applyAsInt(entity, consume.get()));
+                if(stack.getSize() <= 0)
+                    entity.setDead();
+                return remaining <= 0;
+            }
+
+            return false;
+        });
+    }
+
+    public void consumeItems(PrecisePoint point, double maxDistance, int amount, int howLong, IItem item, ToIntBiFunction<EntityItem, Integer> or)
+    {
+        addItemConsumer(point, maxDistance, amount, howLong, (entity, remaining)-> {
+            IItemStack stack = (IItemStack) (Object) entity.getEntityItem();
+            if(stack.getIItem() != item)
+                return or.applyAsInt(entity, remaining);
+
+            int size = stack.getSize();
+            int remove = Math.min(size, remaining);
+            stack.setSize(size - remove);
+            return remove;
+        });
+    }
+
+    public void consumeItems(PrecisePoint point, double maxDistance, int amount, int howLong, IItem item)
+    {
+        consumeItems(point, maxDistance, amount, howLong, item, (entity, remaining) -> 0);
+    }
+
+    public void consumeItemsOrAddOwner(PrecisePoint point, double maxDistance, int amount, int howLong, IItem item, UUID owner)
+    {
+        consumeItems(point, maxDistance, amount, howLong, item, (entity, remaining) -> {
+            allowToPickup(entity, owner);
+            return 0;
+        });
+    }
+
+    public void allowToPickup(EntityItem item, UUID uuid)
+    {
+        NBTTagCompound nbt = item.getEntityData();
+        NBTTagList allow = nbt.getTagList("MineCityAllowPickup", Constants.NBT.TAG_STRING);
+        allow.appendTag(new NBTTagString(uuid.toString()));
+        nbt.setTag("MineCityAllowPickup", allow);
+    }
+
+    public void setOwner(Entity entity, PlayerID id)
+    {
+        NBTTagCompound nbt = entity.getEntityData();
+        UUID uniqueID = id.getUniqueId();
+        nbt.setLong("MineCityOwnerUUIDMost", uniqueID.getMostSignificantBits());
+        nbt.setLong("MineCityOwnerUUIDLeast", uniqueID.getLeastSignificantBits());
+        nbt.setString("MineCityOwner", id.getName());
+    }
+
+    public boolean setOwnerIfAbsent(Entity entity, PlayerID id)
+    {
+        NBTTagCompound nbt = entity.getEntityData();
+        if(nbt.getLong("MineCityOwnerUUIDMost") == 0)
+        {
+            setOwner(entity, id);
+            return true;
+        }
+
+        return false;
     }
 
     public void callSpawnListeners(IEntity entity)
