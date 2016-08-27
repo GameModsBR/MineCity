@@ -1,6 +1,8 @@
 package br.com.gamemods.minecity.api.shape;
 
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.api.world.WorldDim;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,6 +98,11 @@ public class Point implements Serializable, Comparable<Point>
     public Point divide(int x, int y, int z)
     {
         return new Point(this.x/x, this.y/y, this.z/z);
+    }
+
+    public BlockPos toBlock(WorldDim world)
+    {
+        return new BlockPos(world, x, y, z);
     }
 
     @Override

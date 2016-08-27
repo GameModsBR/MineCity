@@ -138,4 +138,9 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
         EntityPlayerMP player = (EntityPlayerMP) this;
         player.sendContainerToPlayer(player.inventoryContainer);
     }
+
+    default float getEyeHeight()
+    {
+        return getForgeEntity().getEyeHeight();
+    }
 }

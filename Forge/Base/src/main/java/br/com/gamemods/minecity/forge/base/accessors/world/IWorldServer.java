@@ -1,10 +1,12 @@
 package br.com.gamemods.minecity.forge.base.accessors.world;
 
 import br.com.gamemods.minecity.api.shape.Point;
+import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.world.WorldServerTransformer;
@@ -66,10 +68,17 @@ public interface IWorldServer
         return getIState(pos.x, pos.y, pos.z);
     }
 
+    default IBlock getIBlock(Point pos)
+    {
+        return getIBlock(pos.x, pos.y, pos.z);
+    }
+
     boolean setBlock(int x, int y, int z, IState state);
 
     default boolean setBlock(BlockPos pos, IState state)
     {
         return setBlock(pos.x, pos.y, pos.z, state);
     }
+
+    IRayTraceResult rayTraceBlocks(PrecisePoint start, PrecisePoint end, boolean stopOnLiquid);
 }

@@ -71,4 +71,10 @@ public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingB
     {
         return SevenEntityLivingBase.super.getName();
     }
+
+    @Override
+    default float getEyeHeight()
+    {
+        return ((EntityPlayerMP) this).yOffset;
+    }
 }

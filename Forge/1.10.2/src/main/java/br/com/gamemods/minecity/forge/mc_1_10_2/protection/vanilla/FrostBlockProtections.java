@@ -22,6 +22,16 @@ public class FrostBlockProtections extends BlockProtections
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onItemRightClick(PlayerInteractEvent.RightClickItem event)
+    {
+        if(event.getWorld().isRemote)
+            return;
+
+        if(onItemRightClick(event.getEntityPlayer(), event.getItemStack(), event.getHand() == EnumHand.OFF_HAND))
+            event.setCanceled(true);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onBlockPlace(BlockEvent.PlaceEvent event)
     {
         if(event.getWorld().isRemote)
@@ -69,7 +79,10 @@ public class FrostBlockProtections extends BlockProtections
         if(result == 3)
             event.setCanceled(true);
         else if(result == 1)
+        {
             event.setUseItem(Event.Result.DENY);
+            event.setCanceled(true);
+        }
         else if(result == 2)
             event.setUseBlock(Event.Result.DENY);
     }

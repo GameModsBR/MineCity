@@ -24,4 +24,9 @@ public interface IItem
     {
         return getForgeItem().getUnlocalizedName();
     }
+
+    default Reaction reactRightClick(IEntityPlayerMP player, IItemStack stack, boolean offHand)
+    {
+        return NoReaction.INSTANCE;
+    }
 }

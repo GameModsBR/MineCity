@@ -1,13 +1,16 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.accessors.world;
 
+import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.SevenUtil;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlock;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenMetadataProperty;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.world.SevenWorldServerTransformer;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -66,5 +69,15 @@ public interface SevenWorldServer extends IWorldServer
     default boolean setBlock(int x, int y, int z, IState state)
     {
         return ((WorldServer) this).setBlock(x, y, z, state.getForgeBlock(), state.getValue(SevenMetadataProperty.INSTANCE), 3);
+    }
+
+    @Override
+    default IRayTraceResult rayTraceBlocks(PrecisePoint start, PrecisePoint end, boolean stopOnLiquid)
+    {
+        return (IRayTraceResult) ((WorldServer) this).rayTraceBlocks(
+                Vec3.createVectorHelper(start.x, start.y, start.z),
+                Vec3.createVectorHelper(end.x, end.y, end.z),
+                stopOnLiquid
+        );
     }
 }

@@ -2,6 +2,8 @@ package br.com.gamemods.minecity.api;
 
 public class MathUtil
 {
+    public static final float RADIAN = 0.017453292F;
+
     private MathUtil() {}
 
     public static <C extends Comparable<C>, T extends C> T min(T a, T b)

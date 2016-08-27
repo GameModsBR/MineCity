@@ -87,6 +87,11 @@ public class SevenBlockProtections extends BlockProtections
             else if(result == 2)
                 event.useBlock = Event.Result.DENY;
         }
+        else if(event.action == PlayerInteractEvent.Action.RIGHT_CLICK_AIR)
+        {
+            if(onItemRightClick(event.entityPlayer, event.entityPlayer.getHeldItem(), false))
+                event.setCanceled(true);
+        }
     }
 
     private IState state(Block block, int meta)

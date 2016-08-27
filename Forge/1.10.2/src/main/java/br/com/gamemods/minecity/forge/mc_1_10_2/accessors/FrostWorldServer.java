@@ -1,7 +1,9 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.accessors;
 
+import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.FrostUtil;
@@ -11,6 +13,7 @@ import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostWorl
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
 
 @Referenced(at = FrostWorldServerTransformer.class)
@@ -46,5 +49,15 @@ public interface FrostWorldServer extends IWorldServer
     default boolean setBlock(int x, int y, int z, IState state)
     {
         return ((WorldServer) this).setBlockState(new BlockPos(x, y, z), (IBlockState) state);
+    }
+
+    @Override
+    default IRayTraceResult rayTraceBlocks(PrecisePoint start, PrecisePoint end, boolean stopOnLiquid)
+    {
+        return (IRayTraceResult) ((WorldServer) this).rayTraceBlocks(
+                new Vec3d(start.x, start.y, start.z),
+                new Vec3d(end.x, end.y, end.z),
+                stopOnLiquid
+        );
     }
 }

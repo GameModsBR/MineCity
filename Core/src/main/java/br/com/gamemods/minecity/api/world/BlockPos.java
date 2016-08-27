@@ -165,6 +165,15 @@ public final class BlockPos extends Point implements Serializable
     }
 
     @Override
+    public BlockPos toBlock(WorldDim world)
+    {
+        if(world.equals(this.world))
+            return this;
+
+        return new BlockPos(world, x, y, z);
+    }
+
+    @Override
     public boolean equals(Object o)
     {
         if(this == o) return true;
