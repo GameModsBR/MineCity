@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.accessors.entity;
 
+import br.com.gamemods.minecity.api.MathUtil;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
@@ -15,7 +16,6 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldServer;
 
 import java.util.List;
@@ -116,7 +116,7 @@ public interface IEntity
     default Direction getCardinalDirection()
     {
         return Direction.cardinal8.get(
-                MathHelper.floor_double((double)((((Entity)this).rotationYaw + 180.0F) * 8.0F / 360.0F) + 0.5D) & 7
+                MathUtil.floor_double((double)((((Entity)this).rotationYaw + 180.0F) * 8.0F / 360.0F) + 0.5D) & 7
         );
     }
 

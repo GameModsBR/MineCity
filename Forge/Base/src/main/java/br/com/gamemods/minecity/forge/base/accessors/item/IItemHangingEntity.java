@@ -44,7 +44,6 @@ public interface IItemHangingEntity extends IItem
                     mod.callSyncMethod(()->{
                         EntityPainting painting = (EntityPainting) entity;
                         EntityPainting.EnumArt currentArt = painting.art;
-                        //if((int)painting.posX == pos.x && ((int)painting.posY - currentArt.sizeY/16 + 1) == pos.y && (int)painting.posZ == pos.z)
                         BlockPos blockPos = ((IEntity) painting).getBlockPos(mod);
                         double distance = blockPos.distance(pos);
                         double sqrt = (Math.sqrt(currentArt.sizeX*currentArt.sizeX + currentArt.sizeY*currentArt.sizeY)/16)-1;
@@ -114,7 +113,7 @@ public interface IItemHangingEntity extends IItem
                 }
 
                 return false;
-            }, 10)
+            }, 2)
         );
 
         return reaction;

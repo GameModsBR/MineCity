@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.listeners;
 
+import br.com.gamemods.minecity.api.MathUtil;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
@@ -15,6 +16,7 @@ import cpw.mods.fml.common.event.*;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import org.mcstats.Metrics;
@@ -30,6 +32,9 @@ public class MineCitySevenMod
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) throws IOException, SAXException
     {
+        MathUtil.sin = MathHelper::sin;
+        MathUtil.cos = MathHelper::cos;
+
         forge = new MineCityForge();
         forge.logger = event.getModLog();
         forge.selectionTool = Items.wooden_hoe;

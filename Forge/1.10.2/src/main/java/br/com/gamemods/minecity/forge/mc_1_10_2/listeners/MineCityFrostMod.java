@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.listeners;
 
+import br.com.gamemods.minecity.api.MathUtil;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
@@ -11,6 +12,7 @@ import br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla.FrostBlockPro
 import br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla.FrostEntityProtections;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -28,6 +30,9 @@ public class MineCityFrostMod
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) throws IOException, SAXException
     {
+        MathUtil.sin = MathHelper::sin;
+        MathUtil.cos = MathHelper::cos;
+
         forge = new MineCityFrost();
         forge.logger = event.getModLog();
         forge.selectionTool = Items.WOODEN_HOE;

@@ -4,10 +4,12 @@ import br.com.gamemods.minecity.api.world.Direction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
 import java.util.function.BiFunction;
 
-public class PrecisePoint implements Comparable<PrecisePoint>
+public class PrecisePoint implements Serializable, Comparable<PrecisePoint>
 {
+    private static final long serialVersionUID = -5945672470572274507L;
     public final double x, y, z;
 
     public PrecisePoint(double x, double y, double z)
@@ -133,5 +135,13 @@ public class PrecisePoint implements Comparable<PrecisePoint>
                 ", y=" + y +
                 ", z=" + z +
                 '}';
+    }
+
+    public double distance(Point pos)
+    {
+        double x = this.x - pos.x;
+        double y = this.y - pos.y;
+        double z = this.z - pos.z;
+        return Math.sqrt(x*x + y*y + z*z);
     }
 }

@@ -1,47 +1,41 @@
 package br.com.gamemods.minecity.api.world;
 
+import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.function.BiFunction;
 
-public final class EntityPos implements Serializable
+public final class EntityPos extends PrecisePoint implements Serializable
 {
     private static final long serialVersionUID = -2727591696451881914L;
 
     @NotNull
     public final WorldDim world;
-    public final double x, y, z;
     public final float pitch, yaw;
 
     transient BlockPos block;
 
     public EntityPos(@NotNull WorldDim world, double x, double y, double z)
     {
+        super(x, y, z);
         this.world = world;
-        this.x = x;
-        this.y = y;
-        this.z = z;
         pitch = yaw = 0;
     }
 
     public EntityPos(@NotNull WorldDim world, double x, double y, double z, float pitch, float yaw)
     {
+        super(x, y, z);
         this.world = world;
-        this.x = x;
-        this.y = y;
-        this.z = z;
         this.pitch = pitch;
         this.yaw = yaw;
     }
 
     public EntityPos(BlockPos block, float pitch, float yaw)
     {
+        super(block.x + 0.5, block.y + 0.5, block.z + 0.5);
         this.world = block.world;
-        this.x = block.x + 0.5;
-        this.y = block.y + 0.5;
-        this.z = block.z + 0.5;
         this.pitch = pitch;
         this.yaw = yaw;
         this.block = block;
@@ -55,12 +49,14 @@ public final class EntityPos implements Serializable
     }
 
     @NotNull
+    @Override
     public <T> EntityPos apply(@Nullable T x, @Nullable T y, @Nullable T z, @NotNull BiFunction<Double, T, Double> op)
     {
         return new EntityPos(world, op.apply(this.x, x), op.apply(this.y, y), op.apply(this.z, z));
     }
 
     @NotNull
+    @Override
     public EntityPos apply(@NotNull Direction direction, double multiplier, @NotNull BiFunction<Double, Double, Double> op)
     {
         return apply(direction.x*multiplier, direction.y*multiplier, direction.z*multiplier, op);
@@ -73,12 +69,14 @@ public final class EntityPos implements Serializable
     }
 
     @NotNull
+    @Override
     public EntityPos add(@NotNull Direction direction, double multiplier)
     {
         return apply(direction, multiplier, (a,b)-> a+b);
     }
 
     @NotNull
+    @Override
     public EntityPos subtract(@NotNull Direction direction, double multiplier)
     {
         return apply(direction, multiplier, (a,b)-> a-b);
@@ -98,36 +96,28 @@ public final class EntityPos implements Serializable
     }
 
     @NotNull
-    public EntityPos add(@NotNull Direction direction)
-    {
-        return add(direction.x, direction.y, direction.z);
-    }
-
-    @NotNull
-    public EntityPos subtract(@NotNull Direction direction)
-    {
-        return subtract(direction.x, direction.y, direction.z);
-    }
-
-    @NotNull
+    @Override
     public EntityPos add(double x, double y, double z)
     {
         return new EntityPos(world, this.x+x, this.y+y, this.z+z);
     }
 
     @NotNull
+    @Override
     public EntityPos subtract(double x, double y, double z)
     {
         return new EntityPos(world, this.x-x, this.y-y, this.z-z);
     }
 
     @NotNull
+    @Override
     public EntityPos multiply(double x, double y, double z)
     {
         return new EntityPos(world, this.x*x, this.y*y, this.z*z);
     }
 
     @NotNull
+    @Override
     public EntityPos divide(double x, double y, double z)
     {
         return new EntityPos(world, this.x/x, this.y/y, this.z/z);
