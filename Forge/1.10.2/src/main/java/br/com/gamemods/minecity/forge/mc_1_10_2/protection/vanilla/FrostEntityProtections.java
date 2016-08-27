@@ -6,6 +6,7 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import net.minecraft.util.EnumHand;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -32,5 +33,29 @@ public class FrostEntityProtections extends EntityProtections
         {
             event.setCanceled(true);
         }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onEntityConstruct(EntityEvent.EntityConstructing event)
+    {
+        if(event.getEntity().worldObj.isRemote)
+            return;
+
+        mod.callSpawnListeners((IEntity) event.getEntity());
+    }
+
+    //@SubscribeEvent(priority = EventPriority.HIGH)
+    public void on(EntityEvent.EnteringChunk event)
+    {
+        if(event.getEntity().worldObj.isRemote)
+            return;
+
+        onEntityEnterChunk(
+                (IEntity) event.getEntity(),
+                event.getOldChunkX(),
+                event.getOldChunkZ(),
+                event.getNewChunkX(),
+                event.getNewChunkZ()
+        );
     }
 }

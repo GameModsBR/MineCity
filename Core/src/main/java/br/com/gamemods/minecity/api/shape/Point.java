@@ -149,4 +149,12 @@ public class Point implements Serializable, Comparable<Point>
                 ", z=" + z +
                 '}';
     }
+
+    public double distance(Point pos)
+    {
+        int x = this.x - pos.x;
+        int y = this.y - pos.y;
+        int z = this.z - pos.z;
+        return Math.sqrt(x*x + y*y + z*z);
+    }
 }

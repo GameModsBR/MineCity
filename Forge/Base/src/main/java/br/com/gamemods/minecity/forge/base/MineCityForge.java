@@ -29,6 +29,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -44,17 +45,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class MineCityForge implements Server, ChunkProvider, WorldProvider
 {
-    private final ConcurrentLinkedQueue<FutureTask> syncTasks = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Task> syncTasks = new ConcurrentLinkedQueue<>();
     public Logger logger;
     public IMinecraftServer server;
     private ExecutorService executors;
@@ -64,6 +63,21 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
     public MineCity mineCity;
     public Item selectionTool;
     public Consumer<ForgePlayerSender.ForgeSelection> selectionPallet;
+    private final Queue<Predicate<IEntity>> entitySpawnListeners = new ConcurrentLinkedQueue<>();
+
+    public void addSpawnListener(Predicate<IEntity> listener, int howLong)
+    {
+        entitySpawnListeners.add(listener);
+        syncTasks.add(new Task(()-> entitySpawnListeners.remove(listener), howLong));
+    }
+
+    public void callSpawnListeners(IEntity entity)
+    {
+        Iterator<Predicate<IEntity>> iter = entitySpawnListeners.iterator();
+        while(iter.hasNext())
+            if(iter.next().test(entity))
+                iter.remove();
+    }
 
     private void adjustDefaultFlag(Configuration config, String prefix, PermissionFlag flag, boolean def, SimpleFlagHolder flags)
     {
@@ -156,6 +170,10 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
 
         worldContainer = Paths.get(server.getFolderName());
 
+        MineCityConfig config = this.config;
+        if(server instanceof IntegratedServer)
+            config = config.clone();
+
         mineCity = new MineCity(this, config, transformer);
         mineCity.worldProvider = Optional.of(this);
         String lang = config.locale.toLanguageTag();
@@ -192,12 +210,12 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
 
         // Using iterator instead of poll() to avoid infinite loop when a task register an other task.
         // This won't happens on iterator because it's weakly consistent.
-        Iterator<FutureTask> iterator = syncTasks.iterator();
+        Iterator<Task> iterator = syncTasks.iterator();
         while(iterator.hasNext())
         {
-            FutureTask task = iterator.next();
-            iterator.remove();
-            task.run();
+            Task task = iterator.next();
+            if(task.execute())
+                iterator.remove();
         }
     }
 
@@ -216,8 +234,19 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
     @Override
     public <R> Future<R> callSyncMethod(Callable<R> callable)
     {
-        FutureTask<R> future = new FutureTask<>(callable);
-        syncTasks.add(future);
+        FutureTask<R> future = new FutureTask<>(()->{
+            try
+            {
+                return callable.call();
+            }
+            catch(Throwable e)
+            {
+                logger.error("A sync task threw an throwable on execution!", e);
+                throw e;
+            }
+        });
+
+        syncTasks.add(new Task(future, 1));
         return future;
     }
 

@@ -12,7 +12,7 @@ public class SevenMovingObjectPositionTransformer extends InsertInterfaceTransfo
     {
         super(
                 "net.minecraft.util.MovingObjectPosition",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.accessors.SevenMovingObjectPositionTransformer"
+                "br.com.gamemods.minecity.forge.mc_1_7_10.accessors.SevenMovingObjectPosition"
         );
     }
 }

@@ -29,6 +29,7 @@ public class MineCityFrostMod
     public void onPreInit(FMLPreInitializationEvent event) throws IOException, SAXException
     {
         forge = new MineCityFrost();
+        forge.logger = event.getModLog();
         forge.selectionTool = Items.WOODEN_HOE;
         forge.selectionPallet = selection -> {
             selection.cornerA = Blocks.GLOWSTONE.getDefaultState();

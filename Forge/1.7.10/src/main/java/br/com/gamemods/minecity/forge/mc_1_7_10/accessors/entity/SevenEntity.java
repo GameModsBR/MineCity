@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityTransformer;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.WorldServer;
 
 import java.util.Collections;
@@ -51,5 +52,15 @@ public interface SevenEntity extends IEntity
     default IWorldServer getIWorld()
     {
         return (IWorldServer) ((Entity) this).worldObj;
+    }
+
+    default void writeNBT(NBTTagCompound nbt)
+    {
+        ((Entity) this).writeToNBT(nbt);
+    }
+
+    default void readNBT(NBTTagCompound nbt)
+    {
+        ((Entity) this).readFromNBT(nbt);
     }
 }

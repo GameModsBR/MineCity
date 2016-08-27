@@ -4,7 +4,7 @@ import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 
 import java.util.Locale;
 
-public class MineCityConfig
+public final class MineCityConfig implements Cloneable
 {
     public String dbUrl = "jdbc:mysql://localhost/minecity?autoReconnect=true";
     public String dbUser;
@@ -16,4 +16,17 @@ public class MineCityConfig
     public SimpleFlagHolder defaultReserveFlags = new SimpleFlagHolder();
     public boolean defaultNatureDisableCities;
     public boolean useTitle = true;
+
+    @Override
+    public MineCityConfig clone()
+    {
+        try
+        {
+            return (MineCityConfig) super.clone();
+        }
+        catch(CloneNotSupportedException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
 }

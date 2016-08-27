@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 
 public class SevenEntityProtections extends EntityProtections
@@ -31,5 +32,29 @@ public class SevenEntityProtections extends EntityProtections
         {
             event.setCanceled(true);
         }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onEntityConstruct(EntityEvent.EntityConstructing event)
+    {
+        if(event.entity.worldObj.isRemote)
+            return;
+
+        mod.callSpawnListeners((IEntity) event.entity);
+    }
+
+    //@SubscribeEvent(priority = EventPriority.HIGH)
+    public void onEntityEnterChunk(EntityEvent.EnteringChunk event)
+    {
+        if(event.entity.worldObj.isRemote)
+            return;
+
+        onEntityEnterChunk(
+                (IEntity) event.entity,
+                event.oldChunkX,
+                event.oldChunkZ,
+                event.newChunkX,
+                event.newChunkZ
+        );
     }
 }

@@ -38,4 +38,8 @@ public class EntityProtections extends ForgeProtections
 
         return false;
     }
+
+    public void onEntityEnterChunk(IEntity entity, int oldChunkX, int oldChunkZ, int newChunkX, int newChunkZ)
+    {
+    }
 }

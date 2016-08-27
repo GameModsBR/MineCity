@@ -31,6 +31,7 @@ public class MineCitySevenMod
     public void onPreInit(FMLPreInitializationEvent event) throws IOException, SAXException
     {
         forge = new MineCityForge();
+        forge.logger = event.getModLog();
         forge.selectionTool = Items.wooden_hoe;
         forge.selectionPallet = selection -> {
             selection.cornerA = Blocks.glowstone;

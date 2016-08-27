@@ -14,6 +14,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityT
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldServer;
 
@@ -122,5 +123,15 @@ public interface IEntity
     default Reaction reactPlayerInteraction(ForgePlayer<?,?,?> player, IItemStack stack, boolean offHand)
     {
         return NoReaction.INSTANCE;
+    }
+
+    default void writeNBT(NBTTagCompound nbt)
+    {
+        ((Entity) this).writeToNBT(nbt);
+    }
+
+    default void readNBT(NBTTagCompound nbt)
+    {
+        ((Entity) this).readFromNBT(nbt);
     }
 }
