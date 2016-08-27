@@ -14,6 +14,6 @@ public interface IEntityItemFrame extends IEntity
     @Override
     default Reaction reactPlayerInteraction(ForgePlayer<?,?,?> player, IItemStack stack, boolean offHand)
     {
-        return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.MODIFY);
+        return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.OPEN);
     }
 }
