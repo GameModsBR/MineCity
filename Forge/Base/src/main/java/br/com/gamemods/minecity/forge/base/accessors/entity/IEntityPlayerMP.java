@@ -143,4 +143,9 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
     {
         return getForgeEntity().getEyeHeight();
     }
+
+    default boolean isCreative()
+    {
+        return getForgeEntity().isCreative();
+    }
 }

@@ -33,15 +33,18 @@ public interface IItemMinecart extends IItem
                 reaction.addAllowListener((reaction1, permissible, flag, pos, message) ->
                         mod.addSpawnListener(spawned -> {
                             if(spawned instanceof EntityMinecart && spawned.getEntityPos(mod).distance(pos) < 2)
-                            {
-                                EntityMinecart cart = (EntityMinecart) spawned;
-                                NBTTagCompound nbt = cart.getEntityData();
-                                UUID uniqueID = player.getUniqueID();
-                                nbt.setLong("MineCityOwnerUUIDMost", uniqueID.getMostSignificantBits());
-                                nbt.setLong("MineCityOwnerUUIDLeast", uniqueID.getLeastSignificantBits());
-                                nbt.setString("MineCityOwner", player.getName());
-                                return true;
-                            }
+                                mod.callSyncMethod(()-> {
+                                    EntityMinecart cart = (EntityMinecart) spawned;
+                                    NBTTagCompound nbt = cart.getEntityData();
+                                    if(nbt.getLong("MineCityOwnerUUIDMost") == 0)
+                                    {
+                                        UUID uniqueID = player.getUniqueID();
+                                        nbt.setLong("MineCityOwnerUUIDMost", uniqueID.getMostSignificantBits());
+                                        nbt.setLong("MineCityOwnerUUIDLeast", uniqueID.getLeastSignificantBits());
+                                        nbt.setString("MineCityOwner", player.getName());
+                                    }
+                                });
+
                             return false;
                         }, 2)
                 );

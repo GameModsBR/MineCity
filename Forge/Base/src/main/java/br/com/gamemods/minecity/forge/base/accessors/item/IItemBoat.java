@@ -51,16 +51,22 @@ public interface IItemBoat extends IItem
         SingleBlockReaction reaction = new SingleBlockReaction(result.getHitBlockPos().toBlock(world.getMineCityWorld()), PermissionFlag.VEHICLE);
         reaction.addAllowListener((reaction1, permissible, flag, pos, message) ->
             mod.addSpawnListener(spawned -> {
-                if(spawned instanceof EntityBoat && spawned.getEntityPos(mod).distance(pos) < 2)
-                {
-                    EntityBoat boat = (EntityBoat) spawned;
-                    NBTTagCompound nbt = boat.getEntityData();
-                    UUID uniqueID = player.getUniqueID();
-                    nbt.setLong("MineCityOwnerUUIDMost", uniqueID.getMostSignificantBits());
-                    nbt.setLong("MineCityOwnerUUIDLeast", uniqueID.getLeastSignificantBits());
-                    nbt.setString("MineCityOwner", player.getName());
-                    return true;
-                }
+                if(spawned instanceof EntityBoat)
+                    mod.callSyncMethod(()->{
+                        if(spawned.getEntityPos(mod).distance(pos) < 2)
+                        {
+                            EntityBoat boat = (EntityBoat) spawned;
+                            NBTTagCompound nbt = boat.getEntityData();
+                            if(nbt.getLong("MineCityOwnerUUIDMost") == 0)
+                            {
+                                UUID uniqueID = player.getUniqueID();
+                                nbt.setLong("MineCityOwnerUUIDMost", uniqueID.getMostSignificantBits());
+                                nbt.setLong("MineCityOwnerUUIDLeast", uniqueID.getLeastSignificantBits());
+                                nbt.setString("MineCityOwner", player.getName());
+                            }
+                        }
+                    });
+
                 return false;
             }, 2)
         );

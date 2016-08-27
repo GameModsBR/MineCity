@@ -77,4 +77,10 @@ public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingB
     {
         return ((EntityPlayerMP) this).yOffset;
     }
+
+    @Override
+    default boolean isCreative()
+    {
+        return getForgeEntity().capabilities.isCreativeMode;
+    }
 }

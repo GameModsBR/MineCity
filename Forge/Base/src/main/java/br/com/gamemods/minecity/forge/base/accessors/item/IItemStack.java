@@ -32,4 +32,14 @@ public interface IItemStack
     {
         return getStack().getUnlocalizedName();
     }
+
+    default int getSize()
+    {
+        return getStack().stackSize;
+    }
+
+    default void setSize(int size)
+    {
+        getStack().stackSize = size;
+    }
 }
