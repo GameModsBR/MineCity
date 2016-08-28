@@ -43,37 +43,18 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     public String[] getASMTransformerClass()
     {
         return new String[]{
+                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostInterfaceTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityBoatTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityMinecartTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.IPropertyTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostWorldServerTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.world.ChunkTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPlayerMPTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityItemFrameTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostBlockTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostIBlockStateTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostPlayerListTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.MinecraftServerTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostBlockSnapshotTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemHangingEntityTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemBlockTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostRayTraceResultTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemSnowTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemDyeTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemMinecartTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemBoatTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockOpenReactorTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockClickReactorTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockClickExtendsOpenTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockModifyExtendsOpenTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockNoReactExtendsOpenTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemStackTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemModifyOppositeReactorTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockCropsTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockDoorTransformer"
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.ProjectileTransformer"
         };
     }
 

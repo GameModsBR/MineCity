@@ -1,6 +1,8 @@
 package br.com.gamemods.minecity.forge.base.accessors.entity;
 
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.Server;
+import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.EntityPos;
@@ -11,15 +13,21 @@ import br.com.gamemods.minecity.forge.base.accessors.ICommander;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityPlayerMPTransformer;
+import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.WorldServer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Referenced(at = EntityPlayerMPTransformer.class)
 public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
 {
+    Server getServer();
     void setMineCityPlayer(ForgePlayer player);
     ForgePlayer getMineCityPlayer();
 
@@ -29,6 +37,7 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
         return (EntityPlayerMP) this;
     }
 
+    @NotNull
     default PlayerID getIdentity()
     {
         ForgePlayer player = getMineCityPlayer();
@@ -91,8 +100,15 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
         return null;
     }
 
+    @Override
+    default Reaction reactDamage(MineCityForge mod, DamageSource source, float amount)
+    {
+        return NoReaction.INSTANCE;
+    }
+
     void sendTitle(MineCityForge mod, Message title, Message subTitle);
 
+    @NotNull
     @Override
     default String getName()
     {
@@ -152,5 +168,38 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
     default boolean isSneaking()
     {
         return getForgeEntity().isSneaking();
+    }
+
+    @NotNull
+    @Override
+    default Type getType()
+    {
+        return Type.PLAYER;
+    }
+
+    @Nullable
+    @Override
+    default CommandSender getCommandSender()
+    {
+        ForgePlayer player = getMineCityPlayer();
+        if(player == null)
+            return null;
+        return player.getCommandSender();
+    }
+
+    @Override
+    default void send(Message message)
+    {
+        ForgePlayer player = getMineCityPlayer();
+        if(player != null)
+            player.send(message);
+    }
+
+    @Override
+    default void send(Message[] messages)
+    {
+        ForgePlayer player = getMineCityPlayer();
+        if(player != null)
+            player.send(messages);
     }
 }

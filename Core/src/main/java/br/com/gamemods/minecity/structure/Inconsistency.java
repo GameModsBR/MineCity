@@ -69,6 +69,12 @@ public class Inconsistency implements ChunkOwner
 
     public static ClaimedChunk claim(ChunkPos pos)
     {
+        Nature nature = pos.world.nature;
+        if(nature != null)
+            getInconsistentCity(nature.mineCity);
+        else
+            getInconsistentCity();
+
         ClaimedChunk chunk = new ClaimedChunk(INSTANCE, pos);
         chunk.invalidate();
         return chunk;

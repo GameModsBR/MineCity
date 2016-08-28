@@ -3,15 +3,16 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.accessors.entity;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
-import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenInterfaceTransformer;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.WorldServer;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
 
-@Referenced(at = SevenEntityTransformer.class)
+@Referenced(at = SevenInterfaceTransformer.class)
 public interface SevenEntity extends IEntity
 {
     @Override
@@ -36,6 +37,7 @@ public interface SevenEntity extends IEntity
         ((Entity) this).mountEntity(null);
     }
 
+    @NotNull
     @Override
     default String getName()
     {

@@ -1,6 +1,8 @@
 package br.com.gamemods.minecity.api.permission;
 
-public class ServerAdmins<T> extends OptionalPlayer<T>
+import java.io.Serializable;
+
+public class ServerAdmins<T extends Serializable> extends OptionalPlayer<T>
 {
     public static final ServerAdmins<?> INSTANCE = new ServerAdmins<>(Boolean.FALSE, "Server Admins");
 

@@ -2,7 +2,9 @@ package br.com.gamemods.minecity.api.permission;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface Identifiable<T>
+import java.io.Serializable;
+
+public interface Identifiable<T extends Serializable>
 {
     @NotNull
     T getUniqueId();

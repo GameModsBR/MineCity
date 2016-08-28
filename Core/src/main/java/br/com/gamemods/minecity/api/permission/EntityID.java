@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public class EntityID extends Identity<UUID>
 {
+    private static final long serialVersionUID = -2507233509584643722L;
     public final MinecraftEntity.Type type;
 
     public EntityID(@NotNull MinecraftEntity.Type type, @NotNull UUID id, @NotNull String name)

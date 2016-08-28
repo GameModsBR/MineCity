@@ -9,7 +9,7 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
-import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
@@ -17,7 +17,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraftforge.fluids.BlockFluidBase;
 
-@Referenced(at = BlockTransformer.class)
+@Referenced(at = ForgeInterfaceTransformer.class)
 public interface IBlock
 {
     default Block getForgeBlock()

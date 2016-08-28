@@ -5,6 +5,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class NatureID extends Identity<WorldDim>
 {
+    private static final long serialVersionUID = -6074055085321354433L;
+
     public NatureID(@NotNull WorldDim world)
     {
         super(world, world.name());

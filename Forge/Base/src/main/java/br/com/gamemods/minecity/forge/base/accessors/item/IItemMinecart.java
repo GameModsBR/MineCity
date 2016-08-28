@@ -7,14 +7,14 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
-import br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemMinecartTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.entity.item.EntityMinecart;
 
-@Referenced(at = ItemMinecartTransformer.class)
+@Referenced(at = ForgeInterfaceTransformer.class)
 public interface IItemMinecart extends IItem
 {
     @Override

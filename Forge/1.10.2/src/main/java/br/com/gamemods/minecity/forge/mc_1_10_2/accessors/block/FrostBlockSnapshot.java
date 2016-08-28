@@ -6,10 +6,10 @@ import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
-import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostBlockSnapshotTransformer;
+import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostInterfaceTransformer;
 import net.minecraftforge.common.util.BlockSnapshot;
 
-@Referenced(at = FrostBlockSnapshotTransformer.class)
+@Referenced(at = FrostInterfaceTransformer.class)
 public interface FrostBlockSnapshot extends IBlockSnapshot
 {
     @Override

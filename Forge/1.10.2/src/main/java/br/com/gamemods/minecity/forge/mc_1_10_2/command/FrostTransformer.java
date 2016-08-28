@@ -10,7 +10,7 @@ public class FrostTransformer extends ForgeTransformer
     @Override
     public void send(Message message, ICommander commander)
     {
-        commander.getCommandSender().addChatMessage(ITextComponent.Serializer.jsonToComponent(
+        commander.getForgeSender().addChatMessage(ITextComponent.Serializer.jsonToComponent(
                 toJson(message)
         ));
     }
@@ -18,7 +18,7 @@ public class FrostTransformer extends ForgeTransformer
     @Override
     public void send(Message[] message, ICommander commander)
     {
-        commander.getCommandSender().addChatMessage(ITextComponent.Serializer.jsonToComponent(
+        commander.getForgeSender().addChatMessage(ITextComponent.Serializer.jsonToComponent(
                 toJson(Message.list(message, Message.LINE_BREAK))
         ));
     }

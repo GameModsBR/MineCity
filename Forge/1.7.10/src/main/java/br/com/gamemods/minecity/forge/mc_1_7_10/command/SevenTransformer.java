@@ -23,7 +23,7 @@ public class SevenTransformer extends ForgeTransformer
     public void send(Message message, ICommander commander)
     {
         for(IChatComponent msg: toMultilineForge(message))
-            commander.getCommandSender().addChatMessage(msg);
+            commander.getForgeSender().addChatMessage(msg);
     }
 
     @Override

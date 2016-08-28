@@ -4,13 +4,13 @@ import net.minecraft.command.ICommandSender;
 
 public interface ICommander
 {
-    default ICommandSender getCommandSender()
+    default ICommandSender getForgeSender()
     {
         return (ICommandSender) this;
     }
 
     default String getName()
     {
-        return getCommandSender().getName();
+        return getForgeSender().getName();
     }
 }

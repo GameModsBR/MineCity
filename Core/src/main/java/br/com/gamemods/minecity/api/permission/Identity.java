@@ -2,8 +2,11 @@ package br.com.gamemods.minecity.api.permission;
 
 import org.jetbrains.annotations.NotNull;
 
-public abstract class Identity<T> implements Permissible, Comparable<Identity<?>>
+import java.io.Serializable;
+
+public abstract class Identity<T extends Serializable> implements Permissible, Serializable, Comparable<Identity<?>>
 {
+    private static final long serialVersionUID = 9057760656328808949L;
     private int dataSourceId;
     @NotNull
     public final T uniqueId;

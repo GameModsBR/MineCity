@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public final class PlayerID extends OptionalPlayer<UUID>
 {
+    private static final long serialVersionUID = -1690881554834873995L;
+
     public PlayerID(@NotNull UUID uniqueId, @NotNull String name)
     {
         super(uniqueId, name);

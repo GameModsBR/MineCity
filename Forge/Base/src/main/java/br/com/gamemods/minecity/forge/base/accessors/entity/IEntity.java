@@ -1,28 +1,37 @@
 package br.com.gamemods.minecity.forge.base.accessors.entity;
 
 import br.com.gamemods.minecity.api.MathUtil;
+import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.world.BlockPos;
-import br.com.gamemods.minecity.api.world.Direction;
-import br.com.gamemods.minecity.api.world.EntityPos;
-import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.api.permission.EntityID;
+import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
-import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.IProjectile;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.WorldServer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
 
-@Referenced(at = EntityTransformer.class)
-public interface IEntity
+@Referenced(at = ForgeInterfaceTransformer.class)
+public interface IEntity extends MinecraftEntity
 {
     default Entity getForgeEntity()
     {
@@ -46,6 +55,7 @@ public interface IEntity
         return (List) getPassengers();
     }
 
+    @NotNull
     default String getName()
     {
         return getForgeEntity().getName();
@@ -125,6 +135,11 @@ public interface IEntity
         return NoReaction.INSTANCE;
     }
 
+    default Reaction reactDamage(MineCityForge mod, DamageSource source, float amount)
+    {
+        return new SingleBlockReaction(getBlockPos(mod), PermissionFlag.MODIFY);
+    }
+
     default void writeNBT(NBTTagCompound nbt)
     {
         ((Entity) this).writeToNBT(nbt);
@@ -133,5 +148,58 @@ public interface IEntity
     default void readNBT(NBTTagCompound nbt)
     {
         ((Entity) this).readFromNBT(nbt);
+    }
+
+    @NotNull
+    @Override
+    default Type getType()
+    {
+        if(this instanceof IMob)
+            return Type.MONSTER;
+
+        if(this instanceof IAnimals)
+            return Type.ANIMAL;
+
+        if(this instanceof IProjectile)
+            return Type.PROJECTILE;
+
+        if(this instanceof EntityItem)
+            return Type.ITEM;
+
+        return Type.UNCLASSIFIED;
+    }
+
+    @NotNull
+    @Override
+    default UUID getUniqueId()
+    {
+        return getUniqueID();
+    }
+
+    @Nullable
+    @Override
+    default CommandSender getCommandSender()
+    {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    default Identity<UUID> getIdentity()
+    {
+        return new EntityID(getType(), getUniqueId(), getName());
+    }
+
+    @Override
+    default boolean kick(Message message)
+    {
+        return false;
+    }
+
+    @NotNull
+    @Override
+    default Identity<?> identity()
+    {
+        return getIdentity();
     }
 }

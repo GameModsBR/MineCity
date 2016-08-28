@@ -11,6 +11,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.S23PacketBlockChange;
+import org.jetbrains.annotations.NotNull;
 
 @Referenced(at = SevenEntityPlayerMPTransformer.class)
 public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingBase
@@ -66,6 +67,7 @@ public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingB
         // Not supported
     }
 
+    @NotNull
     @Override
     default String getName()
     {

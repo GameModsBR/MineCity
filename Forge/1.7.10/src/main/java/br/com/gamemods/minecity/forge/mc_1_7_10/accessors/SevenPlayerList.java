@@ -3,7 +3,7 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.accessors;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IPlayerList;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
-import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.ServerConfigurationManagerTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenInterfaceTransformer;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.management.ServerConfigurationManager;
@@ -11,7 +11,7 @@ import net.minecraft.world.Teleporter;
 
 import java.util.List;
 
-@Referenced(at = ServerConfigurationManagerTransformer.class)
+@Referenced(at = SevenInterfaceTransformer.class)
 public interface SevenPlayerList extends IPlayerList
 {
     default ServerConfigurationManager getForgePlayerList()

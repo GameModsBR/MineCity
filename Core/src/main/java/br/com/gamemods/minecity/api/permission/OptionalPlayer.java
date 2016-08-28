@@ -4,7 +4,9 @@ import br.com.gamemods.minecity.api.PlayerID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class OptionalPlayer<T> extends Identity<T>
+import java.io.Serializable;
+
+public abstract class OptionalPlayer<T extends Serializable> extends Identity<T>
 {
     public OptionalPlayer(@NotNull T id, @NotNull String name)
     {

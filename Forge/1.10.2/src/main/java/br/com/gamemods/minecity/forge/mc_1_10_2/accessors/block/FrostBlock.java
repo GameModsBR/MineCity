@@ -3,12 +3,12 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.accessors.block;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
-import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostBlockTransformer;
+import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostInterfaceTransformer;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-@Referenced(at = FrostBlockTransformer.class)
+@Referenced(at = FrostInterfaceTransformer.class)
 public interface FrostBlock extends IBlock
 {
     default FrostState getDefaultIState()

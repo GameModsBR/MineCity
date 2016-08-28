@@ -6,11 +6,11 @@ import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
-import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.block.SevenBlockSnapshotTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenInterfaceTransformer;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.util.BlockSnapshot;
 
-@Referenced(at = SevenBlockSnapshotTransformer.class)
+@Referenced(at = SevenInterfaceTransformer.class)
 public interface SevenBlockSnapshot extends IBlockSnapshot
 {
     @Override

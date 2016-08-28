@@ -50,7 +50,7 @@ public class SevenEntityProtections extends EntityProtections
         if(event.entity.worldObj.isRemote)
             return;
 
-        if(onVehicleDamage(
+        if(onEntityDamage(
                 (IEntity) event.entity,
                 event.source,
                 event.amount

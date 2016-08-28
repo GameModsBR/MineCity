@@ -1,11 +1,11 @@
 package br.com.gamemods.minecity.forge.base.accessors.block;
 
 import br.com.gamemods.minecity.forge.base.Referenced;
-import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.IPropertyTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 
 import java.util.Collection;
 
-@Referenced(at = IPropertyTransformer.class)
+@Referenced(at = ForgeInterfaceTransformer.class)
 public interface IProp<T extends Comparable<T>>
 {
     String getName();

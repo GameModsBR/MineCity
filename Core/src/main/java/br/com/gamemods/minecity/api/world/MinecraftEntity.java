@@ -1,7 +1,6 @@
 package br.com.gamemods.minecity.api.world;
 
 import br.com.gamemods.minecity.api.PlayerID;
-import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.EntityID;
@@ -13,10 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public interface MinecraftEntity extends Identifiable, Permissible
+public interface MinecraftEntity extends Identifiable<UUID>, Permissible
 {
-    Server getServer();
-
     @NotNull
     @Override
     UUID getUniqueId();

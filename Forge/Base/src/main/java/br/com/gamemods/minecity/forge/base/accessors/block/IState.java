@@ -1,7 +1,7 @@
 package br.com.gamemods.minecity.forge.base.accessors.block;
 
 import br.com.gamemods.minecity.forge.base.Referenced;
-import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.IBlockStateTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import net.minecraft.block.Block;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.IntUnaryOperator;
 
-@Referenced(at = IBlockStateTransformer.class)
+@Referenced(at = ForgeInterfaceTransformer.class)
 public interface IState
 {
     IBlock getIBlock();

@@ -9,7 +9,7 @@ import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
-import br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemHangingEntityTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
-@Referenced(at = ItemHangingEntityTransformer.class)
+@Referenced(at = ForgeInterfaceTransformer.class)
 public interface IItemHangingEntity extends IItem
 {
     @Override

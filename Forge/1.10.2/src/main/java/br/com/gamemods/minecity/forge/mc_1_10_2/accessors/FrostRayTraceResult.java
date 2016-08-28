@@ -7,12 +7,12 @@ import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
 import br.com.gamemods.minecity.forge.mc_1_10_2.FrostUtil;
-import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostRayTraceResultTransformer;
+import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostInterfaceTransformer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 
-@Referenced(at = FrostRayTraceResultTransformer.class)
+@Referenced(at = FrostInterfaceTransformer.class)
 public interface FrostRayTraceResult extends IRayTraceResult
 {
     @Override

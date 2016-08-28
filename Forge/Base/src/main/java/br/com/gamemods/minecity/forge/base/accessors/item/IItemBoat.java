@@ -8,14 +8,14 @@ import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
-import br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemBlockTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.player.EntityPlayerMP;
 
-@Referenced(at = ItemBlockTransformer.class)
+@Referenced(at = ForgeInterfaceTransformer.class)
 public interface IItemBoat extends IItem
 {
 

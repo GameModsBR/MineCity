@@ -4,6 +4,9 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.*;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * Makes a class implements an interface with a setter and getter.
@@ -24,37 +27,49 @@ public class InsertSetterGetterTransformer implements IClassTransformer
     /**
      * The SRG name of the class that will be transformed
      */
-    private String className = "net.minecraft.world.WorldServer";
+    private Collection<String> classNames;
 
     /**
      * The type of the field that will be added to the class
      */
-    private String fieldClass = "br.com.gamemods.minecity.api.world.WorldDim";
+    private String fieldClass;
 
     /**
      * The name of the field that will be added to the class
      */
-    private String fieldName = "mineCity";
+    private String fieldName;
 
     /**
      * The class name of the interface that will be injected to the class
      */
-    private String interfaceClass = "br.com.gamemods.minecity.forge.base.accessors.IWorldServer";
+    private String interfaceClass;
 
     /**
      * The setter method name, must return void and accept the same class as {@link #fieldClass}
      */
-    private String setterMethodName = "setMineCityWorld";
+    private String setterMethodName;
 
     /**
      * The getter method name, must return the same class as {@link #fieldClass} and receive no argument
      */
-    private String getterMethodName = "getMineCityWorld";
+    private String getterMethodName;
 
     public InsertSetterGetterTransformer(String className, String fieldClass, String fieldName,
                                          String interfaceClass, String setterMethodName, String getterMethodName)
     {
-        this.className = className;
+        this.classNames = Collections.singleton(className);
+        this.fieldClass = fieldClass;
+        this.fieldName = fieldName;
+        this.interfaceClass = interfaceClass;
+        this.setterMethodName = setterMethodName;
+        this.getterMethodName = getterMethodName;
+    }
+
+    public InsertSetterGetterTransformer(String fieldClass, String fieldName, String interfaceClass,
+                                         String setterMethodName, String getterMethodName,
+                                         Collection<String> classNames)
+    {
+        this.classNames = new HashSet<>(classNames);
         this.fieldClass = fieldClass;
         this.fieldName = fieldName;
         this.interfaceClass = interfaceClass;
@@ -65,13 +80,13 @@ public class InsertSetterGetterTransformer implements IClassTransformer
     @Override
     public byte[] transform(String name, String srgName, byte[] bytes)
     {
-        if(srgName.equals(className))
+        if(classNames.contains(srgName))
         {
             ClassReader reader = new ClassReader(bytes);
             ClassWriter writer = new ClassWriter(reader, Opcodes.ASM4);
             String fieldClassName = fieldClass.replace('.','/');
             String interfaceClassName = interfaceClass.replace('.','/');
-            String thisClassName = className.replace('.','/');
+            String thisClassName = srgName.replace('.','/');
 
             ClassVisitor visitor = new ClassVisitor(Opcodes.ASM4, writer)
             {

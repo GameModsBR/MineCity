@@ -401,7 +401,6 @@ public class ForgePlayer
         return cmd;
     }
 
-    @Override
     public F getServer()
     {
         return cmd.mod;

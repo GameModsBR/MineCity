@@ -5,14 +5,14 @@ import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.block.IProp;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
-import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.block.SevenBlockTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenInterfaceTransformer;
 import net.minecraft.block.Block;
 import net.minecraft.world.IBlockAccess;
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
-@Referenced(at = SevenBlockTransformer.class)
+@Referenced(at = SevenInterfaceTransformer.class)
 public interface SevenBlock extends IBlock, IState
 {
     @Override

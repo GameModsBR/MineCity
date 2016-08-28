@@ -3,7 +3,7 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.accessors.block;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.block.IProp;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
-import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostIBlockStateTransformer;
+import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostInterfaceTransformer;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.registry.GameData;
 import java.util.Collection;
 import java.util.Map;
 
-@Referenced(at = FrostIBlockStateTransformer.class)
+@Referenced(at = FrostInterfaceTransformer.class)
 public interface FrostState extends IState
 {
     default IBlockState getForgeState()

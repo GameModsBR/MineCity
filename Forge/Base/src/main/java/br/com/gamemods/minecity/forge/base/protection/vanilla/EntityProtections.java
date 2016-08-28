@@ -2,14 +2,19 @@ package br.com.gamemods.minecity.forge.base.protection.vanilla;
 
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
+import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.Projectile;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
 
 import java.util.Optional;
 
@@ -40,8 +45,30 @@ public class EntityProtections extends ForgeProtections
         return false;
     }
 
-    public boolean onVehicleDamage(IEntity entity, DamageSource source, float amount)
+    public void onEntityEnterChunk(Entity entity, int fromX, int fromZ, int toX, int toZ)
     {
-        return true;
+        if(entity.ticksExisted != 0 || !(entity instanceof Projectile))
+            return;
+
+        ((Projectile) entity).detectShooter(mod);
+    }
+
+    public boolean onEntityDamage(IEntity entity, DamageSource source, float amount)
+    {
+        if(source instanceof EntityDamageSource)
+        {
+            Permissible player;
+            Entity attacker = source.getEntity();
+            Entity projectile;
+            if(source instanceof EntityDamageSourceIndirect)
+            {
+                projectile = source.getSourceOfDamage();
+            }
+            else
+                projectile = null;
+
+        }
+
+        return false;
     }
 }

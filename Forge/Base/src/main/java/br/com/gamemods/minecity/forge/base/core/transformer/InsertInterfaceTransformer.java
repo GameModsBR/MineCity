@@ -7,6 +7,8 @@ import org.objectweb.asm.tree.ClassNode;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Makes a class implements an interface.
@@ -22,31 +24,51 @@ import java.util.Collections;
 public class InsertInterfaceTransformer implements IClassTransformer
 {
     /**
-     * The SRG name of the classes that will be transformed
+     * The key is a SRG name of the classes that will be transformed,
+     * the value is a class name of the interface that will be injected to the class
      */
-    private Collection<String> classNames;
-
-    /**
-     * The class name of the interface that will be injected to the class
-     */
-    private String interfaceClass;
+    private Map<String, String> replacements;
 
     public InsertInterfaceTransformer(String className, String interfaceClass)
     {
-        this.classNames = Collections.singleton(className);
-        this.interfaceClass = interfaceClass;
+        replacements = Collections.singletonMap(className, interfaceClass);
     }
 
     public InsertInterfaceTransformer(String interfaceClass, Collection<String> classNames)
     {
-        this.classNames = classNames;
-        this.interfaceClass = interfaceClass;
+        replacements = new HashMap<>(classNames.size());
+        classNames.forEach(key-> replacements.put(key, interfaceClass));
+    }
+
+    public InsertInterfaceTransformer()
+    {
+        replacements = Collections.emptyMap();
+    }
+
+    public void setReplacements(Map<String, String> replacements)
+    {
+        this.replacements = replacements;
+    }
+
+    public Map<String, String> getReplacements()
+    {
+        return replacements;
+    }
+
+    public void printReplacements()
+    {
+        System.out.println("The following classes will have these interfaces inserted");
+        replacements.forEach((k, v) -> {
+            System.out.println(" - "+k);
+            System.out.println(" | -- "+v);
+        });
     }
 
     @Override
     public byte[] transform(String s, String srgName, byte[] bytes)
     {
-        if(!classNames.contains(srgName))
+        String interfaceClass = replacements.get(srgName);
+        if(interfaceClass == null)
             return bytes;
 
         ClassNode classNode = new ClassNode();

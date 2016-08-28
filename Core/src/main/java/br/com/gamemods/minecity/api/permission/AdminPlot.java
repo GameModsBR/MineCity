@@ -3,11 +3,11 @@ package br.com.gamemods.minecity.api.permission;
 import br.com.gamemods.minecity.structure.Plot;
 import org.jetbrains.annotations.NotNull;
 
-public class AdminPlot extends ServerAdmins<Plot>
+public class AdminPlot extends ServerAdmins<Integer>
 {
     public AdminPlot(Plot plot)
     {
-        super(plot, ServerAdmins.INSTANCE.getName());
+        super(plot.id, ServerAdmins.INSTANCE.getName());
     }
 
     @NotNull

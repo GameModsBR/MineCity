@@ -8,7 +8,7 @@ import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
-import br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemDyeTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
@@ -16,7 +16,7 @@ import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockOldLog;
 import net.minecraft.block.BlockTallGrass;
 
-@Referenced(at = ItemDyeTransformer.class)
+@Referenced(at = ForgeInterfaceTransformer.class)
 public interface IItemDye extends IItem
 {
     @Override
