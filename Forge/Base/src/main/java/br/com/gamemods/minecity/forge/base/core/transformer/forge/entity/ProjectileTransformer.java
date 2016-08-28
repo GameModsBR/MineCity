@@ -1,13 +1,17 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.entity;
 
+import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.entity.EntityProjectile;
 import br.com.gamemods.minecity.forge.base.accessors.entity.ProjectileShooter;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertSetterGetterTransformer;
 
 import java.util.Arrays;
 
+@Referenced
 public class ProjectileTransformer extends InsertSetterGetterTransformer
 {
+    @Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
+    @Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod")
     public ProjectileTransformer()
     {
         super(

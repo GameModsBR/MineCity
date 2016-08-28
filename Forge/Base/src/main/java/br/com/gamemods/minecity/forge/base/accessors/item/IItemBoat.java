@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IVehicle;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
@@ -48,7 +49,7 @@ public interface IItemBoat extends IItem
         SingleBlockReaction reaction = new SingleBlockReaction(result.getHitBlockPos().toBlock(world.getMineCityWorld()), PermissionFlag.VEHICLE);
         reaction.addAllowListener((reaction1, permissible, flag, pos, message) ->
             mod.addPostSpawnListener(pos.precise(), 2, EntityBoat.class, 2, spawned ->
-                    mod.setOwnerIfAbsent(spawned, player.getIdentity())
+                    ((IVehicle)spawned).setVehicleOwnerIfAbsent(player.getIdentity())
         ));
         return reaction;
     }

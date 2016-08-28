@@ -22,7 +22,9 @@ public final class MineCityConfig implements Cloneable
     {
         try
         {
-            return (MineCityConfig) super.clone();
+            MineCityConfig clone = (MineCityConfig) super.clone();
+            clone.dbPass = dbPass.clone();
+            return clone;
         }
         catch(CloneNotSupportedException e)
         {

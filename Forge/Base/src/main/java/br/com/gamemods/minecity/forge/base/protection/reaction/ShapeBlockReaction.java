@@ -41,10 +41,4 @@ public class ShapeBlockReaction extends TriggeredReaction
                 .filter(Optional::isPresent).map(Optional::get)
                 ;
     }
-
-    @Override
-    public Optional<Message> can(MineCity mineCity, Permissible permissible)
-    {
-        return stream(mineCity, permissible).findFirst();
-    }
 }

@@ -53,9 +53,13 @@ public class Inconsistency implements ChunkOwner
             try
             {
                 VoidStorage voidStorage = new VoidStorage();
-                city = new City(mineCity, "#inconsistent", "#Inconsistency", null, new BlockPos(WORLD, 0, 0, 0),
-                        Collections.singleton(island = new InconsistentIsland(voidStorage)), -1000, voidStorage, voidStorage, null
-                );
+                synchronized(WORLD)
+                {
+                    city = new City(mineCity, "#inconsistent", "#Inconsistency", null, new BlockPos(WORLD, 0, 0, 0),
+                            Collections.singleton(island = new InconsistentIsland(voidStorage)), -1000, voidStorage,
+                            voidStorage, null
+                    );
+                }
             }
             catch(DataSourceException unexpected)
             {
@@ -108,7 +112,14 @@ public class Inconsistency implements ChunkOwner
         @Override
         public City getCity()
         {
-            return city;
+            City c = city;
+            if(c == null)
+                synchronized(WORLD)
+                {
+                    return city;
+                }
+
+            return c;
         }
 
         @Override

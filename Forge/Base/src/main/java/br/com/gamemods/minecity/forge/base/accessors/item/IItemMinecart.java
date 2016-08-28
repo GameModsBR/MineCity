@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IVehicle;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
@@ -29,7 +30,7 @@ public interface IItemMinecart extends IItem
                 MineCityForge mod = player.getMineCityPlayer().getServer();
                 reaction.addAllowListener((reaction1, permissible, flag, pos, message) ->
                     mod.addPostSpawnListener(pos.precise(), 2, EntityMinecart.class, 2, cart ->
-                            mod.setOwnerIfAbsent(cart, player.getIdentity())
+                            ((IVehicle)cart).setVehicleOwnerIfAbsent(player.getIdentity())
                 ));
                 return reaction;
             }

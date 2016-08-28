@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
@@ -13,10 +14,12 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
+import br.com.gamemods.minecity.forge.base.protection.reaction.DoubleBlockReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.IMob;
@@ -169,6 +172,53 @@ public interface IEntity extends MinecraftEntity
         return Type.UNCLASSIFIED;
     }
 
+    default void afterPlayerAttack(MineCityForge mod, Permissible player, IItemStack stack, IEntity entity,
+                                   DamageSource source, float amount, List<Permissible> attackers, Message message)
+    {
+        // Do nothing
+    }
+
+    default Reaction reactPlayerAttack(MineCityForge mod, Permissible player, IItemStack stack,
+                                       DamageSource source, float amount, List<Permissible> attackers)
+    {
+        if(identity().equals(player.identity()))
+            return NoReaction.INSTANCE;
+
+        if(((Entity) this).hasCustomName())
+            return new SingleBlockReaction(getBlockPos(mod), PermissionFlag.MODIFY);
+
+        BlockPos playerPos = null;
+        if(player instanceof IEntity)
+            playerPos = ((IEntity) player).getBlockPos(mod);
+        else
+        {
+            IEntity sod = (IEntity) source.getSourceOfDamage();
+            if(sod != null)
+                playerPos = sod.getBlockPos(mod);
+            else
+            {
+                sod = attackers.stream().filter(IEntity.class::isInstance).map(IEntity.class::cast).findFirst().orElse(null);
+                if(sod != null)
+                    playerPos = sod.getBlockPos(mod);
+            }
+        }
+
+        PermissionFlag flag;
+        switch(getType())
+        {
+            case MONSTER: flag = PermissionFlag.PVM; break;
+            case ANIMAL: flag = PermissionFlag.PVC; break;
+            case PLAYER: flag = PermissionFlag.PVP; break;
+            case PROJECTILE: return NoReaction.INSTANCE;
+            default: return new SingleBlockReaction(getBlockPos(mod), PermissionFlag.MODIFY);
+        }
+
+        if(playerPos != null)
+            return new DoubleBlockReaction(flag, playerPos, getBlockPos(mod));
+        else
+            return new SingleBlockReaction(getBlockPos(mod), flag);
+    }
+
     @NotNull
     @Override
     default UUID getUniqueId()
@@ -201,5 +251,21 @@ public interface IEntity extends MinecraftEntity
     default Identity<?> identity()
     {
         return getIdentity();
+    }
+
+    @Nullable
+    default UUID getEntityOwnerId()
+    {
+        if(this instanceof IEntityOwnable)
+            return ((IEntityOwnable) this).getOwnerId();
+        return null;
+    }
+
+    @Nullable
+    default IEntityLivingBase getEntityOwner()
+    {
+        if(this instanceof IEntityOwnable)
+            return (IEntityLivingBase) ((IEntityOwnable) this).getOwner();
+        return null;
     }
 }

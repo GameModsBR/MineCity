@@ -1,7 +1,9 @@
 package br.com.gamemods.minecity.forge.base.accessors.item;
 
+import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
@@ -10,6 +12,9 @@ import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterface
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import net.minecraft.item.Item;
+import net.minecraft.util.DamageSource;
+
+import java.util.List;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
 public interface IItem
@@ -35,6 +40,12 @@ public interface IItem
     }
 
     default Reaction reactInteractEntity(IEntityPlayerMP player, IEntity target, IItemStack stack, boolean offHand)
+    {
+        return NoReaction.INSTANCE;
+    }
+
+    default Reaction reactPlayerAttack(MineCityForge mod, Permissible player, IItemStack stack, IEntity entity,
+                                       DamageSource source, float amount, List<Permissible> attackers)
     {
         return NoReaction.INSTANCE;
     }

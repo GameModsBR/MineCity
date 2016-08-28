@@ -92,7 +92,15 @@ public interface Projectile
             ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
             ObjectInputStream in = new ObjectInputStream(stream);
             ProjectileShooter shooter = (ProjectileShooter) in.readObject();
-            setMineCityShooter(shooter);
+            try
+            {
+                setMineCityShooter(shooter);
+            }
+            catch(AbstractMethodError error)
+            {
+                System.err.println("[MineCity] The class "+this+" does not implements setMineCityShooter(), using NBT Tags without caches!");
+            }
+
             return shooter;
         }
         catch(Exception e)

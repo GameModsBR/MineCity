@@ -25,6 +25,7 @@ import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayerSender;
 import br.com.gamemods.minecity.forge.base.command.ForgeTransformer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
+import br.com.gamemods.minecity.structure.Inconsistency;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -183,27 +184,6 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
         nbt.setTag("MineCityAllowPickup", allow);
     }
 
-    public void setOwner(Entity entity, PlayerID id)
-    {
-        NBTTagCompound nbt = entity.getEntityData();
-        UUID uniqueID = id.getUniqueId();
-        nbt.setLong("MineCityOwnerUUIDMost", uniqueID.getMostSignificantBits());
-        nbt.setLong("MineCityOwnerUUIDLeast", uniqueID.getLeastSignificantBits());
-        nbt.setString("MineCityOwner", id.getName());
-    }
-
-    public boolean setOwnerIfAbsent(Entity entity, PlayerID id)
-    {
-        NBTTagCompound nbt = entity.getEntityData();
-        if(nbt.getLong("MineCityOwnerUUIDMost") == 0)
-        {
-            setOwner(entity, id);
-            return true;
-        }
-
-        return false;
-    }
-
     public void callSpawnListeners(IEntity entity)
     {
         Iterator<Predicate<IEntity>> iter = entitySpawnListeners.iterator();
@@ -308,6 +288,7 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
             config = config.clone();
 
         mineCity = new MineCity(this, config, transformer);
+        Inconsistency.getInconsistentCity(mineCity);
         mineCity.worldProvider = Optional.of(this);
         String lang = config.locale.toLanguageTag();
         mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands-"+lang+".xml"));

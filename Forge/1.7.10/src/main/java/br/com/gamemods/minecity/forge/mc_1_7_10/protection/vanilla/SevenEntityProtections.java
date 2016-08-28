@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla;
 
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
@@ -9,6 +10,7 @@ import br.com.gamemods.minecity.forge.mc_1_7_10.event.VehicleDamageEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 
 public class SevenEntityProtections extends EntityProtections
@@ -42,6 +44,22 @@ public class SevenEntityProtections extends EntityProtections
             return;
 
         mod.callSpawnListeners((IEntity) event.entity);
+    }
+
+    @SubscribeEvent
+    public void onLivingAttack(LivingAttackEvent event)
+    {
+        if(event.entity.worldObj.isRemote)
+            return;
+
+        if(onEntityDamage(
+                (IEntityLivingBase) event.entity,
+                event.source,
+                event.ammount
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
