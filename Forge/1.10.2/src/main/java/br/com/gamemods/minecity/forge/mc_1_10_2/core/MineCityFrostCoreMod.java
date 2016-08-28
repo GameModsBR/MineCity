@@ -44,6 +44,7 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     {
         return new String[]{
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostInterfaceTransformer",
+                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPotionTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityBoatTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostWorldServerTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.world.ChunkTransformer",

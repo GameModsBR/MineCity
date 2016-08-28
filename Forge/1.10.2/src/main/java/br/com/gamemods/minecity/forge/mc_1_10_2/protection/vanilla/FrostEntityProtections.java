@@ -6,6 +6,7 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
+import br.com.gamemods.minecity.forge.mc_1_10_2.event.PotionApplyEvent;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.VehicleDamageEvent;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -62,7 +63,23 @@ public class FrostEntityProtections extends EntityProtections
         );
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onPotionApply(PotionApplyEvent event)
+    {
+        if(event.getEntity().worldObj.isRemote)
+            return;
+
+        if(onPotionApply(
+                (IEntityLivingBase) event.getEntityLiving(),
+                event.effect,
+                (IEntity) event.potion
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onLivingAttack(LivingAttackEvent event)
     {
         if(event.getEntity().worldObj.isRemote)

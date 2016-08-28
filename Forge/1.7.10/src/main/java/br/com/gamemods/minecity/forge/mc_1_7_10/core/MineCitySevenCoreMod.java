@@ -44,6 +44,7 @@ public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     {
         return new String[]{
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenInterfaceTransformer",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPotionTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityBoatTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityMinecartTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.world.SevenWorldServerTransformer",

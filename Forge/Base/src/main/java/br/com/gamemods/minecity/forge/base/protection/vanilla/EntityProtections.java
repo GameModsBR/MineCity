@@ -14,6 +14,7 @@ import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import net.minecraft.entity.Entity;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 
@@ -46,6 +47,11 @@ public class EntityProtections extends ForgeProtections
         }
 
         return false;
+    }
+
+    public boolean onPotionApply(IEntityLivingBase entity, PotionEffect effect, IEntity potion)
+    {
+        return true;
     }
 
     public void onEntityEnterChunk(Entity entity, int fromX, int fromZ, int toX, int toZ)
