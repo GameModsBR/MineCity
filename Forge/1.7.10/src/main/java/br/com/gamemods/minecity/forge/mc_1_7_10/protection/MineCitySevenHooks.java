@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.protection;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityBoatTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPotionTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.event.PotionApplyEvent;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.VehicleDamageEvent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -23,7 +24,9 @@ public class MineCitySevenHooks
     @Referenced(at = SevenEntityPotionTransformer.class)
     public static void onPotionApplyEffect(EntityLivingBase entity, PotionEffect effect, EntityPotion potion)
     {
-        entity.addPotionEffect(effect);
+        PotionApplyEvent event = new PotionApplyEvent(entity, effect, potion);
+        if(!MinecraftForge.EVENT_BUS.post(event))
+            entity.addPotionEffect(effect);
     }
 
     private MineCitySevenHooks(){}

@@ -4,8 +4,10 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IPotionEffect;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
+import br.com.gamemods.minecity.forge.mc_1_7_10.event.PotionApplyEvent;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.VehicleDamageEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -46,7 +48,38 @@ public class SevenEntityProtections extends EntityProtections
         mod.callSpawnListeners((IEntity) event.entity);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onEntityEnterChunk(EntityEvent.EnteringChunk event)
+    {
+        if(event.entity.worldObj.isRemote)
+            return;
+
+        onEntityEnterChunk(
+                event.entity,
+                event.oldChunkX,
+                event.oldChunkZ,
+                event.newChunkX,
+                event.newChunkZ
+        );
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onPotionApply(PotionApplyEvent event)
+    {
+        if(event.entity.worldObj.isRemote)
+            return;
+
+        if(onPotionApply(
+                (IEntityLivingBase) event.entity,
+                (IPotionEffect) event.effect,
+                (IEntity) event.potion
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onLivingAttack(LivingAttackEvent event)
     {
         if(event.entity.worldObj.isRemote)

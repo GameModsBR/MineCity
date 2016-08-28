@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IPotionEffect;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.PotionApplyEvent;
@@ -48,7 +49,7 @@ public class FrostEntityProtections extends EntityProtections
         mod.callSpawnListeners((IEntity) event.getEntity());
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEntityEnterChunk(EntityEvent.EnteringChunk event)
     {
         if(event.getEntity().worldObj.isRemote)
@@ -71,7 +72,7 @@ public class FrostEntityProtections extends EntityProtections
 
         if(onPotionApply(
                 (IEntityLivingBase) event.getEntityLiving(),
-                event.effect,
+                (IPotionEffect) event.effect,
                 (IEntity) event.potion
         ))
         {

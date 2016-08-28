@@ -2,7 +2,7 @@ package br.com.gamemods.minecity.forge.base.accessors.entity;
 
 import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
-import net.minecraft.world.World;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,7 +58,7 @@ public interface EntityProjectile extends Projectile, IEntity
         if(identity == null || !(identity.uniqueId instanceof UUID))
             return null;
 
-        World world = getForgeEntity().worldObj;
-        return (IEntityLivingBase) world.getPlayerEntityByUUID((UUID) identity.uniqueId);
+        IWorldServer world = getIWorld();
+        return world.getPlayerByUUID((UUID) identity.uniqueId);
     }
 }

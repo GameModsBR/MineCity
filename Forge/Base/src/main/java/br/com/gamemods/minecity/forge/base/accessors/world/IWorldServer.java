@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.world.WorldServerTransformer;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Referenced(at = WorldServerTransformer.class)
 public interface IWorldServer
@@ -88,4 +90,9 @@ public interface IWorldServer
     List<PreciseCuboid> getCollisionBoxes(PreciseCuboid cuboid);
 
     List<IEntity> getEntities(PreciseCuboid cuboid);
+
+    default IEntityPlayerMP getPlayerByUUID(UUID uniqueId)
+    {
+        return (IEntityPlayerMP) getForgeWorld().getPlayerEntityByUUID(uniqueId);
+    }
 }

@@ -178,13 +178,34 @@ public interface IEntity extends MinecraftEntity
         // Do nothing
     }
 
+    default boolean isNamed()
+    {
+        return getForgeEntity().hasCustomName();
+    }
+
+    @Nullable
+    default PermissionFlag getPlayerAttackType()
+    {
+        if(isNamed())
+            return PermissionFlag.MODIFY;
+
+        switch(getType())
+        {
+            case MONSTER: return PermissionFlag.PVM;
+            case ANIMAL: return PermissionFlag.PVC;
+            case PLAYER: return PermissionFlag.PVP;
+            case PROJECTILE: return null;
+            default: return PermissionFlag.MODIFY;
+        }
+    }
+
     default Reaction reactPlayerAttack(MineCityForge mod, Permissible player, IItemStack stack,
                                        DamageSource source, float amount, List<Permissible> attackers)
     {
         if(identity().equals(player.identity()))
             return NoReaction.INSTANCE;
 
-        if(((Entity) this).hasCustomName())
+        if(isNamed())
             return new SingleBlockReaction(getBlockPos(mod), PermissionFlag.MODIFY);
 
         BlockPos playerPos = null;
@@ -203,15 +224,9 @@ public interface IEntity extends MinecraftEntity
             }
         }
 
-        PermissionFlag flag;
-        switch(getType())
-        {
-            case MONSTER: flag = PermissionFlag.PVM; break;
-            case ANIMAL: flag = PermissionFlag.PVC; break;
-            case PLAYER: flag = PermissionFlag.PVP; break;
-            case PROJECTILE: return NoReaction.INSTANCE;
-            default: return new SingleBlockReaction(getBlockPos(mod), PermissionFlag.MODIFY);
-        }
+        PermissionFlag flag = getPlayerAttackType();
+        if(flag == null)
+            return NoReaction.INSTANCE;
 
         if(playerPos != null)
             return new DoubleBlockReaction(flag, playerPos, getBlockPos(mod));

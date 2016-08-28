@@ -7,11 +7,13 @@ import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.SevenUtil;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlock;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenMetadataProperty;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.world.SevenWorldServerTransformer;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -21,6 +23,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Referenced(at = SevenWorldServerTransformer.class)
@@ -121,5 +124,20 @@ public interface SevenWorldServer extends IWorldServer
 
         //noinspection ConstantConditions
         return ((WorldServer) this).getEntitiesWithinAABBExcludingEntity(null, box);
+    }
+
+    @Override
+    default IEntityPlayerMP getPlayerByUUID(UUID uniqueId)
+    {
+        WorldServer world = (WorldServer) this;
+        for(int i = 0; i < world.playerEntities.size(); ++i)
+        {
+            EntityPlayer player = (EntityPlayer)world.playerEntities.get(i);
+
+            if(uniqueId.equals(player.getUniqueID()))
+                return (IEntityPlayerMP) player;
+        }
+
+        return null;
     }
 }

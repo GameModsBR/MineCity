@@ -14,7 +14,6 @@ import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import net.minecraft.entity.Entity;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 
@@ -49,9 +48,26 @@ public class EntityProtections extends ForgeProtections
         return false;
     }
 
-    public boolean onPotionApply(IEntityLivingBase entity, PotionEffect effect, IEntity potion)
+    public boolean onPotionApply(IEntityLivingBase entity, IPotionEffect effect, IEntity potion)
     {
-        return true;
+        List<Permissible> relative = new ArrayList<>(1);
+        relative.add(potion);
+        addRelativeEntity(potion, relative);
+
+        relative.stream().filter(IEntityPlayerMP.class::isInstance).map(IEntityPlayerMP.class::cast).forEach(mod::player);
+
+        Optional<Permissible> optional = relative.stream().filter(
+                permissible -> permissible.identity().getType() == Identity.Type.PLAYER
+        ).findFirst();
+
+        if(optional.isPresent())
+        {
+            Permissible player = optional.get();
+            Reaction reaction = entity.reactPlayerApplyPotion(mod, player, effect, potion, relative);
+            return reaction.can(mod.mineCity, player).isPresent();
+        }
+
+        return false;
     }
 
     public void onEntityEnterChunk(Entity entity, int fromX, int fromZ, int toX, int toZ)

@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.forge.base.accessors.entity;
 
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -84,5 +85,10 @@ public class ProjectileShooter implements Serializable
     public Identity<?> getIndirectId()
     {
         return indirectId;
+    }
+
+    public Permissible getResponsible()
+    {
+        return indirectEntity != null? indirectEntity : indirectId != null? indirectId : entity != null? entity : identity;
     }
 }

@@ -32,6 +32,12 @@ public interface SevenEntity extends IEntity
     }
 
     @Override
+    default boolean isNamed()
+    {
+        return false;
+    }
+
+    @Override
     default void dismount()
     {
         ((Entity) this).mountEntity(null);

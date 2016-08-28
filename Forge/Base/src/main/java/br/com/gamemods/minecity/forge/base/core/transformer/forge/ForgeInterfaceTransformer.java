@@ -11,6 +11,9 @@ public class ForgeInterfaceTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("net.minecraft.potion.PotionEffect",
+                "br.com.gamemods.minecity.forge.base.accessors.entity.IPotionEffect");
+
         r.put("net.minecraft.entity.projectile.EntityArrow",
                 "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityArrow");
 

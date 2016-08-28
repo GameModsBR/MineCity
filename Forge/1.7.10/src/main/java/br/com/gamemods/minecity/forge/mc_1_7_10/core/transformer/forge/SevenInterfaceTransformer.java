@@ -14,6 +14,12 @@ public class SevenInterfaceTransformer extends ForgeInterfaceTransformer
     {
         Map<String, String> r = getReplacements();
 
+        r.put("net.minecraft.entity.EntityLiving",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.accessors.entity.SevenEntityLiving");
+
+        r.put("net.minecraft.potion.PotionEffect",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.accessors.entity.SevenPotionEffect");
+
         r.put("net.minecraft.entity.projectile.EntityFishHook",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.accessors.entity.SevenEntityFishHook");
 
