@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
+import br.com.gamemods.minecity.forge.mc_1_10_2.event.VehicleDamageEvent;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -44,18 +45,19 @@ public class FrostEntityProtections extends EntityProtections
         mod.callSpawnListeners((IEntity) event.getEntity());
     }
 
-    //@SubscribeEvent(priority = EventPriority.HIGH)
-    public void on(EntityEvent.EnteringChunk event)
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onVehicleDamage(VehicleDamageEvent event)
     {
         if(event.getEntity().worldObj.isRemote)
             return;
 
-        onEntityEnterChunk(
+        if(onVehicleDamage(
                 (IEntity) event.getEntity(),
-                event.getOldChunkX(),
-                event.getOldChunkZ(),
-                event.getNewChunkX(),
-                event.getNewChunkZ()
-        );
+                event.source,
+                event.amount
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 }

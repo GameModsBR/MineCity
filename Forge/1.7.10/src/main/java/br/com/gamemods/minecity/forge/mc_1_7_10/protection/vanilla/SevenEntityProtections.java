@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
+import br.com.gamemods.minecity.forge.mc_1_7_10.event.VehicleDamageEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -43,18 +44,19 @@ public class SevenEntityProtections extends EntityProtections
         mod.callSpawnListeners((IEntity) event.entity);
     }
 
-    //@SubscribeEvent(priority = EventPriority.HIGH)
-    public void onEntityEnterChunk(EntityEvent.EnteringChunk event)
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onVehicleDamage(VehicleDamageEvent event)
     {
         if(event.entity.worldObj.isRemote)
             return;
 
-        onEntityEnterChunk(
+        if(onVehicleDamage(
                 (IEntity) event.entity,
-                event.oldChunkX,
-                event.oldChunkZ,
-                event.newChunkX,
-                event.newChunkZ
-        );
+                event.source,
+                event.amount
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 }

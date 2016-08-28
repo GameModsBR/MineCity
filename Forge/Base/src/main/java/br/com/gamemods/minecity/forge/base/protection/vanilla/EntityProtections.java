@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
+import net.minecraft.util.DamageSource;
 
 import java.util.Optional;
 
@@ -39,7 +40,8 @@ public class EntityProtections extends ForgeProtections
         return false;
     }
 
-    public void onEntityEnterChunk(IEntity entity, int oldChunkX, int oldChunkZ, int newChunkX, int newChunkZ)
+    public boolean onVehicleDamage(IEntity entity, DamageSource source, float amount)
     {
+        return true;
     }
 }
