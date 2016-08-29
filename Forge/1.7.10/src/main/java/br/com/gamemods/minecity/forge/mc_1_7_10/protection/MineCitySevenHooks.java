@@ -2,11 +2,14 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.protection;
 
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityBoatTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityFishingHookTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPotionTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.event.FishingHookHitEntityEvent;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.PotionApplyEvent;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.VehicleDamageEvent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
@@ -26,6 +29,16 @@ public class MineCitySevenHooks
         PotionApplyEvent event = new PotionApplyEvent(entity, effect, potion);
         if(!MinecraftForge.EVENT_BUS.post(event))
             entity.addPotionEffect(effect);
+    }
+
+    @Referenced(at = SevenEntityFishingHookTransformer.class)
+    public static Entity onFishingHookHitEntity(Entity entity, EntityFishHook hook)
+    {
+        FishingHookHitEntityEvent event = new FishingHookHitEntityEvent(entity, hook);
+        if(MinecraftForge.EVENT_BUS.post(event))
+            return null;
+        else
+            return entity;
     }
 
     private MineCitySevenHooks(){}

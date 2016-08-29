@@ -48,6 +48,11 @@ public class EntityProtections extends ForgeProtections
         return false;
     }
 
+    public boolean onFishingHookHitEntity(IEntity entity, EntityProjectile hook)
+    {
+        return true;
+    }
+
     public boolean onPotionApply(IEntityLivingBase entity, IPotionEffect effect, IEntity potion)
     {
         List<Permissible> relative = new ArrayList<>(1);

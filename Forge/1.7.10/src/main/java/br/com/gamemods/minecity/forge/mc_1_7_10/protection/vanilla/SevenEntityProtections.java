@@ -1,12 +1,10 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla;
 
 import br.com.gamemods.minecity.forge.base.MineCityForge;
-import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
-import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityLivingBase;
-import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
-import br.com.gamemods.minecity.forge.base.accessors.entity.IPotionEffect;
+import br.com.gamemods.minecity.forge.base.accessors.entity.*;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
+import br.com.gamemods.minecity.forge.mc_1_7_10.event.FishingHookHitEntityEvent;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.PotionApplyEvent;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.VehicleDamageEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -61,6 +59,21 @@ public class SevenEntityProtections extends EntityProtections
                 event.newChunkX,
                 event.newChunkZ
         );
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onFishingHookHitEntity(FishingHookHitEntityEvent event)
+    {
+        if(event.hook.worldObj.isRemote)
+            return;
+
+        if(onFishingHookHitEntity(
+                (IEntity) event.entity,
+                (EntityProjectile) event.hook
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

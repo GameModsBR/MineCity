@@ -2,11 +2,14 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.protection;
 
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityBoatTransformer;
+import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityFishingHookTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPotionTransformer;
+import br.com.gamemods.minecity.forge.mc_1_10_2.event.FishingHookHitEntityEvent;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.PotionApplyEvent;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.VehicleDamageEvent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
@@ -27,6 +30,16 @@ public class MineCityFrostHooks
         PotionApplyEvent event = new PotionApplyEvent(entity, effect, potion);
         if(!MinecraftForge.EVENT_BUS.post(event))
             entity.addPotionEffect(effect);
+    }
+
+    @Referenced(at = FrostEntityFishingHookTransformer.class)
+    public static Entity onFishingHookHitEntity(Entity entity, EntityFishHook hook)
+    {
+        FishingHookHitEntityEvent event = new FishingHookHitEntityEvent(entity, hook);
+        if(MinecraftForge.EVENT_BUS.post(event))
+            return null;
+        else
+            return entity;
     }
 
     private MineCityFrostHooks(){}
