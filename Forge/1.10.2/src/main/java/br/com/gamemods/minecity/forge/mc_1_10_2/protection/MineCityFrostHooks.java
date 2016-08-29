@@ -18,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,8 +28,14 @@ public class MineCityFrostHooks
     @Referenced(at = FrostEntityIgnitionTransformer.class)
     public static void onIgnite(Entity entity, int fireTicks, @Nullable Object source, Class<?> sourceClass, String method, String desc)
     {
-        // TODO Fire events
-        entity.setFire(fireTicks);
+        Event event;
+        if(source instanceof Entity)
+            event = new EntityIgniteEntityEvent(entity, (Entity) source, source, sourceClass, method, desc);
+        else
+            event = new EntityIgniteEvent(entity, source, sourceClass, method, desc);
+
+        if(!MinecraftForge.EVENT_BUS.post(event))
+            entity.setFire(fireTicks);
     }
 
     @Referenced(at = FrostEntityEnderCrystalTransformer.class)

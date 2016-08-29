@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockTNTTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.*;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.*;
+import cpw.mods.fml.common.eventhandler.Event;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -21,8 +22,14 @@ public class MineCitySevenHooks
     @Referenced(at = SevenEntityIgnitionTransformer.class)
     public static void onIgnite(Entity entity, int fireTicks, @Nullable Object source, Class<?> sourceClass, String method, String desc)
     {
-        // TODO Fire events
-        entity.setFire(fireTicks);
+        Event event;
+        if(source instanceof Entity)
+            event = new EntityIgniteEntityEvent(entity, (Entity) source, source, sourceClass, method, desc);
+        else
+            event = new EntityIgniteEvent(entity, source, sourceClass, method, desc);
+
+        if(!MinecraftForge.EVENT_BUS.post(event))
+            entity.setFire(fireTicks);
     }
 
     @Referenced(at = SevenEntityEnderCrystalTransformer.class)

@@ -63,11 +63,6 @@ public class EntityIgnitionTransformer implements IClassTransformer
         this.hookClass = hookClass.replace('.','/');
     }
 
-    private void x()
-    {
-        System.out.println("This is a string class:" + String.class);
-    }
-
     @Override
     public byte[] transform(String s, String srg, byte[] bytes)
     {
@@ -75,7 +70,7 @@ public class EntityIgnitionTransformer implements IClassTransformer
         ClassReader reader = new ClassReader(bytes);
         reader.accept(node, 0);
 
-        if(node.superName == null && !srg.equals("net.minecraft.entity.Entity"))
+        if(srg.replace('.', '/').equals(hookClass))
             return bytes;
 
         boolean modified = false;
