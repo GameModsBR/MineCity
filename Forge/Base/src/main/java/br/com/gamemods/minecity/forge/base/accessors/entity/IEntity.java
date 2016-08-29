@@ -154,11 +154,6 @@ public interface IEntity extends MinecraftEntity
         return reactPlayerInteraction(player, stack, offHand);
     }
 
-    default Reaction reactDamage(MineCityForge mod, DamageSource source, float amount)
-    {
-        return new SingleBlockReaction(getBlockPos(mod), PermissionFlag.MODIFY);
-    }
-
     default void writeNBT(NBTTagCompound nbt)
     {
         ((Entity) this).writeToNBT(nbt);

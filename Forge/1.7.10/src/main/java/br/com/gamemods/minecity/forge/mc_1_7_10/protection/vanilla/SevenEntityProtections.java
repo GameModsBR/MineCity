@@ -156,4 +156,20 @@ public class SevenEntityProtections extends EntityProtections
             event.setCanceled(true);
         }
     }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onEntityDamage(EntityDamageEvent event)
+    {
+        if(event.entity.worldObj.isRemote)
+            return;
+
+        if(onEntityDamage(
+                (IEntity) event.entity,
+                event.source,
+                event.amount
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
 }

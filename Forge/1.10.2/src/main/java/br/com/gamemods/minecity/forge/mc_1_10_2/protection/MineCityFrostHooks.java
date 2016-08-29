@@ -24,6 +24,13 @@ import org.jetbrains.annotations.Nullable;
 @Referenced
 public class MineCityFrostHooks
 {
+    @Referenced(at = FrostEntityEnderCrystalTransformer.class)
+    public static boolean onEntityDamage(Entity entity, DamageSource source, float amount)
+    {
+        EntityDamageEvent event = new EntityDamageEvent(entity, source, amount);
+        return MinecraftForge.EVENT_BUS.post(event);
+    }
+
     @Referenced(at = FrostBlockTNTTransformer.class)
     public static boolean onArrowIgnite(World world, BlockPos pos, IBlockState state, EntityArrow arrow)
     {

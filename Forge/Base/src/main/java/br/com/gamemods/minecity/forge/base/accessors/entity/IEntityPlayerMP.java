@@ -13,13 +13,10 @@ import br.com.gamemods.minecity.forge.base.accessors.ICommander;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityPlayerMPTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
-import net.minecraft.util.DamageSource;
 import net.minecraft.world.WorldServer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -98,12 +95,6 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
         mod.server.getIPlayerList().transferToDimension(this, pos.world.dim, worldServer.getDefaultTeleporter());
         sender.setPositionAndUpdate(x, y, z);
         return null;
-    }
-
-    @Override
-    default Reaction reactDamage(MineCityForge mod, DamageSource source, float amount)
-    {
-        return NoReaction.INSTANCE;
     }
 
     void sendTitle(MineCityForge mod, Message title, Message subTitle);
