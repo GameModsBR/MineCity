@@ -13,7 +13,7 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 import net.minecraft.block.BlockRailBase;
-import net.minecraft.entity.item.EntityMinecart;
+import net.minecraft.entity.item.EntityMinecartEmpty;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
 public interface IItemMinecart extends IItem
@@ -29,7 +29,7 @@ public interface IItemMinecart extends IItem
                 SingleBlockReaction reaction = new SingleBlockReaction(block, PermissionFlag.VEHICLE);
                 MineCityForge mod = player.getMineCityPlayer().getServer();
                 reaction.addAllowListener((reaction1, permissible, flag, pos, message) ->
-                    mod.addPostSpawnListener(pos.precise(), 2, EntityMinecart.class, 2, cart ->
+                    mod.addPostSpawnListener(pos.precise(), 2, EntityMinecartEmpty.class, 2, cart ->
                             ((IVehicle)cart).setVehicleOwnerIfAbsent(player.getIdentity())
                 ));
                 return reaction;
