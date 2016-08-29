@@ -14,6 +14,7 @@ import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 
@@ -50,12 +51,52 @@ public class EntityProtections extends ForgeProtections
 
     public boolean onFishingHookHitEntity(IEntity entity, EntityProjectile hook)
     {
+        Entity forge = hook.getForgeEntity();
+        NBTTagCompound nbt = forge.getEntityData();
+        boolean destroy = nbt.getBoolean("MineCityDestroy");
+
+        if(onEntityPullEntity(entity, hook, !destroy))
+        {
+            if(destroy)
+                forge.setDead();
+            else
+                nbt.setBoolean("MineCityDestroy", true);
+
+            return true;
+        }
+
         return false;
     }
 
     public boolean onFishingHookBringEntity(IEntity entity, EntityProjectile hook)
     {
-        return true;
+        return onEntityPullEntity(entity, hook, true);
+    }
+
+    public boolean onEntityPullEntity(IEntity pulled, IEntity other, boolean verbose)
+    {
+        List<Permissible> relative = new ArrayList<>(1);
+        relative.add(other);
+        addRelativeEntity(other, relative);
+
+        relative.stream().filter(IEntityPlayerMP.class::isInstance).map(IEntityPlayerMP.class::cast).forEach(mod::player);
+
+        Optional<Permissible> optional = relative.stream().filter(
+                permissible -> permissible.identity().getType() == Identity.Type.PLAYER
+        ).findFirst();
+
+        if(optional.isPresent())
+        {
+            Permissible player = optional.get();
+            Reaction reaction = pulled.reactPlayerPull(mod, player, other, relative);
+            Optional<Message> denial = reaction.can(mod.mineCity, player);
+            if(verbose && denial.isPresent())
+                player.send(FlagHolder.wrapDeny(denial.get()));
+
+            return denial.isPresent();
+        }
+
+        return false;
     }
 
     public boolean onPotionApply(IEntityLivingBase entity, IPotionEffect effect, IEntity potion)

@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
 public interface IEntity extends MinecraftEntity
@@ -197,6 +198,36 @@ public interface IEntity extends MinecraftEntity
             case PROJECTILE: return null;
             default: return PermissionFlag.MODIFY;
         }
+    }
+
+    default Reaction reactPlayerPull(MineCityForge mod, Permissible player, IEntity other, List<Permissible> relative)
+    {
+        if(identity().equals(player.identity()))
+            return NoReaction.INSTANCE;
+
+        if(isNamed())
+            return new SingleBlockReaction(getBlockPos(mod), PermissionFlag.MODIFY);
+
+        BlockPos playerPos;
+        if(player instanceof IEntity)
+            playerPos = ((IEntity) player).getBlockPos(mod);
+        else
+        {
+            IEntity rel = relative.stream()
+                    .filter(Predicate.isEqual(other).negate())
+                    .filter(IEntity.class::isInstance).map(IEntity.class::cast)
+                    .findFirst().orElse(null);
+            if(rel != null)
+                playerPos = rel.getBlockPos(mod);
+            else
+                playerPos = other.getBlockPos(mod);
+        }
+
+        PermissionFlag flag = getPlayerAttackType();
+        if(flag == null)
+            return NoReaction.INSTANCE;
+
+        return new DoubleBlockReaction(flag, playerPos, getBlockPos(mod));
     }
 
     default Reaction reactPlayerAttack(MineCityForge mod, Permissible player, IItemStack stack,

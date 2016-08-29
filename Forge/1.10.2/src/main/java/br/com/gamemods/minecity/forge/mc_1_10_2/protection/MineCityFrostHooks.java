@@ -36,6 +36,9 @@ public class MineCityFrostHooks
     @Referenced(at = FrostEntityFishingHookTransformer.class)
     public static Entity onFishingHookHitEntity(Entity entity, EntityFishHook hook)
     {
+        if(entity == null)
+            return null;
+
         FishingHookHitEntityEvent event = new FishingHookHitEntityEvent(entity, hook);
         if(MinecraftForge.EVENT_BUS.post(event))
             return null;
