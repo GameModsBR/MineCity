@@ -13,12 +13,13 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import org.jetbrains.annotations.Nullable;
 
 @Referenced
 public class MineCitySevenHooks
 {
     @Referenced(at = SevenEntityIgnitionTransformer.class)
-    public static void onIgnite(Entity entity, int fireTicks, Object source)
+    public static void onIgnite(Entity entity, int fireTicks, @Nullable Object source, Class<?> sourceClass, String method, String desc)
     {
         // TODO Fire events
         entity.setFire(fireTicks);

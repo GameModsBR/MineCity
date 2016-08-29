@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 public class MineCityFrostHooks
 {
     @Referenced(at = FrostEntityIgnitionTransformer.class)
-    public static void onIgnite(Entity entity, int fireTicks, Object source)
+    public static void onIgnite(Entity entity, int fireTicks, @Nullable Object source, Class<?> sourceClass, String method, String desc)
     {
         // TODO Fire events
         entity.setFire(fireTicks);

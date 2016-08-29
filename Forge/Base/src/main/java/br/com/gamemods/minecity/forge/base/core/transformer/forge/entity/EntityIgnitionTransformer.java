@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.forge.base.MethodPatcher;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 import java.util.ListIterator;
@@ -11,10 +12,10 @@ import java.util.ListIterator;
 import static org.objectweb.asm.Opcodes.*;
 
 /**
- * Wraps all calls to entity.setFire(int) in methods that are not static to MineCityHook.onIgnite(entity, int, this)<br/>
+ * Wraps all calls to entity.setFire(int) in methods to MineCityHook.onIgnite(entity, int, this, ClassName.class, "methodName", "methodSignature")<br/>
  * Example:
  * <code><pre>
- *     public class Anthing {
+ *     public class Anything {
  *         public Object something;
  *
  *         public void anyNonStaticMethod(Entity.. anySignature) throws Exception {
@@ -33,18 +34,18 @@ import static org.objectweb.asm.Opcodes.*;
  * </pre></code>
  * <p>Will be transformed to:
  * <pre><code>
- *     public class Anthing {
+ *     public class Anything {
  *         public Object something;
  *
  *         public void anyNonStaticMethod(Entity.. anySignature) throws Exception {
  *             Entity anyEntityVariable = anySignature[0];
  *             // Any logic before
- *             MineCityHook.onIgnite(anyEntityVariable, 5, this);
+ *             MineCityHook.onIgnite(anyEntityVariable, 5, this, Anything.class, "anyNonStaticMethod", "([Lnet/minecraft/entity/Entity;)V");
  *             // Any logic after
  *             int anyWay = 5;
- *             MineCityHook.onIgnite(anySignature[3], (int)Math.sqrt((anyWay * 5)/2), this);
+ *             MineCityHook.onIgnite(anySignature[3], (int)Math.sqrt((anyWay * 5)/2), this, Anything.class, "anyNonStaticMethod", "([Lnet/minecraft/entity/Entity;)V");
  *             // Including casts
- *             MineCityHook.onIgnite((Entity) something, 3, this);
+ *             MineCityHook.onIgnite((Entity) something, 3, this, Anything.class, "anyNonStaticMethod", "([Lnet/minecraft/entity/Entity;)V");
  *             // Will not work with reflections
  *             Entity.class.getDeclaredMethod("setFire", Integer.TYPE).invoke(something, 5);
  *         }
@@ -62,6 +63,11 @@ public class EntityIgnitionTransformer implements IClassTransformer
         this.hookClass = hookClass.replace('.','/');
     }
 
+    private void x()
+    {
+        System.out.println("This is a string class:" + String.class);
+    }
+
     @Override
     public byte[] transform(String s, String srg, byte[] bytes)
     {
@@ -76,9 +82,9 @@ public class EntityIgnitionTransformer implements IClassTransformer
 
         for(MethodNode method : node.methods)
         {
-            if((method.access & ACC_STATIC) > 0)
-                continue;
+            boolean stat = (method.access & ACC_STATIC) > 0;
 
+            boolean warned = false;
             boolean repeat = true;
             repeat:
             while(repeat)
@@ -96,14 +102,28 @@ public class EntityIgnitionTransformer implements IClassTransformer
                         )
                         {
                             InsnList list = new InsnList();
-                            list.add(new VarInsnNode(ALOAD, 0));
+                            if(stat)
+                                list.add(new InsnNode(ACONST_NULL));
+                            else
+                                list.add(new VarInsnNode(ALOAD, 0));
+                            list.add(new LdcInsnNode(Type.getObjectType(srg.replace('.','/'))));
+                            list.add(new LdcInsnNode(method.name));
+                            list.add(new LdcInsnNode(method.desc));
                             iter.add(new MethodInsnNode(INVOKESTATIC,
-                                    hookClass, "onIgnite", "(Lnet/minecraft/entity/Entity;ILjava/lang/Object;)V", false
+                                    hookClass, "onIgnite", "(Lnet/minecraft/entity/Entity;ILjava/lang/Object;Ljava/lang/Class;Ljava/lang/String;Ljava/lang/String;)V", false
                             ));
                             method.instructions.insertBefore(ins, list);
                             method.instructions.remove(ins);
                             repeat = true;
                             modified = true;
+                            if(!warned)
+                            {
+                                System.out.println("\n | - "+srg +
+                                        " had calls to entity.setFire(int) wrapped " +
+                                        "to MineCityHook.onIgnite(entity, int, "+(stat?"null":"this")+", " +
+                                        srg + ".class, \""+method.name+"\", \""+method.desc+"\")");
+                                warned = true;
+                            }
                             continue repeat;
                         }
                     }
@@ -114,7 +134,6 @@ public class EntityIgnitionTransformer implements IClassTransformer
         if(!modified)
             return bytes;
 
-        System.out.println(srg+" had all calls to entity.setFire(int) wrapped to MineCityHook.onIgnite(entity, int, this)");
 
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         node.accept(writer);
