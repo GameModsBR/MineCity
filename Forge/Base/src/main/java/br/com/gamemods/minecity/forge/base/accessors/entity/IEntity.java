@@ -240,7 +240,7 @@ public interface IEntity extends MinecraftEntity
         return new DoubleBlockReaction(flag, playerPos, getBlockPos(mod));
     }
 
-    default Reaction reactPlayerIgnition(MineCityForge mod, Permissible player, IEntity igniter, int ticks, List<Permissible> attackers)
+    default Reaction reactPlayerIgnition(MineCityForge mod, Permissible player, IEntity igniter, int seconds, List<Permissible> attackers)
     {
         PermissionFlag flag = getPlayerAttackType();
         if(flag == null)

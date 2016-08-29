@@ -268,9 +268,9 @@ public class EntityProtections extends ForgeProtections
         }
     }
 
-    public boolean onEntityIgniteEntityEvent(IEntity entity, IEntity igniter, int ticks)
+    public boolean onEntityIgniteEntityEvent(IEntity entity, IEntity igniter, int seconds)
     {
-        if(entity == igniter || entity.getFireTicks() >= ticks)
+        if(entity == igniter || entity.getFireTicks() >= seconds * 20)
             return false;
 
         List<Permissible> attackers = new ArrayList<>(1);
@@ -284,7 +284,7 @@ public class EntityProtections extends ForgeProtections
         if(optionalPlayer.isPresent())
         {
             Permissible player = optionalPlayer.get();
-            Reaction reaction = entity.reactPlayerIgnition(mod, player, igniter, ticks, attackers);
+            Reaction reaction = entity.reactPlayerIgnition(mod, player, igniter, seconds, attackers);
             return reaction.can(mod.mineCity, player).isPresent();
         }
 

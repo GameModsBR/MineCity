@@ -71,7 +71,7 @@ public interface IVehicle extends IEntity
     }
 
     @Override
-    default Reaction reactPlayerIgnition(MineCityForge mod, Permissible player, IEntity igniter, int ticks,
+    default Reaction reactPlayerIgnition(MineCityForge mod, Permissible player, IEntity igniter, int seconds,
                                          List<Permissible> attackers)
     {
         if(player.identity().equals(getVehicleOwner()))
