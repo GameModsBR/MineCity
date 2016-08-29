@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityBoatTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityFishingHookTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPotionTransformer;
+import br.com.gamemods.minecity.forge.mc_1_10_2.event.FishingHookBringEntityEvent;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.FishingHookHitEntityEvent;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.PotionApplyEvent;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.VehicleDamageEvent;
@@ -40,6 +41,13 @@ public class MineCityFrostHooks
             return null;
         else
             return entity;
+    }
+
+    @Referenced(at = FrostEntityFishingHookTransformer.class)
+    public static boolean onFishingHookBringEntity(EntityFishHook hook)
+    {
+        FishingHookBringEntityEvent event = new FishingHookBringEntityEvent(hook.caughtEntity, hook);
+        return MinecraftForge.EVENT_BUS.post(event);
     }
 
     private MineCityFrostHooks(){}

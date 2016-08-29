@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityBoatTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityFishingHookTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPotionTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.event.FishingHookBringEntityEvent;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.FishingHookHitEntityEvent;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.PotionApplyEvent;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.VehicleDamageEvent;
@@ -39,6 +40,13 @@ public class MineCitySevenHooks
             return null;
         else
             return entity;
+    }
+
+    @Referenced(at = SevenEntityFishingHookTransformer.class)
+    public static boolean onFishingHookBringEntity(EntityFishHook hook)
+    {
+        FishingHookBringEntityEvent event = new FishingHookBringEntityEvent(hook.field_146043_c, hook);
+        return MinecraftForge.EVENT_BUS.post(event);
     }
 
     private MineCitySevenHooks(){}

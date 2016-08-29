@@ -4,10 +4,11 @@ import br.com.gamemods.minecity.forge.base.MethodPatcher;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
-import java.io.FileOutputStream;
+import java.lang.reflect.Modifier;
 import java.util.ListIterator;
 
 @MethodPatcher
@@ -63,19 +64,36 @@ public class EntityFishingHookTransformer implements IClassTransformer
             }
         }
 
+        boolean skip = true;
+        for(MethodNode method : node.methods)
+        {
+            if(method.desc.equals("()V") && Modifier.isProtected(method.access))
+            {
+                if(skip)
+                {
+                    skip = false;
+                    continue;
+                }
+
+                InsnList add = new InsnList();
+                add.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                add.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                        hookClass, "onFishingHookBringEntity",
+                        "(Lnet/minecraft/entity/projectile/EntityFishHook;)Z",
+                        false
+                ));
+                LabelNode elseLabel = new LabelNode(new Label());
+                add.add(new JumpInsnNode(Opcodes.IFEQ, elseLabel));
+                add.add(new InsnNode(Opcodes.RETURN));
+                add.add(elseLabel);
+
+                method.instructions.insertBefore(method.instructions.get(0), add);
+                break;
+            }
+        }
+
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         node.accept(writer);
-        bytes = writer.toByteArray();
-
-        try(FileOutputStream out = new FileOutputStream(srg+".class"))
-        {
-            out.write(bytes);
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        return bytes;
+        return writer.toByteArray();
     }
 }

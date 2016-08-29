@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.*;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
+import br.com.gamemods.minecity.forge.mc_1_10_2.event.FishingHookBringEntityEvent;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.FishingHookHitEntityEvent;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.PotionApplyEvent;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.VehicleDamageEvent;
@@ -69,6 +70,21 @@ public class FrostEntityProtections extends EntityProtections
             return;
 
         if(onFishingHookHitEntity(
+                (IEntity) event.getEntity(),
+                (EntityProjectile) event.hook
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onFishingHookBringEntity(FishingHookBringEntityEvent event)
+    {
+        if(event.hook.worldObj.isRemote)
+            return;
+
+        if(onFishingHookBringEntity(
                 (IEntity) event.getEntity(),
                 (EntityProjectile) event.hook
         ))

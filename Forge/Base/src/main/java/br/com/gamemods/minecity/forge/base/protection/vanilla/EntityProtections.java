@@ -50,6 +50,11 @@ public class EntityProtections extends ForgeProtections
 
     public boolean onFishingHookHitEntity(IEntity entity, EntityProjectile hook)
     {
+        return false;
+    }
+
+    public boolean onFishingHookBringEntity(IEntity entity, EntityProjectile hook)
+    {
         return true;
     }
 
