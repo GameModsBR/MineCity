@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
@@ -136,7 +137,20 @@ public interface IEntity extends MinecraftEntity
 
     default Reaction reactPlayerInteraction(ForgePlayer<?,?,?> player, IItemStack stack, boolean offHand)
     {
-        return NoReaction.INSTANCE;
+        if(player.getUniqueId().equals(getEntityOwnerId()))
+            return NoReaction.INSTANCE;
+
+        switch(getType())
+        {
+            case STORAGE: return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.OPEN);
+            case VEHICLE: return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.RIDE);
+            default: return NoReaction.INSTANCE;
+        }
+    }
+
+    default Reaction reactPlayerInteractionPrecise(ForgePlayer player, IItemStack stack, boolean offHand, PrecisePoint point)
+    {
+        return reactPlayerInteraction(player, stack, offHand);
     }
 
     default Reaction reactDamage(MineCityForge mod, DamageSource source, float amount)

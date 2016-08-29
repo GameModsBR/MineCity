@@ -35,9 +35,6 @@ public class ForgeInterfaceTransformer extends InsertInterfaceTransformer
         r.put("net.minecraft.entity.passive.EntityHorse",
                 "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityHorse");
 
-        r.put("net.minecraft.entity.item.EntityArmorStand",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityArmorStand");
-
         r.put("net.minecraft.entity.projectile.EntityFireball",
                 "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityFireball");
 

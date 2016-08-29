@@ -1,23 +1,39 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.protection;
 
 import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityArmorStandTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityBoatTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityFishingHookTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPotionTransformer;
-import br.com.gamemods.minecity.forge.mc_1_10_2.event.FishingHookBringEntityEvent;
-import br.com.gamemods.minecity.forge.mc_1_10_2.event.FishingHookHitEntityEvent;
-import br.com.gamemods.minecity.forge.mc_1_10_2.event.PotionApplyEvent;
-import br.com.gamemods.minecity.forge.mc_1_10_2.event.VehicleDamageEvent;
+import br.com.gamemods.minecity.forge.mc_1_10_2.event.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFishHook;
+import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 
 @Referenced
 public class MineCityFrostHooks
 {
+    @Nullable
+    @Referenced(at = FrostEntityArmorStandTransformer.class)
+    public static EnumActionResult onPrecisePlayerInteraction(Entity entity, EntityPlayer player, Vec3d vec, ItemStack stack, EnumHand hand)
+    {
+        PlayerInteractEntityPreciseEvent event = new PlayerInteractEntityPreciseEvent(entity, player, vec, stack, hand);
+        if(MinecraftForge.EVENT_BUS.post(event))
+            return EnumActionResult.FAIL;
+        else
+            return null;
+    }
+
     @Referenced(at = FrostEntityBoatTransformer.class)
     public static boolean onVehicleDamage(Entity entity, DamageSource source, float amount)
     {
@@ -33,6 +49,7 @@ public class MineCityFrostHooks
             entity.addPotionEffect(effect);
     }
 
+    @Contract("null, _ -> null")
     @Referenced(at = FrostEntityFishingHookTransformer.class)
     public static Entity onFishingHookHitEntity(Entity entity, EntityFishHook hook)
     {

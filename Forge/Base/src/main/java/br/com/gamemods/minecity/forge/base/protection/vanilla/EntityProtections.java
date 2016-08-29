@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.Permissible;
+import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
@@ -27,6 +28,26 @@ public class EntityProtections extends ForgeProtections
     public EntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    public boolean onPlayerInteractEntityPrecisely(IEntityPlayerMP entityPlayer, IEntity target, IItemStack stack, boolean offHand, PrecisePoint point)
+    {
+        ForgePlayer player = mod.player(entityPlayer);
+        Reaction reaction;
+        if(stack != null)
+            reaction = stack.getIItem().reactInteractEntityPrecisely(entityPlayer, target, stack, offHand, point);
+        else
+            reaction = NoReaction.INSTANCE;
+
+        reaction = reaction.combine(target.reactPlayerInteractionPrecise(player, stack, offHand, point));
+        Optional<Message> denial = reaction.can(mod.mineCity, player);
+        if(denial.isPresent())
+        {
+            player.send(FlagHolder.wrapDeny(denial.get()));
+            return true;
+        }
+
+        return false;
     }
 
     public boolean onPlayerInteractEntity(IEntityPlayerMP entityPlayer, IEntity target, IItemStack stack, boolean offHand)

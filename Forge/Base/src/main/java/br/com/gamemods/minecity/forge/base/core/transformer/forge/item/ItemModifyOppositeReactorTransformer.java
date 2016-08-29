@@ -14,7 +14,8 @@ public class ItemModifyOppositeReactorTransformer extends InsertInterfaceTransfo
     {
         super("br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyOppositeReactor", Arrays.asList(
                 "net.minecraft.item.ItemFlintAndSteel",
-                "net.minecraft.item.ItemFireball"
+                "net.minecraft.item.ItemFireball",
+                "net.minecraft.item.ItemArmorStand"
         ));
     }
 }

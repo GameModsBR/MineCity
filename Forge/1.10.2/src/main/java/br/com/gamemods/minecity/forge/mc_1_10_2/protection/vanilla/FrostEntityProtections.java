@@ -1,14 +1,13 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla;
 
+import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.*;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
-import br.com.gamemods.minecity.forge.mc_1_10_2.event.FishingHookBringEntityEvent;
-import br.com.gamemods.minecity.forge.mc_1_10_2.event.FishingHookHitEntityEvent;
-import br.com.gamemods.minecity.forge.mc_1_10_2.event.PotionApplyEvent;
-import br.com.gamemods.minecity.forge.mc_1_10_2.event.VehicleDamageEvent;
+import br.com.gamemods.minecity.forge.mc_1_10_2.event.*;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -33,6 +32,25 @@ public class FrostEntityProtections extends EntityProtections
                 (IEntity) event.getTarget(),
                 (IItemStack) (Object) event.getItemStack(),
                 event.getHand() == EnumHand.OFF_HAND
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onPlayerInteractEntityPrecisely(PlayerInteractEntityPreciseEvent event)
+    {
+        if(event.player.worldObj.isRemote)
+            return;
+
+        Vec3d pos = event.pos;
+        if(onPlayerInteractEntityPrecisely(
+                (IEntityPlayerMP) event.player,
+                (IEntity) event.getEntity(),
+                (IItemStack) (Object) event.stack,
+                event.hand == EnumHand.OFF_HAND,
+                new PrecisePoint(pos.xCoord, pos.yCoord, pos.zCoord)
         ))
         {
             event.setCanceled(true);

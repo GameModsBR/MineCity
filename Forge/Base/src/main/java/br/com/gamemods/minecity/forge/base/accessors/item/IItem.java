@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.base.accessors.item;
 
 import br.com.gamemods.minecity.api.permission.Permissible;
+import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
@@ -46,6 +47,11 @@ public interface IItem
 
     default Reaction reactPlayerAttack(MineCityForge mod, Permissible player, IItemStack stack, IEntity entity,
                                        DamageSource source, float amount, List<Permissible> attackers)
+    {
+        return NoReaction.INSTANCE;
+    }
+
+    default Reaction reactInteractEntityPrecisely(IEntityPlayerMP player, IEntity target, IItemStack stack, boolean offHand, PrecisePoint point)
     {
         return NoReaction.INSTANCE;
     }
