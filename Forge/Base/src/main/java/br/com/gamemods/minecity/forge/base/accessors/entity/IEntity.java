@@ -212,6 +212,10 @@ public interface IEntity extends MinecraftEntity
 
     default Reaction reactPlayerPull(MineCityForge mod, Permissible player, IEntity other, List<Permissible> relative)
     {
+        PermissionFlag flag = getPlayerAttackType();
+        if(flag == null)
+            return NoReaction.INSTANCE;
+
         if(identity().equals(player.identity()))
             return NoReaction.INSTANCE;
 
@@ -233,9 +237,26 @@ public interface IEntity extends MinecraftEntity
                 playerPos = other.getBlockPos(mod);
         }
 
+        return new DoubleBlockReaction(flag, playerPos, getBlockPos(mod));
+    }
+
+    default Reaction reactPlayerIgnition(MineCityForge mod, Permissible player, IEntity igniter, int ticks, List<Permissible> attackers)
+    {
         PermissionFlag flag = getPlayerAttackType();
         if(flag == null)
             return NoReaction.INSTANCE;
+
+        if(identity().equals(player.identity()))
+            return NoReaction.INSTANCE;
+
+        if(isNamed())
+            return new SingleBlockReaction(getBlockPos(mod), PermissionFlag.MODIFY);
+
+        BlockPos playerPos;
+        if(player instanceof IEntity)
+            playerPos = ((IEntity) player).getBlockPos(mod);
+        else
+            playerPos = igniter.getBlockPos(mod);
 
         return new DoubleBlockReaction(flag, playerPos, getBlockPos(mod));
     }
@@ -243,6 +264,10 @@ public interface IEntity extends MinecraftEntity
     default Reaction reactPlayerAttack(MineCityForge mod, Permissible player, IItemStack stack,
                                        DamageSource source, float amount, List<Permissible> attackers)
     {
+        PermissionFlag flag = getPlayerAttackType();
+        if(flag == null)
+            return NoReaction.INSTANCE;
+
         if(identity().equals(player.identity()))
             return NoReaction.INSTANCE;
 
@@ -264,10 +289,6 @@ public interface IEntity extends MinecraftEntity
                     playerPos = sod.getBlockPos(mod);
             }
         }
-
-        PermissionFlag flag = getPlayerAttackType();
-        if(flag == null)
-            return NoReaction.INSTANCE;
 
         if(playerPos != null)
             return new DoubleBlockReaction(flag, playerPos, getBlockPos(mod));
@@ -329,5 +350,10 @@ public interface IEntity extends MinecraftEntity
         if(this instanceof IEntityOwnable)
             return (IEntityLivingBase) ((IEntityOwnable) this).getOwner();
         return null;
+    }
+
+    default int getFireTicks()
+    {
+        return ((Entity) this).fire;
     }
 }

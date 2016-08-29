@@ -29,4 +29,11 @@ public interface IEntityEndCrystal extends IEntity
     {
         return new SingleBlockReaction(getBlockPos(mod), PermissionFlag.MODIFY);
     }
+
+    @Override
+    default Reaction reactPlayerIgnition(MineCityForge mod, Permissible player, IEntity igniter, int ticks,
+                                         List<Permissible> attackers)
+    {
+        return new SingleBlockReaction(getBlockPos(mod), PermissionFlag.MODIFY);
+    }
 }

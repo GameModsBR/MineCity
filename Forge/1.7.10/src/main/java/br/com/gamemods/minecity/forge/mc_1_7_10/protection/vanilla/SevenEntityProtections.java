@@ -126,6 +126,22 @@ public class SevenEntityProtections extends EntityProtections
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onEntityIgniteEntityEvent(EntityIgniteEntityEvent event)
+    {
+        if(event.igniter.worldObj.isRemote)
+            return;
+
+        if(onEntityIgniteEntityEvent(
+                (IEntity) event.entity,
+                (IEntity) event.igniter,
+                event.ticks
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onLivingAttack(LivingAttackEvent event)
     {
         if(event.entity.worldObj.isRemote)

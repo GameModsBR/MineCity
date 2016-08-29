@@ -87,6 +87,6 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     @Override
     public String getAccessTransformerClass()
     {
-        return null;
+        return "br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityAT";
     }
 }

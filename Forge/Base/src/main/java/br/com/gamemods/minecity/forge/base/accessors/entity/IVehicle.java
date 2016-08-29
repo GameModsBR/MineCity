@@ -71,6 +71,16 @@ public interface IVehicle extends IEntity
     }
 
     @Override
+    default Reaction reactPlayerIgnition(MineCityForge mod, Permissible player, IEntity igniter, int ticks,
+                                         List<Permissible> attackers)
+    {
+        if(player.identity().equals(getVehicleOwner()))
+            return NoReaction.INSTANCE;
+
+        return new SingleBlockReaction(getBlockPos(mod), PermissionFlag.MODIFY);
+    }
+
+    @Override
     default Reaction reactPlayerInteraction(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
     {
         if(player.identity().equals(getVehicleOwner()))

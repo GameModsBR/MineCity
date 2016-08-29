@@ -13,13 +13,15 @@ public class EntityIgniteEvent extends EntityEvent
     public final Class<?> sourceClass;
     public final String sourceMethod;
     public final String sourceMethodDesc;
+    public final int ticks;
 
-    public EntityIgniteEvent(Entity entity, @Nullable Object source, Class<?> sourceClass, String sourceMethod, String sourceMethodDesc)
+    public EntityIgniteEvent(Entity entity, int ticks, @Nullable Object source, Class<?> sourceClass, String sourceMethod, String sourceMethodDesc)
     {
         super(entity);
         this.source = source;
         this.sourceClass = sourceClass;
         this.sourceMethod = sourceMethod;
         this.sourceMethodDesc = sourceMethodDesc;
+        this.ticks = ticks;
     }
 }

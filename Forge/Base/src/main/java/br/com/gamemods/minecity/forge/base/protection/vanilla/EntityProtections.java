@@ -268,6 +268,29 @@ public class EntityProtections extends ForgeProtections
         }
     }
 
+    public boolean onEntityIgniteEntityEvent(IEntity entity, IEntity igniter, int ticks)
+    {
+        if(entity == igniter || entity.getFireTicks() >= ticks)
+            return false;
+
+        List<Permissible> attackers = new ArrayList<>(1);
+        attackers.add(igniter);
+        addRelativeEntity(igniter, attackers);
+
+        initPlayers(attackers);
+
+        Optional<Permissible> optionalPlayer = attackers.stream().filter(FILTER_PLAYER).findFirst();
+
+        if(optionalPlayer.isPresent())
+        {
+            Permissible player = optionalPlayer.get();
+            Reaction reaction = entity.reactPlayerIgnition(mod, player, igniter, ticks, attackers);
+            return reaction.can(mod.mineCity, player).isPresent();
+        }
+
+        return false;
+    }
+
     public boolean onEntityDamage(IEntity entity, DamageSource source, float amount)
     {
         List<Permissible> attackers;
@@ -306,9 +329,7 @@ public class EntityProtections extends ForgeProtections
             stack = null;
         }
 
-        Optional<Permissible> optionalPlayer = attackers.stream().filter(permissible ->
-                permissible instanceof IEntityPlayerMP || permissible instanceof PlayerID
-        ).findFirst();
+        Optional<Permissible> optionalPlayer = attackers.stream().filter(FILTER_PLAYER).findFirst();
 
         Reaction reaction = NoReaction.INSTANCE;
         if(optionalPlayer.isPresent())

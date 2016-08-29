@@ -55,7 +55,8 @@ jar {
     manifest {
         attributes (
                 'FMLCorePlugin': 'br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod',
-                'FMLCorePluginContainsFMLMod': 'true'
+                'FMLCorePluginContainsFMLMod': 'true',
+                'FMLAT': 'minecity_at.cfg'
         )
     }
 
