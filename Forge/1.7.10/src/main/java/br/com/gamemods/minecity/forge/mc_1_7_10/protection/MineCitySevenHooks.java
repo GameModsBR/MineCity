@@ -2,10 +2,7 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.protection;
 
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockTNTTransformer;
-import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityBoatTransformer;
-import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityEnderCrystalTransformer;
-import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityFishingHookTransformer;
-import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPotionTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.*;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.*;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -20,6 +17,13 @@ import net.minecraftforge.common.MinecraftForge;
 @Referenced
 public class MineCitySevenHooks
 {
+    @Referenced(at = SevenEntityIgnitionTransformer.class)
+    public static void onIgnite(Entity entity, int fireTicks, Object source)
+    {
+        // TODO Fire events
+        entity.setFire(fireTicks);
+    }
+
     @Referenced(at = SevenEntityEnderCrystalTransformer.class)
     public static boolean onEntityDamage(Entity entity, DamageSource source, float amount)
     {

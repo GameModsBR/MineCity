@@ -24,6 +24,13 @@ import org.jetbrains.annotations.Nullable;
 @Referenced
 public class MineCityFrostHooks
 {
+    @Referenced(at = FrostEntityIgnitionTransformer.class)
+    public static void onIgnite(Entity entity, int fireTicks, Object source)
+    {
+        // TODO Fire events
+        entity.setFire(fireTicks);
+    }
+
     @Referenced(at = FrostEntityEnderCrystalTransformer.class)
     public static boolean onEntityDamage(Entity entity, DamageSource source, float amount)
     {
