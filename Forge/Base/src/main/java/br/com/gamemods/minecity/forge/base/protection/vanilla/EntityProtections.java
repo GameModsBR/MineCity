@@ -6,11 +6,14 @@ import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.*;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
@@ -25,6 +28,8 @@ import java.util.stream.Stream;
 
 public class EntityProtections extends ForgeProtections
 {
+    public static Predicate<Permissible> FILTER_PLAYER = permissible -> permissible.identity().getType() == Identity.Type.PLAYER;
+
     public EntityProtections(MineCityForge mod)
     {
         super(mod);
@@ -89,6 +94,11 @@ public class EntityProtections extends ForgeProtections
         return false;
     }
 
+    private void initPlayers(Collection<? extends Permissible> collection)
+    {
+        collection.stream().filter(IEntityPlayerMP.class::isInstance).map(IEntityPlayerMP.class::cast).forEach(mod::player);
+    }
+
     public boolean onFishingHookBringEntity(IEntity entity, EntityProjectile hook)
     {
         return onEntityPullEntity(entity, hook, true);
@@ -100,11 +110,9 @@ public class EntityProtections extends ForgeProtections
         relative.add(other);
         addRelativeEntity(other, relative);
 
-        relative.stream().filter(IEntityPlayerMP.class::isInstance).map(IEntityPlayerMP.class::cast).forEach(mod::player);
+        initPlayers(relative);
 
-        Optional<Permissible> optional = relative.stream().filter(
-                permissible -> permissible.identity().getType() == Identity.Type.PLAYER
-        ).findFirst();
+        Optional<Permissible> optional = relative.stream().filter(FILTER_PLAYER).findFirst();
 
         if(optional.isPresent())
         {
@@ -120,17 +128,40 @@ public class EntityProtections extends ForgeProtections
         return false;
     }
 
+    public boolean onProjectileModifyBlock(IEntity projectile, IState state, IWorldServer world, int x, int y, int z)
+    {
+        BlockPos pos = new BlockPos(mod.world(world), x, y, z);
+        List<Permissible> relative = new ArrayList<>(1);
+        relative.add(projectile);
+        addRelativeEntity(projectile, relative);
+
+        initPlayers(relative);
+
+        Optional<Permissible> optional = relative.stream().filter(FILTER_PLAYER).findFirst();
+
+        if(optional.isPresent())
+        {
+            Permissible player = optional.get();
+            Reaction reaction = projectile.reactPlayerModifyWithProjectile(player, projectile, state, world, pos);
+            reaction = reaction.combine(
+                    state.getIBlock().reactPlayerModifyWithProjectile(player, projectile, state, world, pos)
+            );
+
+            return reaction.can(mod.mineCity, player).isPresent();
+        }
+
+        return false;
+    }
+
     public boolean onPotionApply(IEntityLivingBase entity, IPotionEffect effect, IEntity potion)
     {
         List<Permissible> relative = new ArrayList<>(1);
         relative.add(potion);
         addRelativeEntity(potion, relative);
 
-        relative.stream().filter(IEntityPlayerMP.class::isInstance).map(IEntityPlayerMP.class::cast).forEach(mod::player);
+        initPlayers(relative);
 
-        Optional<Permissible> optional = relative.stream().filter(
-                permissible -> permissible.identity().getType() == Identity.Type.PLAYER
-        ).findFirst();
+        Optional<Permissible> optional = relative.stream().filter(FILTER_PLAYER).findFirst();
 
         if(optional.isPresent())
         {
@@ -267,8 +298,7 @@ public class EntityProtections extends ForgeProtections
             else
                 stack = null;
 
-            attackers.stream().filter(IEntityPlayerMP.class::isInstance).map(IEntityPlayerMP.class::cast)
-                    .forEach(mod::player);
+            initPlayers(attackers);
         }
         else
         {

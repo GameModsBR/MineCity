@@ -43,6 +43,7 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     public String[] getASMTransformerClass()
     {
         return new String[]{
+                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostBlockTNTTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityArmorStandTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityFishingHookTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityAreaEffectCloudTransformer",

@@ -92,9 +92,6 @@ public class ForgeInterfaceTransformer extends InsertInterfaceTransformer
         r.put("net.minecraft.entity.EntityLivingBase",
                 "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityLivingBase");
 
-        r.put("net.minecraft.block.BlockTNT",
-                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockTNT");
-
         r.put("net.minecraft.item.ItemBoat",
                 "br.com.gamemods.minecity.forge.base.accessors.item.IItemBoat");
 

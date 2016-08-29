@@ -1,13 +1,13 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla;
 
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.*;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
-import br.com.gamemods.minecity.forge.mc_1_7_10.event.FishingHookBringEntityEvent;
-import br.com.gamemods.minecity.forge.mc_1_7_10.event.FishingHookHitEntityEvent;
-import br.com.gamemods.minecity.forge.mc_1_7_10.event.PotionApplyEvent;
-import br.com.gamemods.minecity.forge.mc_1_7_10.event.VehicleDamageEvent;
+import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
+import br.com.gamemods.minecity.forge.mc_1_7_10.event.*;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -19,6 +19,23 @@ public class SevenEntityProtections extends EntityProtections
     public SevenEntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onProjectileModifyBlock(ProjectileModifyBlockEvent event)
+    {
+        if(event.world.isRemote)
+            return;
+
+        if(onProjectileModifyBlock(
+                (IEntity) event.projectile,
+                event.blockMetadata == 0? (IState) event.block : new SevenBlockState(event.block, event.blockMetadata),
+                (IWorldServer) event.world,
+                event.x, event.y, event.z
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

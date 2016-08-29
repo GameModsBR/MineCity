@@ -2,11 +2,14 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla;
 
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.*;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.*;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -19,6 +22,24 @@ public class FrostEntityProtections extends EntityProtections
     public FrostEntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onProjectileModifyBlock(ProjectileModifyBlockEvent event)
+    {
+        if(event.getWorld().isRemote)
+            return;
+
+        BlockPos pos = event.getPos();
+        if(onProjectileModifyBlock(
+                (IEntity) event.projectile,
+                (IState) event.getState(),
+                (IWorldServer) event.getWorld(),
+                pos.getX(), pos.getY(), pos.getZ()
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

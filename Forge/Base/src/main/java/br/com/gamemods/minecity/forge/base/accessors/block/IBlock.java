@@ -1,9 +1,11 @@
 package br.com.gamemods.minecity.forge.base.accessors.block;
 
+import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
@@ -50,6 +52,12 @@ public interface IBlock
     }
 
     default Reaction reactBlockBreak(ForgePlayer<?,?,?> player, IState state, BlockPos pos)
+    {
+        return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
+    }
+
+    default Reaction reactPlayerModifyWithProjectile(Permissible player, IEntity projectile,
+                                         IState state, IWorldServer world, BlockPos pos)
     {
         return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
     }

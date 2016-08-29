@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
@@ -277,6 +278,12 @@ public interface IEntity extends MinecraftEntity
             return new DoubleBlockReaction(flag, playerPos, getBlockPos(mod));
         else
             return new SingleBlockReaction(getBlockPos(mod), flag);
+    }
+
+    default Reaction reactPlayerModifyWithProjectile(Permissible permissible, IEntity projectile,
+                                                     IState state, IWorldServer world, BlockPos pos)
+    {
+        return NoReaction.INSTANCE;
     }
 
     @NotNull
