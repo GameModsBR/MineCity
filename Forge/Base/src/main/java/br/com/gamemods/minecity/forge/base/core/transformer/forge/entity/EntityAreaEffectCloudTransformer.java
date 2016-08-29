@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.entity;
 
+import br.com.gamemods.minecity.forge.base.MethodPatcher;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
@@ -9,6 +10,7 @@ import org.objectweb.asm.tree.*;
 
 import java.util.ListIterator;
 
+@MethodPatcher
 public class EntityAreaEffectCloudTransformer implements IClassTransformer
 {
     private String hookClass;

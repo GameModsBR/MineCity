@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.core.transformer;
 
+import br.com.gamemods.minecity.forge.base.MethodPatcher;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.util.DamageSource;
 import org.objectweb.asm.ClassReader;
@@ -9,6 +10,7 @@ import org.objectweb.asm.tree.*;
 
 import static org.objectweb.asm.Opcodes.*;
 
+@MethodPatcher
 public class InsertDamageHookTransformer implements IClassTransformer
 {
     private String className;

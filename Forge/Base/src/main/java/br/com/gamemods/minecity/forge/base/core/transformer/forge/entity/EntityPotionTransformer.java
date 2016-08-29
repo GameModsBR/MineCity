@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.entity;
 
+import br.com.gamemods.minecity.forge.base.MethodPatcher;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -8,6 +9,7 @@ import org.objectweb.asm.tree.*;
 
 import java.util.ListIterator;
 
+@MethodPatcher
 public class EntityPotionTransformer implements IClassTransformer
 {
     private String rayTraceClass;
