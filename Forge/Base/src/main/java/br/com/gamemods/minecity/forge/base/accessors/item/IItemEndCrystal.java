@@ -24,6 +24,8 @@ public interface IItemEndCrystal extends IItem
         if(block != Blocks.OBSIDIAN && block != Blocks.BEDROCK)
             return NoReaction.INSTANCE;
 
-        return new DoubleBlockReaction(PermissionFlag.MODIFY, pos, pos.add(Direction.UP));
+        DoubleBlockReaction reaction = new DoubleBlockReaction(PermissionFlag.MODIFY, pos, pos.add(Direction.UP));
+        reaction.onDenyUpdateInventory();
+        return reaction;
     }
 }

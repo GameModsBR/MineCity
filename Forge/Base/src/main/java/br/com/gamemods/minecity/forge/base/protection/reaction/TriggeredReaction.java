@@ -5,6 +5,8 @@ import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
+import br.com.gamemods.minecity.forge.base.command.ForgePlayerSender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,11 @@ public abstract class TriggeredReaction implements Reaction
     public void onDenyUpdateInventory()
     {
         addDenialListener((reaction, permissible, flag, pos, message) -> {
+            if(permissible instanceof ForgePlayer)
+                permissible = (Permissible) ((ForgePlayer) permissible).player;
+            else if(permissible instanceof ForgePlayerSender)
+                permissible = (Permissible) ((ForgePlayerSender) permissible).sender;
+
             if(permissible instanceof IEntityPlayerMP)
             {
                 IEntityPlayerMP player = (IEntityPlayerMP) permissible;
