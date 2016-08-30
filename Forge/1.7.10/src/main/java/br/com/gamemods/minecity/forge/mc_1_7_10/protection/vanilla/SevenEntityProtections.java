@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.forge.mc_1_7_10.event.*;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
@@ -21,6 +22,21 @@ public class SevenEntityProtections extends EntityProtections
     public SevenEntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    @SubscribeEvent
+    public void onItemToss(ItemTossEvent event)
+    {
+        if(event.entity.worldObj.isRemote)
+            return;
+
+        if(onItemToss(
+                (IEntityPlayerMP) event.player,
+                (IEntityItem) event.entityItem
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

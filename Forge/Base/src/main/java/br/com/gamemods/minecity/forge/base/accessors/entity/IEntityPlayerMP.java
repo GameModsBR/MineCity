@@ -10,11 +10,14 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.ICommander;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityPlayerMPTransformer;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.world.WorldServer;
 import org.jetbrains.annotations.NotNull;
@@ -202,5 +205,26 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
         ForgePlayer player = getMineCityPlayer();
         if(player != null)
             player.send(messages);
+    }
+
+    default void attemptToReturn(IItemStack stack)
+    {
+        EntityPlayerMP player = getForgeEntity();
+        if(!player.inventory.addItemStackToInventory(stack.getStack()))
+        {
+            ItemStack rest = player.getInventoryEnderChest().addItem(stack.getStack());
+            if(rest != null)
+            {
+                EntityItem drop = player.dropItem(rest, false, true);
+                if(drop == null)
+                    getServer().logger.error("Failed to return a stack to the player: "+identity()+" stack: "+stack);
+                else
+                {
+                    drop.setNoPickupDelay();
+                    drop.setOwner(player.getName());
+                    ((IEntityItem) drop).allowToPickup(identity());
+                }
+            }
+        }
     }
 }

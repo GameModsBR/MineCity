@@ -38,6 +38,24 @@ public class EntityProtections extends ForgeProtections
         super(mod);
     }
 
+    public boolean onItemToss(IEntityPlayerMP entityPlayer, IEntityItem entityItem)
+    {
+        ForgePlayer player = mod.player(entityPlayer);
+
+        IItemStack stack = entityItem.getStack();
+        Reaction reaction = stack.getIItem().reactItemToss(player, stack, entityItem);
+        Optional<Message> denial = reaction.can(mod.mineCity, player);
+
+        if(denial.isPresent())
+        {
+            player.send(FlagHolder.wrapDeny(denial.get()));
+            return true;
+        }
+        
+        entityItem.allowToPickup(player.identity());
+        return false;
+    }
+
     public boolean onXpOrbTargetPlayerEvent(IEntityPlayerMP entityPlayer, IEntityXPOrb entityOrb)
     {
         return onPlayerInteractXpOrb(entityPlayer, entityOrb, true);
