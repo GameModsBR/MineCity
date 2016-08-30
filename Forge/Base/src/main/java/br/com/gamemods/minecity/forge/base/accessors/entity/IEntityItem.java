@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.base.accessors.entity;
 
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
@@ -21,6 +22,13 @@ public interface IEntityItem extends Pickable
     default IItemStack getStack()
     {
         return (IItemStack) (Object) getForgeEntity().getEntityItem();
+    }
+
+    @Nullable
+    @Override
+    default PermissionFlag getPlayerAttackType()
+    {
+        return PermissionFlag.PICKUP;
     }
 
     @Nullable
