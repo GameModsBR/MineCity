@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.entity;
 
+import br.com.gamemods.minecity.forge.base.MethodPatcher;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -12,6 +13,7 @@ import java.util.ListIterator;
 
 import static org.objectweb.asm.Opcodes.*;
 
+@MethodPatcher
 public class EntityArrowTransformer implements IClassTransformer
 {
     private String hookClass;

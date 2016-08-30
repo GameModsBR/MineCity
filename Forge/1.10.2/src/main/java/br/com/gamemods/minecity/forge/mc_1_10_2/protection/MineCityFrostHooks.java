@@ -6,6 +6,7 @@ import br.com.gamemods.minecity.forge.mc_1_10_2.event.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityFishHook;
@@ -25,6 +26,16 @@ import org.jetbrains.annotations.Nullable;
 @Referenced
 public class MineCityFrostHooks
 {
+    @Referenced(at = FrostEntityXPOrbTransformer.class)
+    public static EntityPlayer onXpOrbTargetPlayer(EntityPlayer player, EntityXPOrb orb)
+    {
+        Event event = new XpOrbTargetPlayerEvent(player, orb);
+        if(MinecraftForge.EVENT_BUS.post(event))
+            return null;
+        else
+            return player;
+    }
+
     @Referenced(at = FrostEntityArrowTransformer.class)
     public static boolean onPlayerPickupArrow(EntityArrow arrow, EntityPlayer player)
     {

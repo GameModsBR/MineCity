@@ -24,6 +24,21 @@ public class SevenEntityProtections extends EntityProtections
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onXpOrbTargetPlayerEvent(XpOrbTargetPlayerEvent event)
+    {
+        if(event.entityPlayer.worldObj.isRemote)
+            return;
+
+        if(onXpOrbTargetPlayerEvent(
+                (IEntityPlayerMP) event.entityPlayer,
+                (IEntityXPOrb) event.orb
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onPlayerPickupExpEvent(PlayerPickupXpEvent event)
     {
         if(event.entityPlayer.worldObj.isRemote)

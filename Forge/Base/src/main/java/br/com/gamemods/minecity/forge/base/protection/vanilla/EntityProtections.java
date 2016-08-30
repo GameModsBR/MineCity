@@ -38,7 +38,17 @@ public class EntityProtections extends ForgeProtections
         super(mod);
     }
 
+    public boolean onXpOrbTargetPlayerEvent(IEntityPlayerMP entityPlayer, IEntityXPOrb entityOrb)
+    {
+        return onPlayerInteractXpOrb(entityPlayer, entityOrb, true);
+    }
+
     public boolean onPlayerPickupExpEvent(IEntityPlayerMP entityPlayer, IEntityXPOrb entityOrb)
+    {
+        return onPlayerInteractXpOrb(entityPlayer, entityOrb, false);
+    }
+
+    public boolean onPlayerInteractXpOrb(IEntityPlayerMP entityPlayer, IEntityXPOrb entityOrb, boolean silent)
     {
         if(entityOrb.isAllowedToPickup(entityPlayer.identity()))
             return false;
@@ -56,7 +66,8 @@ public class EntityProtections extends ForgeProtections
         {
             mod.callSyncMethodDelayed(() -> player.disablePickup = false, 40);
             player.disablePickup = true;
-            player.send(FlagHolder.wrapDeny(denial.get()));
+            if(!silent)
+                player.send(FlagHolder.wrapDeny(denial.get()));
             return true;
         }
 
