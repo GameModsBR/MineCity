@@ -24,9 +24,9 @@ public class MineCitySevenHooks
     {
         Event event;
         if(source instanceof Entity)
-            event = new EntityIgniteEntityEvent(entity, (Entity) source, source, sourceClass, method, desc);
+            event = new EntityIgniteEntityEvent(entity, (Entity) source, fireTicks, source, sourceClass, method, desc);
         else
-            event = new EntityIgniteEvent(entity, source, sourceClass, method, desc);
+            event = new EntityIgniteEvent(entity, fireTicks, source, sourceClass, method, desc);
 
         if(!MinecraftForge.EVENT_BUS.post(event))
             entity.setFire(fireTicks);
