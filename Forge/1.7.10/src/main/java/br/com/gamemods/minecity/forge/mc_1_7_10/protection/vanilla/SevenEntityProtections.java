@@ -15,6 +15,7 @@ import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
 
 public class SevenEntityProtections extends EntityProtections
@@ -22,6 +23,19 @@ public class SevenEntityProtections extends EntityProtections
     public SevenEntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    @SubscribeEvent
+    public void onPlayerDrops(PlayerDropsEvent event)
+    {
+        if(event.entityPlayer.worldObj.isRemote)
+            return;
+
+        onPlayerDrops(
+                (IEntityPlayerMP) event.entityPlayer,
+                event.source,
+                event.drops
+        );
     }
 
     @SubscribeEvent

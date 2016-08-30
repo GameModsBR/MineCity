@@ -19,8 +19,8 @@ import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
@@ -38,6 +38,12 @@ public class EntityProtections extends ForgeProtections
         super(mod);
     }
 
+    public void onPlayerDrops(IEntityPlayerMP entityPlayer, DamageSource source, Collection<EntityItem> drops)
+    {
+        PlayerID id = entityPlayer.identity();
+        drops.stream().map(IEntityItem.class::cast).forEach(item-> item.allowToPickup(id));
+    }
+
     public boolean onItemToss(IEntityPlayerMP entityPlayer, IEntityItem entityItem)
     {
         ForgePlayer player = mod.player(entityPlayer);
@@ -51,7 +57,7 @@ public class EntityProtections extends ForgeProtections
             player.send(FlagHolder.wrapDeny(denial.get()));
             return true;
         }
-        
+
         entityItem.allowToPickup(player.identity());
         return false;
     }
