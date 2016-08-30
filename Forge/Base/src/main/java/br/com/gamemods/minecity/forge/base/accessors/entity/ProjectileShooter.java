@@ -87,6 +87,7 @@ public class ProjectileShooter implements Serializable
         return indirectId;
     }
 
+    @Nullable
     public Permissible getResponsible()
     {
         return indirectEntity != null? indirectEntity : indirectId != null? indirectId : entity != null? entity : identity;

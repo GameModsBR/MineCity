@@ -23,6 +23,21 @@ public class SevenEntityProtections extends EntityProtections
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onPlayerPickupArrowEvent(PlayerPickupArrowEvent event)
+    {
+        if(event.arrow.worldObj.isRemote)
+            return;
+
+        if(onPlayerPickupArrowEvent(
+                (IEntityPlayerMP) event.entityPlayer,
+                (IEntityArrow) event.arrow
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onProjectileModifyBlock(ProjectileModifyBlockEvent event)
     {
         if(event.world.isRemote)

@@ -6,7 +6,10 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityArrowTransformer;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 
 import java.util.List;
@@ -18,6 +21,12 @@ public interface IEntityArrow extends EntityProjectile
     default EntityArrow getForgeEntity()
     {
         return (EntityArrow) this;
+    }
+
+    @Referenced(at = EntityArrowTransformer.class)
+    default IItemStack getIArrowStack()
+    {
+        return (IItemStack) (Object) new ItemStack(Items.ARROW);
     }
 
     @Override

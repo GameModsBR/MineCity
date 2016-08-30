@@ -25,6 +25,13 @@ import org.jetbrains.annotations.Nullable;
 @Referenced
 public class MineCityFrostHooks
 {
+    @Referenced(at = FrostEntityArrowTransformer.class)
+    public static boolean onPlayerPickupArrow(EntityArrow arrow, EntityPlayer player)
+    {
+        Event event = new PlayerPickupArrowEvent(player, arrow);
+        return MinecraftForge.EVENT_BUS.post(event);
+    }
+
     @Referenced(at = FrostEntityIgnitionTransformer.class)
     public static void onIgnite(Entity entity, int fireTicks, @Nullable Object source, Class<?> sourceClass, String method, String desc)
     {

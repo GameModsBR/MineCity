@@ -9,7 +9,6 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
-import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityItem;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
@@ -61,7 +60,7 @@ public interface IItem
         return NoReaction.INSTANCE;
     }
 
-    default Reaction onPlayerPickup(IEntityPlayerMP entity, IEntityItem item)
+    default Reaction onPlayerPickup(IEntityPlayerMP entity, IEntity item)
     {
         return new SingleBlockReaction(item.getBlockPos(entity.getServer()), PermissionFlag.PICKUP);
     }

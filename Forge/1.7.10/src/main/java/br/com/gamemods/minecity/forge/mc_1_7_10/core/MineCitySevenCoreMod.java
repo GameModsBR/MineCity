@@ -43,6 +43,7 @@ public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     public String[] getASMTransformerClass()
     {
         return new String[]{
+                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityArrowTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityIgnitionTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityEnderCrystalTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockTNTTransformer",
@@ -85,6 +86,6 @@ public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     @Override
     public String getAccessTransformerClass()
     {
-        return "br.com.gamemods.minecity.forge.base.core.transformer.MineCityAT";
+        return "br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenAT";
     }
 }

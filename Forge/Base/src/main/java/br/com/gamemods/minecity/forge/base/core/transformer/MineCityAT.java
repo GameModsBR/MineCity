@@ -8,6 +8,6 @@ public class MineCityAT extends AccessTransformer
 {
     public MineCityAT() throws IOException
     {
-        super("assets/minecity/forge/minecity_at.cfg");
+        super("minecity_at.cfg");
     }
 }

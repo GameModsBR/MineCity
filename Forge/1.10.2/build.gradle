@@ -30,6 +30,9 @@ project(':Forge:1.10.2') {
 minecraft {
     version = "1.10.2-12.18.1.2011"
     runDir = "run"
+
+    clientJvmArgs += "-Dfml.coreMods.load=br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod"
+    serverJvmArgs += "-Dfml.coreMods.load=br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod"
     
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.

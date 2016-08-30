@@ -8,6 +8,7 @@ import cpw.mods.fml.common.eventhandler.Event;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.potion.PotionEffect;
@@ -19,6 +20,13 @@ import org.jetbrains.annotations.Nullable;
 @Referenced
 public class MineCitySevenHooks
 {
+    @Referenced(at = SevenEntityArrowTransformer.class)
+    public static boolean onPlayerPickupArrow(EntityArrow arrow, EntityPlayer player)
+    {
+        Event event = new PlayerPickupArrowEvent(player, arrow);
+        return MinecraftForge.EVENT_BUS.post(event);
+    }
+
     @Referenced(at = SevenEntityIgnitionTransformer.class)
     public static void onIgnite(Entity entity, int fireTicks, @Nullable Object source, Class<?> sourceClass, String method, String desc)
     {

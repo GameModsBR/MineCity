@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.Permissible;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.EntityPos;
@@ -18,6 +19,7 @@ import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
+import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
@@ -34,6 +36,47 @@ public class EntityProtections extends ForgeProtections
     public EntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    public boolean onPlayerPickupArrowEvent(IEntityPlayerMP entityPlayer, IEntityArrow arrow)
+    {
+        ForgePlayer player = mod.player(entityPlayer);
+
+        ProjectileShooter shooter = arrow.getShooter();
+        if(shooter != null)
+        {
+            Permissible responsible = shooter.getResponsible();
+            if(responsible == null)
+            {
+                if(player.disablePickup)
+                    return true;
+
+                EntityPos pos = shooter.getPos();
+                FlagHolder flagHolder = mod.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos.getBlock());
+                Identity<?> owner = flagHolder.owner();
+                if(entityPlayer.getIdentity().equals(owner) || !flagHolder.can(entityPlayer, PermissionFlag.PICKUP).isPresent())
+                    return false;
+            }
+            else if(responsible.identity().equals(entityPlayer.identity()))
+                return false;
+        }
+
+        if(player.disablePickup)
+            return true;
+
+        IItemStack stack = arrow.getIArrowStack();
+        Reaction react = stack.getIItem().onPlayerPickup(entityPlayer, arrow);
+        Optional<Message> denial = react.can(mod.mineCity, entityPlayer);
+
+        if(denial.isPresent())
+        {
+            mod.callSyncMethodDelayed(() -> player.disablePickup = false, 40);
+            player.disablePickup = true;
+            player.send(FlagHolder.wrapDeny(denial.get()));
+            return true;
+        }
+
+        return false;
     }
 
     public boolean onPlayerPickupItem(IEntityPlayerMP entity, IEntityItem entityItem)
