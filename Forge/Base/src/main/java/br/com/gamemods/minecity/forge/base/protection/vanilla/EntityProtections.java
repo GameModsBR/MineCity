@@ -38,6 +38,25 @@ public class EntityProtections extends ForgeProtections
         super(mod);
     }
 
+    public void onLivingDrops(IEntityLivingBase entity, DamageSource source, Collection<EntityItem> drops)
+    {
+        List<Permissible> attackers = new ArrayList<>(2);
+        PlayerID whoDamaged = entity.getWhoDamaged();
+        if(whoDamaged != null)
+            attackers.add(whoDamaged);
+        getAttackers(source, attackers);
+
+        if(!attackers.isEmpty())
+        {
+            drops.stream().map(IEntityItem.class::cast).forEach(item ->
+                    attackers.stream().map(Permissible::identity)
+                            .filter(PlayerID.class::isInstance).map(PlayerID.class::cast)
+                            .forEach(item::allowToPickup)
+            );
+
+        }
+    }
+
     public void onPlayerDrops(IEntityPlayerMP entityPlayer, DamageSource source, Collection<EntityItem> drops)
     {
         PlayerID id = entityPlayer.identity();
@@ -436,9 +455,8 @@ public class EntityProtections extends ForgeProtections
         return false;
     }
 
-    public boolean onEntityDamage(IEntity entity, DamageSource source, float amount)
+    public IItemStack getAttackers(DamageSource source, final List<Permissible> attackers)
     {
-        List<Permissible> attackers;
         IItemStack stack;
 
         if(source instanceof EntityDamageSource)
@@ -447,7 +465,6 @@ public class EntityProtections extends ForgeProtections
             Entity indirect = source.getEntity();
 
             boolean hasIndirect = indirect != null && indirect != direct;
-            attackers = new ArrayList<>(hasIndirect? 2 : 1);
             attackers.add((Permissible) direct);
 
             if(hasIndirect)
@@ -469,10 +486,15 @@ public class EntityProtections extends ForgeProtections
             initPlayers(attackers);
         }
         else
-        {
-            attackers = Collections.emptyList();
-            stack = null;
-        }
+            return null;
+
+        return stack;
+    }
+
+    public boolean onEntityDamage(IEntity entity, DamageSource source, float amount)
+    {
+        List<Permissible> attackers = new ArrayList<>(2);
+        IItemStack stack = getAttackers(source, attackers);
 
         Optional<Permissible> optionalPlayer = attackers.stream().filter(FILTER_PLAYER).findFirst();
 
@@ -487,6 +509,8 @@ public class EntityProtections extends ForgeProtections
             Optional<Message> denial = reaction.can(mod.mineCity, player);
             if(denial.isPresent())
                 player.send(FlagHolder.wrapDeny(denial.get()));
+            else
+                entity.setWhoDamaged((PlayerID) player.identity());
 
             Stream.concat(Stream.of(entity), attackers.stream()).filter(IEntity.class::isInstance).map(IEntity.class::cast).forEach(involved->
                     involved.afterPlayerAttack(mod, player, stack, entity, source, amount, attackers, denial.orElse(null))

@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.base.accessors.entity;
 
 import br.com.gamemods.minecity.api.MathUtil;
+import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.EntityID;
@@ -360,5 +361,31 @@ public interface IEntity extends MinecraftEntity
     default void setDead()
     {
         getForgeEntity().setDead();
+    }
+
+    default void setWhoDamaged(PlayerID identity)
+    {
+        Entity entity = getForgeEntity();
+        NBTTagCompound nbt = entity.getEntityData();
+        UUID uuid = identity.getUniqueId();
+        nbt.setLong("MineCityLastDmg0", uuid.getMostSignificantBits());
+        nbt.setLong("MineCityLastDmg1", uuid.getLeastSignificantBits());
+        nbt.setString("MineCityLastDmg2", identity.getName());
+        nbt.setInteger("MineCityLastDmg3", entity.ticksExisted);
+    }
+
+    default PlayerID getWhoDamaged()
+    {
+        Entity entity = getForgeEntity();
+        NBTTagCompound nbt = entity.getEntityData();
+        if(!nbt.hasKey("MineCityLastDmg3"))
+            return null;
+
+        int ticks = nbt.getInteger("MineCityLastDmg3");
+        int existed = entity.ticksExisted;
+        if(existed < ticks || existed - ticks > 20*20)
+            return null;
+
+        return new PlayerID(new UUID(nbt.getLong("MineCityLastDmg0"), nbt.getLong("MineCityLastDmg1")), nbt.getString("MineCityLastDmg2"));
     }
 }

@@ -14,6 +14,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -28,7 +29,20 @@ public class FrostEntityProtections extends EntityProtections
         super(mod);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onLivingDrops(LivingDropsEvent event)
+    {
+        if(event.getEntityLiving().worldObj.isRemote)
+            return;
+
+        onLivingDrops(
+                (IEntityLivingBase) event.getEntityLiving(),
+                event.getSource(),
+                event.getDrops()
+        );
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onPlayerDrops(PlayerDropsEvent event)
     {
         if(event.getEntityPlayer().worldObj.isRemote)
@@ -41,7 +55,7 @@ public class FrostEntityProtections extends EntityProtections
         );
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onItemToss(ItemTossEvent event)
     {
         if(event.getEntity().worldObj.isRemote)

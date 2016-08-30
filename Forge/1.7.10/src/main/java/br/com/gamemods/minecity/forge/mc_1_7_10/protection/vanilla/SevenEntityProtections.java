@@ -10,9 +10,11 @@ import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.*;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
@@ -25,7 +27,20 @@ public class SevenEntityProtections extends EntityProtections
         super(mod);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onLivingDrops(LivingDropsEvent event)
+    {
+        if(event.entityLiving.worldObj.isRemote)
+            return;
+
+        onLivingDrops(
+                (IEntityLivingBase) event.entityLiving,
+                event.source,
+                event.drops
+        );
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onPlayerDrops(PlayerDropsEvent event)
     {
         if(event.entityPlayer.worldObj.isRemote)
@@ -38,7 +53,7 @@ public class SevenEntityProtections extends EntityProtections
         );
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onItemToss(ItemTossEvent event)
     {
         if(event.entity.worldObj.isRemote)
