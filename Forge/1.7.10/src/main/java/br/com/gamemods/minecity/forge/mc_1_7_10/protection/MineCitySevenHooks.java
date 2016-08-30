@@ -24,6 +24,9 @@ public class MineCitySevenHooks
     @Referenced(at = SevenEntityXPOrbTransformer.class)
     public static EntityPlayer onXpOrbTargetPlayer(EntityPlayer player, EntityXPOrb orb)
     {
+        if(player == null)
+            return null;
+
         Event event = new XpOrbTargetPlayerEvent(player, orb);
         if(MinecraftForge.EVENT_BUS.post(event))
             return null;
