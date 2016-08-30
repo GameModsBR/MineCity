@@ -1,8 +1,11 @@
 package br.com.gamemods.minecity.forge.base.accessors.entity;
 
+import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import org.jetbrains.annotations.NotNull;
 
-public interface IEntityXPOrb extends IEntity
+@Referenced(at = ForgeInterfaceTransformer.class)
+public interface IEntityXPOrb extends Pickable
 {
     @NotNull
     @Override

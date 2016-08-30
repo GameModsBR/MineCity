@@ -13,6 +13,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 
 public class SevenEntityProtections extends EntityProtections
 {
@@ -119,6 +120,21 @@ public class SevenEntityProtections extends EntityProtections
                 (IEntityLivingBase) event.entity,
                 (IPotionEffect) event.effect,
                 (IEntity) event.potion
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onPlayerPickupItem(EntityItemPickupEvent event)
+    {
+        if(event.entity.worldObj.isRemote)
+            return;
+
+        if(onPlayerPickupItem(
+                (IEntityPlayerMP) event.entityPlayer,
+                (IEntityItem) event.item
         ))
         {
             event.setCanceled(true);

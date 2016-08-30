@@ -15,6 +15,7 @@ import br.com.gamemods.minecity.forge.base.accessors.ICommander;
 import br.com.gamemods.minecity.forge.base.accessors.IMinecraftServer;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityItem;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
@@ -28,13 +29,9 @@ import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Inconsistency;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.world.World;
@@ -43,7 +40,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.BlockSnapshot;
-import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -75,6 +71,11 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
     public Item selectionTool;
     public Consumer<ForgePlayerSender.ForgeSelection> selectionPallet;
     private final Queue<Predicate<IEntity>> entitySpawnListeners = new ConcurrentLinkedQueue<>();
+
+    public void callSyncMethodDelayed(Runnable runnable, int delay)
+    {
+        syncTasks.add(new Task(runnable, delay));
+    }
 
     public void addSpawnListener(int howLong, Predicate<IEntity> listener)
     {
@@ -126,15 +127,15 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
         addPostSpawnListener(point, maxDistance, filter::isInstance, howLong, entity -> listener.test(filter.cast(entity)));
     }
 
-    public void addItemConsumer(PrecisePoint point, double maxDistance, int amount, int howLong, ToIntBiFunction<EntityItem, Integer> listener)
+    public void addItemConsumer(PrecisePoint point, double maxDistance, int amount, int howLong, ToIntBiFunction<IEntityItem, Integer> listener)
     {
         AtomicInteger consume = new AtomicInteger(amount);
-        addPostSpawnListener(point, maxDistance, EntityItem.class, howLong, entity ->
+        addPostSpawnListener(point, maxDistance, IEntityItem.class, howLong, entity ->
         {
             if(consume.get() <= 0)
                 return true;
 
-            IItemStack stack = (IItemStack) (Object) entity.getEntityItem();
+            IItemStack stack = entity.getStack();
             if(stack.getSize() <= 0)
                 entity.setDead();
             else
@@ -149,39 +150,36 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
         });
     }
 
-    public void consumeItems(PrecisePoint point, double maxDistance, int amount, int howLong, IItem item, ToIntBiFunction<EntityItem, Integer> or)
+    public void consumeItems(PrecisePoint point, double maxDistance, int amount, int howLong, @Nullable IItem item, ToIntBiFunction<IEntityItem, Integer> or)
     {
-        addItemConsumer(point, maxDistance, amount, howLong, (entity, remaining)-> {
-            IItemStack stack = (IItemStack) (Object) entity.getEntityItem();
-            if(stack.getIItem() != item)
-                return or.applyAsInt(entity, remaining);
+        AtomicInteger consume = new AtomicInteger(amount);
+        addItemConsumer(point, maxDistance, Integer.MAX_VALUE, howLong, (entity, r)-> {
+            IItemStack stack = entity.getStack();
+            int remaining = consume.get();
+            if(remaining <= 0 || stack.getIItem() != item)
+            {
+                consume.addAndGet(or.applyAsInt(entity, remaining));
+                return 0;
+            }
 
             int size = stack.getSize();
             int remove = Math.min(size, remaining);
             stack.setSize(size - remove);
-            return remove;
-        });
-    }
-
-    public void consumeItems(PrecisePoint point, double maxDistance, int amount, int howLong, IItem item)
-    {
-        consumeItems(point, maxDistance, amount, howLong, item, (entity, remaining) -> 0);
-    }
-
-    public void consumeItemsOrAddOwner(PrecisePoint point, double maxDistance, int amount, int howLong, IItem item, UUID owner)
-    {
-        consumeItems(point, maxDistance, amount, howLong, item, (entity, remaining) -> {
-            allowToPickup(entity, owner);
+            consume.addAndGet(-remove);
             return 0;
         });
     }
 
-    public void allowToPickup(EntityItem item, UUID uuid)
+    public void consumeItemsOrAddOwnerIf(PrecisePoint point, double maxDistance, int amount, int howLong, @Nullable IItem item, PlayerID owner, Predicate<IEntityItem> cond)
     {
-        NBTTagCompound nbt = item.getEntityData();
-        NBTTagList allow = nbt.getTagList("MineCityAllowPickup", Constants.NBT.TAG_STRING);
-        allow.appendTag(new NBTTagString(uuid.toString()));
-        nbt.setTag("MineCityAllowPickup", allow);
+        consumeItems(point, maxDistance, amount, howLong, item, (entity, remaining) -> {
+            if(cond.test(entity))
+            {
+                entity.allowToPickup(owner);
+                entity.setItemOwner(owner.getName());
+            }
+            return 0;
+        });
     }
 
     public void callSpawnListeners(IEntity entity)

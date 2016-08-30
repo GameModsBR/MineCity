@@ -6,7 +6,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterface
 import net.minecraft.item.ItemBlock;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
-public interface IItemBlock extends IItem
+public interface IItemBlock extends ItemBlockBase
 {
     @Override
     default ItemBlock getForgeItem()
@@ -14,6 +14,7 @@ public interface IItemBlock extends IItem
         return (ItemBlock) this;
     }
 
+    @Override
     default IBlock getIBlock()
     {
         return (IBlock) ((ItemBlock) this).getBlock();

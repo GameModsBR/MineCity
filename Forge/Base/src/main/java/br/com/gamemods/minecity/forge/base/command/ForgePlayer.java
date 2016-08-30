@@ -45,6 +45,8 @@ public class ForgePlayer
     private Set<GroupID> groups;
     public Set<EntityLiving> leashedEntities = new HashSet<>(1);
     public boolean offHand;
+    public boolean disablePickup;
+    public boolean disablePickupHarvest;
 
     public ForgePlayer(S cmd)
     {

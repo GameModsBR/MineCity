@@ -3,30 +3,18 @@ package br.com.gamemods.minecity.forge.base.accessors.block;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
-import net.minecraft.block.BlockCrops;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
-public interface IBlockCrops extends SimpleCrop
+public interface IBlockStem extends IBlock
 {
-    @Override
-    default BlockCrops getForgeBlock()
+    default IItemStack getISeed(IState state, IWorldServer world, int x, int y, int z)
     {
-        return (BlockCrops) this;
-    }
-
-    default int getMaxAge()
-    {
-        return getForgeBlock().getMaxAge();
-    }
-
-    @Override
-    default boolean isHarvestAge(int age)
-    {
-        return age == getMaxAge();
+        return getItemStack(getDefaultIState(), world, x, y, z);
     }
 
     @Override
@@ -34,7 +22,7 @@ public interface IBlockCrops extends SimpleCrop
     {
         // Allow to use bone meal
         IItemStack stack = player.cmd.sender.getStackInHand(player.offHand);
-        if(stack != null && stack.getItem() != getISeed())
+        if(stack != null && stack.getItem() != getISeed(snap.getCurrentState(), snap.getIWorld(), snap.getX(), snap.getY(), snap.getZ()))
             return new SingleBlockReaction(snap.getPosition(player.getServer()), PermissionFlag.HARVEST);
 
         return new SingleBlockReaction(snap.getPosition(player.getServer()), PermissionFlag.MODIFY);

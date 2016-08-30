@@ -1,7 +1,6 @@
 package br.com.gamemods.minecity.forge.base.accessors.entity;
 
 import br.com.gamemods.minecity.api.PlayerID;
-import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.BlockPos;
@@ -24,9 +23,13 @@ import org.jetbrains.annotations.Nullable;
 @Referenced(at = EntityPlayerMPTransformer.class)
 public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
 {
-    Server getServer();
     void setMineCityPlayer(ForgePlayer player);
     ForgePlayer getMineCityPlayer();
+
+    default MineCityForge getServer()
+    {
+        return getMineCityPlayer().getServer();
+    }
 
     @Override
     default EntityPlayerMP getForgeEntity()
@@ -42,6 +45,13 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
             return player.identity();
 
         return new PlayerID(getUniqueID(), getName());
+    }
+
+    @NotNull
+    @Override
+    default PlayerID identity()
+    {
+        return getIdentity();
     }
 
     @Override

@@ -95,4 +95,9 @@ public interface IWorldServer
     {
         return (IEntityPlayerMP) getForgeWorld().getPlayerEntityByUUID(uniqueId);
     }
+
+    default IEntityPlayerMP getPlayerByName(String owner)
+    {
+        return (IEntityPlayerMP) getForgeWorld().getPlayerEntityByName(owner);
+    }
 }

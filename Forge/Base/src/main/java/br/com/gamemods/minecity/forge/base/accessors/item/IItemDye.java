@@ -47,4 +47,11 @@ public interface IItemDye extends IItem
 
         return new SingleBlockReaction(pos.add(face.getOpposite()), PermissionFlag.MODIFY);
     }
+
+    @Override
+    default boolean isHarvest(IItemStack stack)
+    {
+        int meta = stack.getMeta();
+        return meta == 3 || meta == 15;
+    }
 }

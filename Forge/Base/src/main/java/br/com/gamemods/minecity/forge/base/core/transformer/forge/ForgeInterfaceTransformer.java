@@ -11,6 +11,36 @@ public class ForgeInterfaceTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("net.minecraft.block.BlockPumpkin",
+                "br.com.gamemods.minecity.forge.base.accessors.block.BlockStemProduct");
+
+        r.put("net.minecraft.block.BlockMelon",
+                "br.com.gamemods.minecity.forge.base.accessors.block.BlockStemProduct");
+
+        r.put("net.minecraft.block.BlockStem",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockStem");
+
+        r.put("net.minecraft.item.ItemSeedFood",
+                "br.com.gamemods.minecity.forge.base.accessors.item.IItemSeedFood");
+
+        r.put("net.minecraft.item.ItemSeeds",
+                "br.com.gamemods.minecity.forge.base.accessors.item.IItemSeeds");
+
+        r.put("net.minecraft.item.ItemBlockSpecial",
+                "br.com.gamemods.minecity.forge.base.accessors.item.IItemBlockSpecial");
+
+        r.put("net.minecraft.block.BlockNetherWart",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockNetherWart");
+
+        r.put("net.minecraft.block.BlockReed",
+                "br.com.gamemods.minecity.forge.base.accessors.block.BlockTallHarvest");
+
+        r.put("net.minecraft.block.BlockCactus",
+                "br.com.gamemods.minecity.forge.base.accessors.block.BlockTallHarvest");
+
+        r.put("net.minecraft.entity.item.EntityItem",
+                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityItem");
+
         r.put("net.minecraft.item.ItemEndCrystal",
                 "br.com.gamemods.minecity.forge.base.accessors.item.IItemEndCrystal");
 

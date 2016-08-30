@@ -12,6 +12,7 @@ import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.*;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
@@ -33,6 +34,47 @@ public class EntityProtections extends ForgeProtections
     public EntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    public boolean onPlayerPickupItem(IEntityPlayerMP entity, IEntityItem entityItem)
+    {
+        if(entityItem.isAllowedToPickup(entity.identity()))
+            return false;
+
+        IItemStack stack = entityItem.getStack();
+        IItem item = stack.getIItem();
+        boolean harvest = item.isHarvest(stack);
+        ForgePlayer player = mod.player(entity);
+
+        if(harvest)
+        {
+            if(player.disablePickupHarvest)
+                return true;
+        }
+        else if(player.disablePickup)
+            return true;
+
+
+        Reaction reaction = item.onPlayerPickup(entity, entityItem);
+        Optional<Message> denial = reaction.can(mod.mineCity, player);
+        if(denial.isPresent())
+        {
+            if(harvest)
+            {
+                mod.callSyncMethodDelayed(() -> player.disablePickupHarvest = false, 40);
+                player.disablePickupHarvest = true;
+            }
+            else
+            {
+                mod.callSyncMethodDelayed(() -> player.disablePickup = false, 40);
+                player.disablePickup = true;
+            }
+
+            player.send(FlagHolder.wrapDeny(denial.get()));
+            return true;
+        }
+
+        return false;
     }
 
     public boolean onPlayerInteractEntityPrecisely(IEntityPlayerMP entityPlayer, IEntity target, IItemStack stack, boolean offHand, PrecisePoint point)

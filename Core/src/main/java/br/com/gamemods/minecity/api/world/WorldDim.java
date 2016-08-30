@@ -88,6 +88,21 @@ public final class WorldDim implements Serializable
         this.dataSourceId = dataSourceId;
     }
 
+    @NotNull
+    @SuppressWarnings("unchecked")
+    public <T> T getInstance()
+    {
+        assert instance != null;
+        return (T) instance;
+    }
+
+    @NotNull
+    public <T> T getInstance(Class<T> t)
+    {
+        assert instance != null;
+        return t.cast(instance);
+    }
+
     @SuppressWarnings("RedundantIfStatement")
     @Override
     public boolean equals(Object o)

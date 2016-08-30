@@ -356,4 +356,9 @@ public interface IEntity extends MinecraftEntity
     {
         return ((Entity) this).fire;
     }
+
+    default void setDead()
+    {
+        getForgeEntity().setDead();
+    }
 }

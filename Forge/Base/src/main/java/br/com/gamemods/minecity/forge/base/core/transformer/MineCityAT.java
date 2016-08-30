@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge.mc_1_10_2.core;
+package br.com.gamemods.minecity.forge.base.core.transformer;
 
 import net.minecraftforge.fml.common.asm.transformers.AccessTransformer;
 
@@ -8,6 +8,6 @@ public class MineCityAT extends AccessTransformer
 {
     public MineCityAT() throws IOException
     {
-        super("minecity_at.cfg");
+        super("assets/minecity/forge/minecity_at.cfg");
     }
 }

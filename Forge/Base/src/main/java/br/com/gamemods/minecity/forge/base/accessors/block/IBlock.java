@@ -19,6 +19,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraftforge.fluids.BlockFluidBase;
 
+import java.util.Random;
+
 @Referenced(at = ForgeInterfaceTransformer.class)
 public interface IBlock
 {
@@ -74,4 +76,13 @@ public interface IBlock
     {
         return getForgeBlock().getUnlocalizedName();
     }
+
+    default boolean isHarvest()
+    {
+        return false;
+    }
+
+    IItem getItemDropped(IState state, Random rand, int fortune);
+
+    IItemStack getItemStack(IState state, IWorldServer world, int x, int y, int z);
 }

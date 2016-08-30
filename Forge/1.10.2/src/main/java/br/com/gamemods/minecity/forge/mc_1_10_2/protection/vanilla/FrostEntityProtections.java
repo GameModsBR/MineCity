@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -142,6 +143,21 @@ public class FrostEntityProtections extends EntityProtections
                 (IEntityLivingBase) event.getEntityLiving(),
                 (IPotionEffect) event.effect,
                 (IEntity) event.potion
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onPlayerPickupItem(EntityItemPickupEvent event)
+    {
+        if(event.getEntity().worldObj.isRemote)
+            return;
+
+        if(onPlayerPickupItem(
+                (IEntityPlayerMP) event.getEntityPlayer(),
+                (IEntityItem) event.getItem()
         ))
         {
             event.setCanceled(true);
