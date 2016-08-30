@@ -14,12 +14,28 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
 
 public class SevenEntityProtections extends EntityProtections
 {
     public SevenEntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onPlayerPickupExpEvent(PlayerPickupXpEvent event)
+    {
+        if(event.entityPlayer.worldObj.isRemote)
+            return;
+
+        if(onPlayerPickupExpEvent(
+                (IEntityPlayerMP) event.entityPlayer,
+                (IEntityXPOrb) event.orb
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

@@ -38,6 +38,31 @@ public class EntityProtections extends ForgeProtections
         super(mod);
     }
 
+    public boolean onPlayerPickupExpEvent(IEntityPlayerMP entityPlayer, IEntityXPOrb entityOrb)
+    {
+        if(entityOrb.isAllowedToPickup(entityPlayer.identity()))
+            return false;
+
+        ForgePlayer player = mod.player(entityPlayer);
+        if(player.disablePickup)
+            return true;
+
+
+        BlockPos pos = entityOrb.getBlockPos(mod);
+        Optional<Message> denial = mod.mineCity.provideChunk(pos.getChunk())
+                .getFlagHolder(pos).can(player,PermissionFlag.PICKUP);
+
+        if(denial.isPresent())
+        {
+            mod.callSyncMethodDelayed(() -> player.disablePickup = false, 40);
+            player.disablePickup = true;
+            player.send(FlagHolder.wrapDeny(denial.get()));
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean onPlayerPickupArrowEvent(IEntityPlayerMP entityPlayer, IEntityArrow arrow)
     {
         ForgePlayer player = mod.player(entityPlayer);
