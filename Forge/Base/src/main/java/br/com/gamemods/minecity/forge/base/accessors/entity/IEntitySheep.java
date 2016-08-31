@@ -13,7 +13,7 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.TriggeredReaction
 import net.minecraft.entity.passive.EntitySheep;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
-public interface IEntitySheep extends IEntityAgeable
+public interface IEntitySheep extends IEntityAnimal
 {
     @Override
     default EntitySheep getForgeEntity()

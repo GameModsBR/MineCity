@@ -2,19 +2,15 @@ package br.com.gamemods.minecity.forge.base.accessors.entity;
 
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
-import net.minecraft.entity.EntityAgeable;
+import org.jetbrains.annotations.NotNull;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
-public interface IEntityAgeable extends IEntityCreature
+public interface IEntityMob extends IEntityCreature
 {
+    @NotNull
     @Override
-    default EntityAgeable getForgeEntity()
+    default Type getType()
     {
-        return (EntityAgeable) this;
-    }
-
-    default boolean isChild()
-    {
-        return getForgeEntity().isChild();
+        return Type.MONSTER;
     }
 }

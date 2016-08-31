@@ -1,10 +1,13 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.accessors.entity;
 
+import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityFishHook;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenInterfaceTransformer;
 import net.minecraft.entity.projectile.EntityFishHook;
 
-public interface SevenEntityFishHook extends IEntityFishHook
+@Referenced(at = SevenInterfaceTransformer.class)
+public interface SevenEntityFishHook extends IEntityFishHook, SevenEntity
 {
     @Override
     default IEntityPlayerMP getAnger()

@@ -1,8 +1,11 @@
 package br.com.gamemods.minecity.forge.base.accessors.entity;
 
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import net.minecraft.entity.projectile.EntityFireball;
 
+@Referenced(at = ForgeInterfaceTransformer.class)
 public interface IEntityFireball extends EntityProjectile
 {
     @Override

@@ -14,9 +14,10 @@ import net.minecraft.network.play.server.SPacketTitle;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import org.jetbrains.annotations.NotNull;
 
 @Referenced(at = FrostEntityPlayerMPTransformer.class)
-public interface FrostEntityPlayerMP extends IEntityPlayerMP
+public interface FrostEntityPlayerMP extends IEntityPlayerMP, FrostEntity
 {
     @Override
     default void sendBlock(int x, int y, int z)
@@ -66,5 +67,12 @@ public interface FrostEntityPlayerMP extends IEntityPlayerMP
                     mod.transformer.toJson(subtitle)
             )));
         }
+    }
+
+    @NotNull
+    @Override
+    default String getName()
+    {
+        return IEntityPlayerMP.super.getName();
     }
 }

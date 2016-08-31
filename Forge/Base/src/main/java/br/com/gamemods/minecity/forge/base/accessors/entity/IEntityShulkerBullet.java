@@ -1,11 +1,14 @@
 package br.com.gamemods.minecity.forge.base.accessors.entity;
 
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityShulkerBullet;
 
 import java.lang.reflect.Field;
 
+@Referenced(at = ForgeInterfaceTransformer.class)
 public interface IEntityShulkerBullet extends EntityProjectile
 {
     @Override

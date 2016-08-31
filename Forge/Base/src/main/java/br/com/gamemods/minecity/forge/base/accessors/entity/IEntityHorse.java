@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
-public interface IEntityHorse extends IEntityAgeable
+public interface IEntityHorse extends IEntityAnimal
 {
     @Override
     default EntityHorse getForgeEntity()

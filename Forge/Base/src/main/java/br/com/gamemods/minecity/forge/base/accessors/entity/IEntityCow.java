@@ -10,7 +10,7 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
-public interface IEntityCow extends IEntityAgeable
+public interface IEntityCow extends IEntityAnimal
 {
     @Override
     default Reaction reactPlayerInteraction(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)

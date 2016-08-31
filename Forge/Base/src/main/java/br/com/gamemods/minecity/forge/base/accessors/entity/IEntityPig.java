@@ -5,7 +5,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterface
 import net.minecraft.entity.passive.EntityPig;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
-public interface IEntityPig extends IEntityAgeable
+public interface IEntityPig extends IEntityAnimal
 {
     @Override
     default EntityPig getForgeEntity()

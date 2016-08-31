@@ -8,7 +8,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
 @Referenced(at = SevenInterfaceTransformer.class)
-public interface SevenEntityArrow extends IEntityArrow
+public interface SevenEntityArrow extends IEntityArrow, SevenEntity
 {
     @Override
     default IItemStack getIArrowStack()
