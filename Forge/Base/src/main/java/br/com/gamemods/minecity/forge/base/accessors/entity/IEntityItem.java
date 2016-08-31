@@ -69,4 +69,14 @@ public interface IEntityItem extends Pickable
     {
         getForgeEntity().setOwner(name);
     }
+
+    default int getPickupDelay()
+    {
+        return ((EntityItem) this).delayBeforeCanPickup;
+    }
+
+    default int getItemAge()
+    {
+        return ((EntityItem) this).age;
+    }
 }

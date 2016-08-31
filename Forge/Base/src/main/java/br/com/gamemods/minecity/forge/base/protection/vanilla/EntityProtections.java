@@ -101,10 +101,7 @@ public class EntityProtections extends ForgeProtections
         Optional<Message> denial = reaction.can(mod.mineCity, player);
 
         if(denial.isPresent())
-        {
-            player.send(FlagHolder.wrapDeny(denial.get()));
-            return true;
-        }
+            return false;
 
         entityItem.allowToPickup(player.identity());
         return false;

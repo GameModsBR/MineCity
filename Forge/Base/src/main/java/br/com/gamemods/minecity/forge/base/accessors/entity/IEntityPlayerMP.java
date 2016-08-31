@@ -207,12 +207,17 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
             player.send(messages);
     }
 
+    default ItemStack addToEnderChest(IItemStack stack)
+    {
+        return ((EntityPlayerMP) this).getInventoryEnderChest().addItem(stack.getStack());
+    }
+
     default void attemptToReturn(IItemStack stack)
     {
         EntityPlayerMP player = getForgeEntity();
         if(!player.inventory.addItemStackToInventory(stack.getStack()))
         {
-            ItemStack rest = player.getInventoryEnderChest().addItem(stack.getStack());
+            ItemStack rest = addToEnderChest(stack);
             if(rest != null)
             {
                 EntityItem drop = player.dropItem(rest, false, true);
@@ -226,5 +231,10 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
                 }
             }
         }
+    }
+
+    default void sendChanges()
+    {
+        ((EntityPlayerMP) this).inventoryContainer.detectAndSendChanges();
     }
 }

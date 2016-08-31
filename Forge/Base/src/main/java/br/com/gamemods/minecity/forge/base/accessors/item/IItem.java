@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.accessors.item;
 
+import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
@@ -69,9 +70,19 @@ public interface IItem
 
     default Reaction reactItemToss(ForgePlayer<?,?,?> player, IItemStack stack, IEntityItem entityItem)
     {
-        SingleBlockReaction reaction = new SingleBlockReaction(entityItem.getBlockPos(player.getServer()), PermissionFlag.PICKUP);
+        MineCityForge mod = player.getServer();
+        IEntityPlayerMP entityPlayer = player.cmd.sender;
+        SingleBlockReaction reaction = new SingleBlockReaction(entityItem.getBlockPos(mod), PermissionFlag.PICKUP);
         reaction.addDenialListener((reaction1, permissible, flag, p, message) ->
-                player.cmd.sender.attemptToReturn(stack)
+                mod.callSyncMethod(() -> {
+                    if(!entityItem.isDead() && entityItem.getPickupDelay() < 32000)
+                    {
+                        entityPlayer.attemptToReturn(stack);
+                        entityPlayer.sendChanges();
+                        player.send(FlagHolder.wrapDeny(message));
+                        entityItem.setDead();
+                    }
+                })
         );
         return reaction;
     }

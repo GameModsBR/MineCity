@@ -388,4 +388,9 @@ public interface IEntity extends MinecraftEntity
 
         return new PlayerID(new UUID(nbt.getLong("MineCityLastDmg0"), nbt.getLong("MineCityLastDmg1")), nbt.getString("MineCityLastDmg2"));
     }
+
+    default boolean isDead()
+    {
+        return ((Entity) this).isDead;
+    }
 }

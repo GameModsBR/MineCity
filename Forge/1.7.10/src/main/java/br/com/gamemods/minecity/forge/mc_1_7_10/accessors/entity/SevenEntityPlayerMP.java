@@ -5,9 +5,12 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPlayerMPTransformer;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.InventoryEnderChest;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.S23PacketBlockChange;
@@ -84,5 +87,48 @@ public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingB
     default boolean isCreative()
     {
         return getForgeEntity().capabilities.isCreativeMode;
+    }
+
+    @Override
+    default ItemStack addToEnderChest(IItemStack stack)
+    {
+        InventoryEnderChest inv = getForgeEntity().getInventoryEnderChest();
+        ItemStack itemStack = stack.getStack().copy();
+
+        for (int i = 0; i < inv.getSizeInventory(); ++i)
+        {
+            ItemStack other = inv.getStackInSlot(i);
+
+            //noinspection ConstantConditions
+            if (other == null)
+            {
+                inv.setInventorySlotContents(i, itemStack);
+                inv.markDirty();
+                return null;
+            }
+
+            if (ItemStack.areItemStacksEqual(other, itemStack))
+            {
+                int j = Math.min(inv.getInventoryStackLimit(), other.getMaxStackSize());
+                int k = Math.min(itemStack.stackSize, j - other.stackSize);
+
+                if (k > 0)
+                {
+                    other.stackSize += k;
+                    itemStack.stackSize -= k;
+
+                    if (itemStack.stackSize <= 0)
+                    {
+                        inv.markDirty();
+                        return null;
+                    }
+                }
+            }
+        }
+
+        if (itemStack.stackSize != stack.getSize())
+            inv.markDirty();
+
+        return itemStack;
     }
 }
