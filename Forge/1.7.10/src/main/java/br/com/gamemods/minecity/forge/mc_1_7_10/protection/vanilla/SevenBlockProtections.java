@@ -96,9 +96,6 @@ public class SevenBlockProtections extends BlockProtections
 
     private IState state(Block block, int meta)
     {
-        if(meta == 0)
-            return (IState) block;
-
         return new SevenBlockState(block, meta);
     }
 }

@@ -11,28 +11,20 @@ import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenInte
 import net.minecraft.block.Block;
 import net.minecraft.world.IBlockAccess;
 
-import java.util.Collection;
-import java.util.NoSuchElementException;
 import java.util.Random;
 
 @Referenced(at = SevenInterfaceTransformer.class)
-public interface SevenBlock extends IBlock, IState
+public interface SevenBlock extends IBlock
 {
-    @Override
-    default SevenBlock getIBlock()
-    {
-        return this;
-    }
-
     @Override
     default Block getForgeBlock()
     {
         return (Block) this;
     }
 
-    default SevenBlock getDefaultIState()
+    default SevenBlockState getDefaultIState()
     {
-        return this;
+        return new SevenBlockState(this, 0);
     }
 
     default boolean isOpaqueCube()
@@ -41,32 +33,11 @@ public interface SevenBlock extends IBlock, IState
     }
 
     @Override
-    default int getStateId()
-    {
-        return 0;
-    }
-
-    @Override
     default boolean isReplaceable(IWorldServer world, int x, int y, int z)
     {
         return ((Block) this).isReplaceable((IBlockAccess) world, x, y, z);
     }
 
-    @Override
-    default Collection<IProp<?>> getPropertyKeys()
-    {
-        return SevenMetadataProperty.SINGLETON;
-    }
-
-    @Override
-    default <T extends Comparable<T>> T getValue(IProp<T> prop)
-    {
-        if(prop == SevenMetadataProperty.INSTANCE)
-            return prop.getValueClass().cast(0);
-        throw new NoSuchElementException("Property "+prop+" not found in "+this);
-    }
-
-    @Override
     default boolean isSolid()
     {
         return ((Block) this).getMaterial().isSolid();

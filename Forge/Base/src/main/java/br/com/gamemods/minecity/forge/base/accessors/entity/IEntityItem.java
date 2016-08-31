@@ -35,7 +35,7 @@ public interface IEntityItem extends Pickable
     @Override
     default IEntityLivingBase getEntityOwner()
     {
-        String owner = getForgeEntity().getOwner();
+        String owner = getItemOwner();
         //noinspection ConstantConditions
         if(owner == null)
             return null;
@@ -54,10 +54,15 @@ public interface IEntityItem extends Pickable
         return owner.getUniqueID();
     }
 
+    default String getItemOwner()
+    {
+        return getForgeEntity().getOwner();
+    }
+
     @Override
     default boolean isAllowedToPickup(PlayerID id)
     {
-        return id.getName().equals(getForgeEntity().getOwner()) || Pickable.super.isAllowedToPickup(id);
+        return id.getName().equals(getItemOwner()) || Pickable.super.isAllowedToPickup(id);
     }
 
     default void setItemOwner(String name)

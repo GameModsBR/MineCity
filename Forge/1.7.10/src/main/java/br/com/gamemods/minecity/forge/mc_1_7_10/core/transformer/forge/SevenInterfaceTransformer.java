@@ -14,6 +14,9 @@ public class SevenInterfaceTransformer extends ForgeInterfaceTransformer
     {
         Map<String, String> r = getReplacements();
 
+        r.put("net.minecraft.entity.item.EntityItem",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.accessors.entity.SevenEntityItem");
+
         r.put("net.minecraft.block.BlockStem",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockStem");
 

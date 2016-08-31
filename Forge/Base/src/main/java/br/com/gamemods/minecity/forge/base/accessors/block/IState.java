@@ -16,7 +16,10 @@ import java.util.function.IntUnaryOperator;
 public interface IState
 {
     IBlock getIBlock();
-    Block getForgeBlock();
+    default Block getForgeBlock()
+    {
+        return (Block) getIBlock();
+    }
 
     boolean isOpaqueCube();
 

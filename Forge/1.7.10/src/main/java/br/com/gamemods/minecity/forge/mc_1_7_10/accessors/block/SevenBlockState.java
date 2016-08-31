@@ -58,7 +58,7 @@ public class SevenBlockState implements IState
     @Override
     public Collection<IProp<?>> getPropertyKeys()
     {
-        return Collections.singleton(SevenMetadataProperty.INSTANCE);
+        return SevenMetadataProperty.SINGLETON;
     }
 
     @Override

@@ -5,12 +5,14 @@ import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
+import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.SevenUtil;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlock;
+import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenMetadataProperty;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.world.SevenWorldServerTransformer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,15 +32,16 @@ import java.util.stream.Collectors;
 public interface SevenWorldServer extends IWorldServer
 {
     @Override
-    default SevenBlock getIBlock(int x, int y, int z)
+    default IBlock getIBlock(int x, int y, int z)
     {
         return (SevenBlock) ((WorldServer) this).getBlock(x, y, z);
     }
 
     @Override
-    default SevenBlock getIState(int x, int y, int z)
+    default IState getIState(int x, int y, int z)
     {
-        return getIBlock(x, y, z);
+        WorldServer world = (WorldServer) this;
+        return new SevenBlockState(world.getBlock(x, y, z), world.getBlockMetadata(x, y, z));
     }
 
     @Override

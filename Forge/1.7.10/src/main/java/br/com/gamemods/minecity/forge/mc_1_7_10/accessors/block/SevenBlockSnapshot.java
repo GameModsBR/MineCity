@@ -51,7 +51,7 @@ public interface SevenBlockSnapshot extends IBlockSnapshot
         Block currentBlock = snapshot.getCurrentBlock();
         int meta = snapshot.world.getBlockMetadata(snapshot.x, snapshot.y, snapshot.z);
         if(meta == 0)
-            return (IState) currentBlock;
+            return ((SevenBlock) currentBlock).getDefaultIState();
         return new SevenBlockState((SevenBlock) currentBlock, meta);
     }
 
@@ -62,7 +62,7 @@ public interface SevenBlockSnapshot extends IBlockSnapshot
         Block replacedBlock = snapshot.getReplacedBlock();
         int meta = snapshot.meta;
         if(meta == 0)
-            return (IState) replacedBlock;
+            return ((SevenBlock) replacedBlock).getDefaultIState();
         return new SevenBlockState((SevenBlock) replacedBlock, meta);
     }
 }
