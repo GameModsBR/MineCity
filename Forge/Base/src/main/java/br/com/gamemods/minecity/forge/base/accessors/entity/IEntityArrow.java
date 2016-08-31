@@ -24,10 +24,7 @@ public interface IEntityArrow extends EntityProjectile
     }
 
     @Referenced(at = EntityArrowTransformer.class)
-    default IItemStack getIArrowStack()
-    {
-        return (IItemStack) (Object) new ItemStack(Items.ARROW);
-    }
+    IItemStack getIArrowStack();
 
     @Override
     default void detectShooter(MineCityForge mod)
