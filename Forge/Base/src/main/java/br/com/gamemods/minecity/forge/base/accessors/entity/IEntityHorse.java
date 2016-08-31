@@ -1,7 +1,13 @@
 package br.com.gamemods.minecity.forge.base.accessors.entity;
 
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
+import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
+import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 import net.minecraft.entity.passive.EntityHorse;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,5 +39,39 @@ public interface IEntityHorse extends IEntityAgeable
             return null;
 
         return (IEntityLivingBase) horse.worldObj.getPlayerEntityByUUID(uuid);
+    }
+
+    @Override
+    default Reaction reactPlayerInteraction(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
+    {
+        if(isChild() || player.getUniqueId().equals(getEntityOwnerId()))
+            return NoReaction.INSTANCE;
+
+        if(stack != null && canHaveChest() && !isCarryingChest() && stack.getIItem().getUnlocalizedName().equals("tile.chest"))
+        {
+            SingleBlockReaction react = new SingleBlockReaction(getBlockPos(player.getServer()),PermissionFlag.MODIFY);
+            react.addDenialListener((reaction, permissible, flag, pos, message) -> {
+                setCarryingChest(true);
+                setCarryingChest(false);
+            });
+            return react;
+        }
+
+        return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.RIDE);
+    }
+
+    default void setCarryingChest(boolean val)
+    {
+        ((EntityHorse) this).setChested(val);
+    }
+
+    default boolean canHaveChest()
+    {
+        return ((EntityHorse) this).getType().canBeChested();
+    }
+
+    default boolean isCarryingChest()
+    {
+        return ((EntityHorse) this).isChested();
     }
 }
