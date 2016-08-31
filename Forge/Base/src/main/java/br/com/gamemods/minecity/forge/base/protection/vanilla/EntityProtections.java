@@ -53,7 +53,8 @@ public class EntityProtections extends ForgeProtections
     {
         NBTTagCompound nbt = living.getForgeEntity().getEntityData();
         Set<PlayerID> ids = new HashSet<>(2);
-        ids.add(player.identity());
+        if(player != null)
+            ids.add(player.identity());
         if(nbt.hasKey("MineCitySplitXp"))
             nbt.getCompoundTag("MineCitySplitXp").getKeySet().forEach(key-> ids.add(new PlayerID(UUID.fromString(key), nbt.getString(key))));
 
