@@ -21,6 +21,16 @@ import org.jetbrains.annotations.Nullable;
 @Referenced
 public class MineCitySevenHooks
 {
+    @Referenced(at = SevenEntityLivingBaseTransformer.class)
+    public static int getExperienceDrop(int exp, EntityLivingBase living, EntityPlayer player)
+    {
+        LivingExpDropEvent event = new LivingExpDropEvent(living, player, exp);
+        if (MinecraftForge.EVENT_BUS.post(event))
+            return 0;
+
+        return event.droppedExperiencePoints;
+    }
+
     @Referenced(at = SevenEntityXPOrbTransformer.class)
     public static EntityPlayer onXpOrbTargetPlayer(EntityPlayer player, EntityXPOrb orb)
     {

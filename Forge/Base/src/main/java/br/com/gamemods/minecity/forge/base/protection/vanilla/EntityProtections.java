@@ -26,7 +26,9 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class EntityProtections extends ForgeProtections
@@ -36,6 +38,21 @@ public class EntityProtections extends ForgeProtections
     public EntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    public void onLivingDropsExp(IEntityLivingBase living, IEntityPlayerMP player, int droppedExp)
+    {
+        NBTTagCompound nbt = living.getForgeEntity().getEntityData();
+        Set<PlayerID> ids = new HashSet<>(2);
+        ids.add(player.identity());
+        if(nbt.hasKey("MineCitySplitXp"))
+            nbt.getCompoundTag("MineCitySplitXp").getKeySet().forEach(key-> ids.add(new PlayerID(UUID.fromString(key), nbt.getString(key))));
+
+        AtomicInteger remaining = new AtomicInteger(droppedExp);
+        mod.addPostSpawnListener(living.getEntityPos(mod), 1, IEntityXPOrb.class, 2, orb-> {
+            ids.forEach(orb::allowToPickup);
+            return remaining.addAndGet(-orb.getXp()) > 0;
+        });
     }
 
     public void onLivingDrops(IEntityLivingBase entity, DamageSource source, Collection<EntityItem> drops)
@@ -48,12 +65,14 @@ public class EntityProtections extends ForgeProtections
 
         if(!attackers.isEmpty())
         {
-            drops.stream().map(IEntityItem.class::cast).forEach(item ->
-                    attackers.stream().map(Permissible::identity)
-                            .filter(PlayerID.class::isInstance).map(PlayerID.class::cast)
-                            .forEach(item::allowToPickup)
-            );
+            Set<PlayerID> ids = attackers.stream().map(Permissible::identity)
+                    .filter(PlayerID.class::isInstance).map(PlayerID.class::cast)
+                    .collect(Collectors.toSet());
 
+            drops.stream().map(IEntityItem.class::cast).forEach(item -> ids.forEach(item::allowToPickup));
+            NBTTagCompound tag = new NBTTagCompound();
+            ids.forEach(id-> tag.setString(id.getUniqueId().toString(), id.getName()));
+            entity.getForgeEntity().getEntityData().setTag("MineCitySplitXp", tag);
         }
     }
 

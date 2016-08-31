@@ -10,7 +10,6 @@ import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.*;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -25,6 +24,19 @@ public class SevenEntityProtections extends EntityProtections
     public SevenEntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onLivingDropsXp(LivingExpDropEvent event)
+    {
+        if(event.entityLiving.worldObj.isRemote)
+            return;
+
+        onLivingDropsExp(
+                (IEntityLivingBase) event.entityLiving,
+                (IEntityPlayerMP) event.attackingPlayer,
+                event.droppedExperiencePoints
+        );
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

@@ -15,6 +15,7 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -27,6 +28,19 @@ public class FrostEntityProtections extends EntityProtections
     public FrostEntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onLivingDropsXp(LivingExperienceDropEvent event)
+    {
+        if(event.getEntityLiving().worldObj.isRemote)
+            return;
+
+        onLivingDropsExp(
+                (IEntityLivingBase) event.getEntityLiving(),
+                (IEntityPlayerMP) event.getAttackingPlayer(),
+                event.getDroppedExperience()
+        );
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
