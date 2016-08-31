@@ -15,7 +15,7 @@ public interface IEntityMushroom extends IEntityCow
     @Override
     default Reaction reactPlayerInteraction(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
     {
-        if(stack != null && stack.getIItem().getUnlocalizedName().equals("item.bowl"))
+        if(stack != null && !isChild() && stack.getIItem().getUnlocalizedName().equals("item.bowl"))
             return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.HARVEST);
         return NoReaction.INSTANCE;
     }
