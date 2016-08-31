@@ -21,6 +21,13 @@ import org.jetbrains.annotations.Nullable;
 @Referenced
 public class MineCitySevenHooks
 {
+    @Referenced(at = SevenEntityFishingHookTransformer.class)
+    public static Entity onFishingHookSpawnEntity(Entity entity, EntityFishHook hook)
+    {
+        MinecraftForge.EVENT_BUS.post(new EntitySpawnByFishingHookEvent(entity, hook));
+        return entity;
+    }
+
     @Referenced(at = SevenEntityLivingBaseTransformer.class)
     public static int getExperienceDrop(int exp, EntityLivingBase living, EntityPlayer player)
     {

@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.entity;
 
+import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.forge.base.MethodPatcher;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
@@ -9,6 +10,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.lang.reflect.Modifier;
+import java.util.Comparator;
 import java.util.ListIterator;
 
 @MethodPatcher
@@ -67,6 +69,24 @@ public class EntityFishingHookTransformer implements IClassTransformer
         boolean skip = true;
         for(MethodNode method : node.methods)
         {
+            if(method.desc.equals("()I"))
+                CollectionUtil.stream(method.instructions.iterator())
+                        .filter(ins -> ins.getOpcode() == Opcodes.INVOKEVIRTUAL).map(MethodInsnNode.class::cast)
+                        .filter(ins -> ins.owner.equals("net/minecraft/world/World"))
+                        .filter(ins -> ins.desc.equals("(Lnet/minecraft/entity/Entity;)Z"))
+                        .map(ins -> method.instructions.indexOf(ins))
+                        .sorted(Comparator.reverseOrder()).mapToInt(Integer::intValue)
+                        .forEachOrdered(index -> {
+                            InsnList list = new InsnList();
+                            list.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                            list.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                    hookClass, "onFishingHookSpawnEntity",
+                                    "(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/projectile/EntityFishHook;)Lnet/minecraft/entity/Entity;",
+                                    false
+                            ));
+                            method.instructions.insertBefore(method.instructions.get(index), list);
+                        });
+
             if(method.desc.equals("()V") && Modifier.isProtected(method.access))
             {
                 if(skip)

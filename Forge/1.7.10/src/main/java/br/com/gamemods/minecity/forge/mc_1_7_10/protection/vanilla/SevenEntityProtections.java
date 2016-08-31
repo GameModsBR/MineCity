@@ -26,6 +26,18 @@ public class SevenEntityProtections extends EntityProtections
         super(mod);
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onEntitySpawnByFishingHook(EntitySpawnByFishingHookEvent event)
+    {
+        if(event.entity.worldObj.isRemote)
+            return;
+
+        onEntitySpawnByFishingHook(
+                (IEntity) event.entity,
+                (IEntityFishHook) event.hook
+        );
+    }
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onLivingDropsXp(LivingExpDropEvent event)
     {

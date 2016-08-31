@@ -26,6 +26,13 @@ import org.jetbrains.annotations.Nullable;
 @Referenced
 public class MineCityFrostHooks
 {
+    @Referenced(at = FrostEntityFishingHookTransformer.class)
+    public static Entity onFishingHookSpawnEntity(Entity entity, EntityFishHook hook)
+    {
+        MinecraftForge.EVENT_BUS.post(new EntitySpawnByFishingHookEvent(entity, hook));
+        return entity;
+    }
+
     @Referenced(at = FrostEntityXPOrbTransformer.class)
     public static EntityPlayer onXpOrbTargetPlayer(EntityPlayer player, EntityXPOrb orb)
     {

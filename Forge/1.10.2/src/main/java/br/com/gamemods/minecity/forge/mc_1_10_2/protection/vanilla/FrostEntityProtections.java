@@ -30,6 +30,18 @@ public class FrostEntityProtections extends EntityProtections
         super(mod);
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onEntitySpawnByFishingHook(EntitySpawnByFishingHookEvent event)
+    {
+        if(event.getEntity().worldObj.isRemote)
+            return;
+
+        onEntitySpawnByFishingHook(
+                (IEntity) event.getEntity(),
+                (IEntityFishHook) event.hook
+        );
+    }
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onLivingDropsXp(LivingExperienceDropEvent event)
     {

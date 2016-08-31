@@ -40,6 +40,15 @@ public class EntityProtections extends ForgeProtections
         super(mod);
     }
 
+    public void onEntitySpawnByFishingHook(IEntity entity, IEntityFishHook hook)
+    {
+        IEntityPlayerMP anger = hook.getAnger();
+        if(anger != null && entity instanceof Pickable)
+        {
+            ((Pickable) entity).allowToPickup(anger.identity());
+        }
+    }
+
     public void onLivingDropsExp(IEntityLivingBase living, IEntityPlayerMP player, int droppedExp)
     {
         NBTTagCompound nbt = living.getForgeEntity().getEntityData();
