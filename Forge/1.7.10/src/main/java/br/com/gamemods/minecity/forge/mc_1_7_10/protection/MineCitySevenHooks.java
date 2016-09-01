@@ -1,8 +1,10 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.protection;
 
+import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockDragonEggTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockTNTTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenGrowMonitorTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.*;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.*;
 import cpw.mods.fml.common.eventhandler.Event;
@@ -19,13 +21,50 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.BlockSnapshot;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 @Referenced
 public class MineCitySevenHooks
 {
+    @Contract("!null, _, _, _, _, _ -> fail")
+    @Referenced(at = SevenGrowMonitorTransformer.class)
+    public static void onGrowableGrow(Throwable thrown, Object source, World world, int x, int y, int z)
+            throws Throwable
+    {
+        world.captureBlockSnapshots = false;
+        ArrayList<BlockSnapshot> changes = new ArrayList<>(world.capturedBlockSnapshots);
+        world.capturedBlockSnapshots.clear();
+
+        if(MinecraftForge.EVENT_BUS.post(new BlockGrowEvent(world, x, y, z, source, changes)))
+        {
+            HashSet<Point> restored = new HashSet<>();
+            for(BlockSnapshot snapshot : changes)
+            {
+                Point snapPos = new Point(snapshot.x, snapshot.y, snapshot.z);
+                if(restored.contains(snapPos))
+                    continue;
+
+                world.restoringBlockSnapshots = true;
+                snapshot.restore(true, false);
+                world.restoringBlockSnapshots = false;
+                restored.add(snapPos);
+            }
+        }
+        else
+        {
+            changes.stream().forEachOrdered(snapshot ->
+                snapshot.world.markBlockForUpdate(snapshot.x, snapshot.y, snapshot.z)
+            );
+        }
+
+        if(thrown != null)
+            throw thrown;
+    }
+
     @Referenced(at = SevenBlockDragonEggTransformer.class)
     public static void startCapturingBlocks(World world)
     {

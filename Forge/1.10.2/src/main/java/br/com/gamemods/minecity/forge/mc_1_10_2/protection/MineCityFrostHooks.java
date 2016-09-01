@@ -27,10 +27,53 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 @Referenced
 public class MineCityFrostHooks
 {
+    @Contract("!null, _, _, _, _ -> fail")
+    @Referenced(at = FrostGrowMonitorTransformer.class)
+    public static void onGrowableGrow(Throwable thrown, Object source, World world, BlockPos pos, IBlockState state)
+            throws Throwable
+    {
+        world.captureBlockSnapshots = false;
+        ArrayList<BlockSnapshot> changes = new ArrayList<>(world.capturedBlockSnapshots);
+        world.capturedBlockSnapshots.clear();
+
+        if(MinecraftForge.EVENT_BUS.post(new BlockGrowEvent(world, pos, state, source, changes)))
+        {
+            HashSet<BlockPos> restored = new HashSet<>();
+            for(BlockSnapshot snapshot : changes)
+            {
+                BlockPos snapPos = snapshot.getPos();
+                if(restored.contains(snapPos))
+                    continue;
+
+                world.restoringBlockSnapshots = true;
+                snapshot.restore(true, false);
+                world.restoringBlockSnapshots = false;
+                restored.add(snapPos);
+            }
+        }
+        else
+        {
+            HashSet<BlockPos> notified = new HashSet<>();
+            for(BlockSnapshot snapshot : changes)
+            {
+                BlockPos snapPos = snapshot.getPos();
+                if(notified.contains(snapPos))
+                    continue;
+
+                world.notifyBlockUpdate(snapPos, snapshot.getReplacedBlock(), snapshot.getCurrentBlock(), snapshot.getFlag());
+                notified.add(snapPos);
+            }
+        }
+
+        if(thrown != null)
+            throw thrown;
+    }
+
     @Referenced(at = FrostBlockDragonEggTransformer.class)
     public static void startCapturingBlocks(World world)
     {

@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.forge.base.protection.vanilla;
 
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
+import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
@@ -45,6 +46,22 @@ public class BlockProtections extends ForgeProtections
         }
 
         return false;
+    }
+
+    public boolean onBlockGrow(IState state, BlockPos block, List<IBlockSnapshot> changes)
+    {
+        int size = changes.size();
+        if(size == 1 && changes.get(0).getPosition(mod).equals(block))
+            return false;
+        else if(size == 0)
+            return false;
+
+        Identity<?> owner = mod.mineCity.provideChunk(block.getChunk()).getFlagHolder(block).owner();
+
+        Reaction reaction = new MultiBlockReaction(PermissionFlag.MODIFY,
+                changes.stream().map(snap-> snap.getPosition(mod)).collect(Collectors.toList()));
+
+        return reaction.can(mod.mineCity, owner).isPresent();
     }
 
     public boolean onDragonEggTeleport(IEntityPlayerMP player, IState state, BlockPos pos, List<IBlockSnapshot> changes)

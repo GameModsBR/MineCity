@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP
 import br.com.gamemods.minecity.forge.base.protection.vanilla.BlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.SevenUtil;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
+import br.com.gamemods.minecity.forge.mc_1_7_10.event.BlockGrowEvent;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.PlayerTeleportDragonEggEvent;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -25,6 +26,23 @@ public class SevenBlockProtections extends BlockProtections
     {
         super(mod);
         this.mod = mod;
+    }
+
+    @SuppressWarnings("unchecked")
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onBlockGrow(BlockGrowEvent event)
+    {
+        if(event.world.isRemote)
+            return;
+
+        if(onBlockGrow(
+                state(event.block, event.blockMetadata),
+                new BlockPos(mod.world(event.world), event.x, event.y, event.z),
+                (List) event.changes
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 
     @SuppressWarnings("unchecked")
