@@ -48,14 +48,19 @@ public interface IEntityHorse extends IEntityAnimal
         if(isChild() || player.getUniqueId().equals(getEntityOwnerId()))
             return NoReaction.INSTANCE;
 
-        if(stack != null && canHaveChest() && !isCarryingChest() && stack.getIItem().getUnlocalizedName().equals("tile.chest"))
+        if(stack != null && !isChild())
         {
-            SingleBlockReaction react = new SingleBlockReaction(getBlockPos(player.getServer()),PermissionFlag.MODIFY);
-            react.addDenialListener((reaction, permissible, flag, pos, message) -> {
-                setCarryingChest(true);
-                setCarryingChest(false);
-            });
-            return react;
+            if(canHaveChest() && !isCarryingChest() && stack.getIItem().getUnlocalizedName().equals("tile.chest"))
+            {
+                SingleBlockReaction react = new SingleBlockReaction(getBlockPos(player.getServer()),PermissionFlag.MODIFY);
+                react.addDenialListener((reaction, permissible, flag, pos, message) -> {
+                    setCarryingChest(true);
+                    setCarryingChest(false);
+                });
+            }
+
+            if(isBreedingItem(stack))
+                return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.PVC);
         }
 
         return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.RIDE);

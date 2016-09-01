@@ -29,16 +29,22 @@ public interface IEntitySheep extends IEntityAnimal
     @Override
     default Reaction reactPlayerInteraction(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
     {
-        if(stack != null && !isSheared() && !isChild() && stack.getIItem().getUnlocalizedName().equals("item.shears"))
+        if(stack != null && !isChild())
         {
-            MineCityForge server = player.getServer();
-            TriggeredReaction react = new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.HARVEST);
-            react.addAllowListener((reaction, permissible, flag, pos, message) ->
-                server.consumeItemsOrAddOwnerIf(getEntityPos(server), 2, 1, 2, null, player.identity(), item->
-                        item.getStack().getIItem().isHarvest(item.getStack())
-                )
-            );
-            return react;
+            if(!isSheared() && stack.getIItem().getUnlocalizedName().equals("item.shears"))
+            {
+                MineCityForge server = player.getServer();
+                TriggeredReaction react = new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.HARVEST);
+                react.addAllowListener((reaction, permissible, flag, pos, message) ->
+                    server.consumeItemsOrAddOwnerIf(getEntityPos(server), 2, 1, 2, null, player.identity(), item->
+                            item.getStack().getIItem().isHarvest(item.getStack())
+                    )
+                );
+                return react;
+            }
+
+            if(isBreedingItem(stack))
+                return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.PVC);
         }
 
         return NoReaction.INSTANCE;
