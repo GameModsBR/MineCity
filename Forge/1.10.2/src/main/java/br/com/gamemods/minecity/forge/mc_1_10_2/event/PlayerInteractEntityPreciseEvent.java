@@ -6,8 +6,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 
+/**
+ * @deprecated Use {@link PlayerInteractEvent.EntityInteractSpecific} instead
+ */
+@Deprecated
 @Cancelable
 public class PlayerInteractEntityPreciseEvent extends EntityEvent
 {

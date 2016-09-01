@@ -9,6 +9,10 @@ import org.objectweb.asm.tree.*;
 
 import static org.objectweb.asm.Opcodes.*;
 
+/**
+ * @deprecated Used to fire a custom event but there's a forge event available for the same thing.
+ */
+@Deprecated
 @MethodPatcher
 public class EntityArmorStandTransformer implements IClassTransformer
 {

@@ -184,6 +184,10 @@ public class FrostEntityProtections extends EntityProtections
         }
     }
 
+    /**
+     * @deprecated Should use {@link PlayerInteractEvent.EntityInteractSpecific} instead
+     */
+    @Deprecated
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onPlayerInteractEntityPrecisely(PlayerInteractEntityPreciseEvent event)
     {

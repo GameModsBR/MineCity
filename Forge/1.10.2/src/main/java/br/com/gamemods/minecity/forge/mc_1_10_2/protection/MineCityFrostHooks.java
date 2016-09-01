@@ -19,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -80,6 +81,10 @@ public class MineCityFrostHooks
         return MinecraftForge.EVENT_BUS.post(event);
     }
 
+    /**
+     * @deprecated {@link PlayerInteractEvent.EntityInteractSpecific} does basically the same thing but has better support for modded entities
+     */
+    @Deprecated
     @Nullable
     @Referenced(at = FrostEntityArmorStandTransformer.class)
     public static EnumActionResult onPrecisePlayerInteraction(Entity entity, EntityPlayer player, Vec3d vec, ItemStack stack, EnumHand hand)

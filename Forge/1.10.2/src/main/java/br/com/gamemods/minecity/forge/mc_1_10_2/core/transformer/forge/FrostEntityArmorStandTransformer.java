@@ -5,6 +5,10 @@ import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityA
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod;
 import br.com.gamemods.minecity.forge.mc_1_10_2.protection.MineCityFrostHooks;
 
+/**
+ * @deprecated Used to fire a custom event but there's a forge event available for the same thing.
+ */
+@Deprecated
 @Referenced
 public class FrostEntityArmorStandTransformer extends EntityArmorStandTransformer
 {
