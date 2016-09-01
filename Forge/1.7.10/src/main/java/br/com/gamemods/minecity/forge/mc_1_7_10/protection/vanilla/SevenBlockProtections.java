@@ -3,15 +3,19 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.BlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.SevenUtil;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
+import br.com.gamemods.minecity.forge.mc_1_7_10.event.PlayerTeleportDragonEggEvent;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.block.Block;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
+
+import java.util.List;
 
 public class SevenBlockProtections extends BlockProtections
 {
@@ -21,6 +25,24 @@ public class SevenBlockProtections extends BlockProtections
     {
         super(mod);
         this.mod = mod;
+    }
+
+    @SuppressWarnings("unchecked")
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onDragonEggTeleport(PlayerTeleportDragonEggEvent event)
+    {
+        if(event.world.isRemote)
+            return;
+
+        if(onDragonEggTeleport(
+                (IEntityPlayerMP) event.player,
+                state(event.block, event.blockMetadata),
+                new BlockPos(mod.world(event.world), event.x, event.y, event.z),
+                (List) event.changes
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

@@ -11,14 +11,18 @@ import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
+import br.com.gamemods.minecity.forge.base.protection.reaction.MultiBlockReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.BlockSnapshot;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class BlockProtections extends ForgeProtections
 {
@@ -41,6 +45,21 @@ public class BlockProtections extends ForgeProtections
         }
 
         return false;
+    }
+
+    public boolean onDragonEggTeleport(IEntityPlayerMP player, IState state, BlockPos pos, List<IBlockSnapshot> changes)
+    {
+        int size = changes.size();
+        if(size == 0)
+            return false;
+
+        Reaction react;
+        if(size == 1)
+            react = new SingleBlockReaction(changes.get(0).getPosition(mod), PermissionFlag.MODIFY);
+        else
+            react = new MultiBlockReaction(PermissionFlag.MODIFY, changes.stream().map(snap -> snap.getPosition(mod)).collect(Collectors.toList()));
+
+        return react.can(mod.mineCity, player).isPresent();
     }
 
     public boolean onBlockPlace(EntityPlayer entity, BlockSnapshot snapshot)

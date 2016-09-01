@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.protection;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.*;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.*;
+import net.minecraft.block.BlockDragonEgg;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,14 +20,38 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+
 @Referenced
 public class MineCityFrostHooks
 {
+    @Referenced(at = FrostBlockDragonEggTransformer.class)
+    public static void startCapturingBlocks(World world)
+    {
+        world.captureBlockSnapshots = true;
+    }
+
+    @Referenced(at = FrostBlockDragonEggTransformer.class)
+    public static void onDragonEggTeleport(BlockDragonEgg block, EntityPlayer player, World world, BlockPos pos, IBlockState state)
+    {
+        world.captureBlockSnapshots = false;
+        ArrayList<BlockSnapshot> changes = new ArrayList<>(world.capturedBlockSnapshots);
+        world.capturedBlockSnapshots.clear();
+
+        if(MinecraftForge.EVENT_BUS.post(new PlayerTeleportDragonEggEvent(player, world, pos, state, changes)))
+            changes.forEach(snapshot -> {
+                world.restoringBlockSnapshots = true;
+                snapshot.restore(true, false);
+                world.restoringBlockSnapshots = false;
+            });
+    }
+
     @Referenced(at = FrostEntityFishingHookTransformer.class)
     public static Entity onFishingHookSpawnEntity(Entity entity, EntityFishHook hook)
     {

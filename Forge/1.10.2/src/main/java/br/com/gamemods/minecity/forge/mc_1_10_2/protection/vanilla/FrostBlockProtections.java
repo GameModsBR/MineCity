@@ -1,15 +1,19 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla;
 
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.BlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_10_2.FrostUtil;
 import br.com.gamemods.minecity.forge.mc_1_10_2.MineCityFrost;
+import br.com.gamemods.minecity.forge.mc_1_10_2.event.PlayerTeleportDragonEggEvent;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.util.List;
 
 public class FrostBlockProtections extends BlockProtections
 {
@@ -19,6 +23,24 @@ public class FrostBlockProtections extends BlockProtections
     {
         super(mod);
         this.mod = mod;
+    }
+
+    @SuppressWarnings("unchecked")
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onDragonEggTeleport(PlayerTeleportDragonEggEvent event)
+    {
+        if(event.getWorld().isRemote)
+            return;
+
+        if(onDragonEggTeleport(
+                (IEntityPlayerMP) event.player,
+                (IState) event.getState(),
+                mod.block(event.getWorld(), event.getPos()),
+                (List) event.changes
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

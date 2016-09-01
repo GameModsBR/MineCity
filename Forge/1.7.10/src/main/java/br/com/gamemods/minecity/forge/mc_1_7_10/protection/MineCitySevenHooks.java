@@ -1,11 +1,13 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.protection;
 
 import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockDragonEggTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockTNTTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.*;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.*;
 import cpw.mods.fml.common.eventhandler.Event;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDragonEgg;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityXPOrb;
@@ -16,11 +18,35 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.BlockSnapshot;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
 
 @Referenced
 public class MineCitySevenHooks
 {
+    @Referenced(at = SevenBlockDragonEggTransformer.class)
+    public static void startCapturingBlocks(World world)
+    {
+        world.captureBlockSnapshots = true;
+    }
+
+    @Referenced(at = SevenBlockDragonEggTransformer.class)
+    public static void onDragonEggTeleport(BlockDragonEgg block, EntityPlayer player, World world, int x, int y, int z, int meta)
+    {
+        world.captureBlockSnapshots = false;
+        ArrayList<BlockSnapshot> changes = new ArrayList<>(world.capturedBlockSnapshots);
+        world.capturedBlockSnapshots.clear();
+
+        if(MinecraftForge.EVENT_BUS.post(new PlayerTeleportDragonEggEvent(player, x, y, z, world, block, meta, changes)))
+            changes.forEach(snapshot -> {
+                world.restoringBlockSnapshots = true;
+                snapshot.restore(true, false);
+                world.restoringBlockSnapshots = false;
+            });
+    }
+
     @Referenced(at = SevenEntityFishingHookTransformer.class)
     public static Entity onFishingHookSpawnEntity(Entity entity, EntityFishHook hook)
     {
