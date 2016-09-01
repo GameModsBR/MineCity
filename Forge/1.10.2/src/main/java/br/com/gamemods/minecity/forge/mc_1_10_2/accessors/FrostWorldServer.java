@@ -6,7 +6,7 @@ import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
-import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.FrostUtil;
 import br.com.gamemods.minecity.forge.mc_1_10_2.accessors.block.FrostBlock;

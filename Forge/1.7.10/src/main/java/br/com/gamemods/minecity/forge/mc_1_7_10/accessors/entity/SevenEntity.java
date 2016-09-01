@@ -1,7 +1,7 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.accessors.entity;
 
 import br.com.gamemods.minecity.forge.base.Referenced;
-import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenInterfaceTransformer;
 import net.minecraft.entity.Entity;

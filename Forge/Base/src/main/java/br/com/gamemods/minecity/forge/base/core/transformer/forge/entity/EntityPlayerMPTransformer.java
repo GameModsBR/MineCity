@@ -1,6 +1,6 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.entity;
 
-import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertSetterGetterTransformer;
 
 /**

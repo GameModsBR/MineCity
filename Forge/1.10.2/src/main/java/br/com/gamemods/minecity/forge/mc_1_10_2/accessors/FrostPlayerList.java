@@ -2,7 +2,7 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.accessors;
 
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IPlayerList;
-import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostInterfaceTransformer;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.EntityPlayerMP;

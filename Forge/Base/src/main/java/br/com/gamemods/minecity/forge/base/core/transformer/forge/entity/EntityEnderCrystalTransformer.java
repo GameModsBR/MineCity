@@ -1,6 +1,6 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.entity;
 
-import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityEndCrystal;
+import br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityEndCrystal;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertDamageHookTransformer;
 
 public class EntityEnderCrystalTransformer extends InsertDamageHookTransformer

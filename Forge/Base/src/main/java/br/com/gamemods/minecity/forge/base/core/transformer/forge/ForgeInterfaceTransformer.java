@@ -12,37 +12,37 @@ public class ForgeInterfaceTransformer extends InsertInterfaceTransformer
         Map<String, String> r = new HashMap<>();
 
         r.put("net.minecraft.entity.monster.EntityZombie",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityZombie");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.mob.IEntityZombie");
 
         r.put("net.minecraft.entity.monster.EntityMob",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityMob");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.mob.IEntityMob");
 
         r.put("net.minecraft.entity.EntityCreature",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityCreature");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityCreature");
 
         r.put("net.minecraft.entity.passive.EntityAnimal",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityAnimal");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.passive.IEntityAnimal");
 
         r.put("net.minecraft.item.ItemSaddle",
                 "br.com.gamemods.minecity.forge.base.accessors.item.IItemSaddle");
 
         r.put("net.minecraft.entity.passive.EntityPig",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPig");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.passive.IEntityPig");
 
         r.put("net.minecraft.entity.passive.EntityVillager",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityVillager");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.passive.IEntityVillager");
 
         r.put("net.minecraft.block.BlockColored",
                 "br.com.gamemods.minecity.forge.base.accessors.block.IBlockWool");
 
         r.put("net.minecraft.entity.passive.EntitySheep",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntitySheep");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.passive.IEntitySheep");
 
         r.put("net.minecraft.entity.passive.EntityMooshroom",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityMushroom");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.passive.IEntityMushroom");
 
         r.put("net.minecraft.entity.passive.EntityCow",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityCow");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.passive.IEntityCow");
 
         r.put("net.minecraft.block.BlockPumpkin",
                 "br.com.gamemods.minecity.forge.base.accessors.block.BlockStemProduct");
@@ -72,55 +72,55 @@ public class ForgeInterfaceTransformer extends InsertInterfaceTransformer
                 "br.com.gamemods.minecity.forge.base.accessors.block.BlockTallHarvest");
 
         r.put("net.minecraft.entity.item.EntityItem",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityItem");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityItem");
 
         r.put("net.minecraft.item.ItemEndCrystal",
                 "br.com.gamemods.minecity.forge.base.accessors.item.IItemEndCrystal");
 
         r.put("net.minecraft.entity.item.EntityMinecartContainer",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IVehicleContainer");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.vehicle.IVehicleContainer");
 
         r.put("net.minecraft.entity.item.EntityMinecartEmpty",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IVehicleRideable");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.vehicle.IVehicleRideable");
 
         r.put("net.minecraft.entity.item.EntityBoat",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IVehicleRideable");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.vehicle.IVehicleRideable");
 
         r.put("net.minecraft.potion.PotionEffect",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IPotionEffect");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.base.IPotionEffect");
 
         r.put("net.minecraft.entity.projectile.EntityArrow",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityArrow");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityArrow");
 
         r.put("net.minecraft.entity.EntityAgeable",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityAgeable");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityAgeable");
 
         r.put("net.minecraft.entity.passive.EntityHorse",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityHorse");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.passive.IEntityHorse");
 
         r.put("net.minecraft.entity.projectile.EntityFireball",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityFireball");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityFireball");
 
         r.put("net.minecraft.entity.projectile.EntityFishHook",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityFishHook");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityFishHook");
 
         r.put("net.minecraft.entity.EntityHanging",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityHanging");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityHanging");
 
         r.put("net.minecraft.entity.EntityLiving",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityLiving");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLiving");
 
         r.put("net.minecraft.entity.projectile.EntityShulkerBullet",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityShulkerBullet");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityShulkerBullet");
 
         r.put("net.minecraft.entity.projectile.EntityThrowable",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityThrowable");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityThrowable");
 
         r.put("net.minecraft.entity.item.EntityTNTPrimed",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityTNTPrimed");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityTNTPrimed");
 
         r.put("net.minecraft.entity.item.EntityXPOrb",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityXPOrb");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityXPOrb");
 
         r.put("net.minecraft.item.ItemDye",
                 "br.com.gamemods.minecity.forge.base.accessors.item.IItemDye");
@@ -138,13 +138,13 @@ public class ForgeInterfaceTransformer extends InsertInterfaceTransformer
                 "br.com.gamemods.minecity.forge.base.accessors.block.IBlock");
 
         r.put("net.minecraft.entity.Entity",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntity");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity");
 
         r.put("net.minecraft.item.ItemBlock",
                 "br.com.gamemods.minecity.forge.base.accessors.item.IItemBlock");
 
         r.put("net.minecraft.entity.IProjectile",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.Projectile");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.projectile.Projectile");
 
         r.put("net.minecraft.block.state.IBlockState",
                 "br.com.gamemods.minecity.forge.base.accessors.block.IState");
@@ -153,7 +153,7 @@ public class ForgeInterfaceTransformer extends InsertInterfaceTransformer
                 "br.com.gamemods.minecity.forge.base.accessors.IMinecraftServer");
 
         r.put("net.minecraft.entity.EntityLivingBase",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityLivingBase");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase");
 
         r.put("net.minecraft.item.ItemBoat",
                 "br.com.gamemods.minecity.forge.base.accessors.item.IItemBoat");
@@ -168,7 +168,7 @@ public class ForgeInterfaceTransformer extends InsertInterfaceTransformer
                 "br.com.gamemods.minecity.forge.base.accessors.item.IItem");
 
         r.put("net.minecraft.entity.item.EntityItemFrame",
-                "br.com.gamemods.minecity.forge.base.accessors.entity.IEntityItemFrame");
+                "br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityItemFrame");
 
         r.put("net.minecraft.block.properties.IProperty",
                 "br.com.gamemods.minecity.forge.base.accessors.block.IProp");

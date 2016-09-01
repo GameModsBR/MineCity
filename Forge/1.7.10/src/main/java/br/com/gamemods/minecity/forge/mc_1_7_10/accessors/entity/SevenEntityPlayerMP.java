@@ -4,7 +4,7 @@ import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
-import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPlayerMPTransformer;
 import io.netty.buffer.Unpooled;

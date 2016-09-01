@@ -35,7 +35,7 @@ public class EntityPotionTransformer implements IClassTransformer
         ClassReader reader = new ClassReader(bytes);
         reader.accept(node, 0);
 
-        node.interfaces.add("br/com/gamemods/minecity/forge/base/accessors/entity/EntityProjectile");
+        node.interfaces.add("br/com/gamemods/minecity/forge/base/accessors/entity/projectile/EntityProjectile");
 
         for(MethodNode method : node.methods)
         {
@@ -85,18 +85,18 @@ public class EntityPotionTransformer implements IClassTransformer
                             VarInsnNode var = (VarInsnNode) method.instructions.get(index - 3);
                             InsnList add = new InsnList();
                             add.add(new VarInsnNode(Opcodes.ALOAD, var.var));
-                            add.add(new TypeInsnNode(Opcodes.CHECKCAST, "br/com/gamemods/minecity/forge/base/accessors/entity/Projectile"));
+                            add.add(new TypeInsnNode(Opcodes.CHECKCAST, "br/com/gamemods/minecity/forge/base/accessors/entity/projectile/Projectile"));
                             add.add(new VarInsnNode(Opcodes.ALOAD, 0));
                             add.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
-                                    "br/com/gamemods/minecity/forge/base/accessors/entity/Projectile",
+                                    "br/com/gamemods/minecity/forge/base/accessors/entity/projectile/Projectile",
                                     "getShooter",
-                                    "()Lbr/com/gamemods/minecity/forge/base/accessors/entity/ProjectileShooter;",
+                                    "()Lbr/com/gamemods/minecity/forge/base/accessors/entity/projectile/ProjectileShooter;",
                                     true
                             ));
                             add.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
-                                    "br/com/gamemods/minecity/forge/base/accessors/entity/Projectile",
+                                    "br/com/gamemods/minecity/forge/base/accessors/entity/projectile/Projectile",
                                     "setShooter",
-                                    "(Lbr/com/gamemods/minecity/forge/base/accessors/entity/ProjectileShooter;)V",
+                                    "(Lbr/com/gamemods/minecity/forge/base/accessors/entity/projectile/ProjectileShooter;)V",
                                     true
                             ));
                             method.instructions.insert(methodIns, add);

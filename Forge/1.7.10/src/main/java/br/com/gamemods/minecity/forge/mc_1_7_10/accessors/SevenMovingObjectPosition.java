@@ -5,7 +5,7 @@ import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
-import br.com.gamemods.minecity.forge.base.accessors.entity.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;

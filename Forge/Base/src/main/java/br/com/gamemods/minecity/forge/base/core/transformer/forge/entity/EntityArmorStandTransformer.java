@@ -55,7 +55,7 @@ public class EntityArmorStandTransformer implements IClassTransformer
             }
         }
 
-        node.interfaces.add("br/com/gamemods/minecity/forge/base/accessors/entity/IEntityArmorStand");
+        node.interfaces.add("br/com/gamemods/minecity/forge/base/accessors/entity/item/IEntityArmorStand");
 
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         node.accept(writer);

@@ -7,7 +7,7 @@ import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
-import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;

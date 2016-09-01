@@ -10,7 +10,7 @@ import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
-import br.com.gamemods.minecity.forge.base.accessors.entity.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.world.IChunk;
 import br.com.gamemods.minecity.structure.DisplayedSelection;
 import net.minecraft.item.ItemStack;
