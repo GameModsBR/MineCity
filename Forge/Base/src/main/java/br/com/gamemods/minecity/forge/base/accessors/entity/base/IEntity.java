@@ -275,6 +275,9 @@ public interface IEntity extends MinecraftEntity
         if(isNamed())
             return new SingleBlockReaction(getBlockPos(mod), PermissionFlag.MODIFY);
 
+        if(player.identity().uniqueId.equals(getEntityOwnerId()))
+            return NoReaction.INSTANCE;
+
         BlockPos playerPos = null;
         if(player instanceof IEntity)
             playerPos = ((IEntity) player).getBlockPos(mod);
