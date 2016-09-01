@@ -14,6 +14,9 @@ public class FrostInterfaceTransformer extends ForgeInterfaceTransformer
     {
         Map<String, String> r = getReplacements();
 
+        r.put("net.minecraft.item.ItemGlassBottle",
+                "br.com.gamemods.minecity.forge.mc_1_10_2.accessors.item.FrostItemGlassBottle");
+
         r.put("net.minecraftforge.common.util.BlockSnapshot",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.accessors.block.FrostBlockSnapshot");
 
