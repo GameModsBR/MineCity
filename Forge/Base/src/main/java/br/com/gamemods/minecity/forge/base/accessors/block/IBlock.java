@@ -85,4 +85,9 @@ public interface IBlock
     IItem getItemDropped(IState state, Random rand, int fortune);
 
     IItemStack getItemStack(IState state, IWorldServer world, int x, int y, int z);
+
+    default Reaction reactBoneMeal(IEntityPlayerMP entity, BlockPos pos, IState state)
+    {
+        return new SingleBlockReaction(pos, PermissionFlag.HARVEST);
+    }
 }

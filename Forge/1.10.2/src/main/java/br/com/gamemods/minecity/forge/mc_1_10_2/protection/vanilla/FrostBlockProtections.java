@@ -8,6 +8,7 @@ import br.com.gamemods.minecity.forge.mc_1_10_2.MineCityFrost;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.BlockGrowEvent;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.PlayerTeleportDragonEggEvent;
 import net.minecraft.util.EnumHand;
+import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -24,6 +25,22 @@ public class FrostBlockProtections extends BlockProtections
     {
         super(mod);
         this.mod = mod;
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onBoneMeal(BonemealEvent event)
+    {
+        if(event.getWorld().isRemote)
+            return;
+
+        if(onBoneMeal(
+                (IEntityPlayerMP) event.getEntityPlayer(),
+                mod.block(event.getWorld(), event.getPos()),
+                (IState) event.getBlock()
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 
     @SuppressWarnings("unchecked")

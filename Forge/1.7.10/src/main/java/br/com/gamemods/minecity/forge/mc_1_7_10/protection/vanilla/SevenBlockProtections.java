@@ -13,6 +13,7 @@ import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.block.Block;
+import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 
@@ -26,6 +27,22 @@ public class SevenBlockProtections extends BlockProtections
     {
         super(mod);
         this.mod = mod;
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onBoneMeal(BonemealEvent event)
+    {
+        if(event.world.isRemote)
+            return;
+
+        if(onBoneMeal(
+                (IEntityPlayerMP) event.entityPlayer,
+                new BlockPos(mod.world(event.world), event.x, event.y, event.z),
+                state(event.block, event.world.getBlockMetadata(event.x, event.y, event.z))
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 
     @SuppressWarnings("unchecked")

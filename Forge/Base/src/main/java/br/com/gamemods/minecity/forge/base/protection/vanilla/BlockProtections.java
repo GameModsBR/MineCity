@@ -32,6 +32,20 @@ public class BlockProtections extends ForgeProtections
         super(mod);
     }
 
+    public boolean onBoneMeal(IEntityPlayerMP entity, BlockPos pos, IState state)
+    {
+        ForgePlayer player = mod.player(entity);
+        Reaction reaction = state.getIBlock().reactBoneMeal(entity, pos, state);
+
+        Optional<Message> denial = reaction.can(mod.mineCity, player);
+        if(denial.isPresent())
+        {
+            player.send(FlagHolder.wrapDeny(denial.get()));
+            return true;
+        }
+        return false;
+    }
+
     public boolean onItemRightClick(EntityPlayer entity, ItemStack itemStack, boolean offHand)
     {
         IItemStack stack = (IItemStack) (Object) itemStack;
