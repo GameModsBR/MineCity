@@ -96,7 +96,7 @@ public class EntityProtections extends AbstractProtection
                 ProjectileSource shooter = entity.getShooter();
                 if(shooter instanceof Player)
                 {
-                    if(check(location, (Player) shooter, PermissionFlag.MODIFY))
+                    if(check(location, (Player) shooter, event.getEntityType() == EntityType.CHICKEN? PermissionFlag.PVC : PermissionFlag.MODIFY))
                     {
                         event.setCancelled(true);
                         return;
