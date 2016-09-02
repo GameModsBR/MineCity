@@ -52,7 +52,7 @@ public class SevenBlockProtections extends BlockProtections
         if(event.world.isRemote)
             return;
 
-        if(onBlockGrow(
+         if(onBlockGrow(
                 state(event.block, event.blockMetadata),
                 new BlockPos(mod.world(event.world), event.x, event.y, event.z),
                 (List) event.changes

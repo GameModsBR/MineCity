@@ -38,6 +38,13 @@ public class MineCityFrostHooks
             throws Throwable
     {
         world.captureBlockSnapshots = false;
+        if(world.capturedBlockSnapshots.isEmpty())
+        {
+            if(thrown != null)
+                throw thrown;
+            return;
+        }
+
         ArrayList<BlockSnapshot> changes = new ArrayList<>(world.capturedBlockSnapshots);
         world.capturedBlockSnapshots.clear();
 

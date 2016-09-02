@@ -69,6 +69,9 @@ public class BlockProtections extends ForgeProtections
 
     public boolean onBlockGrow(IState state, BlockPos block, List<IBlockSnapshot> changes)
     {
+        IEntityPlayerMP boneMealPlayer = this.boneMealPlayer;
+        this.boneMealPlayer = null;
+
         int size = changes.size();
         if(size == 1 && changes.get(0).getPosition(mod).equals(block))
             return false;
@@ -76,7 +79,6 @@ public class BlockProtections extends ForgeProtections
             return false;
 
         Permissible owner = boneMealPlayer != null? boneMealPlayer : mod.mineCity.provideChunk(block.getChunk()).getFlagHolder(block).owner();
-        boneMealPlayer = null;
 
         Reaction reaction = new MultiBlockReaction(PermissionFlag.MODIFY,
                 changes.stream().map(snap-> snap.getPosition(mod)).collect(Collectors.toList()));
