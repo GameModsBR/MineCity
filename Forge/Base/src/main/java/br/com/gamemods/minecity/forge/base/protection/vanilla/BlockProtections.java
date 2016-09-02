@@ -2,7 +2,7 @@ package br.com.gamemods.minecity.forge.base.protection.vanilla;
 
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
-import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 
 public class BlockProtections extends ForgeProtections
 {
+    private IEntityPlayerMP boneMealPlayer;
+
     public BlockProtections(MineCityForge mod)
     {
         super(mod);
@@ -40,9 +42,12 @@ public class BlockProtections extends ForgeProtections
         Optional<Message> denial = reaction.can(mod.mineCity, player);
         if(denial.isPresent())
         {
+            boneMealPlayer = null;
             player.send(FlagHolder.wrapDeny(denial.get()));
             return true;
         }
+
+        boneMealPlayer = entity;
         return false;
     }
 
@@ -70,12 +75,20 @@ public class BlockProtections extends ForgeProtections
         else if(size == 0)
             return false;
 
-        Identity<?> owner = mod.mineCity.provideChunk(block.getChunk()).getFlagHolder(block).owner();
+        Permissible owner = boneMealPlayer != null? boneMealPlayer : mod.mineCity.provideChunk(block.getChunk()).getFlagHolder(block).owner();
+        boneMealPlayer = null;
 
         Reaction reaction = new MultiBlockReaction(PermissionFlag.MODIFY,
                 changes.stream().map(snap-> snap.getPosition(mod)).collect(Collectors.toList()));
 
-        return reaction.can(mod.mineCity, owner).isPresent();
+        Optional<Message> denial = reaction.can(mod.mineCity, owner);
+        if(denial.isPresent())
+        {
+            owner.send(FlagHolder.wrapDeny(denial.get()));
+            return true;
+        }
+
+        return false;
     }
 
     public boolean onDragonEggTeleport(IEntityPlayerMP player, IState state, BlockPos pos, List<IBlockSnapshot> changes)
