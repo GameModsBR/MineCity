@@ -47,6 +47,25 @@ public class EntityProtections extends ForgeProtections
         super(mod);
     }
 
+    public boolean onEggSpawnChicken(EntityProjectile egg)
+    {
+        ProjectileShooter shooter = egg.getShooter();
+        Permissible cause;
+        if(shooter != null)
+            cause = shooter.getResponsible(mod.mineCity);
+        else
+        {
+            List<Permissible> involved = new ArrayList<>();
+            addRelativeEntity(egg, involved);
+            cause = involved.stream().filter(FILTER_PLAYER).findFirst().orElse(null);
+            if(cause == null)
+                return true;
+        }
+
+        BlockPos pos = egg.getBlockPos(mod);
+        return mod.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).can(cause, PermissionFlag.PVC).isPresent();
+    }
+
     public void onEntitySpawnByFishingHook(IEntity entity, IEntityFishHook hook)
     {
         IEntityPlayerMP anger = hook.getAnger();

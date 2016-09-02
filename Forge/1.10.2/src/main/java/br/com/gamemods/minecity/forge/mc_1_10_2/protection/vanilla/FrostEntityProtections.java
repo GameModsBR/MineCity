@@ -39,6 +39,16 @@ public class FrostEntityProtections extends EntityProtections
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onEggSpawnChicken(EggSpawnChickenEvent event)
+    {
+        if(event.getEntity().worldObj.isRemote)
+            return;
+
+        if(onEggSpawnChicken((EntityProjectile) event.getEntity()))
+            event.setCanceled(true);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEntitySpawnByFishingHook(EntitySpawnByFishingHookEvent event)
     {
         if(event.getEntity().worldObj.isRemote)

@@ -35,6 +35,16 @@ public class SevenEntityProtections extends EntityProtections
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onEggSpawnChicken(EggSpawnChickenEvent event)
+    {
+        if(event.entity.worldObj.isRemote)
+            return;
+
+        if(onEggSpawnChicken((EntityProjectile) event.entity))
+            event.setCanceled(true);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEntitySpawnByFishingHook(EntitySpawnByFishingHookEvent event)
     {
         if(event.entity.worldObj.isRemote)

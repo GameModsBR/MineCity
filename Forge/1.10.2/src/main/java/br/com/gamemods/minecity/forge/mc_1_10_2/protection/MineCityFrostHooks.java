@@ -10,6 +10,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntityEgg;
 import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
@@ -32,6 +33,12 @@ import java.util.HashSet;
 @Referenced
 public class MineCityFrostHooks
 {
+    @Referenced(at = FrostEntityEggTransformer.class)
+    public static boolean onEggSpawnChicken(EntityEgg egg)
+    {
+        return MinecraftForge.EVENT_BUS.post(new EggSpawnChickenEvent(egg));
+    }
+
     @Contract("!null, _, _, _, _ -> fail")
     @Referenced(at = FrostGrowMonitorTransformer.class)
     public static void onGrowableGrow(Throwable thrown, Object source, World world, BlockPos pos, IBlockState state)

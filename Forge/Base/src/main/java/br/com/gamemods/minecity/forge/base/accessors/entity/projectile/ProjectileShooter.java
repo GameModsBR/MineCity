@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.accessors.entity.projectile;
 
+import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.Permissible;
@@ -92,5 +93,15 @@ public class ProjectileShooter implements Serializable
     public Permissible getResponsible()
     {
         return indirectEntity != null? indirectEntity : indirectId != null? indirectId : entity != null? entity : identity;
+    }
+
+    @NotNull
+    public Permissible getResponsible(MineCity mineCity)
+    {
+        Permissible responsible = getResponsible();
+        if(responsible == null)
+            return mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos.getBlock()).owner();
+
+        return responsible;
     }
 }
