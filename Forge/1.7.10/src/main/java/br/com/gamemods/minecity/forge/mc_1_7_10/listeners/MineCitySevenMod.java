@@ -5,8 +5,8 @@ import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
-import br.com.gamemods.minecity.forge.base.ModConstants;
 import br.com.gamemods.minecity.forge.base.command.RootCommand;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenBlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenEntityProtections;
@@ -24,7 +24,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 
-@Mod(modid = ModConstants.MOD_ID, name = ModConstants.MOD_NAME, version = ModConstants.MOD_VERSION, acceptableRemoteVersions = "*")
+@Mod(modid = ModEnv.MOD_ID, name = ModEnv.MOD_NAME, version = ModEnv.MOD_VERSION, acceptableRemoteVersions = "*")
 public class MineCitySevenMod
 {
     private MineCityForge forge;

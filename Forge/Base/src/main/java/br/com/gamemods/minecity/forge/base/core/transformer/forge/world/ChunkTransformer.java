@@ -1,11 +1,10 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.world;
 
-import br.com.gamemods.minecity.forge.base.Referenced;
-import br.com.gamemods.minecity.forge.base.accessors.world.IChunk;
+import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertSetterGetterTransformer;
 
 /**
- * Makes {@link net.minecraft.world.chunk.Chunk} implements {@link IChunk}
+ * Makes {@link net.minecraft.world.chunk.Chunk} implements {@link br.com.gamemods.minecity.forge.base.accessors.world.IChunk}
  * <pre><code>
  *     public class Chunk
  *         implements IChunk // <- Added

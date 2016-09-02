@@ -1,6 +1,8 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.entity;
 
-import br.com.gamemods.minecity.forge.base.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
+import br.com.gamemods.minecity.forge.base.core.Referenced;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -53,16 +55,11 @@ import static org.objectweb.asm.Opcodes.*;
  * </code></pre>
  * <p>On Vanilla Minecraft + Forge only EntityMob, EntityZombie, EntityPlayer, EntityArrow and EntitySmallFireball are patched.</p>
  */
+@Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod")
+@Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
 @MethodPatcher
 public class EntityIgnitionTransformer implements IClassTransformer
 {
-    private String hookClass;
-
-    public EntityIgnitionTransformer(String hookClass)
-    {
-        this.hookClass = hookClass.replace('.','/');
-    }
-
     @Override
     public byte[] transform(String s, String srg, byte[] bytes)
     {
@@ -70,8 +67,10 @@ public class EntityIgnitionTransformer implements IClassTransformer
         ClassReader reader = new ClassReader(bytes);
         reader.accept(node, 0);
 
-        if(srg.replace('.', '/').equals(hookClass))
+        if(srg.equals(ModEnv.hookClass))
             return bytes;
+
+        String hookClass = ModEnv.hookClass.replace('.','/');
 
         boolean modified = false;
 

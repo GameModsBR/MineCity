@@ -1,10 +1,9 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.world;
 
-import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertSetterGetterTransformer;
 
 /**
- * Makes {@link net.minecraft.world.WorldServer} implements {@link IWorldServer}
+ * Makes {@link net.minecraft.world.WorldServer} implements {@link br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer}
  * <pre><code>
  *     public class WorldServer extends World
  *         implements IWorldServer // <- Added

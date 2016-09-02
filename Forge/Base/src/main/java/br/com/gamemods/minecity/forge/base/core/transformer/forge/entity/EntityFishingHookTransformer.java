@@ -1,7 +1,9 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.entity;
 
 import br.com.gamemods.minecity.api.CollectionUtil;
-import br.com.gamemods.minecity.forge.base.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
+import br.com.gamemods.minecity.forge.base.core.Referenced;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -13,23 +15,18 @@ import java.lang.reflect.Modifier;
 import java.util.Comparator;
 import java.util.ListIterator;
 
+@Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod")
+@Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
 @MethodPatcher
 public class EntityFishingHookTransformer implements IClassTransformer
 {
-    private String hookClass;
-    private String rayTracerClass;
-
-    public EntityFishingHookTransformer(String rayTracerClass, String hookClass)
-    {
-        this.rayTracerClass = rayTracerClass.replace('.','/');
-        this.hookClass = hookClass.replace('.','/');
-    }
-
     @Override
     public byte[] transform(String s, String srg, byte[] bytes)
     {
         if(!srg.equals("net.minecraft.entity.projectile.EntityFishHook"))
             return bytes;
+
+        String hookClass = ModEnv.hookClass.replace('.','/');
 
         ClassReader reader = new ClassReader(bytes);
         ClassNode node = new ClassNode();
@@ -47,7 +44,7 @@ public class EntityFishingHookTransformer implements IClassTransformer
                     if(ins.getOpcode() == Opcodes.GETFIELD)
                     {
                         FieldInsnNode fieldNode = (FieldInsnNode) ins;
-                        if(fieldNode.owner.equals(rayTracerClass)
+                        if((fieldNode.owner.equals("net/minecraft/entity/util/RayTraceResult") || fieldNode.owner.equals("net/minecraft/entity/util/math/MovingObjectPosition"))
                                 && fieldNode.desc.equals("Lnet/minecraft/entity/Entity;"))
                         {
                             InsnList add = new InsnList();

@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.core;
 
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.deploader.DepLoader;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.Loader;
@@ -18,8 +19,8 @@ import java.util.Map;
 @Name("MineCityCore")
 @MCVersion("1.10.2")
 @TransformerExclusions({
-        "br.com.gamemods.minecity.forge.mc_1_10_2.core",
-        "br.com.gamemods.minecity.forge.base.core",
+    "br.com.gamemods.minecity.forge.mc_1_10_2.core",
+    "br.com.gamemods.minecity.forge.base.core",
 })
 @SortingIndex(value = 1001)
 public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
@@ -42,25 +43,28 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     @Override
     public String[] getASMTransformerClass()
     {
+        ModEnv.hookClass = "br.com.gamemods.minecity.forge.mc_1_10_2.protection.MineCityFrostHooks";
+        ModEnv.rayTraceResultClass = "net.minecraft.util.math.RayTraceResult";
+
         return new String[]{
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostOnImpactTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityEggTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostBlockStemTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.OnImpactTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityEggTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockStemTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockSaplingTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostGrowMonitorTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostBlockDragonEggTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityXPOrbTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityArrowTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityIgnitionTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityEnderCrystalTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostBlockTNTTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityArmorStandTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityFishingHookTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityAreaEffectCloudTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockDragonEggTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityXPOrbTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityArrowTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityIgnitionTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityEnderCrystalTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityArmorStandTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityFishingHookTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityAreaEffectCloudTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostInterfaceTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPotionTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityBoatTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityMinecartTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityBoatTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityMinecartTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostWorldServerTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.world.ChunkTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPlayerMPTransformer",

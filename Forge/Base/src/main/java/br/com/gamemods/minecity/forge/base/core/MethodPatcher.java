@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge.base;
+package br.com.gamemods.minecity.forge.base.core;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;

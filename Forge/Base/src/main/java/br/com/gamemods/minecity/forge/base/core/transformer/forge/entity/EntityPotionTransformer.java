@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.entity;
 
-import br.com.gamemods.minecity.forge.base.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -12,15 +13,11 @@ import java.util.ListIterator;
 @MethodPatcher
 public class EntityPotionTransformer implements IClassTransformer
 {
-    private String rayTraceClass;
-    private String hookClass;
     private int skip;
     private boolean cloud;
 
-    public EntityPotionTransformer(String rayTraceClass, String hookClass, int skip)
+    public EntityPotionTransformer(int skip)
     {
-        this.rayTraceClass = rayTraceClass.replace('.','/');
-        this.hookClass = hookClass.replace('.','/');
         this.skip = skip;
         cloud = skip == 1;
     }
@@ -30,6 +27,9 @@ public class EntityPotionTransformer implements IClassTransformer
     {
         if(!srg.equals("net.minecraft.entity.projectile.EntityPotion"))
             return bytes;
+
+        String rayTraceClass = ModEnv.rayTraceResultClass.replace('.','/');
+        String hookClass = ModEnv.hookClass.replace('.','/');
 
         ClassNode node = new ClassNode();
         ClassReader reader = new ClassReader(bytes);

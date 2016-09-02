@@ -4,8 +4,8 @@ import br.com.gamemods.minecity.api.MathUtil;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
-import br.com.gamemods.minecity.forge.base.ModConstants;
 import br.com.gamemods.minecity.forge.base.command.RootCommand;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.mc_1_10_2.MineCityFrost;
 import br.com.gamemods.minecity.forge.mc_1_10_2.command.FrostTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla.FrostBlockProtections;
@@ -22,7 +22,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 
-@Mod(modid = ModConstants.MOD_ID, name = ModConstants.MOD_ID, version = ModConstants.MOD_VERSION, acceptableRemoteVersions = "*")
+@Mod(modid = ModEnv.MOD_ID, name = ModEnv.MOD_ID, version = ModEnv.MOD_VERSION, acceptableRemoteVersions = "*")
 public class MineCityFrostMod
 {
     private MineCityFrost forge;

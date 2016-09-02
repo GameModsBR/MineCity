@@ -1,6 +1,8 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.entity;
 
-import br.com.gamemods.minecity.forge.base.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
+import br.com.gamemods.minecity.forge.base.core.Referenced;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -12,22 +14,18 @@ import static org.objectweb.asm.Opcodes.*;
 /**
  * @deprecated Used to fire a custom event but there's a forge event available for the same thing.
  */
+@Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
 @Deprecated
 @MethodPatcher
 public class EntityArmorStandTransformer implements IClassTransformer
 {
-    private String hookClass;
-
-    public EntityArmorStandTransformer(String hookClass)
-    {
-        this.hookClass = hookClass.replace('.','/');
-    }
-
     @Override
     public byte[] transform(String s, String srg, byte[] bytes)
     {
         if(!srg.equals("net.minecraft.entity.item.EntityArmorStand"))
             return bytes;
+
+        String hookClass = ModEnv.hookClass.replace('.','/');
 
         ClassReader reader = new ClassReader(bytes);
         ClassNode node = new ClassNode();

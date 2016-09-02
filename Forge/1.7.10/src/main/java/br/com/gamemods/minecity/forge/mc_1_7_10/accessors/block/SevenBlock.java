@@ -1,12 +1,11 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block;
 
-import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
-import br.com.gamemods.minecity.forge.base.accessors.block.IProp;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
+import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenInterfaceTransformer;
 import net.minecraft.block.Block;
 import net.minecraft.world.IBlockAccess;

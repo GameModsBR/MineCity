@@ -1,7 +1,8 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.entity;
 
-import br.com.gamemods.minecity.forge.base.MethodPatcher;
-import net.minecraft.entity.EntityLivingBase;
+import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
+import br.com.gamemods.minecity.forge.base.core.Referenced;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -10,27 +11,23 @@ import org.objectweb.asm.tree.*;
 
 import java.util.ListIterator;
 
+@Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
 @MethodPatcher
 public class EntityAreaEffectCloudTransformer implements IClassTransformer
 {
-    private String hookClass;
-
-    public EntityAreaEffectCloudTransformer(String hookClass)
-    {
-        this.hookClass = hookClass.replace('.','/');
-    }
-
     @Override
     public byte[] transform(String s, String srg, byte[] bytes)
     {
         if(!srg.equals("net.minecraft.entity.EntityAreaEffectCloud"))
             return bytes;
 
+        String hookClass = ModEnv.hookClass.replace('.','/');
+
         ClassNode node = new ClassNode();
         ClassReader reader = new ClassReader(bytes);
         reader.accept(node, 0);
 
-        String owner = EntityLivingBase.class.getName().replace('.','/');
+        String owner = "net/minecraft/entity/EntityLivingBase";
 
         method:
         for(MethodNode method : node.methods)

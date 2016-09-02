@@ -1,11 +1,10 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.entity;
 
-import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertSetterGetterTransformer;
 
 /**
  * Makes {@link net.minecraft.entity.player.EntityPlayerMP EntityPlayerMP}
- * implements {@link IEntityPlayerMP IEntityPlayerMP}
+ * implements {@link br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP IEntityPlayerMP}
  * <pre><code>
  *     public class EntityPlayerMP extends EntityPlayer
  *         implements IEntityPlayerMP // <- Added
@@ -26,10 +25,5 @@ public class EntityPlayerMPTransformer extends InsertSetterGetterTransformer
                 "br/com/gamemods/minecity/forge/base/command/ForgePlayer", "mineCity",
                 interfaceName, "setMineCityPlayer", "getMineCityPlayer"
         );
-    }
-
-    public EntityPlayerMPTransformer()
-    {
-        this("br/com/gamemods/minecity/forge/base/accessors/IEntityPlayerMP");
     }
 }

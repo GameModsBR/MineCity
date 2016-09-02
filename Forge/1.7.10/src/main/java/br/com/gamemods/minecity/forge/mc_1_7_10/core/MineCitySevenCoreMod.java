@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.core;
 
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.deploader.DepLoader;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.versioning.ComparableVersion;
@@ -42,23 +43,27 @@ public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     @Override
     public String[] getASMTransformerClass()
     {
+        ModEnv.hookClass = "br.com.gamemods.minecity.forge.mc_1_7_10.protection.MineCitySevenHooks";
+        ModEnv.rayTraceResultClass = "net.minecraft.util.MovingObjectPosition";
+
         return new String[]{
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenOnImpactTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockStemTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.OnImpactTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityEggTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockStemTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockSaplingTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenGrowMonitorTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockDragonEggTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockDragonEggTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityLivingBaseTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityXpOrbTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityArrowTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityIgnitionTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityEnderCrystalTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockTNTTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityFishingHookTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityXpOrbTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityArrowTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityIgnitionTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityEnderCrystalTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityFishingHookTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenInterfaceTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPotionTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityBoatTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityMinecartTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityBoatTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityMinecartTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.world.SevenWorldServerTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.world.SevenChunkTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPlayerMPTransformer",
@@ -93,6 +98,6 @@ public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     @Override
     public String getAccessTransformerClass()
     {
-        return "br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenAT";
+        return "br.com.gamemods.minecity.forge.base.core.transformer.MineCityAT";
     }
 }

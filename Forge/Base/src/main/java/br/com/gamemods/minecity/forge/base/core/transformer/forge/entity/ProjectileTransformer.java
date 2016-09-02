@@ -1,8 +1,6 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.entity;
 
-import br.com.gamemods.minecity.forge.base.Referenced;
-import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.EntityProjectile;
-import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.ProjectileShooter;
+import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertSetterGetterTransformer;
 
 import java.util.Arrays;
@@ -15,9 +13,9 @@ public class ProjectileTransformer extends InsertSetterGetterTransformer
     public ProjectileTransformer()
     {
         super(
-                ProjectileShooter.class.getName(),
+                "br.com.gamemods.minecity.forge.base.accessors.entity.projectile.ProjectileShooter",
                 "mineCityShooter",
-                EntityProjectile.class.getName(),
+                "br.com.gamemods.minecity.forge.base.accessors.entity.projectile.EntityProjectile",
                 "setMineCityShooter", "getMineCityShooter",
                 Arrays.asList(
                         "net.minecraft.entity.EntityAreaEffectCloud",

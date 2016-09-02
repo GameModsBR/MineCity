@@ -1,6 +1,6 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.item;
 
-import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertInterfaceTransformer;
 
 import java.util.Arrays;

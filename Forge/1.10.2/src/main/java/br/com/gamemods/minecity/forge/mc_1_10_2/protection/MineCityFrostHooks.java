@@ -1,8 +1,12 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.protection;
 
-import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
-import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.*;
+import br.com.gamemods.minecity.forge.base.core.Referenced;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockDragonEggTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.*;
+import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPotionTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.*;
 import net.minecraft.block.BlockDragonEgg;
 import net.minecraft.block.state.IBlockState;
@@ -76,19 +80,19 @@ public class MineCityFrostHooks
         }
     }
 
-    @Referenced(at = FrostOnImpactTransformer.class)
+    @Referenced(at = OnImpactTransformer.class)
     public static void onFireBallImpact(EntityFireball fireball, RayTraceResult result)
     {
         onImpact(fireball, result);
     }
 
-    @Referenced(at = FrostOnImpactTransformer.class)
+    @Referenced(at = OnImpactTransformer.class)
     public static void onThrowableImpact(EntityThrowable throwable, RayTraceResult result)
     {
         onImpact(throwable, result);
     }
 
-    @Referenced(at = FrostEntityEggTransformer.class)
+    @Referenced(at = EntityEggTransformer.class)
     public static boolean onEggSpawnChicken(EntityEgg egg)
     {
         return MinecraftForge.EVENT_BUS.post(new EggSpawnChickenEvent(egg));
@@ -126,7 +130,7 @@ public class MineCityFrostHooks
     }
 
     @Contract("!null, _, _, _, _ -> fail")
-    @Referenced(at = FrostGrowMonitorTransformer.class)
+    @Referenced(at = GrowMonitorTransformer.class)
     public static void onGrowableGrow(Throwable thrown, Object source, World world, BlockPos pos, IBlockState state)
             throws Throwable
     {
@@ -150,13 +154,13 @@ public class MineCityFrostHooks
             throw thrown;
     }
 
-    @Referenced(at = FrostBlockDragonEggTransformer.class)
+    @Referenced(at = BlockDragonEggTransformer.class)
     public static void startCapturingBlocks(World world)
     {
         world.captureBlockSnapshots = true;
     }
 
-    @Referenced(at = FrostBlockDragonEggTransformer.class)
+    @Referenced(at = BlockDragonEggTransformer.class)
     public static void onDragonEggTeleport(BlockDragonEgg block, EntityPlayer player, World world, BlockPos pos, IBlockState state)
     {
         world.captureBlockSnapshots = false;
@@ -171,14 +175,14 @@ public class MineCityFrostHooks
             });
     }
 
-    @Referenced(at = FrostEntityFishingHookTransformer.class)
+    @Referenced(at = EntityFishingHookTransformer.class)
     public static Entity onFishingHookSpawnEntity(Entity entity, EntityFishHook hook)
     {
         MinecraftForge.EVENT_BUS.post(new EntitySpawnByFishingHookEvent(entity, hook));
         return entity;
     }
 
-    @Referenced(at = FrostEntityXPOrbTransformer.class)
+    @Referenced(at = EntityXPOrbTransformer.class)
     public static EntityPlayer onXpOrbTargetPlayer(EntityPlayer player, EntityXPOrb orb)
     {
         if(player == null)
@@ -191,14 +195,14 @@ public class MineCityFrostHooks
             return player;
     }
 
-    @Referenced(at = FrostEntityArrowTransformer.class)
+    @Referenced(at = EntityArrowTransformer.class)
     public static boolean onPlayerPickupArrow(EntityArrow arrow, EntityPlayer player)
     {
         Event event = new PlayerPickupArrowEvent(player, arrow);
         return MinecraftForge.EVENT_BUS.post(event);
     }
 
-    @Referenced(at = FrostEntityIgnitionTransformer.class)
+    @Referenced(at = EntityIgnitionTransformer.class)
     public static void onIgnite(Entity entity, int fireTicks, @Nullable Object source, Class<?> sourceClass, String method, String desc)
     {
         Event event;
@@ -211,14 +215,14 @@ public class MineCityFrostHooks
             entity.setFire(fireTicks);
     }
 
-    @Referenced(at = FrostEntityEnderCrystalTransformer.class)
+    @Referenced(at = EntityEnderCrystalTransformer.class)
     public static boolean onEntityDamage(Entity entity, DamageSource source, float amount)
     {
         EntityDamageEvent event = new EntityDamageEvent(entity, source, amount);
         return MinecraftForge.EVENT_BUS.post(event);
     }
 
-    @Referenced(at = FrostBlockTNTTransformer.class)
+    @Referenced(at = BlockTNTTransformer.class)
     public static boolean onArrowIgnite(World world, BlockPos pos, IBlockState state, EntityArrow arrow)
     {
         ProjectileModifyBlockEvent event = new ProjectileModifyBlockEvent(arrow, world, pos, state);
@@ -230,7 +234,7 @@ public class MineCityFrostHooks
      */
     @Deprecated
     @Nullable
-    @Referenced(at = FrostEntityArmorStandTransformer.class)
+    @Referenced(at = EntityArmorStandTransformer.class)
     public static EnumActionResult onPrecisePlayerInteraction(Entity entity, EntityPlayer player, Vec3d vec, ItemStack stack, EnumHand hand)
     {
         PlayerInteractEntityPreciseEvent event = new PlayerInteractEntityPreciseEvent(entity, player, vec, stack, hand);
@@ -240,7 +244,8 @@ public class MineCityFrostHooks
             return null;
     }
 
-    @Referenced(at = FrostEntityBoatTransformer.class)
+    @Referenced(at = EntityBoatTransformer.class)
+    @Referenced(at = EntityMinecartTransformer.class)
     public static boolean onVehicleDamage(Entity entity, DamageSource source, float amount)
     {
         VehicleDamageEvent event = new VehicleDamageEvent(entity, source, amount);
@@ -256,7 +261,7 @@ public class MineCityFrostHooks
     }
 
     @Contract("null, _ -> null")
-    @Referenced(at = FrostEntityFishingHookTransformer.class)
+    @Referenced(at = EntityFishingHookTransformer.class)
     public static Entity onFishingHookHitEntity(Entity entity, EntityFishHook hook)
     {
         if(entity == null)
@@ -269,7 +274,7 @@ public class MineCityFrostHooks
             return entity;
     }
 
-    @Referenced(at = FrostEntityFishingHookTransformer.class)
+    @Referenced(at = EntityFishingHookTransformer.class)
     public static boolean onFishingHookBringEntity(EntityFishHook hook)
     {
         FishingHookBringEntityEvent event = new FishingHookBringEntityEvent(hook.caughtEntity, hook);

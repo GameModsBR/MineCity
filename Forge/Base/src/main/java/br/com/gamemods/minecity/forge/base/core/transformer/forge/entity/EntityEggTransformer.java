@@ -1,7 +1,9 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.entity;
 
 import br.com.gamemods.minecity.api.CollectionUtil;
-import br.com.gamemods.minecity.forge.base.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
+import br.com.gamemods.minecity.forge.base.core.Referenced;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -9,21 +11,18 @@ import org.objectweb.asm.tree.*;
 
 import static org.objectweb.asm.Opcodes.*;
 
+@Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod")
+@Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
 @MethodPatcher
 public class EntityEggTransformer implements IClassTransformer
 {
-    private String hookClass;
-
-    public EntityEggTransformer(String hookClass)
-    {
-        this.hookClass = hookClass.replace('.','/');
-    }
-
     @Override
     public byte[] transform(String s, String srg, byte[] bytes)
     {
         if(!srg.equals("net.minecraft.entity.projectile.EntityEgg"))
             return bytes;
+
+        String hookClass = ModEnv.hookClass.replace('.','/');
 
         ClassNode node = new ClassNode();
         ClassReader reader = new ClassReader(bytes);

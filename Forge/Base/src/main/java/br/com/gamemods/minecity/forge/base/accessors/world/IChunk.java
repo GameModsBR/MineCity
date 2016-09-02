@@ -1,7 +1,7 @@
 package br.com.gamemods.minecity.forge.base.accessors.world;
 
 import br.com.gamemods.minecity.api.world.ChunkPos;
-import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.world.ChunkTransformer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.world.chunk.Chunk;

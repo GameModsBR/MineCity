@@ -1,8 +1,8 @@
 package br.com.gamemods.minecity.forge.base.core.transformer;
 
-import br.com.gamemods.minecity.forge.base.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraft.util.DamageSource;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -14,28 +14,21 @@ import static org.objectweb.asm.Opcodes.*;
 public class InsertDamageHookTransformer implements IClassTransformer
 {
     private String className;
-    private String hookClass;
     private String hookName;
     private String entityClass;
     private String interfaceName;
 
-    public InsertDamageHookTransformer(String className, Class hookClass, String hookName, Class itf, String entityClass)
+    public InsertDamageHookTransformer(String className, String hookName, String itf, String entityClass)
     {
         this.className = className;
-        this.hookClass = hookClass.getName().replace('.','/');
         this.hookName = hookName;
         this.entityClass = entityClass;
-        this.interfaceName = itf == null? null : itf.getName().replace('.','/');
+        this.interfaceName = itf == null? null : itf.replace('.','/');
     }
 
-    public InsertDamageHookTransformer(String className, Class hookClass, String hookName, Class itf)
+    public InsertDamageHookTransformer(String className, String hookName, String itf)
     {
-        this(className, hookClass, hookName, itf, "net.minecraft.entity.Entity");
-    }
-
-    public InsertDamageHookTransformer(String className, Class hookClass, String hookName)
-    {
-        this(className, hookClass, hookName, null, "net.minecraft.entity.Entity");
+        this(className, hookName, itf, "net.minecraft.entity.Entity");
     }
 
     @Override
@@ -44,11 +37,13 @@ public class InsertDamageHookTransformer implements IClassTransformer
         if(!srg.equals(className))
             return bytes;
 
+        String hookClass = ModEnv.hookClass.replace('.','/');
+
         ClassReader reader = new ClassReader(bytes);
         ClassNode node = new ClassNode();
         reader.accept(node, 0);
 
-        String sourceClass = DamageSource.class.getName().replace('.', '/');
+        String sourceClass = "net/minecraft/util/DamageSource";
 
         node.methods.stream().filter(method -> method.desc.equals("(L"+sourceClass+";F)Z")).forEach(method ->
         {

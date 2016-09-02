@@ -1,12 +1,14 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.protection;
 
 import br.com.gamemods.minecity.api.shape.Point;
-import br.com.gamemods.minecity.forge.base.Referenced;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
-import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockDragonEggTransformer;
-import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockTNTTransformer;
-import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenGrowMonitorTransformer;
-import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.*;
+import br.com.gamemods.minecity.forge.base.core.Referenced;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockDragonEggTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.*;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityLivingBaseTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPotionTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.*;
 import cpw.mods.fml.common.eventhandler.Event;
 import net.minecraft.block.Block;
@@ -77,13 +79,13 @@ public class MineCitySevenHooks
         }
     }
 
-    @Referenced(at = SevenOnImpactTransformer.class)
+    @Referenced(at = OnImpactTransformer.class)
     public static void onFireBallImpact(EntityFireball fireball, MovingObjectPosition result)
     {
         onImpact(fireball, result);
     }
 
-    @Referenced(at = SevenOnImpactTransformer.class)
+    @Referenced(at = OnImpactTransformer.class)
     public static void onThrowableImpact(EntityThrowable throwable, MovingObjectPosition result)
     {
         onImpact(throwable, result);
@@ -114,7 +116,7 @@ public class MineCitySevenHooks
     }
 
     @Contract("!null, _, _, _, _, _ -> fail")
-    @Referenced(at = SevenGrowMonitorTransformer.class)
+    @Referenced(at = GrowMonitorTransformer.class)
     public static void onGrowableGrow(Throwable thrown, Object source, World world, int x, int y, int z)
             throws Throwable
     {
@@ -131,13 +133,13 @@ public class MineCitySevenHooks
             throw thrown;
     }
 
-    @Referenced(at = SevenBlockDragonEggTransformer.class)
+    @Referenced(at = BlockDragonEggTransformer.class)
     public static void startCapturingBlocks(World world)
     {
         world.captureBlockSnapshots = true;
     }
 
-    @Referenced(at = SevenBlockDragonEggTransformer.class)
+    @Referenced(at = BlockDragonEggTransformer.class)
     public static void onDragonEggTeleport(BlockDragonEgg block, EntityPlayer player, World world, int x, int y, int z, int meta)
     {
         world.captureBlockSnapshots = false;
@@ -152,7 +154,7 @@ public class MineCitySevenHooks
             });
     }
 
-    @Referenced(at = SevenEntityFishingHookTransformer.class)
+    @Referenced(at = EntityFishingHookTransformer.class)
     public static Entity onFishingHookSpawnEntity(Entity entity, EntityFishHook hook)
     {
         MinecraftForge.EVENT_BUS.post(new EntitySpawnByFishingHookEvent(entity, hook));
@@ -169,7 +171,8 @@ public class MineCitySevenHooks
         return event.droppedExperiencePoints;
     }
 
-    @Referenced(at = SevenEntityXPOrbTransformer.class)
+    @Contract("null, _ -> null")
+    @Referenced(at = EntityXPOrbTransformer.class)
     public static EntityPlayer onXpOrbTargetPlayer(EntityPlayer player, EntityXPOrb orb)
     {
         if(player == null)
@@ -182,14 +185,14 @@ public class MineCitySevenHooks
             return player;
     }
 
-    @Referenced(at = SevenEntityArrowTransformer.class)
+    @Referenced(at = EntityArrowTransformer.class)
     public static boolean onPlayerPickupArrow(EntityArrow arrow, EntityPlayer player)
     {
         Event event = new PlayerPickupArrowEvent(player, arrow);
         return MinecraftForge.EVENT_BUS.post(event);
     }
 
-    @Referenced(at = SevenEntityIgnitionTransformer.class)
+    @Referenced(at = EntityIgnitionTransformer.class)
     public static void onIgnite(Entity entity, int fireTicks, @Nullable Object source, Class<?> sourceClass, String method, String desc)
     {
         Event event;
@@ -202,21 +205,22 @@ public class MineCitySevenHooks
             entity.setFire(fireTicks);
     }
 
-    @Referenced(at = SevenEntityEnderCrystalTransformer.class)
+    @Referenced(at = EntityEnderCrystalTransformer.class)
     public static boolean onEntityDamage(Entity entity, DamageSource source, float amount)
     {
         EntityDamageEvent event = new EntityDamageEvent(entity, source, amount);
         return MinecraftForge.EVENT_BUS.post(event);
     }
 
-    @Referenced(at = SevenBlockTNTTransformer.class)
+    @Referenced(at = BlockTNTTransformer.class)
     public static boolean onArrowIgnite(World world, int x, int y, int z, Block block, EntityArrow arrow)
     {
         ProjectileModifyBlockEvent event = new ProjectileModifyBlockEvent(arrow, world, x, y, z, block);
         return MinecraftForge.EVENT_BUS.post(event);
     }
 
-    @Referenced(at = SevenEntityBoatTransformer.class)
+    @Referenced(at = EntityBoatTransformer.class)
+    @Referenced(at = EntityMinecartTransformer.class)
     public static boolean onVehicleDamage(Entity entity, DamageSource source, float amount)
     {
         return MinecraftForge.EVENT_BUS.post(new VehicleDamageEvent(entity, source, amount));
@@ -230,7 +234,7 @@ public class MineCitySevenHooks
             entity.addPotionEffect(effect);
     }
 
-    @Referenced(at = SevenEntityFishingHookTransformer.class)
+    @Referenced(at = EntityFishingHookTransformer.class)
     public static Entity onFishingHookHitEntity(Entity entity, EntityFishHook hook)
     {
         if(entity == null)
@@ -243,7 +247,7 @@ public class MineCitySevenHooks
             return entity;
     }
 
-    @Referenced(at = SevenEntityFishingHookTransformer.class)
+    @Referenced(at = EntityFishingHookTransformer.class)
     public static boolean onFishingHookBringEntity(EntityFishHook hook)
     {
         FishingHookBringEntityEvent event = new FishingHookBringEntityEvent(hook.field_146043_c, hook);

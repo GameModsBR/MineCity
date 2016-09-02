@@ -1,8 +1,8 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.forge.block;
 
 import br.com.gamemods.minecity.api.CollectionUtil;
-import br.com.gamemods.minecity.forge.base.MethodPatcher;
-import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.Referenced;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
