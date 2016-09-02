@@ -15,6 +15,6 @@ public interface SevenBlockStem extends IBlockStem, SevenBlock
     @Override
     default IItemStack getISeed(IState state, IWorldServer world, int x, int y, int z)
     {
-        return (IItemStack) (Object) ((BlockStem) this).getDrops((World) world, x, y, z, 0, 0).get(0);
+        return (IItemStack) (Object) ((BlockStem) this).getDrops((World) world, x, y, z, 16, 0).get(0);
     }
 }
