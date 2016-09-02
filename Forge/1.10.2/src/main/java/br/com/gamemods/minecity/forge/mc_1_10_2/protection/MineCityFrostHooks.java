@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.protection;
 
 import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.*;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.*;
 import net.minecraft.block.BlockDragonEgg;
@@ -9,15 +10,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.projectile.EntityEgg;
-import net.minecraft.entity.projectile.EntityFishHook;
+import net.minecraft.entity.projectile.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -29,14 +29,100 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 @Referenced
 public class MineCityFrostHooks
 {
+    public static Entity spawner;
+
+    public static void onImpact(Entity entity, RayTraceResult result)
+    {
+        if(MinecraftForge.EVENT_BUS.post(new PreImpactEvent(entity, result)))
+        {
+            entity.setDead();
+            return;
+        }
+
+        World worldObj = entity.worldObj;
+        try
+        {
+            spawner = entity;
+            worldObj.captureBlockSnapshots = true;
+
+            ((OnImpact) entity).mineCityOnImpact(result);
+
+            worldObj.captureBlockSnapshots = false;
+            spawner = null;
+
+            ArrayList<BlockSnapshot> changes = new ArrayList<>(worldObj.capturedBlockSnapshots);
+            worldObj.capturedBlockSnapshots.clear();
+
+            if(MinecraftForge.EVENT_BUS.post(new PostImpactEvent(entity, result, changes)))
+                revertChanges(changes);
+            else
+                sendUpdates(changes);
+        }
+        catch(Exception e)
+        {
+            revertChanges(new ArrayList<>(worldObj.capturedBlockSnapshots));
+            throw e;
+        }
+        finally
+        {
+            spawner = null;
+            worldObj.captureBlockSnapshots = false;
+            worldObj.capturedBlockSnapshots.clear();
+        }
+    }
+
+    @Referenced(at = FrostOnImpactTransformer.class)
+    public static void onFireBallImpact(EntityFireball fireball, RayTraceResult result)
+    {
+        onImpact(fireball, result);
+    }
+
+    @Referenced(at = FrostOnImpactTransformer.class)
+    public static void onThrowableImpact(EntityThrowable throwable, RayTraceResult result)
+    {
+        onImpact(throwable, result);
+    }
+
     @Referenced(at = FrostEntityEggTransformer.class)
     public static boolean onEggSpawnChicken(EntityEgg egg)
     {
         return MinecraftForge.EVENT_BUS.post(new EggSpawnChickenEvent(egg));
+    }
+
+    private static void revertChanges(List<BlockSnapshot> changes)
+    {
+        HashSet<BlockPos> restored = new HashSet<>();
+        for(BlockSnapshot snapshot : changes)
+        {
+            BlockPos snapPos = snapshot.getPos();
+            if(restored.contains(snapPos))
+                continue;
+
+            World world = snapshot.getWorld();
+            world.restoringBlockSnapshots = true;
+            snapshot.restore(true, false);
+            world.restoringBlockSnapshots = false;
+            restored.add(snapPos);
+        }
+    }
+
+    private static void sendUpdates(List<BlockSnapshot> changes)
+    {
+        HashSet<BlockPos> notified = new HashSet<>();
+        for(BlockSnapshot snapshot : changes)
+        {
+            BlockPos snapPos = snapshot.getPos();
+            if(notified.contains(snapPos))
+                continue;
+
+            snapshot.getWorld().notifyBlockUpdate(snapPos, snapshot.getReplacedBlock(), snapshot.getCurrentBlock(), snapshot.getFlag());
+            notified.add(snapPos);
+        }
     }
 
     @Contract("!null, _, _, _, _ -> fail")
@@ -56,33 +142,9 @@ public class MineCityFrostHooks
         world.capturedBlockSnapshots.clear();
 
         if(MinecraftForge.EVENT_BUS.post(new BlockGrowEvent(world, pos, state, source, changes)))
-        {
-            HashSet<BlockPos> restored = new HashSet<>();
-            for(BlockSnapshot snapshot : changes)
-            {
-                BlockPos snapPos = snapshot.getPos();
-                if(restored.contains(snapPos))
-                    continue;
-
-                world.restoringBlockSnapshots = true;
-                snapshot.restore(true, false);
-                world.restoringBlockSnapshots = false;
-                restored.add(snapPos);
-            }
-        }
+            revertChanges(changes);
         else
-        {
-            HashSet<BlockPos> notified = new HashSet<>();
-            for(BlockSnapshot snapshot : changes)
-            {
-                BlockPos snapPos = snapshot.getPos();
-                if(notified.contains(snapPos))
-                    continue;
-
-                world.notifyBlockUpdate(snapPos, snapshot.getReplacedBlock(), snapshot.getCurrentBlock(), snapshot.getFlag());
-                notified.add(snapPos);
-            }
-        }
+            sendUpdates(changes);
 
         if(thrown != null)
             throw thrown;

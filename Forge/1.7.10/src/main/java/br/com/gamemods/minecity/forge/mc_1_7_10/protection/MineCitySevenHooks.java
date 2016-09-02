@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.protection;
 
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.forge.base.Referenced;
+import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockDragonEggTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenBlockTNTTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenGrowMonitorTransformer;
@@ -15,9 +16,12 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityFishHook;
+import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.BlockSnapshot;
@@ -26,10 +30,89 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 @Referenced
 public class MineCitySevenHooks
 {
+    public static Entity spawner;
+
+    public static void onImpact(Entity entity, MovingObjectPosition result)
+    {
+        if(MinecraftForge.EVENT_BUS.post(new PreImpactEvent(entity, result)))
+        {
+            entity.setDead();
+            return;
+        }
+
+        World worldObj = entity.worldObj;
+        try
+        {
+            spawner = entity;
+            worldObj.captureBlockSnapshots = true;
+
+            ((OnImpact) entity).mineCityOnImpact(result);
+
+            worldObj.captureBlockSnapshots = false;
+            spawner = null;
+
+            ArrayList<BlockSnapshot> changes = new ArrayList<>(worldObj.capturedBlockSnapshots);
+            worldObj.capturedBlockSnapshots.clear();
+
+            if(MinecraftForge.EVENT_BUS.post(new PostImpactEvent(entity, result, changes)))
+                revertChanges(changes);
+            else
+                sendUpdates(changes);
+        }
+        catch(Exception e)
+        {
+            revertChanges(new ArrayList<>(worldObj.capturedBlockSnapshots));
+            throw e;
+        }
+        finally
+        {
+            spawner = null;
+            worldObj.captureBlockSnapshots = false;
+            worldObj.capturedBlockSnapshots.clear();
+        }
+    }
+
+    @Referenced(at = SevenOnImpactTransformer.class)
+    public static void onFireBallImpact(EntityFireball fireball, MovingObjectPosition result)
+    {
+        onImpact(fireball, result);
+    }
+
+    @Referenced(at = SevenOnImpactTransformer.class)
+    public static void onThrowableImpact(EntityThrowable throwable, MovingObjectPosition result)
+    {
+        onImpact(throwable, result);
+    }
+
+    private static void revertChanges(List<BlockSnapshot> changes)
+    {
+        HashSet<Point> restored = new HashSet<>();
+        for(BlockSnapshot snapshot : changes)
+        {
+            Point snapPos = new Point(snapshot.x, snapshot.y, snapshot.z);
+            if(restored.contains(snapPos))
+                continue;
+
+            World world = snapshot.world;
+            world.restoringBlockSnapshots = true;
+            snapshot.restore(true, false);
+            world.restoringBlockSnapshots = false;
+            restored.add(snapPos);
+        }
+    }
+
+    private static void sendUpdates(List<BlockSnapshot> changes)
+    {
+        changes.stream().forEachOrdered(snapshot ->
+                snapshot.world.markBlockForUpdate(snapshot.x, snapshot.y, snapshot.z)
+        );
+    }
+
     @Contract("!null, _, _, _, _, _ -> fail")
     @Referenced(at = SevenGrowMonitorTransformer.class)
     public static void onGrowableGrow(Throwable thrown, Object source, World world, int x, int y, int z)
@@ -40,26 +123,9 @@ public class MineCitySevenHooks
         world.capturedBlockSnapshots.clear();
 
         if(MinecraftForge.EVENT_BUS.post(new BlockGrowEvent(world, x, y, z, source, changes)))
-        {
-            HashSet<Point> restored = new HashSet<>();
-            for(BlockSnapshot snapshot : changes)
-            {
-                Point snapPos = new Point(snapshot.x, snapshot.y, snapshot.z);
-                if(restored.contains(snapPos))
-                    continue;
-
-                world.restoringBlockSnapshots = true;
-                snapshot.restore(true, false);
-                world.restoringBlockSnapshots = false;
-                restored.add(snapPos);
-            }
-        }
+            revertChanges(changes);
         else
-        {
-            changes.stream().forEachOrdered(snapshot ->
-                snapshot.world.markBlockForUpdate(snapshot.x, snapshot.y, snapshot.z)
-            );
-        }
+            sendUpdates(changes);
 
         if(thrown != null)
             throw thrown;

@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
@@ -24,6 +25,7 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
+import br.com.gamemods.minecity.forge.base.protection.reaction.MultiBlockReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import net.minecraft.entity.Entity;
@@ -47,6 +49,51 @@ public class EntityProtections extends ForgeProtections
         super(mod);
     }
 
+    public boolean onPostImpact(IEntity entity, List<IBlockSnapshot> changes)
+    {
+        if(changes.isEmpty())
+            return false;
+
+        List<Permissible> relative = new ArrayList<>(2);
+        relative.add(entity);
+        addRelativeEntity(entity, relative);
+        initPlayers(relative);
+
+        Reaction reaction = new MultiBlockReaction(PermissionFlag.MODIFY,
+                changes.stream().map(snap -> snap.getPosition(mod)).collect(Collectors.toList())
+        );
+
+        Permissible who = relative.stream().filter(FILTER_PLAYER).findFirst().orElse(entity);
+        Optional<Message> denial = reaction.can(mod.mineCity, who);
+        if(denial.isPresent())
+        {
+            who.send(FlagHolder.wrapDeny(denial.get()));
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean onEntityEnterWorld(IEntity entity, BlockPos pos, IEntity spawner)
+    {
+        if(spawner == null)
+            return false;
+
+        List<Permissible> relative = new ArrayList<>(2);
+        relative.add(spawner);
+        addRelativeEntity(spawner, relative);
+        initPlayers(relative);
+
+        Permissible player = relative.stream().filter(FILTER_PLAYER).findFirst().orElse(null);
+        if(player != null)
+        {
+            Reaction reaction = entity.reactPlayerSpawn(mod,player, pos, spawner, relative);
+            return reaction.can(mod.mineCity, player).isPresent();
+        }
+
+        return false;
+    }
+
     public boolean onEggSpawnChicken(EntityProjectile egg)
     {
         ProjectileShooter shooter = egg.getShooter();
@@ -55,8 +102,9 @@ public class EntityProtections extends ForgeProtections
             cause = shooter.getResponsible(mod.mineCity);
         else
         {
-            List<Permissible> involved = new ArrayList<>();
+            List<Permissible> involved = new ArrayList<>(2);
             addRelativeEntity(egg, involved);
+            initPlayers(involved);
             cause = involved.stream().filter(FILTER_PLAYER).findFirst().orElse(null);
             if(cause == null)
                 return true;

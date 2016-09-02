@@ -396,4 +396,14 @@ public interface IEntity extends MinecraftEntity
     {
         return ((Entity) this).isDead;
     }
+
+    default Reaction reactPlayerSpawn(MineCityForge mod, Permissible player, BlockPos pos, IEntity spawner,
+                                      List<Permissible> relative)
+    {
+        PermissionFlag playerAttackType = getPlayerAttackType();
+        if(playerAttackType == null)
+            return NoReaction.INSTANCE;
+
+        return new SingleBlockReaction(pos, playerAttackType);
+    }
 }

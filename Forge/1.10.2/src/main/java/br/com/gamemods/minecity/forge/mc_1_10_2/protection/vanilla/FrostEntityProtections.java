@@ -16,10 +16,13 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.*;
+import br.com.gamemods.minecity.forge.mc_1_10_2.protection.MineCityFrostHooks;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -31,11 +34,47 @@ import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.List;
+
 public class FrostEntityProtections extends EntityProtections
 {
     public FrostEntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    @SuppressWarnings("unchecked")
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onPostImpact(PostImpactEvent event)
+    {
+        if(event.getEntity().worldObj.isRemote)
+            return;
+
+        if(onPostImpact(
+                (IEntity) event.getEntity(),
+                (List) event.changes
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onEntityEnterWorld(EntityJoinWorldEvent event)
+    {
+        if(event.getWorld().isRemote)
+            return;
+
+        Entity entity = event.getEntity();
+        if(onEntityEnterWorld(
+                (IEntity) entity,
+                new br.com.gamemods.minecity.api.world.BlockPos(mod.world(event.getWorld()), (int) entity.posX, (int) entity.posY, (int) entity.posZ),
+                (IEntity) MineCityFrostHooks.spawner
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
