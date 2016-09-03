@@ -13,6 +13,7 @@ import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenEntityPr
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.*;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.util.EnumChatFormatting;
@@ -98,7 +99,7 @@ public class MineCitySevenMod
     @Mod.EventHandler
     public void onServerStart(FMLServerAboutToStartEvent event) throws IOException, DataSourceException, SAXException
     {
-        forge.onServerAboutToStart(event.getServer());
+        forge.onServerAboutToStart(event.getServer(), event.getSide() == Side.CLIENT);
     }
 
     @Mod.EventHandler

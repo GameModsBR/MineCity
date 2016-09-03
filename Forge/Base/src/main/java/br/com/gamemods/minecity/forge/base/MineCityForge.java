@@ -33,7 +33,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -273,7 +272,7 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
         }
     }
 
-    public void onServerAboutToStart(MinecraftServer server) throws IOException, SAXException, DataSourceException
+    public void onServerAboutToStart(MinecraftServer server, boolean client) throws IOException, SAXException, DataSourceException
     {
         executors = Executors.newCachedThreadPool();
         this.server = (IMinecraftServer) server;
@@ -282,7 +281,7 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
         worldContainer = Paths.get(server.getFolderName());
 
         MineCityConfig config = this.config;
-        if(server instanceof IntegratedServer)
+        if(client)
             config = config.clone();
 
         mineCity = new MineCity(this, config, transformer);

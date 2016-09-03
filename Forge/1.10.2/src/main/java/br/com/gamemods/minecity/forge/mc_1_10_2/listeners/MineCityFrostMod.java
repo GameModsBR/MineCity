@@ -18,6 +18,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.relauncher.Side;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -86,7 +87,7 @@ public class MineCityFrostMod
     @Mod.EventHandler
     public void onServerStart(FMLServerAboutToStartEvent event) throws IOException, DataSourceException, SAXException
     {
-        forge.onServerAboutToStart(event.getServer());
+        forge.onServerAboutToStart(event.getServer(), event.getSide() == Side.CLIENT);
     }
 
     @Mod.EventHandler
