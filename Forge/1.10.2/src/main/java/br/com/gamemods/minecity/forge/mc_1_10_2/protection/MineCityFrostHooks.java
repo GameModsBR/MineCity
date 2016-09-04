@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.protection;
 
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockDragonEggTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer;
@@ -11,11 +12,14 @@ import br.com.gamemods.minecity.forge.mc_1_10_2.event.*;
 import net.minecraft.block.BlockDragonEgg;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.*;
 import net.minecraft.item.ItemStack;
+import net.minecraft.pathfinding.PathFinder;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
@@ -23,6 +27,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.BlockSnapshot;
@@ -39,6 +44,12 @@ import java.util.List;
 public class MineCityFrostHooks
 {
     public static Entity spawner;
+
+    @Referenced(at = PathFinderTransformer.class)
+    public static boolean onPathFind(PathFinder pathFinder, PathPoint point, IBlockAccess access, EntityLiving entity)
+    {
+        return ModEnv.entityProtections.onPathFind(pathFinder, point, access, entity);
+    }
 
     public static void onImpact(Entity entity, RayTraceResult result)
     {

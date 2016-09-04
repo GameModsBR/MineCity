@@ -47,6 +47,8 @@ public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
         ModEnv.rayTraceResultClass = "net.minecraft.util.MovingObjectPosition";
 
         return new String[]{
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.PathFinderTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.world.ChunkCacheTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.OnImpactTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityEggTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockStemTransformer",

@@ -80,7 +80,7 @@ public class MineCityFrostMod
         MinecraftForge.EVENT_BUS.register(new FrostToolListener(forge));
         MinecraftForge.EVENT_BUS.register(new FrostWorldListener(forge));
         MinecraftForge.EVENT_BUS.register(new FrostBlockProtections(forge));
-        MinecraftForge.EVENT_BUS.register(new FrostEntityProtections(forge));
+        MinecraftForge.EVENT_BUS.register(ModEnv.entityProtections = new FrostEntityProtections(forge));
     }
 
     @Slow

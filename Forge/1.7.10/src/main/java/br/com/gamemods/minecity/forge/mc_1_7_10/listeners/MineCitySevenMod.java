@@ -92,7 +92,7 @@ public class MineCitySevenMod
         MinecraftForge.EVENT_BUS.register(new SevenToolListener(forge));
         MinecraftForge.EVENT_BUS.register(new SevenWorldListener(forge));
         MinecraftForge.EVENT_BUS.register(new SevenBlockProtections(forge));
-        MinecraftForge.EVENT_BUS.register(new SevenEntityProtections(forge));
+        MinecraftForge.EVENT_BUS.register(ModEnv.entityProtections = new SevenEntityProtections(forge));
     }
 
     @Slow

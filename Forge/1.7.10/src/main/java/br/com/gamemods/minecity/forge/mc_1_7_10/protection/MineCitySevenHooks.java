@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.protection;
 
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockDragonEggTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer;
@@ -14,6 +15,7 @@ import cpw.mods.fml.common.eventhandler.Event;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDragonEgg;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,9 +23,12 @@ import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.pathfinding.PathFinder;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.BlockSnapshot;
@@ -38,6 +43,12 @@ import java.util.List;
 public class MineCitySevenHooks
 {
     public static Entity spawner;
+
+    @Referenced(at = PathFinderTransformer.class)
+    public static boolean onPathFind(PathFinder pathFinder, PathPoint point, IBlockAccess access, EntityLiving entity)
+    {
+        return ModEnv.entityProtections.onPathFind(pathFinder, point, access, entity);
+    }
 
     public static void onImpact(Entity entity, MovingObjectPosition result)
     {

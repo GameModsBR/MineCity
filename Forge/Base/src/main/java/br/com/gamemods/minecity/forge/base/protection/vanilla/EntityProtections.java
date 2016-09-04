@@ -23,16 +23,23 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.item.Pickable;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.*;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
+import br.com.gamemods.minecity.forge.base.accessors.world.IChunk;
+import br.com.gamemods.minecity.forge.base.accessors.world.IChunkCache;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.MultiBlockReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
+import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.pathfinding.PathFinder;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
+import net.minecraft.world.IBlockAccess;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,6 +54,44 @@ public class EntityProtections extends ForgeProtections
     public EntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    public boolean onPathFind(PathFinder pathFinder, PathPoint point, IBlockAccess access, EntityLiving entity)
+    {
+        ClaimedChunk from;
+        ClaimedChunk to;
+        if(access instanceof IChunkCache)
+        {
+            IChunkCache cache = (IChunkCache) access;
+            from = cache.getClaim(entity.chunkCoordX, entity.chunkCoordZ);
+            if(from == null)
+                return true;
+
+            to = cache.getClaim(point.xCoord >> 4, point.zCoord >> 4);
+        }
+        else
+        {
+            IWorldServer world = (IWorldServer) access;
+            IChunk chunk = world.getLoadedChunk(entity.chunkCoordX, entity.chunkCoordZ);
+            if(chunk == null)
+                return true;
+            from = chunk.getMineCityClaim();
+            if(from == null)
+                return true;
+
+            chunk = world.getLoadedChunk(point.xCoord >> 4, point.zCoord >> 4);
+            if(chunk == null)
+                return true;
+            to = chunk.getMineCityClaim();
+        }
+
+        if(to == null)
+            return true;
+
+        Identity<?> fromId = from.getFlagHolder((int) entity.posX, (int) entity.posY, (int) entity.posZ).owner();
+        Identity<?> toId = to.getFlagHolder(point.xCoord,point.yCoord,point.zCoord).owner();
+
+        return !fromId.equals(toId);
     }
 
     public boolean onPostImpact(IEntity entity, List<IBlockSnapshot> changes)

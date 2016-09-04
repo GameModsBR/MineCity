@@ -1,5 +1,7 @@
 package br.com.gamemods.minecity.forge.base.core;
 
+import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
+
 public class ModEnv
 {
     public static final String MOD_ID = "minecity";
@@ -8,4 +10,5 @@ public class ModEnv
 
     public static String hookClass;
     public static String rayTraceResultClass;
+    public static EntityProtections entityProtections;
 }
