@@ -8,7 +8,6 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import java.io.FileOutputStream;
 import java.util.NoSuchElementException;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -51,17 +50,6 @@ public class NodeProcessorTransformer implements IClassTransformer
 
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         node.accept(writer);
-        bytes = writer.toByteArray();
-
-        try(FileOutputStream out = new FileOutputStream(srg+".class"))
-        {
-            out.write(bytes);
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        return bytes;
+        return writer.toByteArray();
     }
 }

@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
+import br.com.gamemods.minecity.api.unchecked.BiIntFunction;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
@@ -58,8 +59,9 @@ public class EntityProtections extends ForgeProtections
 
     public boolean onPathFind(PathFinder pathFinder, PathPoint point, IBlockAccess access, EntityLiving entity)
     {
+        int width = (int) Math.floor(entity.width+1);
+        BiIntFunction<ClaimedChunk> getClaim;
         ClaimedChunk from;
-        ClaimedChunk to;
         if(access instanceof IChunkCache)
         {
             IChunkCache cache = (IChunkCache) access;
@@ -67,7 +69,7 @@ public class EntityProtections extends ForgeProtections
             if(from == null)
                 return true;
 
-            to = cache.getClaim(point.xCoord >> 4, point.zCoord >> 4);
+            getClaim = cache::getClaim;
         }
         else
         {
@@ -79,19 +81,32 @@ public class EntityProtections extends ForgeProtections
             if(from == null)
                 return true;
 
-            chunk = world.getLoadedChunk(point.xCoord >> 4, point.zCoord >> 4);
-            if(chunk == null)
-                return true;
-            to = chunk.getMineCityClaim();
+            getClaim = (x, z) ->
+            {
+                IChunk c = world.getLoadedChunk(x, z);
+                if(c == null)
+                    return null;
+
+                return c.getMineCityClaim();
+            };
         }
 
-        if(to == null)
-            return true;
-
         Identity<?> fromId = from.getFlagHolder((int) entity.posX, (int) entity.posY, (int) entity.posZ).owner();
-        Identity<?> toId = to.getFlagHolder(point.xCoord,point.yCoord,point.zCoord).owner();
 
-        return !fromId.equals(toId);
+        for(int ix = -width; ix <= width; ix++)
+            for(int iy = -1; iy <= 1; iy++)
+                for(int iz = -width; iz <= width; iz++)
+                {
+                    ClaimedChunk to = getClaim.apply((point.xCoord + ix) >> 4, (point.zCoord + iz) >> 4);
+                    if(to == null)
+                        return true;
+
+                    Identity<?> toId = to.getFlagHolder(point.xCoord,point.yCoord,point.zCoord).owner();
+                    if(!fromId.equals(toId))
+                        return true;
+                }
+
+        return false;
     }
 
     public boolean onPostImpact(IEntity entity, List<IBlockSnapshot> changes)

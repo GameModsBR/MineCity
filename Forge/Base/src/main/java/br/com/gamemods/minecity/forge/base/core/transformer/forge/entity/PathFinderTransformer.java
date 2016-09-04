@@ -9,7 +9,6 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
 
-import java.io.FileOutputStream;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -127,17 +126,6 @@ public class PathFinderTransformer implements IClassTransformer
 
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         node.accept(writer);
-        bytes = writer.toByteArray();
-
-        try(FileOutputStream out = new FileOutputStream(srg+".class"))
-        {
-            out.write(bytes);
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        return bytes;
+        return writer.toByteArray();
     }
 }
