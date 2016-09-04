@@ -98,6 +98,6 @@ public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     @Override
     public String getAccessTransformerClass()
     {
-        return "br.com.gamemods.minecity.forge.base.core.transformer.MineCityAT";
+        return "br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenAT";
     }
 }
