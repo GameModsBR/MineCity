@@ -1,10 +1,12 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.accessors;
 
+import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.shape.PreciseCuboid;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
+import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
@@ -101,5 +103,11 @@ public interface FrostWorldServer extends IWorldServer
         );
 
         return (List) ((WorldServer) this).getEntitiesWithinAABBExcludingEntity(null, box);
+    }
+
+    @Override
+    default ITileEntity getTileEntity(Point pos)
+    {
+        return (ITileEntity) ((WorldServer) this).getTileEntity(new BlockPos(pos.x, pos.y, pos.z));
     }
 }

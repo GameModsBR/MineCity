@@ -71,6 +71,8 @@ public class InsertInterfaceTransformer implements IClassTransformer
         if(interfaceClass == null)
             return bytes;
 
+        System.out.println("\n | - Making "+srgName+" implements "+interfaceClass);
+
         ClassNode classNode = new ClassNode();
         ClassReader classReader = new ClassReader(bytes);
         classReader.accept(classNode, 0);

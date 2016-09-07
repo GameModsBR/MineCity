@@ -1,11 +1,13 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.accessors.world;
 
+import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.shape.PreciseCuboid;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
+import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
@@ -142,5 +144,11 @@ public interface SevenWorldServer extends IWorldServer
         }
 
         return null;
+    }
+
+    @Override
+    default ITileEntity getTileEntity(Point pos)
+    {
+        return (ITileEntity) ((WorldServer) this).getTileEntity(pos.x, pos.y, pos.z);
     }
 }

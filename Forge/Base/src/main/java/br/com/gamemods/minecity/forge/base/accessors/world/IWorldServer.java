@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
+import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
@@ -100,4 +101,6 @@ public interface IWorldServer
     {
         return (IEntityPlayerMP) getForgeWorld().getPlayerEntityByName(owner);
     }
+
+    ITileEntity getTileEntity(Point pos);
 }

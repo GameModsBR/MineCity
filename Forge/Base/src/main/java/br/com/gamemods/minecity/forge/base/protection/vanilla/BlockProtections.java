@@ -10,6 +10,7 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.MultiBlockReaction;
@@ -170,10 +171,20 @@ public class BlockProtections extends ForgeProtections
         Optional<Message> denial;
         if(stack != null)
         {
-            Reaction reaction = stack.getIItem().reactRightClickBlock((IEntityPlayerMP) entity, stack, offHand, state, pos, face);
+            IItem item = stack.getIItem();
+            Reaction reaction = item.reactRightClickBlockFirstUse((IEntityPlayerMP) entity, stack, offHand, state, pos, face);
             denial = reaction.can(mod.mineCity, player);
             if(denial.isPresent())
-                result = 1;
+                result = 3;
+
+            reaction = item.reactRightClickBlock((IEntityPlayerMP) entity, stack, offHand, state, pos, face);
+            Optional<Message> denial2 = reaction.can(mod.mineCity, player);
+            if(denial2.isPresent())
+            {
+                result |= 1;
+                if(!denial.isPresent())
+                    denial = denial2;
+            }
         }
         else denial = Optional.empty();
 
