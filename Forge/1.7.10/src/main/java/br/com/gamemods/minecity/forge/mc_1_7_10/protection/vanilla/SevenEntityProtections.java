@@ -17,8 +17,10 @@ import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.*;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.MineCitySevenHooks;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -231,8 +233,16 @@ public class SevenEntityProtections extends EntityProtections
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEntityConstruct(EntityEvent.EntityConstructing event)
     {
-        if(event.entity.worldObj.isRemote)
-            return;
+        if(event.entity.worldObj != null)
+        {
+            if(event.entity.worldObj.isRemote)
+                return;
+        }
+        else
+        {
+            if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+                return;
+        }
 
         mod.callSpawnListeners((IEntity) event.entity);
     }
