@@ -8,9 +8,13 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPlayerMPTransformer;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.network.play.server.SPacketTitle;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
@@ -74,5 +78,23 @@ public interface FrostEntityPlayerMP extends IEntityPlayerMP, FrostEntity
     default String getName()
     {
         return IEntityPlayerMP.super.getName();
+    }
+
+    @Override
+    default void sendTileEntity(int x, int y, int z)
+    {
+        BlockPos pos = new BlockPos(x, y, z);
+        TileEntity tile = getWorld().getTileEntity(pos);
+        if(tile == null)
+            return;
+
+        Packet packet = tile.getUpdatePacket();
+        if(packet == null)
+        {
+            NBTTagCompound nbt = tile.serializeNBT();
+            packet = new SPacketUpdateTileEntity(pos, 1, nbt);
+        }
+
+        sendPacket(packet);
     }
 }

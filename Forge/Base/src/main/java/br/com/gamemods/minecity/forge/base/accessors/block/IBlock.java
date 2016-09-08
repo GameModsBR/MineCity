@@ -90,4 +90,9 @@ public interface IBlock
     {
         return new SingleBlockReaction(pos, PermissionFlag.HARVEST);
     }
+
+    default Reaction reactRightClickAsItem(IEntityPlayerMP player, IItemStack stack, boolean offHand, IState state, BlockPos pos, Direction face)
+    {
+        return NoReaction.INSTANCE;
+    }
 }

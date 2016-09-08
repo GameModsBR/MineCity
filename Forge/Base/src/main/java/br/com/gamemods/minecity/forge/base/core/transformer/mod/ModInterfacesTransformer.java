@@ -15,6 +15,9 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("codechicken.translocator.BlockTranslocator",
+                "br.com.gamemods.minecity.forge.base.protection.translocators.IBlockTranslocator");
+
         r.put("codechicken.enderstorage.storage.item.ItemEnderPouch",
                 "br.com.gamemods.minecity.forge.base.protection.enderstorage.IItemEnderPouch");
 

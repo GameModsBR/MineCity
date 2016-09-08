@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.base.accessors.entity.base;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
@@ -237,5 +238,23 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
     default void sendChanges()
     {
         ((EntityPlayerMP) this).inventoryContainer.detectAndSendChanges();
+    }
+
+    void sendTileEntity(int x, int y, int z);
+
+    default void sendTileEntity(Point pos)
+    {
+        sendTileEntity(pos.x, pos.y, pos.z);
+    }
+
+    default void sendBlockAndTile(int x, int y, int z)
+    {
+        sendBlock(x, y, z);
+        sendTileEntity(x, y, z);
+    }
+
+    default void sendBlockAndTile(Point pos)
+    {
+        sendBlockAndTile(pos.x, pos.y, pos.z);
     }
 }

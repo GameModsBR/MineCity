@@ -11,9 +11,12 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.InventoryEnderChest;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.S23PacketBlockChange;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import org.jetbrains.annotations.NotNull;
 
 @Referenced(at = SevenEntityPlayerMPTransformer.class)
@@ -130,5 +133,25 @@ public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingB
             inv.markDirty();
 
         return itemStack;
+    }
+
+    @Override
+    default void sendTileEntity(int x, int y, int z)
+    {
+        TileEntity tile = getWorld().getTileEntity(x, y, z);
+        //noinspection ConstantConditions
+        if(tile == null)
+            return;
+
+        Packet packet = tile.getDescriptionPacket();
+        //noinspection ConstantConditions
+        if(packet == null)
+        {
+            NBTTagCompound nbt = new NBTTagCompound();
+            tile.writeToNBT(nbt);
+            packet = new S35PacketUpdateTileEntity(x, y, z, 1, nbt);
+        }
+
+        sendPacket(packet);
     }
 }
