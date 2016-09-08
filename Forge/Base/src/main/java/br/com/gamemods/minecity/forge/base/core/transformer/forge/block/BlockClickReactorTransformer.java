@@ -13,7 +13,7 @@ public class BlockClickReactorTransformer extends InsertInterfaceTransformer
     public BlockClickReactorTransformer()
     {
         super("br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickReactor", Arrays.asList(
-                "net.minecraft.block.BlockLevel",
+                "net.minecraft.block.BlockLever",
                 "net.minecraft.block.BlockButton",
                 "net.minecraft.block.BlockTrapDoor",
                 "net.minecraft.block.BlockFenceGate",
