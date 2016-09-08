@@ -681,4 +681,33 @@ public class EntityProtections extends ForgeProtections
 
         return false;
     }
+
+    public void onArrowActivate(List<EntityProjectile> list, BlockPos blockPos)
+    {
+        if(list.isEmpty())
+            return;
+
+        FlagHolder holder = mod.mineCity.provideChunk(blockPos.getChunk()).getFlagHolder(blockPos);
+        Iterator<EntityProjectile> iterator = list.iterator();
+        ArrayList<Permissible> relative = new ArrayList<>(2);
+        while(iterator.hasNext())
+        {
+            relative.clear();
+
+            EntityProjectile arrow = iterator.next();
+            addRelativeEntity(arrow, relative);
+            initPlayers(relative);
+
+            Optional<Permissible> optionalPlayer = relative.stream().filter(FILTER_PLAYER).findFirst();
+            if(optionalPlayer.isPresent())
+            {
+               if(holder.can(optionalPlayer.get(), PermissionFlag.CLICK).isPresent())
+                   iterator.remove();
+            }
+            else
+            {
+                iterator.remove();
+            }
+        }
+    }
 }
