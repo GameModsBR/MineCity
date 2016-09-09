@@ -24,6 +24,7 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.item.Pickable;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.*;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
+import br.com.gamemods.minecity.forge.base.accessors.nbt.INBTTagCompound;
 import br.com.gamemods.minecity.forge.base.accessors.world.IChunk;
 import br.com.gamemods.minecity.forge.base.accessors.world.IChunkCache;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
@@ -190,7 +191,7 @@ public class EntityProtections extends ForgeProtections
         if(player != null)
             ids.add(player.identity());
         if(nbt.hasKey("MineCitySplitXp"))
-            nbt.getCompoundTag("MineCitySplitXp").getKeySet().forEach(key-> ids.add(new PlayerID(UUID.fromString(key), nbt.getString(key))));
+            ((INBTTagCompound) nbt.getCompoundTag("MineCitySplitXp")).keys().forEach(key-> ids.add(new PlayerID(UUID.fromString(key), nbt.getString(key))));
 
         AtomicInteger remaining = new AtomicInteger(droppedExp);
         mod.addPostSpawnListener(living.getEntityPos(mod), 1, IEntityXPOrb.class, 2, orb-> {
