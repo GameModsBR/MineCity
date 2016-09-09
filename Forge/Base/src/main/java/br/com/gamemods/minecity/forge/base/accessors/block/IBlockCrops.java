@@ -34,7 +34,7 @@ public interface IBlockCrops extends SimpleCrop
     {
         // Allow to use bone meal
         IItemStack stack = player.cmd.sender.getStackInHand(player.offHand);
-        if(stack != null && stack.getItem() != getISeed())
+        if(stack != null && stack.getItem() != getISeed(player.cmd.sender.getIWorld()))
             return new SingleBlockReaction(snap.getPosition(player.getServer()), PermissionFlag.HARVEST);
 
         return new SingleBlockReaction(snap.getPosition(player.getServer()), PermissionFlag.MODIFY);

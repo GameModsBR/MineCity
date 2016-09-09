@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.base.accessors.block;
 
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import net.minecraft.block.BlockNetherWart;
@@ -16,7 +17,7 @@ public interface IBlockNetherWart extends SimpleCrop
     }
 
     @Override
-    default IItem getISeed()
+    default IItem getISeed(IWorldServer world)
     {
         return (IItem) Items.NETHER_WART;
     }

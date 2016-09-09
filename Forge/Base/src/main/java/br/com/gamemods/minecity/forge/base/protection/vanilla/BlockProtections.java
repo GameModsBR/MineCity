@@ -81,8 +81,7 @@ public class BlockProtections extends ForgeProtections
 
         Permissible owner = boneMealPlayer != null? boneMealPlayer : mod.mineCity.provideChunk(block.getChunk()).getFlagHolder(block).owner();
 
-        Reaction reaction = new MultiBlockReaction(PermissionFlag.MODIFY,
-                changes.stream().map(snap-> snap.getPosition(mod)).collect(Collectors.toList()));
+        Reaction reaction = state.getIBlock().reactBlockGrow(mod, state, block, changes, boneMealPlayer);
 
         Optional<Message> denial = reaction.can(mod.mineCity, owner);
         if(denial.isPresent())

@@ -14,7 +14,7 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReacti
 
 public interface SimpleCrop extends IBlock
 {
-    default IItem getISeed()
+    default IItem getISeed(IWorldServer world)
     {
         return getItemDropped(getDefaultIState(), null, 0);
     }
@@ -22,6 +22,11 @@ public interface SimpleCrop extends IBlock
     default boolean isHarvestAge(int age)
     {
         return age == 7;
+    }
+
+    default boolean shouldReplant(int age)
+    {
+        return isHarvestAge(age);
     }
 
     @Override
@@ -36,20 +41,25 @@ public interface SimpleCrop extends IBlock
                         "You can't harvest plants on creative mode, that would just reset the growth state without any drop."
                 ));
         }
-        else if(isHarvestAge(state.getIntValueOrMeta("age")))
+        else
         {
-            SingleBlockReaction reaction = new SingleBlockReaction(pos, PermissionFlag.HARVEST);
-            MineCityForge mod = player.getServer();
-            reaction.addAllowListener((r, permissible, flag, p, message) ->
+            int age = state.getIntValueOrMeta("age");
+            if(isHarvestAge(age))
             {
-                mod.consumeItemsOrAddOwnerIf(p.precise(), 2, 1, 2, getISeed(), player.identity(), item->
-                        item.getStack().getIItem().isHarvest(item.getStack())
-                );
-                mod.callSyncMethod(() ->
-                        pos.world.getInstance(IWorldServer.class).setBlock(pos, getDefaultIState())
-                );
-            });
-            return reaction;
+                SingleBlockReaction reaction = new SingleBlockReaction(pos, PermissionFlag.HARVEST);
+                MineCityForge mod = player.getServer();
+                reaction.addAllowListener((r, permissible, flag, p, message) ->
+                {
+                    mod.consumeItemsOrAddOwnerIf(p.precise(), 2, 1, 2, getISeed(player.cmd.sender.getIWorld()), player.identity(), item->
+                            item.getStack().getIItem().isHarvest(item.getStack())
+                    );
+                    if(shouldReplant(age))
+                        mod.callSyncMethod(() ->
+                                pos.world.getInstance(IWorldServer.class).setBlock(pos, getDefaultIState())
+                        );
+                });
+                return reaction;
+            }
         }
 
         return new SingleBlockReaction(pos, PermissionFlag.MODIFY);

@@ -12,7 +12,9 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 
+import java.util.List;
 import java.util.Random;
 
 @Referenced(at = FrostInterfaceTransformer.class)
@@ -40,5 +42,12 @@ public interface FrostBlock extends IBlock
     default IItemStack getItemStack(IState state, IWorldServer world, int x, int y, int z)
     {
         return (IItemStack)(Object) getForgeBlock().getItem((World) world, new BlockPos(x,y,z), (IBlockState) state);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default List<IItemStack> getDrops(IWorldServer world, IState state, int fortune, int x, int y, int z)
+    {
+        return (List) ((Block) this).getDrops((WorldServer) world, new BlockPos(x, y, z), (IBlockState) state, fortune);
     }
 }

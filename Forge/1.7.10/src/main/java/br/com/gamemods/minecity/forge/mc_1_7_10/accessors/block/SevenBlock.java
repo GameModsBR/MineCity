@@ -9,7 +9,9 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenInterfaceTransformer;
 import net.minecraft.block.Block;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
+import java.util.List;
 import java.util.Random;
 
 @Referenced(at = SevenInterfaceTransformer.class)
@@ -46,6 +48,13 @@ public interface SevenBlock extends IBlock
     default IItem getItemDropped(IState state, Random rand, int fortune)
     {
         return (IItem) getForgeBlock().getItemDropped(state.getIntValueOrMeta("metadata"), rand, fortune);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default List<IItemStack> getDrops(IWorldServer world, IState state, int fortune, int x, int y, int z)
+    {
+        return (List) ((Block) this).getDrops((World) world, x, y, z, state.getIntValueOrMeta("metadata"), fortune);
     }
 
     /**
