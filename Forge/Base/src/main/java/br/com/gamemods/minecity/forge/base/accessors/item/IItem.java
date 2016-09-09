@@ -22,6 +22,7 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemSeedFood;
 import net.minecraft.util.DamageSource;
 
+import java.util.Collection;
 import java.util.List;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
@@ -97,5 +98,10 @@ public interface IItem
         return this instanceof ItemSeedFood || this instanceof ItemFood
                 || getUnlocalizedName().equals("item.wheat")
                 ;
+    }
+
+    default Collection<String> getToolClasses(IItemStack stack)
+    {
+        return ((Item) this).getToolClasses(stack.getStack());
     }
 }

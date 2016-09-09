@@ -15,6 +15,30 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("blusunrize.immersiveengineering.common.blocks.metal.BlockMetalDevices",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IBlockMetalDevices");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.metal.TileEntitySampleDrill",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ITileEntitySampleDrill");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.metal.TileEntityConveyorSorter",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ITileEntityConveyorSorter");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.metal.TileEntityFurnaceHeater",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ImmersiveTileModifyOnHammer");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.metal.TileEntityConveyorBelt",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ImmersiveTileModifyOnHammer");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.metal.TileEntityCapacitorLV",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ImmersiveTileModifyOnHammer");
+
+        r.put("blusunrize.immersiveengineering.common.items.ItemWireCoil",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IItemWireCoil");
+
+        r.put("blusunrize.immersiveengineering.api.energy.IImmersiveConnectable",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IConnectable");
+
         r.put("codechicken.microblock.ItemMicroPart",
                 "br.com.gamemods.minecity.forge.base.protection.forgemultipart.IItemMicroPart");
 

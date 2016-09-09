@@ -42,4 +42,9 @@ public interface IItemStack
     {
         getStack().stackSize = size;
     }
+
+    default boolean isTool(String tool)
+    {
+        return getIItem().getToolClasses(this).contains(tool);
+    }
 }
