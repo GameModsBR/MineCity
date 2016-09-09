@@ -20,18 +20,38 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 public class ImmersiveHooks
 {
     private static Field itemSeeds;
     private static Field itemMaterial;
     private static Class<?> classIEContent;
+    private static Method getDye;
+
+    public static int getDye(ItemStack stack)
+    {
+        try
+        {
+            if(getDye == null)
+                getDye = Class.forName("blusunrize.immersiveengineering.common.util.Utils").getDeclaredMethod("getDye",
+                        ItemStack.class
+                );
+
+            return (int) getDye.invoke(null, stack);
+        }
+        catch(ReflectiveOperationException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
 
     @Referenced(at = ChemthrowerEffectTeleportTransformer.class)
     public static EnderTeleportEvent onChemthrowerTeleport(EnderTeleportEvent event, IEntity attacked, double x, double y, double z, IChemthrowerEffect effect, EntityPlayer shooter)

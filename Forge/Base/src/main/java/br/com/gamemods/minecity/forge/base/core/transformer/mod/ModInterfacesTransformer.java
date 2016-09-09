@@ -15,6 +15,33 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("blusunrize.immersiveengineering.common.blocks.wooden.TileEntityWoodenBarrel",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ITileEntityWoodenBarrel");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.metal.TileEntityChargingStation",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ITileEntityChargingStation");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.metal.TileEntityFluidPipe",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ImmersiveTileModifyOnHammer");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.metal.TileEntityFluidPump",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ImmersiveTileModifyOnHammer");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.metal.TileEntityFloodlight",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ImmersiveTileModifyOnHammer");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.metal.TileEntityEnergyMeter",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ITileEntityEnergyMeter");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.metal.TileEntityRedstoneBreaker",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ITileEntityRedstoneBreaker");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.metal.TileEntityBreakerSwitch",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ITileEntityBreakerSwitch");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces$IColouredTile",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IIColouredTile");
+
         r.put("blusunrize.immersiveengineering.api.tool.ChemthrowerHandler$ChemthrowerEffect",
                 "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IChemthrowerEffect");
 
@@ -26,6 +53,9 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
 
         r.put("blusunrize.immersiveengineering.common.blocks.plant.BlockIECrop",
                 "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IBlockIECrop");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.metal.BlockMetalDevices2",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IBlockMetalDevices2");
 
         r.put("blusunrize.immersiveengineering.common.blocks.metal.BlockMetalDevices",
                 "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IBlockMetalDevices");
