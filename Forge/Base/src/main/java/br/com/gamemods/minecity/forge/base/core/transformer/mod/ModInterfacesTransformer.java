@@ -15,6 +15,9 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("blusunrize.immersiveengineering.api.tool.ChemthrowerHandler$ChemthrowerEffect",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IChemthrowerEffect");
+
         r.put("blusunrize.immersiveengineering.common.items.ItemIESeed",
                 "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IItemIESeed");
 
