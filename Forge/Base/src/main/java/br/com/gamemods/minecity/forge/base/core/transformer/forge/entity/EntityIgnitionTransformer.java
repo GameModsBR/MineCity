@@ -131,6 +131,8 @@ public class EntityIgnitionTransformer implements IClassTransformer
 
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         node.accept(writer);
-        return writer.toByteArray();
+        bytes = writer.toByteArray();
+        ModEnv.saveClass(srg, bytes);
+        return bytes;
     }
 }

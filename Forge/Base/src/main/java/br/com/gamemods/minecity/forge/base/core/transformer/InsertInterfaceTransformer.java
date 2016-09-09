@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.core.transformer;
 
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -81,6 +82,8 @@ public class InsertInterfaceTransformer implements IClassTransformer
 
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         classNode.accept(writer);
-        return writer.toByteArray();
+        bytes = writer.toByteArray();
+        ModEnv.saveClass(srgName, bytes);
+        return bytes;
     }
 }

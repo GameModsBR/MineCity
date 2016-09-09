@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.core.transformer;
 
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.*;
 
@@ -121,6 +122,8 @@ public class InsertSetterGetterTransformer implements IClassTransformer
             methodVisitor.visitEnd();
 
             bytes = writer.toByteArray();
+            ModEnv.saveClass(srgName, bytes);
+            return bytes;
         }
 
         return bytes;

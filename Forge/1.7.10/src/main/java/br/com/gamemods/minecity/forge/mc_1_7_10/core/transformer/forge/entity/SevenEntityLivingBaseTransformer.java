@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity;
 
 import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod;
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -61,6 +62,8 @@ public class SevenEntityLivingBaseTransformer implements IClassTransformer
 
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         node.accept(writer);
-        return writer.toByteArray();
+        bytes = writer.toByteArray();
+        ModEnv.saveClass(srg, bytes);
+        return bytes;
     }
 }

@@ -1,18 +1,17 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.mod.forgemultipart;
 
 import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import java.io.FileOutputStream;
 import java.util.ListIterator;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -123,6 +122,8 @@ public class BlockMultiPartTransformer implements IClassTransformer
 
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         node.accept(writer);
-        return writer.toByteArray();
+        bytes = writer.toByteArray();
+        ModEnv.saveClass(srg, bytes);
+        return bytes;
     }
 }

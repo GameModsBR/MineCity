@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.forge.base.core.transformer.mod.forgemultipart;
 
 import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
@@ -49,6 +50,8 @@ public class ButtonPartTransformer implements IClassTransformer
 
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         node.accept(writer);
-        return writer.toByteArray();
+        bytes = writer.toByteArray();
+        ModEnv.saveClass(srg, bytes);
+        return bytes;
     }
 }
