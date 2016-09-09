@@ -14,6 +14,7 @@ public class ModEnv
     public static String hookClass;
     public static String rayTraceResultClass;
     public static EntityProtections entityProtections;
+    public static boolean seven;
 
     public static boolean saveClasses = true;
 
