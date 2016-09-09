@@ -15,6 +15,21 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("blusunrize.immersiveengineering.common.blocks.wooden.TileEntityWindmill",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ITileEntityWindmill");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.wooden.TileEntityModWorkbench",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ImmersiveTileOpenOnClick");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.wooden.TileEntityWoodenCrate",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ImmersiveTileOpenOnClick");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.wooden.TileEntityWoodenPost",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ImmersiveTileModifyOnHammer");
+
+        r.put("blusunrize.immersiveengineering.common.blocks.wooden.BlockWoodenDevices",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IBlockWoodenDevices");
+
         r.put("blusunrize.immersiveengineering.common.blocks.wooden.TileEntityWoodenBarrel",
                 "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ITileEntityWoodenBarrel");
 

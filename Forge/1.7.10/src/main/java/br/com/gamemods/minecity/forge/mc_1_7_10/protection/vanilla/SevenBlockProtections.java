@@ -1,11 +1,11 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla;
 
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.forge.base.ForgeUtil;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.BlockProtections;
-import br.com.gamemods.minecity.forge.mc_1_7_10.SevenUtil;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.BlockGrowEvent;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.PlayerTeleportDragonEggEvent;
@@ -134,7 +134,7 @@ public class SevenBlockProtections extends BlockProtections
                     event.entityPlayer, false, event.entityPlayer.getHeldItem(),
                     state(event.world.getBlock(event.x, event.y, event.z), event.world.getBlockMetadata(event.x, event.y, event.z)),
                     new BlockPos(mod.world(event.world), event.x, event.y, event.z),
-                    SevenUtil.toDirection(event.face)
+                    ForgeUtil.toDirection(event.face)
             );
 
             if(result == 3)

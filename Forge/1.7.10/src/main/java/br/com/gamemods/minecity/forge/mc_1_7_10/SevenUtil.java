@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 public class SevenUtil
 {
@@ -36,20 +35,6 @@ public class SevenUtil
             case UP: return ForgeDirection.UP;
             case DOWN: return ForgeDirection.DOWN;
             default: return ForgeDirection.UNKNOWN;
-        }
-    }
-
-    public static Direction toDirection(int blockFace)
-    {
-        switch(blockFace)
-        {
-            case 0: return Direction.DOWN;
-            case 1: return Direction.UP;
-            case 2: return Direction.NORTH;
-            case 3: return Direction.SOUTH;
-            case 4: return Direction.WEST;
-            case 5: return Direction.EAST;
-            default: throw new NoSuchElementException(Integer.toString(blockFace));
         }
     }
 

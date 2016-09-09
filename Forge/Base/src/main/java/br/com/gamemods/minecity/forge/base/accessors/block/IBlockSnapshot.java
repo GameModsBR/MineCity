@@ -24,4 +24,9 @@ public interface IBlockSnapshot
     IWorldServer getIWorld();
     IState getCurrentState();
     IState getReplacedState();
+
+    default ITileEntity getCurrentTileEntity()
+    {
+        return getIWorld().getTileEntity(getX(), getY(), getZ());
+    }
 }

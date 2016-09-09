@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.accessors.block;
 
+import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
@@ -39,6 +40,11 @@ public interface ITileEntity
     default int getPosZ()
     {
         return ((TileEntity) this).getPos().getZ();
+    }
+
+    default Point getBlockPos()
+    {
+        return new Point(getPosX(), getPosY(), getPosZ());
     }
 
     default BlockPos getBlockPos(MineCityForge mod)

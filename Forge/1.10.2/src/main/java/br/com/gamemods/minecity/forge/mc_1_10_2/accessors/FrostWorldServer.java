@@ -1,6 +1,5 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.accessors;
 
-import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.shape.PreciseCuboid;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
@@ -106,8 +105,8 @@ public interface FrostWorldServer extends IWorldServer
     }
 
     @Override
-    default ITileEntity getTileEntity(Point pos)
+    default ITileEntity getTileEntity(int x, int y, int z)
     {
-        return (ITileEntity) ((WorldServer) this).getTileEntity(new BlockPos(pos.x, pos.y, pos.z));
+        return (ITileEntity) ((WorldServer) this).getTileEntity(new BlockPos(x, y, z));
     }
 }

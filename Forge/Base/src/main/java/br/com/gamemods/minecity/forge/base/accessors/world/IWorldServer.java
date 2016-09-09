@@ -102,5 +102,10 @@ public interface IWorldServer
         return (IEntityPlayerMP) getForgeWorld().getPlayerEntityByName(owner);
     }
 
-    ITileEntity getTileEntity(Point pos);
+    ITileEntity getTileEntity(int x, int y, int z);
+
+    default ITileEntity getTileEntity(Point pos)
+    {
+        return getTileEntity(pos.x, pos.y, pos.z);
+    }
 }

@@ -112,7 +112,7 @@ public class BlockProtections extends ForgeProtections
     {
         IBlockSnapshot snap = (IBlockSnapshot) snapshot;
         ForgePlayer player = mod.player(entity);
-        Reaction reaction = snap.getReplacedState().getIBlock().reactBlockPlace(player, snap);
+        Reaction reaction = snap.getCurrentState().getIBlock().reactBlockPlace(player, snap);
 
         Optional<Message> denial = reaction.can(mod.mineCity, player);
         if(denial.isPresent())
