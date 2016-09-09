@@ -17,10 +17,10 @@ public class ModEnv
 
     public static boolean saveClasses = true;
 
-    public static void saveClass(String srg, byte[] bytes)
+    public static byte[] saveClass(String srg, byte[] bytes)
     {
         if(!saveClasses)
-            return;
+            return bytes;
 
         File file = new File("MineCityPatch");
         if(!file.isDirectory() && !file.mkdirs())
@@ -34,5 +34,7 @@ public class ModEnv
         {
             e.printStackTrace();
         }
+
+        return bytes;
     }
 }
