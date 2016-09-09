@@ -50,6 +50,7 @@ public class MineCitySevenHooks
         return ModEnv.entityProtections.onPathFind(pathFinder, point, access, entity);
     }
 
+    @Referenced(at = OnImpactTransformer.class)
     public static void onImpact(Entity entity, MovingObjectPosition result)
     {
         if(MinecraftForge.EVENT_BUS.post(new PreImpactEvent(entity, result)))
