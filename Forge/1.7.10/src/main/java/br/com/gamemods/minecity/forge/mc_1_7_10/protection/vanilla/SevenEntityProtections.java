@@ -1,7 +1,6 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla;
 
 import br.com.gamemods.minecity.forge.base.MineCityForge;
-import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
@@ -204,7 +203,7 @@ public class SevenEntityProtections extends EntityProtections
 
         if(onProjectileModifyBlock(
                 (IEntity) event.projectile,
-                event.blockMetadata == 0? (IState) event.block : new SevenBlockState(event.block, event.blockMetadata),
+                new SevenBlockState(event.block, event.blockMetadata),
                 (IWorldServer) event.world,
                 event.x, event.y, event.z
         ))
