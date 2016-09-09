@@ -1,6 +1,10 @@
 package br.com.gamemods.minecity.forge.base.protection.immersiveengineering;
 
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IPotionEffect;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemSeeds;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.ChemthrowerHandlerTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.EntityChemthrowerShotTransformer;
@@ -23,13 +27,27 @@ public class ImmersiveHooks
     @Referenced(at = ChemthrowerHandlerTransformer.class)
     public static void onPotionApplyEffect(EntityLivingBase target, PotionEffect effect, IChemthrowerEffect chemEffect, EntityPlayer shooter)
     {
-        target.addPotionEffect(effect);
+        if(shooter != null && !ModEnv.entityProtections.onPotionApply(
+                (IEntityLivingBase) target,
+                (IPotionEffect) effect,
+                (IEntity) shooter
+        ))
+        {
+            target.addPotionEffect(effect);
+        }
     }
 
     @Referenced(at = ChemthrowerHandlerTransformer.class)
     public static boolean onChemthrowerDamage(Entity entity, DamageSource source, float damage, IChemthrowerEffect effect, EntityPlayer shooter)
     {
-        return entity.attackEntityFrom(source, damage);
+        return shooter != null
+                && !ModEnv.entityProtections.onEntityDamage(
+                        (IEntity) entity,
+                        new EntityDamageSourceIndirect(source.damageType, shooter, shooter).setProjectile(),
+                        damage
+                    )
+                && entity.attackEntityFrom(source, damage)
+        ;
     }
 
     @Referenced(at = EntityChemthrowerShotTransformer.class)
