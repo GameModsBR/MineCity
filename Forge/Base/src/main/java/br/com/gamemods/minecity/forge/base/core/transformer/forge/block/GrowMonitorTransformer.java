@@ -196,7 +196,7 @@ public class GrowMonitorTransformer implements IClassTransformer
         if(!patched)
             return bytes;
 
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         node.accept(writer);
         return writer.toByteArray();
     }
