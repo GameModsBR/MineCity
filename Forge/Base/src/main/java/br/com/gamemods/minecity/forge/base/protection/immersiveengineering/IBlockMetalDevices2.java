@@ -12,6 +12,7 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.TriggeredReaction;
 import org.jetbrains.annotations.Nullable;
 
 @Referenced(at = ModInterfacesTransformer.class)
@@ -42,8 +43,18 @@ public interface IBlockMetalDevices2 extends IBlockOpenReactor
         if(tile instanceof ITileEntityEnergyMeter)
             return new SingleBlockReaction(pos, PermissionFlag.CLICK);
 
-        if(tile instanceof ITileEntityChargingStation || tile instanceof ITileEntityWoodenBarrel)
+        if(tile instanceof ITileEntityWoodenBarrel)
             return new SingleBlockReaction(pos, PermissionFlag.OPEN);
+
+        if(tile instanceof ITileEntityChargingStation)
+        {
+            TriggeredReaction react = new SingleBlockReaction(pos, PermissionFlag.OPEN);
+            react.onDenyUpdateInventory();
+            react.addDenialListener((reaction, permissible, flag, pos1, message) ->
+                player.sendBlockAndTile(pos)
+            );
+            return react;
+        }
 
         return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
     }
