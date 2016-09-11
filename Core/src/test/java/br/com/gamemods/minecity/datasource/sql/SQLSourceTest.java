@@ -4,10 +4,7 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.permission.EntityID;
-import br.com.gamemods.minecity.api.permission.FlagHolder;
-import br.com.gamemods.minecity.api.permission.Group;
-import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.permission.*;
 import br.com.gamemods.minecity.api.shape.Cuboid;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
@@ -696,6 +693,60 @@ public class SQLSourceTest
         assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(entity, PermissionFlag.MODIFY).get());
         assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(groupA.getIdentity(), PermissionFlag.MODIFY).get());
         assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE, city.can(groupB.getIdentity(), PermissionFlag.MODIFY).get());
+    }
+
+    @Test
+    public void testPermissionFlags() throws Exception
+    {
+        Set<PermissionFlag> allFlags = EnumSet.allOf(PermissionFlag.class);
+        Nature nature = mineCity.loadNature(nether);
+        testPermissionFlags(nature, allFlags);
+
+        ChunkPos spawn = new ChunkPos(nether, 400,400);
+        mineCity.loadChunk(spawn);
+        City city = new City(mineCity, "A City", joserobjr, spawn.getMaxBlock());
+        Group group = city.createGroup("A Group");
+        testPermissionFlags(city, allFlags, group);
+
+
+        Island island = mineCity.provideChunk(spawn).getIsland().orElseThrow(() -> new NoSuchElementException("Failed to get the city's island"));
+        Plot plot = island.createPlot("A Plot", joserobjr, spawn.getMinBlock().add(8,32,8), new Cuboid(spawn.getMinBlock().add(2,2,2), spawn.getMaxBlock().subtract(2,2,2)));
+        testPermissionFlags(plot, allFlags, group);
+    }
+
+    private void testPermissionFlags(SimpleFlagHolder holder, Set<PermissionFlag> flags)
+    {
+        for(PermissionFlag flag: flags)
+        {
+            holder.allow(flag);
+            assertFalse(holder.can(flag).isPresent());
+
+            holder.deny(flag);
+            assertTrue(holder.can(flag).isPresent());
+        }
+    }
+
+    private void testPermissionFlags(ExceptFlagHolder holder, Set<PermissionFlag> flags, Group group)
+    {
+        testPermissionFlags(holder, flags, group.getIdentity());
+
+        EntityID entity = new EntityID(MinecraftEntity.Type.MONSTER, UUID.randomUUID(), "Creeper");
+        testPermissionFlags(holder, flags, entity);
+
+        PlayerID somebody = new PlayerID(UUID.randomUUID(), "Somebody");
+        testPermissionFlags(holder, flags, somebody);
+    }
+
+    private void testPermissionFlags(ExceptFlagHolder holder, Set<PermissionFlag> flags, Identity<?> id)
+    {
+        for(PermissionFlag flag: flags)
+        {
+            holder.allow(flag, id);
+            assertFalse(holder.can(id, flag).isPresent());
+
+            holder.deny(flag, id);
+            assertTrue(holder.can(id, flag).isPresent());
+        }
     }
 
     private MinecraftEntity mockPlayer(PlayerID player)

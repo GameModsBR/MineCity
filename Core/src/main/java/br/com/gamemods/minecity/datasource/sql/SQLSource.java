@@ -32,6 +32,8 @@ import static br.com.gamemods.minecity.api.StringUtil.identity;
 
 public class SQLSource implements IDataSource
 {
+    private static final int VERSION = 3;
+
     @NotNull
     public final MineCity mineCity;
     @NotNull
@@ -549,7 +551,7 @@ public class SQLSource implements IDataSource
                 }
                 catch(SQLException e)
                 {
-                    System.out.println("[MineCity] Installing the SQL database version 2");
+                    System.out.println("[MineCity] Installing the SQL database version "+VERSION);
                     ScriptRunner runner = new ScriptRunner(transaction, false, true);
                     runner.setLogWriter(null);
                     runner.runScript(new InputStreamReader(
@@ -559,13 +561,13 @@ public class SQLSource implements IDataSource
                     return;
                 }
 
-                if(version > 2)
+                if(version > VERSION)
                     throw new DataSourceException("Unsupported database version: "+version);
 
-                if(version < 2)
+                if(version < VERSION)
                 {
-                    System.out.println("[MineCity] Starting the database upgrade from "+version+" to 2");
-                    for(; version < 2; version++)
+                    System.out.println("[MineCity] Starting the database upgrade from "+version+" to "+VERSION);
+                    for(; version < VERSION; version++)
                     {
                         System.out.println("[MineCity] Upgrading to version "+(version+1));
                         ScriptRunner runner = new ScriptRunner(transaction, false, true);

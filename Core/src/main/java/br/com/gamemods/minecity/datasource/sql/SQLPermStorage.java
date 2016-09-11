@@ -431,7 +431,7 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
         }
         catch(SQLException e)
         {
-            throw new DataSourceException(e);
+            throw new DataSourceException("Failed to deny the flag "+flag+" with message "+message+" at "+holder,e);
         }
 
         throw new DataSourceException("Unsupported flag holder: "+holder);
@@ -524,7 +524,7 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
         }
         catch(SQLException e)
         {
-            throw new DataSourceException(e);
+            throw new DataSourceException("Failed to allow the flag "+flag+" at "+holder,e);
         }
 
         throw new DataSourceException("Unsupported flag holder: "+holder);
@@ -874,7 +874,7 @@ public class SQLPermStorage implements IExceptPermissionStorage, INatureStorage
         }
         catch(SQLException e)
         {
-            throw new DataSourceException(e);
+            throw new DataSourceException("Failed to set the flag "+flag+" to "+allow+" for "+identity.getType()+" at "+holder+" with message: "+message, e);
         }
 
         throw new DataSourceException("Unsupported flag holder: "+holder);
