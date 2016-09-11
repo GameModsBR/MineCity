@@ -8,6 +8,7 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.command.RootCommand;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.protection.SevenSnapshotHandler;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenBlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenEntityProtections;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -88,6 +89,7 @@ public class MineCitySevenMod
             forge.logger.warn("MCStats metrics failed to start", e);
         }
 
+        MineCityForge.snapshotHandler = new SevenSnapshotHandler();
         FMLCommonHandler.instance().bus().register(new SevenTickListener(forge));
         MinecraftForge.EVENT_BUS.register(new SevenToolListener(forge));
         MinecraftForge.EVENT_BUS.register(new SevenWorldListener(forge));

@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.protection;
 
+import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
@@ -37,7 +38,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 @Referenced
@@ -109,35 +109,16 @@ public class MineCityFrostHooks
         return MinecraftForge.EVENT_BUS.post(new EggSpawnChickenEvent(egg));
     }
 
+    @SuppressWarnings("unchecked")
     private static void revertChanges(List<BlockSnapshot> changes)
     {
-        HashSet<BlockPos> restored = new HashSet<>();
-        for(BlockSnapshot snapshot : changes)
-        {
-            BlockPos snapPos = snapshot.getPos();
-            if(restored.contains(snapPos))
-                continue;
-
-            World world = snapshot.getWorld();
-            world.restoringBlockSnapshots = true;
-            snapshot.restore(true, false);
-            world.restoringBlockSnapshots = false;
-            restored.add(snapPos);
-        }
+        MineCityForge.snapshotHandler.restore((List) changes);
     }
 
+    @SuppressWarnings("unchecked")
     private static void sendUpdates(List<BlockSnapshot> changes)
     {
-        HashSet<BlockPos> notified = new HashSet<>();
-        for(BlockSnapshot snapshot : changes)
-        {
-            BlockPos snapPos = snapshot.getPos();
-            if(notified.contains(snapPos))
-                continue;
-
-            snapshot.getWorld().notifyBlockUpdate(snapPos, snapshot.getReplacedBlock(), snapshot.getCurrentBlock(), snapshot.getFlag());
-            notified.add(snapPos);
-        }
+        MineCityForge.snapshotHandler.send((List) changes);
     }
 
     @Contract("!null, _, _, _, _ -> fail")

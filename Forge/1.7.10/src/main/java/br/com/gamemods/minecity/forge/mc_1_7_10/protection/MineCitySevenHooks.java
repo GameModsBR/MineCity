@@ -1,6 +1,6 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.protection;
 
-import br.com.gamemods.minecity.api.shape.Point;
+import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
@@ -36,7 +36,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 @Referenced
@@ -103,28 +102,16 @@ public class MineCitySevenHooks
         onImpact(throwable, result);
     }
 
+    @SuppressWarnings("unchecked")
     private static void revertChanges(List<BlockSnapshot> changes)
     {
-        HashSet<Point> restored = new HashSet<>();
-        for(BlockSnapshot snapshot : changes)
-        {
-            Point snapPos = new Point(snapshot.x, snapshot.y, snapshot.z);
-            if(restored.contains(snapPos))
-                continue;
-
-            World world = snapshot.world;
-            world.restoringBlockSnapshots = true;
-            snapshot.restore(true, false);
-            world.restoringBlockSnapshots = false;
-            restored.add(snapPos);
-        }
+        MineCityForge.snapshotHandler.restore((List) changes);
     }
 
+    @SuppressWarnings("unchecked")
     private static void sendUpdates(List<BlockSnapshot> changes)
     {
-        changes.stream().forEachOrdered(snapshot ->
-                snapshot.world.markBlockForUpdate(snapshot.x, snapshot.y, snapshot.z)
-        );
+        MineCityForge.snapshotHandler.send((List) changes);
     }
 
     @Contract("!null, _, _, _, _, _ -> fail")

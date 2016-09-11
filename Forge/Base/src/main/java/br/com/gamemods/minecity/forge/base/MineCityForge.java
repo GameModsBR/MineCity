@@ -25,6 +25,7 @@ import br.com.gamemods.minecity.forge.base.command.ForgeCommandSender;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayerSender;
 import br.com.gamemods.minecity.forge.base.command.ForgeTransformer;
+import br.com.gamemods.minecity.forge.base.protection.SnapshotHandler;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Inconsistency;
 import net.minecraft.command.ICommandSender;
@@ -59,6 +60,7 @@ import java.util.stream.Stream;
 
 public class MineCityForge implements Server, ChunkProvider, WorldProvider
 {
+    public static SnapshotHandler snapshotHandler;
     private final ConcurrentLinkedQueue<Task> syncTasks = new ConcurrentLinkedQueue<>();
     public Logger logger;
     public IMinecraftServer server;

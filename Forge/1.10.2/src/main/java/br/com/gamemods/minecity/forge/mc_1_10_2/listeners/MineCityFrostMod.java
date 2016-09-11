@@ -4,10 +4,12 @@ import br.com.gamemods.minecity.api.MathUtil;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.command.RootCommand;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.mc_1_10_2.MineCityFrost;
 import br.com.gamemods.minecity.forge.mc_1_10_2.command.FrostTransformer;
+import br.com.gamemods.minecity.forge.mc_1_10_2.protection.FrostSnapshotHandler;
 import br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla.FrostBlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla.FrostEntityProtections;
 import net.minecraft.init.Blocks;
@@ -76,6 +78,7 @@ public class MineCityFrostMod
     @Mod.EventHandler
     public void onPostInit(FMLPostInitializationEvent event)
     {
+        MineCityForge.snapshotHandler = new FrostSnapshotHandler();
         MinecraftForge.EVENT_BUS.register(new FrostTickListener(forge));
         MinecraftForge.EVENT_BUS.register(new FrostToolListener(forge));
         MinecraftForge.EVENT_BUS.register(new FrostWorldListener(forge));

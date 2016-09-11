@@ -1,10 +1,12 @@
 package br.com.gamemods.minecity.forge.base.protection.immersiveengineering;
 
+import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
@@ -15,6 +17,9 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.ChemthrowerEffectTeleportTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.ChemthrowerHandlerTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.EntityChemthrowerShotTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.ItemIEToolTransformer;
+import br.com.gamemods.minecity.forge.base.protection.reaction.MultiBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -24,10 +29,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ImmersiveHooks
 {
@@ -35,6 +44,44 @@ public class ImmersiveHooks
     private static Field itemMaterial;
     private static Class<?> classIEContent;
     private static Method getDye;
+
+    @Referenced(at = ItemIEToolTransformer.class)
+    public static boolean preCreateStructure(Object multiBlock, World world, int x, int y, int z, int side, EntityPlayer player)
+    {
+        world.captureBlockSnapshots = true;
+        return false;
+    }
+
+    @Referenced(at = ItemIEToolTransformer.class)
+    public static boolean postCreateStructure(boolean result, Object multiBlock, World world, int x, int y, int z, int side, EntityPlayer entityPlayer)
+    {
+        world.captureBlockSnapshots = false;
+        @SuppressWarnings("unchecked")
+        ArrayList<IBlockSnapshot> capture = new ArrayList(world.capturedBlockSnapshots);
+        world.capturedBlockSnapshots.clear();
+
+        int size = capture.size();
+        if(size == 0)
+            return result;
+
+        Reaction react = new MultiBlockReaction(PermissionFlag.MODIFY,
+                capture.stream().map(snap-> snap.getPosition(ModEnv.entityProtections.mod))
+                    .distinct().collect(Collectors.toList())
+        );
+
+        IEntityPlayerMP player = (IEntityPlayerMP) entityPlayer;
+        ModEnv.entityProtections.mod.player(player);
+        Optional<Message> denial = react.can(ModEnv.entityProtections.mod.mineCity, player);
+        if(denial.isPresent())
+        {
+            MineCityForge.snapshotHandler.restore(capture);
+            player.send(FlagHolder.wrapDeny(denial.get()));
+            return result;
+        }
+
+        MineCityForge.snapshotHandler.send(capture);
+        return result;
+    }
 
     public static int getDye(ItemStack stack)
     {
