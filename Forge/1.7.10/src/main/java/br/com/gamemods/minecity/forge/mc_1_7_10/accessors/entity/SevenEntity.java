@@ -71,4 +71,11 @@ public interface SevenEntity extends IEntity
     {
         ((Entity) this).readFromNBT(nbt);
     }
+
+    @Override
+    default void setPosAndUpdate(double x, double y, double z)
+    {
+        Entity entity = (Entity) this;
+        entity.setLocationAndAngles(x, y, z, entity.rotationYaw, entity.rotationPitch);
+    }
 }

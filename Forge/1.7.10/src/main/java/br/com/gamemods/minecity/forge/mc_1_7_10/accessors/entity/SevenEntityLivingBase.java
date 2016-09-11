@@ -23,4 +23,10 @@ public interface SevenEntityLivingBase extends IEntityLivingBase, SevenEntity
         else
             return (IItemStack) (Object) ((EntityLivingBase) this).getHeldItem();
     }
+
+    @Override
+    default void setPosAndUpdate(double x, double y, double z)
+    {
+        ((EntityLivingBase) this).setPositionAndUpdate(x, y, z);
+    }
 }

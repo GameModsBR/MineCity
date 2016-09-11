@@ -101,8 +101,8 @@ public interface IEntity extends MinecraftEntity
         if(current.equals(pos.world))
         {
             dismount();
-            sender.setPositionAndRotation(pos.x, pos.y, pos.z, pos.yaw, pos.pitch);
-            sender.setPositionAndUpdate(pos.x, pos.y, pos.z);
+            setPosAndRotation(pos);
+            setPosAndUpdate(pos);
             return null;
         }
 
@@ -117,7 +117,7 @@ public interface IEntity extends MinecraftEntity
         if(current.equals(pos.world))
         {
             dismount();
-            sender.setPositionAndUpdate(x, y, z);
+            setPosAndUpdate(x, y, z);
             return null;
         }
 
@@ -405,5 +405,25 @@ public interface IEntity extends MinecraftEntity
             return NoReaction.INSTANCE;
 
         return new SingleBlockReaction(pos, playerAttackType);
+    }
+
+    default void setPosAndRotation(double x, double y, double z, float yaw, float pitch)
+    {
+        ((Entity) this).setPositionAndRotation(x, y, z, yaw, pitch);
+    }
+
+    default void setPosAndRotation(EntityPos pos)
+    {
+        setPosAndRotation(pos.x, pos.y, pos.z, pos.yaw, pos.pitch);
+    }
+
+    default void setPosAndUpdate(double x, double y, double z)
+    {
+        ((Entity) this).setPositionAndUpdate(x, y, z);
+    }
+
+    default void setPosAndUpdate(PrecisePoint pos)
+    {
+        setPosAndUpdate(pos.x, pos.y, pos.z);
     }
 }

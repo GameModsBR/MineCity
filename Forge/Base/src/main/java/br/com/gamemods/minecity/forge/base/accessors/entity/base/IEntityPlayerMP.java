@@ -67,8 +67,8 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
         if(current.equals(pos.world))
         {
             dismount();
-            sender.setPositionAndRotation(pos.x, pos.y, pos.z, pos.yaw, pos.pitch);
-            sender.setPositionAndUpdate(pos.x, pos.y, pos.z);
+            setPosAndRotation(pos);
+            setPosAndUpdate(pos);
             return null;
         }
 
@@ -81,8 +81,8 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
 
         dismount();
         mod.server.getIPlayerList().transferToDimension(this, pos.world.dim, worldServer.getDefaultTeleporter());
-        sender.setPositionAndRotation(pos.x, pos.y, pos.z, pos.yaw, pos.pitch);
-        sender.setPositionAndUpdate(pos.x, pos.y, pos.z);
+        setPosAndRotation(pos);
+        setPosAndUpdate(pos);
         return null;
     }
 
@@ -95,7 +95,7 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
         if(current.equals(pos.world))
         {
             dismount();
-            sender.setPositionAndUpdate(x, y, z);
+            setPosAndUpdate(x, y, z);
             return null;
         }
 
@@ -108,7 +108,7 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
 
         dismount();
         mod.server.getIPlayerList().transferToDimension(this, pos.world.dim, worldServer.getDefaultTeleporter());
-        sender.setPositionAndUpdate(x, y, z);
+        setPosAndUpdate(x, y, z);
         return null;
     }
 
