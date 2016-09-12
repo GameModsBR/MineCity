@@ -29,7 +29,12 @@ public final class BlockPos extends Point implements Serializable
     {
         this(old.world, x, y, z);
         if(x>>4 == old.x>>4 && z>>4 == old.z>>4)
-            chunk = old.chunk;
+        {
+            if(old.chunk == null)
+                chunk = old.getChunk();
+            else
+                chunk = old.chunk;
+        }
     }
 
     @NotNull
