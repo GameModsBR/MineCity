@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
+import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
@@ -15,6 +16,7 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItemSeeds;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.*;
+import br.com.gamemods.minecity.forge.base.protection.ModHooks;
 import br.com.gamemods.minecity.forge.base.protection.immersiveintegrations.ImmersiveIntegrationHooks;
 import br.com.gamemods.minecity.forge.base.protection.reaction.MultiBlockReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
@@ -44,6 +46,16 @@ public class ImmersiveHooks
     private static Field shootingEntity;
     private static Class<?> classIEContent;
     private static Method getDye;
+
+    @Referenced(at = TileEntityFluidPumpTransformer.class)
+    public static boolean onBlockDrain(TileEntity tile, World world, int x, int y, int z, boolean drain)
+    {
+        if(drain)
+            return false;
+
+        ITileEntity from = (ITileEntity) tile;
+        return ModHooks.onBlockAccessOther(world, x, y, z, from.getPosX(), from.getPosY(), from.getPosZ(), PermissionFlag.MODIFY).isPresent();
+    }
 
     @Referenced(at = BlockMetalDevicesTransformer.class)
     public static TileEntity onTileAccess(TileEntity fromTile, TileEntity toTile, World world, int x, int y, int z)

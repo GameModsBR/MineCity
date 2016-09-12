@@ -51,6 +51,7 @@ public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveintegration.TileItemRobinTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.zettaindustries.QuarryFixerBlockTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.zettaindustries.BlockSulfurTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.TileEntityFluidPumpTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.TileEntityConveyorSorterTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.BlockMetalDevicesTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.ItemIEToolTransformer",
