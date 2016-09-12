@@ -108,4 +108,11 @@ public interface IWorldServer
     {
         return getTileEntity(pos.x, pos.y, pos.z);
     }
+
+    default int getActualMaxHeight()
+    {
+        return ((WorldServer) this).getActualHeight();
+    }
+
+    boolean isAir(int x, int y, int z);
 }

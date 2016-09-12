@@ -109,4 +109,10 @@ public interface FrostWorldServer extends IWorldServer
     {
         return (ITileEntity) ((WorldServer) this).getTileEntity(new BlockPos(x, y, z));
     }
+
+    @Override
+    default boolean isAir(int x, int y, int z)
+    {
+        return ((WorldServer) this).isAirBlock(new BlockPos(x, y, z));
+    }
 }

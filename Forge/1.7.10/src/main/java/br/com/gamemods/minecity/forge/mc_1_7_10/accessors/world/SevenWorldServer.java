@@ -150,4 +150,10 @@ public interface SevenWorldServer extends IWorldServer
     {
         return (ITileEntity) ((WorldServer) this).getTileEntity(x, y, z);
     }
+
+    @Override
+    default boolean isAir(int x, int y, int z)
+    {
+        return ((WorldServer) this).isAirBlock(x, y, z);
+    }
 }
