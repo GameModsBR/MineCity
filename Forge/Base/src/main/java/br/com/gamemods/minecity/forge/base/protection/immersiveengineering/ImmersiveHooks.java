@@ -14,10 +14,8 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IPotionEffect;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemSeeds;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.ChemthrowerEffectTeleportTransformer;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.ChemthrowerHandlerTransformer;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.EntityChemthrowerShotTransformer;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.ItemIEToolTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.*;
+import br.com.gamemods.minecity.forge.base.protection.immersiveintegrations.ImmersiveIntegrationHooks;
 import br.com.gamemods.minecity.forge.base.protection.reaction.MultiBlockReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
@@ -27,6 +25,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.world.World;
@@ -45,6 +44,15 @@ public class ImmersiveHooks
     private static Field shootingEntity;
     private static Class<?> classIEContent;
     private static Method getDye;
+
+    @Referenced(at = BlockMetalDevicesTransformer.class)
+    public static TileEntity onTileAccess(TileEntity fromTile, TileEntity toTile, World world, int x, int y, int z)
+    {
+        if(world.isRemote || toTile == null)
+            return toTile;
+
+        return ImmersiveIntegrationHooks.onTileOpen(fromTile, toTile, world, x, y, z);
+    }
 
     public static IEntityLivingBase getShootingEntity(IEntityRevolverShot shot)
     {
