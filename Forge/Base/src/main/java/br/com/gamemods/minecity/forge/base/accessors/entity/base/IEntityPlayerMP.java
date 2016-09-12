@@ -257,4 +257,19 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
     {
         sendBlockAndTile(pos.x, pos.y, pos.z);
     }
+
+    default void closeScreen()
+    {
+        getForgeEntity().closeScreen();
+    }
+
+    default int getSelectedSlot()
+    {
+        return ((EntityPlayerMP) this).inventory.currentItem;
+    }
+
+    default IItemStack getStackInSlot(int slot)
+    {
+        return (IItemStack) (Object) ((EntityPlayerMP) this).inventory.getStackInSlot(slot);
+    }
 }

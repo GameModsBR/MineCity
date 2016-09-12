@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla;
 
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
@@ -40,6 +41,21 @@ public class SevenEntityProtections extends EntityProtections
         super(mod);
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onPreImpact(PreImpactEvent event)
+    {
+        if(event.entity.worldObj.isRemote)
+            return;
+
+        if(onPreImpact(
+                (IEntity) event.entity,
+                (IRayTraceResult) event.traceResult
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onPostImpact(PostImpactEvent event)
@@ -49,6 +65,7 @@ public class SevenEntityProtections extends EntityProtections
 
         if(onPostImpact(
                 (IEntity) event.entity,
+                (IRayTraceResult) event.traceResult,
                 (List) event.changes
         ))
         {

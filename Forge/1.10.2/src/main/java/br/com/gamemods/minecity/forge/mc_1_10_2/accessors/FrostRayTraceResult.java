@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.accessors;
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
@@ -15,6 +16,15 @@ import net.minecraft.util.math.Vec3d;
 @Referenced(at = FrostInterfaceTransformer.class)
 public interface FrostRayTraceResult extends IRayTraceResult
 {
+    @Override
+    default br.com.gamemods.minecity.api.world.BlockPos getHitBlockPos(WorldDim dim)
+    {
+        BlockPos pos = ((RayTraceResult) this).getBlockPos();
+        return new br.com.gamemods.minecity.api.world.BlockPos(
+                dim, pos.getX(), pos.getY(), pos.getZ()
+        );
+    }
+
     @Override
     default Point getHitBlockPos()
     {

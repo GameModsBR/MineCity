@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla;
 
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
@@ -43,6 +44,21 @@ public class FrostEntityProtections extends EntityProtections
         super(mod);
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onPreImpact(PreImpactEvent event)
+    {
+        if(event.getEntity().worldObj.isRemote)
+            return;
+
+        if(onPreImpact(
+                (IEntity) event.getEntity(),
+                (IRayTraceResult) event.traceResult
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onPostImpact(PostImpactEvent event)
@@ -52,6 +68,7 @@ public class FrostEntityProtections extends EntityProtections
 
         if(onPostImpact(
                 (IEntity) event.getEntity(),
+                (IRayTraceResult) event.traceResult,
                 (List) event.changes
         ))
         {

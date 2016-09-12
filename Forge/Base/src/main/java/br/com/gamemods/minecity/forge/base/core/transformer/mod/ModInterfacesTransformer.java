@@ -15,6 +15,39 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("com.bymarcin.zettaindustries.mods.ecatalogue.ECatalogueBlock",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickExtendsOpen");
+
+        r.put("com.bymarcin.zettaindustries.mods.nfc.block.BlockNFCReader",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickExtendsOpen");
+
+        r.put("com.bymarcin.zettaindustries.mods.nfc.block.BlockNFCProgrammer",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickExtendsOpen");
+
+        r.put("com.bymarcin.zettaindustries.mods.nfc.smartcard.SmartCardTerminalBlock",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickExtendsOpen");
+
+        r.put("com.bymarcin.zettaindustries.mods.battery.block.BlockBigBatteryPowerTap",
+                "br.com.gamemods.minecity.forge.base.protection.zettaindustries.IBlockBigBatteryPowerTap");
+
+        r.put("com.bymarcin.zettaindustries.mods.battery.block.BlockBigBatteryController",
+                "br.com.gamemods.minecity.forge.base.protection.zettaindustries.IBigBatteryController");
+
+        r.put("com.bymarcin.zettaindustries.mods.battery.block.BasicBlockMultiblockBase",
+                "br.com.gamemods.minecity.forge.base.protection.zettaindustries.IBigBattery");
+
+        r.put("com.bymarcin.zettaindustries.mods.vanillautils.block.VariableRedstoneEmitter",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockModifyExtendsOpen");
+
+        r.put("com.bymarcin.zettaindustries.mods.rfpowermeter.RFMeterBlock",
+                "br.com.gamemods.minecity.forge.base.protection.zettaindustries.IRFMeterBlock");
+
+        r.put("com.bymarcin.zettaindustries.mods.wiregun.EntityHookBullet",
+                "br.com.gamemods.minecity.forge.base.protection.zettaindustries.IEntityHookBullet");
+
+        r.put("blusunrize.immersiveengineering.common.entities.EntityRevolvershot",
+                "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IEntityRevolverShot");
+
         r.put("blusunrize.immersiveengineering.common.items.ItemIETool",
                 "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IItemIETool");
 
@@ -108,7 +141,7 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
         r.put("blusunrize.immersiveengineering.common.blocks.metal.TileEntityCapacitorLV",
                 "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ImmersiveTileModifyOnHammer");
 
-        r.put("blusunrize.immersiveengineering.common.items.ItemWireCoil",
+        r.put("blusunrize.immersiveengineering.api.energy.IWireCoil",
                 "br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IItemWireCoil");
 
         r.put("blusunrize.immersiveengineering.api.energy.IImmersiveConnectable",

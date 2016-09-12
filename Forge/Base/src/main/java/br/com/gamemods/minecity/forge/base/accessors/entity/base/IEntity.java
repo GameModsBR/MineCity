@@ -11,16 +11,15 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
+import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.DoubleBlockReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.IProjectile;
@@ -36,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
 public interface IEntity extends MinecraftEntity
@@ -425,5 +425,17 @@ public interface IEntity extends MinecraftEntity
     default void setPosAndUpdate(PrecisePoint pos)
     {
         setPosAndUpdate(pos.x, pos.y, pos.z);
+    }
+
+    default Reaction reactImpactPre(MineCityForge mod, IRayTraceResult traceResult, Permissible who, List<Permissible> relative)
+    {
+        return NoReaction.INSTANCE;
+    }
+
+    default Reaction reactImpactPost(MineCityForge mod, IRayTraceResult traceResult, List<IBlockSnapshot> changes, Permissible who, List<Permissible> relative)
+    {
+        return new MultiBlockReaction(PermissionFlag.MODIFY,
+                changes.stream().map(snap -> snap.getPosition(mod)).collect(Collectors.toList())
+        );
     }
 }

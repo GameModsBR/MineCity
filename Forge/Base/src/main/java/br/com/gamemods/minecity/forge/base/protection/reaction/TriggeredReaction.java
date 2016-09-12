@@ -61,4 +61,20 @@ public abstract class TriggeredReaction implements Reaction
 
         allowListeners.forEach(listener -> listener.postReaction(this, permissible, flag, pos, null));
     }
+
+    public void onDenyCloseScreen(IEntityPlayerMP player)
+    {
+        addDenialListener((reaction, permissible, flag, pos, message) ->
+                player.closeScreen()
+        );
+    }
+
+    public void onDenyUpdateBlockAndTile(IEntityPlayerMP player)
+    {
+        addDenialListener((reaction, permissible, flag, pos, message) ->
+                player.getServer().callSyncMethod(() ->
+                    player.sendBlockAndTile(pos)
+                )
+        );
+    }
 }

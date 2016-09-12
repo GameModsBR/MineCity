@@ -12,6 +12,7 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
@@ -29,7 +30,6 @@ import br.com.gamemods.minecity.forge.base.accessors.world.IChunk;
 import br.com.gamemods.minecity.forge.base.accessors.world.IChunkCache;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.MultiBlockReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
@@ -110,7 +110,25 @@ public class EntityProtections extends ForgeProtections
         return false;
     }
 
-    public boolean onPostImpact(IEntity entity, List<IBlockSnapshot> changes)
+    public boolean onPreImpact(IEntity entity, IRayTraceResult traceResult)
+    {
+        List<Permissible> relative = new ArrayList<>(2);
+        relative.add(entity);
+        addRelativeEntity(entity, relative);
+        initPlayers(relative);
+        Permissible who = relative.stream().filter(FILTER_PLAYER).findFirst().orElse(entity);
+
+        Optional<Message> denial = entity.reactImpactPre(mod, traceResult, who, relative).can(mod.mineCity, who);
+        if(denial.isPresent())
+        {
+            who.send(FlagHolder.wrapDeny(denial.get()));
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean onPostImpact(IEntity entity, IRayTraceResult traceResult, List<IBlockSnapshot> changes)
     {
         if(changes.isEmpty())
             return false;
@@ -120,11 +138,10 @@ public class EntityProtections extends ForgeProtections
         addRelativeEntity(entity, relative);
         initPlayers(relative);
 
-        Reaction reaction = new MultiBlockReaction(PermissionFlag.MODIFY,
-                changes.stream().map(snap -> snap.getPosition(mod)).collect(Collectors.toList())
-        );
-
         Permissible who = relative.stream().filter(FILTER_PLAYER).findFirst().orElse(entity);
+
+        Reaction reaction =entity.reactImpactPost(mod, traceResult, changes, who, relative);
+
         Optional<Message> denial = reaction.can(mod.mineCity, who);
         if(denial.isPresent())
         {

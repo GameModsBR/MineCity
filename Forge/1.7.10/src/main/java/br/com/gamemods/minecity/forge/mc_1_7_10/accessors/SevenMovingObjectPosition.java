@@ -2,7 +2,9 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.accessors;
 
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
@@ -15,6 +17,13 @@ import java.util.NoSuchElementException;
 @Referenced(at = ForgeInterfaceTransformer.class)
 public interface SevenMovingObjectPosition extends IRayTraceResult
 {
+    @Override
+    default BlockPos getHitBlockPos(WorldDim dim)
+    {
+        MovingObjectPosition pos = (MovingObjectPosition) this;
+        return new BlockPos(dim, pos.blockX, pos.blockY, pos.blockZ);
+    }
+
     @Override
     default Point getHitBlockPos()
     {

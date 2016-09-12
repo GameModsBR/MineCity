@@ -42,8 +42,23 @@ public class ImmersiveHooks
 {
     private static Field itemSeeds;
     private static Field itemMaterial;
+    private static Field shootingEntity;
     private static Class<?> classIEContent;
     private static Method getDye;
+
+    public static IEntityLivingBase getShootingEntity(IEntityRevolverShot shot)
+    {
+        try
+        {
+            if(shootingEntity == null)
+                shootingEntity = Class.forName("blusunrize.immersiveengineering.common.entities.EntityRevolvershot").getDeclaredField("shootingEntity");
+            return (IEntityLivingBase) shootingEntity.get(shot);
+        }
+        catch(ReflectiveOperationException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
 
     @Referenced(at = ItemIEToolTransformer.class)
     public static boolean preCreateStructure(Object multiBlock, World world, int x, int y, int z, int side, EntityPlayer player)
