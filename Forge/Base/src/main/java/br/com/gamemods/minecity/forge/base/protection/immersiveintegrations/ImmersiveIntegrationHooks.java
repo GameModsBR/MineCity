@@ -8,6 +8,7 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveengineering.TileEntityConveyorSorterTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.immersiveintegration.TileItemRobinTransformer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.tileentity.TileEntity;
@@ -38,6 +39,7 @@ public class ImmersiveIntegrationHooks
         return toClaim.getFlagHolder(to).can(fromClaim.getFlagHolder(from).owner(), PermissionFlag.OPEN);
     }
 
+    @Referenced(at = TileEntityConveyorSorterTransformer.class)
     @Referenced(at = TileItemRobinTransformer.class)
     public static TileEntity onTileOpen(TileEntity fromTile, TileEntity toTile, World world, int x, int y, int z)
     {
