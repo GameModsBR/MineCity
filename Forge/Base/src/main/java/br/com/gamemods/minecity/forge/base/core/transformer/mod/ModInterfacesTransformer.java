@@ -15,6 +15,9 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("cpw.mods.ironchest.ItemChestChanger",
+                "br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyFirstReactor");
+
         r.put("unwrittenfun.minecraft.immersiveintegration.blocks.BlockItemRobin",
                 "br.com.gamemods.minecity.forge.base.accessors.block.IBlockModifyExtendsOpen");
 
