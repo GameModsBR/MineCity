@@ -16,7 +16,7 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
         Map<String, String> r = new HashMap<>();
 
         r.put("unwrittenfun.minecraft.immersiveintegration.blocks.BlockItemRobin",
-                "br.com.gamemods.minecity.forge.base.protection.immersiveintegrations.IBlockItemRobin");
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockModifyExtendsOpen");
 
         r.put("unwrittenfun.minecraft.immersiveintegration.blocks.BlockExtendablePost",
                 "br.com.gamemods.minecity.forge.base.protection.immersiveintegrations.IBlockExtendablePost");
