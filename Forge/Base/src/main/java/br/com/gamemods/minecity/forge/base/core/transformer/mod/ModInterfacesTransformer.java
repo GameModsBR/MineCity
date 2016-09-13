@@ -15,6 +15,27 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("br.com.gamemods.universalcoinsserver.blocks.BlockTradeStation",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockNoReactionExtendsOpen");
+
+        r.put("br.com.gamemods.universalcoinsserver.blocks.BlockSlots",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockNoReactionExtendsOpen");
+
+        r.put("br.com.gamemods.universalcoinsserver.blocks.BlockPackager",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockNoReactionExtendsOpen");
+
+        r.put("br.com.gamemods.universalcoinsserver.blocks.BlockCardStation",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockNoReactionExtendsOpen");
+
+        r.put("br.com.gamemods.universalcoinsserver.blocks.BlockOwned",
+                "br.com.gamemods.minecity.forge.base.protection.universalcoinsserver.IBlockOwned");
+
+        r.put("br.com.gamemods.universalcoinsserver.blocks.PlayerOwned",
+                "br.com.gamemods.minecity.forge.base.protection.universalcoinsserver.IPlayerOwned");
+
+        r.put("br.com.gamemods.universalcoinsserver.blocks.BlockAdvSign",
+                "br.com.gamemods.minecity.forge.base.protection.universalcoinsserver.IBlockAdvSign");
+
         r.put("cpw.mods.ironchest.ItemChestChanger",
                 "br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyFirstReactor");
 
