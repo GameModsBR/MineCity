@@ -15,6 +15,12 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("codechicken.wirelessredstone.logic.ReceiverPart",
+                "br.com.gamemods.minecity.forge.base.protection.wrcbe.DevicePart");
+
+        r.put("codechicken.wirelessredstone.logic.WirelessPart",
+                "br.com.gamemods.minecity.forge.base.protection.wrcbe.DevicePart");
+
         r.put("br.com.gamemods.universalcoinsserver.blocks.BlockTradeStation",
                 "br.com.gamemods.minecity.forge.base.accessors.block.IBlockNoReactionExtendsOpen");
 
