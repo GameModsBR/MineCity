@@ -15,6 +15,39 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("com.pam.harvestcraft.BlockPamSink",
+                "br.com.gamemods.minecity.forge.base.protection.pamharvestcraft.IBlockPamSink");
+
+        r.put("com.pam.harvestcraft.BlockPamQuern",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenGUIReactor");
+
+        r.put("com.pam.harvestcraft.BlockPamPresser",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenGUIReactor");
+
+        r.put("com.pam.harvestcraft.BlockPamPot",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickGUIReactor");
+
+        r.put("com.pam.harvestcraft.BlockPamOven",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenGUIReactor");
+
+        r.put("com.pam.harvestcraft.BlockPamMarket",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickGUIReactor");
+
+        r.put("com.pam.harvestcraft.BlockPamFishTrap",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenGUIReactor");
+
+        r.put("com.pam.harvestcraft.BlockPamCuttingBoard",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickGUIReactor");
+
+        r.put("com.pam.harvestcraft.BlockPamChurn",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenGUIReactor");
+
+        r.put("com.pam.harvestcraft.BlockPamApiary",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenGUIReactor");
+
+        r.put("com.pam.harvestcraft.BlockPamAnimalTrap",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenGUIReactor");
+
         r.put("com.mrcrayfish.furniture.blocks.BlockWindowDecorationClosed",
                 "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickReactor");
 
