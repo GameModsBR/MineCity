@@ -8,6 +8,7 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPlayerMPTransformer;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -96,5 +97,11 @@ public interface FrostEntityPlayerMP extends IEntityPlayerMP, FrostEntity
         }
 
         sendPacket(packet);
+    }
+
+    @Override
+    default void sendFakeAir(int x, int y, int z)
+    {
+        sendFakeBlock(x, y, z, (IState) Blocks.AIR.getDefaultState());
     }
 }

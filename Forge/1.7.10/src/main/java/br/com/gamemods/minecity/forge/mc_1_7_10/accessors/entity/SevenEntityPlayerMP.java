@@ -154,4 +154,10 @@ public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingB
 
         sendPacket(packet);
     }
+
+    @Override
+    default void sendFakeAir(int x, int y, int z)
+    {
+        sendFakeBlock(x, y, z, 0, 0);
+    }
 }

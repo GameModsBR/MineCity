@@ -272,4 +272,11 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
     {
         return (IItemStack) (Object) ((EntityPlayerMP) this).inventory.getStackInSlot(slot);
     }
+
+    void sendFakeAir(int x, int y, int z);
+
+    default void sendFakeAir(BlockPos pos)
+    {
+        sendFakeAir(pos.x, pos.y, pos.z);
+    }
 }

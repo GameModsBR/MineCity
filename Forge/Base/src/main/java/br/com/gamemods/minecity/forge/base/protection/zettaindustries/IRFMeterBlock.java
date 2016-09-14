@@ -35,7 +35,7 @@ public interface IRFMeterBlock extends IBlockOpenReactor
         if(player.isSneaking())
         {
             SingleBlockReaction react = new SingleBlockReaction(pos, PermissionFlag.MODIFY);
-            react.onDenyUpdateBlockAndTile(player);
+            react.onDenyUpdateBlockAndTileForced(player);
             return react;
         }
         return NoReaction.INSTANCE;

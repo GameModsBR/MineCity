@@ -18,8 +18,12 @@ public interface IBlockSitRecolor extends IBlockSittable
     default Reaction reactRightClick(BlockPos pos, IState state, IEntityPlayerMP player, IItemStack stack,
                                      boolean offHand, Direction face)
     {
-        if(stack != null && stack.getIItem().getUnlocalizedName().equals("dyePowder"))
-            return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
+        if(stack != null && stack.getIItem().getUnlocalizedName().equals("item.dyePowder"))
+        {
+            SingleBlockReaction reaction = new SingleBlockReaction(pos, PermissionFlag.MODIFY);
+            reaction.onDenyUpdateBlockAndTileForced(player);
+            return reaction;
+        }
 
         return IBlockSittable.super.reactRightClick(pos, state, player, stack, offHand, face);
     }
