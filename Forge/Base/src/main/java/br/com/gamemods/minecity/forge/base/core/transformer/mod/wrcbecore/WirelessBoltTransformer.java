@@ -4,7 +4,7 @@ import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
-import net.minecraft.launchwrapper.IClassTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.InsertSetterGetterTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -19,19 +19,29 @@ import static org.objectweb.asm.Opcodes.*;
 @Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod")
 @Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
 @MethodPatcher
-public class WirelessBoltTransformer implements IClassTransformer
+public class WirelessBoltTransformer extends InsertSetterGetterTransformer
 {
+    public WirelessBoltTransformer()
+    {
+        super("codechicken.wirelessredstone.core.WirelessBolt",
+                "br.com.gamemods.minecity.forge.base.accessors.entity.projectile.ProjectileShooter",
+                "mineCityShooter",
+                "br.com.gamemods.minecity.forge.base.protection.wrcbe.IWirelessBolt",
+                "setMineCityShooter", "getMineCityShooter"
+        );
+    }
+
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass)
     {
         if(!"codechicken.wirelessredstone.core.WirelessBolt".equals(transformedName))
             return basicClass;
 
+        basicClass = super.transform(name, transformedName, basicClass);
+
         ClassNode node = new ClassNode();
         ClassReader reader = new ClassReader(basicClass);
         reader.accept(node, 0);
-
-        node.interfaces.add("br/com/gamemods/minecity/forge/base/protection/wrcbe/IWirelessBolt");
 
         MethodNode wrapper = new MethodNode(ACC_PUBLIC + ACC_STATIC, "mineCity$etherJamEntity",
                 "(Lcodechicken/wirelessredstone/core/RedstoneEther;Lnet/minecraft/entity/EntityLivingBase;ZLcodechicken/wirelessredstone/core/WirelessBolt;)V",
