@@ -11,8 +11,9 @@ import br.com.gamemods.minecity.forge.base.core.transformer.mod.wrcbecore.Wirele
 public interface IWirelessBolt extends Projectile
 {
     @Referenced(at = JammerPartTransformer.class)
-    default void createdFromPart(IJammerPart part)
+    default IWirelessBolt createdFromPart(IJammerPart part)
     {
         setShooter(new ProjectileShooter(part.tileI().getBlockPos(ModEnv.entityProtections.mod).toEntity()));
+        return this;
     }
 }
