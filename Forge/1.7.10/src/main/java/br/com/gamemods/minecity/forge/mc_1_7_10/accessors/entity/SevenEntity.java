@@ -43,6 +43,13 @@ public interface SevenEntity extends IEntity
         ((Entity) this).mountEntity(null);
     }
 
+    @Override
+    default boolean mount(IEntity entity)
+    {
+        ((Entity) this).mountEntity((Entity) entity);
+        return true;
+    }
+
     @NotNull
     @Override
     default String getName()

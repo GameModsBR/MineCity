@@ -50,4 +50,11 @@ public interface FrostBlock extends IBlock
     {
         return (List) ((Block) this).getDrops((WorldServer) world, new BlockPos(x, y, z), (IBlockState) state, fortune);
     }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    default float getHardness(IState state, IWorldServer world, int x, int y, int z)
+    {
+        return ((Block) this).getBlockHardness((IBlockState) state, (World) world, new BlockPos(x, y, z));
+    }
 }

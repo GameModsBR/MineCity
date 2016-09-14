@@ -106,4 +106,11 @@ public interface IBlock
     {
         return new MultiBlockReaction(PermissionFlag.MODIFY, changes.stream().map(snap-> snap.getPosition(mod)).collect(Collectors.toList()));
     }
+
+    float getHardness(IState state, IWorldServer world, int x, int y, int z);
+
+    default float getHardness(IState state, BlockPos pos)
+    {
+        return getHardness(state, pos.world.getInstance(IWorldServer.class), pos.x, pos.y, pos.z);
+    }
 }

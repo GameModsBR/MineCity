@@ -64,4 +64,10 @@ public interface SevenBlock extends IBlock
     @Override
     @Deprecated
     IItemStack getItemStack(IState state, IWorldServer world, int x, int y, int z) throws AbstractMethodError;
+
+    @Override
+    default float getHardness(IState state, IWorldServer world, int x, int y, int z)
+    {
+        return ((Block) this).getBlockHardness((World) world, z, y, z);
+    }
 }

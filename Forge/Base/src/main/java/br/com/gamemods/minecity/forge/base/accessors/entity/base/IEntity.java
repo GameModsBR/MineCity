@@ -94,6 +94,11 @@ public interface IEntity extends MinecraftEntity
         ((Entity) this).dismountRidingEntity();
     }
 
+    default boolean mount(IEntity entity)
+    {
+        return ((Entity) this).startRiding((Entity) entity);
+    }
+
     default Message teleport(MineCityForge mod, EntityPos pos)
     {
         Entity sender = (Entity) this;

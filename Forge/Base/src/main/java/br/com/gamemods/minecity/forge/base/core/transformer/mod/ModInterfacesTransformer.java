@@ -15,6 +15,12 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("com.goldensilver853.vehicles.items.VehicularItem",
+                "br.com.gamemods.minecity.forge.base.protection.vehicularmovement.IVehicularItem");
+
+        r.put("com.goldensilver853.vehicles.entity.VehicularEntity",
+                "br.com.gamemods.minecity.forge.base.protection.vehicularmovement.IVehicularEntity");
+
         r.put("codechicken.wirelessredstone.logic.ReceiverPart",
                 "br.com.gamemods.minecity.forge.base.protection.wrcbe.DevicePart");
 
