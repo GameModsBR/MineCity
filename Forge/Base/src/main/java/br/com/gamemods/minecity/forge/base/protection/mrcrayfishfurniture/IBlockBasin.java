@@ -22,10 +22,15 @@ public interface IBlockBasin extends IBlockOpenReactor
                                      boolean offHand, Direction face)
     {
         MineCityForge mod = player.getServer();
-        return new SingleBlockReaction(pos, PermissionFlag.OPEN).combine(
+        Reaction reaction = new SingleBlockReaction(pos, PermissionFlag.OPEN);
+        BlockPos water = pos.add(Direction.DOWN, 2);
+        if(player.getIWorld().getIBlock(water).getUnlocalizedName().equals("tile.water"))
+            reaction = reaction.combine(
                 new BlameOtherInheritedReaction(
-                    mod.mineCity, pos, new SingleBlockReaction(pos.add(Direction.DOWN, 2), PermissionFlag.MODIFY)
+                    mod.mineCity, pos, new SingleBlockReaction(water, PermissionFlag.MODIFY)
                 )
-        );
+            );
+
+        return reaction;
     }
 }
