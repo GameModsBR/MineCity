@@ -15,6 +15,75 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("com.mrcrayfish.furniture.blocks.BlockWindowDecorationClosed",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickReactor");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockWindowDecoration",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickReactor");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockWallCabinet",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenGUIReactor");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockToaster",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenForceSyncReactor");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockTap",
+                "br.com.gamemods.minecity.forge.base.protection.mrcrayfishfurniture.IBlockTap");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockTV",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickExtendsOpen");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockStereo",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickExtendsOpen");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockShowerHead",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickReactor");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockShower",
+                "br.com.gamemods.minecity.forge.base.protection.mrcrayfishfurniture.IBlockBath");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockPlate",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenForceSyncReactor");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockMicrowave",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenGUIReactor");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockLampOff",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickExtendsOpen");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockLampOn",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickExtendsOpen");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockFridge",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenGUIReactor");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockCookieJar",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenForceSyncReactor");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockComputer",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockClickExtendsOpen");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockChoppingBoard",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenForceSyncReactor");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockCabinetKitchen",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenGUIReactor");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockCabinet",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenGUIReactor");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockBlender",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenForceSyncReactor");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockBin",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockNoReactionExtendsOpen");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockBin",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockNoReactionExtendsOpen");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockBedsideCabinet",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenGUIReactor");
+
         r.put("com.mrcrayfish.furniture.blocks.BlockBath",
                 "br.com.gamemods.minecity.forge.base.protection.mrcrayfishfurniture.IBlockBath");
 
