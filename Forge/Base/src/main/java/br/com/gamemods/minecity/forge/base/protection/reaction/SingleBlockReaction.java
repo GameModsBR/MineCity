@@ -8,6 +8,7 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class SingleBlockReaction extends TriggeredReaction
@@ -27,7 +28,8 @@ public class SingleBlockReaction extends TriggeredReaction
     @Override
     public Stream<Message> stream(MineCity mineCity, Permissible permissible)
     {
-        return Stream.generate(()-> can(mineCity, permissible)).filter(Optional::isPresent).map(Optional::get).limit(1);
+        Supplier<Optional<Message>> check = ()-> can(mineCity, permissible);
+        return Stream.of(check).map(Supplier::get).filter(Optional::isPresent).map(Optional::get);
     }
 
     @Override
