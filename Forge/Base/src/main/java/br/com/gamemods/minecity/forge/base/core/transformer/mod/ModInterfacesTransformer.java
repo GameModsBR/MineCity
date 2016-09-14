@@ -15,6 +15,12 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("com.mrcrayfish.furniture.blocks.BlockCouch",
+                "br.com.gamemods.minecity.forge.base.protection.mrcrayfishfurniture.IBlockSitRecolor");
+
+        r.put("com.mrcrayfish.furniture.blocks.BlockBarStool",
+                "br.com.gamemods.minecity.forge.base.protection.mrcrayfishfurniture.IBlockSitRecolor");
+
         r.put("com.mrcrayfish.furniture.blocks.BlockSittable",
                 "br.com.gamemods.minecity.forge.base.protection.mrcrayfishfurniture.IBlockSittable");
 
