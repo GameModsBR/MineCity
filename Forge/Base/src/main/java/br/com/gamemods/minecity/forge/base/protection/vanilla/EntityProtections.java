@@ -30,6 +30,7 @@ import br.com.gamemods.minecity.forge.base.accessors.world.IChunk;
 import br.com.gamemods.minecity.forge.base.accessors.world.IChunkCache;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
+import br.com.gamemods.minecity.forge.base.protection.ShooterDamageSource;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
@@ -526,76 +527,83 @@ public class EntityProtections extends ForgeProtections
             projectile.detectShooter(mod);
     }
 
-    private void addRelativeEntity(IEntity entity, List<Permissible> list)
+    private boolean shouldAdd(IEntity owner, List<Permissible> list)
     {
-        Predicate<Identity<?>> containsId = identity-> list.stream()
+        if(list.contains(owner))
+            return false;
+
+        int index = list.indexOf(owner.getIdentity());
+        if(index >= 0)
+            list.set(index, owner);
+        else
+            list.add(owner);
+
+        return true;
+    }
+
+    private boolean containsId(Identity<?> identity, List<Permissible> list)
+    {
+        return list.stream()
                 .filter(MinecraftEntity.class::isInstance).map(MinecraftEntity.class::cast)
                 .map(MinecraftEntity::getIdentity).anyMatch(identity::equals);
+    }
 
-        Predicate<IEntity> add = owner -> {
-            if(list.contains(owner))
-                return false;
+    private void addRelativeEntity(ProjectileShooter shooter, List<Permissible> list)
+    {
+        boolean found = false;
+        IEntity owner = shooter.getEntity();
+        if(owner != null)
+        {
+            found = true;
+            if(shouldAdd(owner, list))
+                addRelativeEntity(owner, list);
+        }
+        else
+        {
+            Identity<?> identity = shooter.getIdentity();
+            if(identity != null && !containsId(identity, list))
+                list.add(identity);
+        }
 
-            int index = list.indexOf(owner.getIdentity());
-            if(index >= 0)
-                list.set(index, owner);
-            else
-                list.add(owner);
+        owner = shooter.getIndirectEntity();
+        if(owner != null)
+        {
+            found = true;
+            if(shouldAdd(owner, list))
+                addRelativeEntity(owner, list);
+        }
+        else
+        {
+            Identity<?> identity = shooter.getIndirectId();
+            if(identity != null && !containsId(identity, list))
+                list.add(identity);
+        }
 
-            return true;
-        };
+        if(!found)
+        {
+            EntityPos pos = shooter.getPos();
+            Identity<?> identity = mod.mineCity.provideChunk(pos.getChunk())
+                    .getFlagHolder(pos.getBlock()).owner();
 
+            if(!containsId(identity, list))
+                list.add(identity);
+        }
+    }
+
+    private void addRelativeEntity(IEntity entity, List<Permissible> list)
+    {
         IEntity owner;
         if(entity instanceof Projectile)
         {
             ProjectileShooter shooter = ((Projectile) entity).getShooter();
             if(shooter != null)
-            {
-                boolean found = false;
-                owner = shooter.getEntity();
-                if(owner != null)
-                {
-                    found = true;
-                    if(add.test(owner))
-                        addRelativeEntity(owner, list);
-                }
-                else
-                {
-                    Identity<?> identity = shooter.getIdentity();
-                    if(identity != null && !containsId.test(identity))
-                        list.add(identity);
-                }
-
-                owner = shooter.getIndirectEntity();
-                if(owner != null)
-                {
-                    found = true;
-                    if(add.test(owner))
-                        addRelativeEntity(owner, list);
-                }
-                else
-                {
-                    Identity<?> identity = shooter.getIndirectId();
-                    if(identity != null && !containsId.test(identity))
-                        list.add(identity);
-                }
-
-                if(!found)
-                {
-                    EntityPos pos = shooter.getPos();
-                    Identity<?> identity = mod.mineCity.provideChunk(pos.getChunk())
-                            .getFlagHolder(pos.getBlock()).owner();
-
-                    if(!containsId.test(identity))
-                        list.add(identity);
-                }
-            }
+                addRelativeEntity(shooter, list);
         }
 
         owner = entity.getEntityOwner();
         if(owner != null)
         {
-            if(add.test(owner))
+            if(shouldAdd(owner, list))
                 addRelativeEntity(owner, list);
         }
         else
@@ -605,7 +613,7 @@ public class EntityProtections extends ForgeProtections
                 return;
 
             PlayerID identity = new PlayerID(uuid, "???");
-            if(!containsId.test(identity))
+            if(!containsId(identity, list))
                 list.add(identity);
         }
     }
@@ -662,6 +670,12 @@ public class EntityProtections extends ForgeProtections
                 stack = null;
 
             initPlayers(attackers);
+        }
+        else if(source instanceof ShooterDamageSource)
+        {
+            addRelativeEntity(((ShooterDamageSource) source).shooter, attackers);
+            initPlayers(attackers);
+            return null;
         }
         else
             return null;
