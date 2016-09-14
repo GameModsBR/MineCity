@@ -10,6 +10,7 @@ import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.EntityUpdate;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.protection.ForgeMovementListener;
 import br.com.gamemods.minecity.protection.MovementMonitor;
@@ -174,7 +175,7 @@ public class ForgePlayer
                 if(world == null)
                     cmd.teleport(new BlockPos(lastChunk.world, mov.lastX, mov.lastY, mov.lastZ));
                 else
-                    vehicle.setPositionAndUpdate(mov.lastX+0.5, mov.lastY+0.5, mov.lastZ+0.5);
+                    ((IEntity)vehicle).setPosAndUpdate(mov.lastX+0.5, mov.lastY+0.5, mov.lastZ+0.5);
             }
 
             return;
