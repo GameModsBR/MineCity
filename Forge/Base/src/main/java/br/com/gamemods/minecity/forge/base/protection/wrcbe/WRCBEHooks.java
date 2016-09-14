@@ -1,5 +1,9 @@
 package br.com.gamemods.minecity.forge.base.protection.wrcbe;
 
+import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.ProjectileShooter;
@@ -8,6 +12,7 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.wrcbecore.JammerPartTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.wrcbecore.WirelessBoltTransformer;
 import br.com.gamemods.minecity.forge.base.protection.ShooterDamageSource;
+import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.DamageSource;
 
@@ -15,9 +20,19 @@ import net.minecraft.util.DamageSource;
 public class WRCBEHooks
 {
     @Referenced(at = WirelessBoltTransformer.class)
-    public static boolean onBoltJamTile(Object tile, Object bolt)
+    public static boolean onBoltJamTile(ITileEntity tile, IWirelessBolt bolt)
     {
-        return true;
+        ProjectileShooter shooter = bolt.getShooter();
+        if(shooter == null)
+            return true;
+
+        MineCityForge mod = ModEnv.entityProtections.mod;
+        BlockPos boltPos = shooter.getPos().getBlock();
+        ClaimedChunk partClaim = mod.mineCity.provideChunk(boltPos.getChunk());
+        Identity<?> owner = partClaim.getFlagHolder(boltPos).owner();
+
+        BlockPos tilePos = new BlockPos(boltPos, tile.getPosX(), tile.getPosY(), tile.getPosZ());
+        return mod.mineCity.provideChunk(tilePos.getChunk(), partClaim).getFlagHolder(tilePos).can(owner, PermissionFlag.MODIFY).isPresent();
     }
 
     @Referenced(at = WirelessBoltTransformer.class)
@@ -47,7 +62,13 @@ public class WRCBEHooks
     @Referenced(at = JammerPartTransformer.class)
     public static boolean onJammerJamTile(IJammerPart part, ITileEntity tile)
     {
-        return true;
+        MineCityForge mod = ModEnv.entityProtections.mod;
+        BlockPos partPos = part.tileI().getBlockPos(mod);
+        ClaimedChunk partClaim = mod.mineCity.provideChunk(partPos.getChunk());
+        Identity<?> owner = partClaim.getFlagHolder(partPos).owner();
+
+        BlockPos tilePos = new BlockPos(partPos, tile.getPosX(), tile.getPosY(), tile.getPosZ());
+        return mod.mineCity.provideChunk(tilePos.getChunk(), partClaim).getFlagHolder(tilePos).can(owner, PermissionFlag.MODIFY).isPresent();
     }
 
     @Referenced(at = JammerPartTransformer.class)

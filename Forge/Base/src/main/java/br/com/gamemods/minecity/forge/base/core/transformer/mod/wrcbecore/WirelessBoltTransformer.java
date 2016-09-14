@@ -49,9 +49,7 @@ public class WirelessBoltTransformer extends InsertSetterGetterTransformer
         );
         wrapper.visitCode();
         wrapper.visitVarInsn(ALOAD, 3);
-        wrapper.visitTypeInsn(CHECKCAST, "br/com/gamemods/minecity/forge/base/protection/wrcbe/IWirelessBolt");
         wrapper.visitVarInsn(ALOAD, 1);
-        wrapper.visitTypeInsn(CHECKCAST, "br/com/gamemods/minecity/forge/base/accessors/entity/base/IEntity");
         wrapper.visitMethodInsn(INVOKESTATIC, "br/com/gamemods/minecity/forge/base/protection/wrcbe/WRCBEHooks",
                 "onBoltJamEntity", "(Lbr/com/gamemods/minecity/forge/base/protection/wrcbe/IWirelessBolt;Lbr/com/gamemods/minecity/forge/base/accessors/entity/base/IEntity;)Z",
                 false
@@ -72,7 +70,7 @@ public class WirelessBoltTransformer extends InsertSetterGetterTransformer
         jamWrapper.visitVarInsn(ALOAD, 6);
         jamWrapper.visitMethodInsn(INVOKESTATIC,
                 "br/com/gamemods/minecity/forge/base/protection/wrcbe/WRCBEHooks", "onBoltJamTile",
-                "(Ljava/lang/Object;Ljava/lang/Object;)Z",
+                "(Lbr/com/gamemods/minecity/forge/base/accessors/block/ITileEntity;Lbr/com/gamemods/minecity/forge/base/protection/wrcbe/IWirelessBolt;)Z",
                 false
         );
         Label label2 = new Label();
