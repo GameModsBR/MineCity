@@ -8,12 +8,14 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPlayerMPTransformer;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.network.play.server.SPacketTitle;
+import net.minecraft.network.play.server.SPacketUpdateHealth;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -103,5 +105,12 @@ public interface FrostEntityPlayerMP extends IEntityPlayerMP, FrostEntity
     default void sendFakeAir(int x, int y, int z)
     {
         sendFakeBlock(x, y, z, (IState) Blocks.AIR.getDefaultState());
+    }
+
+    @Override
+    default void sendHealth()
+    {
+        EntityPlayerMP player = (EntityPlayerMP) this;
+        sendPacket(new SPacketUpdateHealth(player.getHealth(), player.getFoodStats().getFoodLevel(), player.getFoodStats().getSaturationLevel()));
     }
 }

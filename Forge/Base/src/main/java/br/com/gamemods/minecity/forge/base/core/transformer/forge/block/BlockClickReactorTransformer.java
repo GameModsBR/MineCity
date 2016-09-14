@@ -17,8 +17,7 @@ public class BlockClickReactorTransformer extends InsertInterfaceTransformer
                 "net.minecraft.block.BlockButton",
                 "net.minecraft.block.BlockTrapDoor",
                 "net.minecraft.block.BlockFenceGate",
-                "net.minecraft.block.BlockWorkbench",
-                "net.minecraft.block.BlockCake"
+                "net.minecraft.block.BlockWorkbench"
         ));
     }
 }

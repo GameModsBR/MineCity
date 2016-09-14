@@ -11,6 +11,9 @@ public class ForgeInterfaceTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("net.minecraft.block.BlockCake",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockCake");
+
         r.put("net.minecraft.nbt.NBTTagCompound",
                 "br.com.gamemods.minecity.forge.base.accessors.nbt.INBTTagCompound");
 

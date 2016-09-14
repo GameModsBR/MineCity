@@ -279,4 +279,6 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
     {
         sendFakeAir(pos.x, pos.y, pos.z);
     }
+
+    void sendHealth();
 }

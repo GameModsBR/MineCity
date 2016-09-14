@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.play.server.S06PacketUpdateHealth;
 import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -159,5 +160,12 @@ public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingB
     default void sendFakeAir(int x, int y, int z)
     {
         sendFakeBlock(x, y, z, 0, 0);
+    }
+
+    @Override
+    default void sendHealth()
+    {
+        EntityPlayerMP player = (EntityPlayerMP) this;
+        sendPacket(new S06PacketUpdateHealth(player.getHealth(), player.getFoodStats().getFoodLevel(), player.getFoodStats().getSaturationLevel()));
     }
 }
