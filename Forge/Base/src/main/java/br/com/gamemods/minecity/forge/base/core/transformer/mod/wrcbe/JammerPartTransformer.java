@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge.base.core.transformer.mod.wrcbecore;
+package br.com.gamemods.minecity.forge.base.core.transformer.mod.wrcbe;
 
 import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
@@ -50,20 +50,6 @@ public class JammerPartTransformer implements IClassTransformer
                         ));
                         list.add(new TypeInsnNode(CHECKCAST, "codechicken/wirelessredstone/core/WirelessBolt"));
                         method.instructions.insert(method.instructions.get(index), list);
-
-                        /*
-                        VarInsnNode var = (VarInsnNode) method.instructions.get(index + 1);
-                        InsnList list = new InsnList();
-                        list = new InsnList();
-                        list.add(new VarInsnNode(ALOAD, var.var));
-                        list.add(new TypeInsnNode(CHECKCAST, bolt));
-                        list.add(new VarInsnNode(ALOAD, 0));
-                        list.add(new MethodInsnNode(INVOKEINTERFACE,
-                                bolt, "createdFromPart", "(L"+jammerPart+";)V",
-                                false
-                        ));
-                        method.instructions.insert(var, list);
-                         */
                     });
 
             if(method.name.equals("jamTile"))

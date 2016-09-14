@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge.base.core.transformer.mod.wrcbecore;
+package br.com.gamemods.minecity.forge.base.core.transformer.mod.wrcbe;
 
 import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
@@ -16,11 +16,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.objectweb.asm.Opcodes.*;
 
-@Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod")
-@Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
+@Referenced
 @MethodPatcher
 public class WirelessBoltTransformer extends InsertSetterGetterTransformer
 {
+    @Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod")
+    @Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
     public WirelessBoltTransformer()
     {
         super("codechicken.wirelessredstone.core.WirelessBolt",
