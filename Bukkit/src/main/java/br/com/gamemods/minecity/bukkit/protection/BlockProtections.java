@@ -918,6 +918,7 @@ public class BlockProtections extends AbstractProtection
                 case WORKBENCH:
                 case ENCHANTMENT_TABLE:
                 case ENDER_CHEST:
+                case CAKE_BLOCK:
                     if(check(block.getLocation(), event.getPlayer(), PermissionFlag.CLICK))
                         event.setUseInteractedBlock(Event.Result.DENY);
                     return;
