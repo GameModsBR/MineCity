@@ -15,6 +15,9 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("li.cil.oc.api.network.EnvironmentHost",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.IEnvironmentHost");
+
         r.put("li.cil.oc.common.block.Keyboard",
                 "br.com.gamemods.minecity.forge.base.protection.opencomputers.IKeyboard");
 

@@ -1,5 +1,11 @@
 package br.com.gamemods.minecity.forge.base.protection.opencomputers;
 
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.core.Referenced;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.PacketHandlerDTransformer;
 import net.minecraft.item.ItemStack;
 
 import java.lang.reflect.Method;
@@ -37,5 +43,15 @@ public class OCHooks
         {
             throw new UnsupportedOperationException(e);
         }
+    }
+
+    @Referenced(at = PacketHandlerDTransformer.class)
+    public static boolean onPlayerInteract(ITextBuffer buffer, IEntityPlayerMP player)
+    {
+        MineCityForge mod = player.getServer();
+
+        IEnvironmentHost host = buffer.hostI();
+        BlockPos pos = host.envBlockPos(mod);
+        return mod.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).can(player, PermissionFlag.CLICK).isPresent();
     }
 }
