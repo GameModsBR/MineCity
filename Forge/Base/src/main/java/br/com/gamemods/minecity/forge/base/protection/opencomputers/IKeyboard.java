@@ -3,8 +3,6 @@ package br.com.gamemods.minecity.forge.base.protection.opencomputers;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
-import br.com.gamemods.minecity.forge.base.ForgeUtil;
-import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
@@ -28,6 +26,7 @@ public interface IKeyboard extends ISimpleBlock
         if(!(tile instanceof IRotatable))
             return NoReaction.INSTANCE;
 
+        /*
         IRotatable rotatable = (IRotatable) tile;
         Direction facing = ForgeUtil.toDirection(rotatable.facing().ordinal()).getOpposite();
         BlockPos screenPos = pos.add(facing);
@@ -60,11 +59,12 @@ public interface IKeyboard extends ISimpleBlock
                 }
             }
         }
+        */
 
         SingleBlockReaction reaction = new SingleBlockReaction(pos, PermissionFlag.CLICK);
         reaction.onDenyCloseScreen(player);
-        return reaction.combine(
+        return reaction/*.combine(
                 ((IScreen) screen).reactRightClickActivation(screenPos, screenState, player, stack, offHand, face)
-        );
+        )*/;
     }
 }

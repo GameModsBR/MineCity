@@ -6,6 +6,4 @@ import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTra
 @Referenced(at = ModInterfacesTransformer.class)
 public interface IRotatable
 {
-    Enum facing();
-    Enum yaw();
 }
