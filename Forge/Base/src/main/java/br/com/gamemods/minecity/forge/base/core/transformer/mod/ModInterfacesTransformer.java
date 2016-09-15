@@ -15,6 +15,21 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("li.cil.oc.common.block.Keyboard",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.IKeyboard");
+
+        r.put("li.cil.oc.common.tileentity.traits.Rotatable",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.IRotatable");
+
+        r.put("li.cil.oc.common.block.Screen",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.IScreen");
+
+        r.put("li.cil.oc.common.block.SimpleBlock",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.ISimpleBlock");
+
+        r.put("li.cil.oc.common.tileentity.traits.Colored",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.IColored");
+
         r.put("com.pam.harvestcraft.BlockPamCrop",
                 "br.com.gamemods.minecity.forge.base.protection.pamharvestcraft.IBlockPamCrop");
 

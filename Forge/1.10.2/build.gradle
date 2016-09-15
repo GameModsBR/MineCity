@@ -52,6 +52,8 @@ dependencies {
     shade project(':Core')
     shade project(':Forge:Base')
     compile "mysql:mysql-connector-java:6.0.3"
+    testCompile fileTree(dir: "run/mods", include: ["*.jar"], exclude:["*Assets*"])
+    testCompile fileTree(dir: "run/mods/1.7.10", include: ["*.jar"])
 }
 
 jar {
