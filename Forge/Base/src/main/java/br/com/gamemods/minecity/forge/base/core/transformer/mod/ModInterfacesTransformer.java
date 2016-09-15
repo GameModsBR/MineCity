@@ -15,6 +15,9 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("com.pam.harvestcraft.BlockPamCrop",
+                "br.com.gamemods.minecity.forge.base.protection.pamharvestcraft.IBlockPamCrop");
+
         r.put("com.pam.harvestcraft.ItemPamSeedFood",
                 "br.com.gamemods.minecity.forge.base.accessors.item.IItemSeedFood");
 
