@@ -15,6 +15,42 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("li.cil.oc.common.block.Transposer",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.ISimpleBlockNoReaction");
+
+        r.put("li.cil.oc.common.block.Redstone",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.ISimpleBlockNoReaction");
+
+        r.put("li.cil.oc.common.block.PowerDistributor",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.ISimpleBlockNoReaction");
+
+        r.put("li.cil.oc.common.block.PowerConverter",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.ISimpleBlockNoReaction");
+
+        r.put("li.cil.oc.common.block.NetSplitter",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.ISimpleBlockNoReaction");
+
+        r.put("li.cil.oc.common.block.MotionSensor",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.ISimpleBlockNoReaction");
+
+        r.put("li.cil.oc.common.block.Hologram",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.ISimpleBlockNoReaction");
+
+        r.put("li.cil.oc.common.block.Geolyzer",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.ISimpleBlockNoReaction");
+
+        r.put("li.cil.oc.common.block.Charger",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.ISimpleBlockOpenUpdate");
+
+        r.put("li.cil.oc.common.block.FakeEndstone",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.ISimpleBlockNoReaction");
+
+        r.put("li.cil.oc.common.block.ChameliumBlock",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.ISimpleBlockNoReaction");
+
+        r.put("li.cil.oc.common.block.Cable",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.ISimpleBlockNoReaction");
+
         r.put("li.cil.oc.api.network.EnvironmentHost",
                 "br.com.gamemods.minecity.forge.base.protection.opencomputers.IEnvironmentHost");
 
