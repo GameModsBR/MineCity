@@ -30,7 +30,7 @@ public interface IBlockCrops extends SimpleCrop
     }
 
     @Override
-    default Reaction reactBlockPlace(ForgePlayer<?, ?, ?> player, IBlockSnapshot snap)
+    default Reaction reactBlockPlace(ForgePlayer<?, ?, ?> player, IBlockSnapshot snap, IItemStack hand, boolean offHand)
     {
         // Allow to use bone meal
         IItemStack stack = player.cmd.sender.getStackInHand(player.offHand);

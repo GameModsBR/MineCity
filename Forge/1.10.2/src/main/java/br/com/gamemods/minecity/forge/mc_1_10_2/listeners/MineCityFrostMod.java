@@ -10,6 +10,7 @@ import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.mc_1_10_2.MineCityFrost;
 import br.com.gamemods.minecity.forge.mc_1_10_2.command.FrostTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.protection.FrostSnapshotHandler;
+import br.com.gamemods.minecity.forge.mc_1_10_2.protection.opencomputers.FrostRobotProtections;
 import br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla.FrostBlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla.FrostEntityProtections;
 import net.minecraft.init.Blocks;
@@ -19,13 +20,16 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.relauncher.Side;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
 
-@Mod(modid = ModEnv.MOD_ID, name = ModEnv.MOD_ID, version = ModEnv.MOD_VERSION, acceptableRemoteVersions = "*")
+@Mod(modid = ModEnv.MOD_ID, name = ModEnv.MOD_ID, version = ModEnv.MOD_VERSION, acceptableRemoteVersions = "*",
+        dependencies = "before:OpenComputers"
+)
 public class MineCityFrostMod
 {
     private MineCityFrost forge;
@@ -84,6 +88,13 @@ public class MineCityFrostMod
         MinecraftForge.EVENT_BUS.register(new FrostWorldListener(forge));
         MinecraftForge.EVENT_BUS.register(new FrostBlockProtections(forge));
         MinecraftForge.EVENT_BUS.register(ModEnv.entityProtections = new FrostEntityProtections(forge));
+    }
+
+    @Optional.Method(modid = "OpenComputers")
+    @Mod.EventHandler
+    public void onPostInitOC(FMLPostInitializationEvent event)
+    {
+        MinecraftForge.EVENT_BUS.register(new FrostRobotProtections(forge));
     }
 
     @Slow

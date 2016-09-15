@@ -104,4 +104,9 @@ public interface IItem
     {
         return ((Item) this).getToolClasses(stack.getStack());
     }
+
+    default Reaction reactPrePlace(Permissible who, IItemStack stack, BlockPos pos)
+    {
+        return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
+    }
 }

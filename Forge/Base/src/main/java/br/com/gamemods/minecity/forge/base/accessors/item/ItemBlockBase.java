@@ -1,6 +1,9 @@
 package br.com.gamemods.minecity.forge.base.accessors.item;
 
+import br.com.gamemods.minecity.api.permission.Permissible;
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
+import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 
 public interface ItemBlockBase extends IItem
 {
@@ -10,5 +13,11 @@ public interface ItemBlockBase extends IItem
     default boolean isHarvest(IItemStack stack)
     {
         return getIBlock().isHarvest();
+    }
+
+    @Override
+    default Reaction reactPrePlace(Permissible who, IItemStack stack, BlockPos pos)
+    {
+        return getIBlock().reactPrePlace(who, stack, pos);
     }
 }

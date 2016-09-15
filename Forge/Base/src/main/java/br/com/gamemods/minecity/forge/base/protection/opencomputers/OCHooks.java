@@ -102,7 +102,14 @@ public class OCHooks
         MineCityForge mod = player.getServer();
 
         IEnvironmentHost host = buffer.hostI();
-        BlockPos pos = host.envBlockPos(mod);
-        return mod.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).can(player, PermissionFlag.CLICK).isPresent();
+        if(host instanceof IScreen)
+        {
+            BlockPos pos = host.envBlockPos(mod);
+            return mod.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).can(player,
+                    PermissionFlag.CLICK
+            ).isPresent();
+        }
+
+        return false;
     }
 }

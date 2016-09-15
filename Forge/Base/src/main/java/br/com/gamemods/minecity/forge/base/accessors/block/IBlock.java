@@ -54,9 +54,14 @@ public interface IBlock
         return NoReaction.INSTANCE;
     }
 
-    default Reaction reactBlockPlace(ForgePlayer<?,?,?> player, IBlockSnapshot snap)
+    default Reaction reactPrePlace(Permissible who, IItemStack stack, BlockPos pos)
     {
-        return new SingleBlockReaction(snap.getPosition(player.getServer()), PermissionFlag.MODIFY);
+        return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
+    }
+
+    default Reaction reactBlockPlace(ForgePlayer<?, ?, ?> player, IBlockSnapshot snap, IItemStack hand, boolean offHand)
+    {
+        return reactPrePlace(player, hand, snap.getPosition(player.getServer()));
     }
 
     default Reaction reactBlockBreak(ForgePlayer<?,?,?> player, IState state, BlockPos pos)

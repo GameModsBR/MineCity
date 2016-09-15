@@ -108,11 +108,11 @@ public class BlockProtections extends ForgeProtections
         return react.can(mod.mineCity, player).isPresent();
     }
 
-    public boolean onBlockPlace(EntityPlayer entity, BlockSnapshot snapshot)
+    public boolean onBlockPlace(EntityPlayer entity, BlockSnapshot snapshot, IItemStack hand, boolean offHand)
     {
         IBlockSnapshot snap = (IBlockSnapshot) snapshot;
         ForgePlayer player = mod.player(entity);
-        Reaction reaction = snap.getCurrentState().getIBlock().reactBlockPlace(player, snap);
+        Reaction reaction = snap.getCurrentState().getIBlock().reactBlockPlace(player, snap, hand, offHand);
 
         Optional<Message> denial = reaction.can(mod.mineCity, player);
         if(denial.isPresent())

@@ -9,10 +9,12 @@ import br.com.gamemods.minecity.forge.base.command.RootCommand;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.SevenSnapshotHandler;
+import br.com.gamemods.minecity.forge.mc_1_7_10.protection.opencomputers.SevenRobotProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenBlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenEntityProtections;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.init.Blocks;
@@ -26,7 +28,9 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 
-@Mod(modid = ModEnv.MOD_ID, name = ModEnv.MOD_NAME, version = ModEnv.MOD_VERSION, acceptableRemoteVersions = "*")
+@Mod(modid = ModEnv.MOD_ID, name = ModEnv.MOD_NAME, version = ModEnv.MOD_VERSION, acceptableRemoteVersions = "*",
+        dependencies = "before:OpenComputers"
+)
 public class MineCitySevenMod
 {
     private MineCityForge forge;
@@ -95,6 +99,13 @@ public class MineCitySevenMod
         MinecraftForge.EVENT_BUS.register(new SevenWorldListener(forge));
         MinecraftForge.EVENT_BUS.register(new SevenBlockProtections(forge));
         MinecraftForge.EVENT_BUS.register(ModEnv.entityProtections = new SevenEntityProtections(forge));
+    }
+
+    @Optional.Method(modid = "OpenComputers")
+    @Mod.EventHandler
+    public void onPostInitOC(FMLPostInitializationEvent event)
+    {
+        MinecraftForge.EVENT_BUS.register(new SevenRobotProtections(forge));
     }
 
     @Slow

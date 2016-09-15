@@ -2,11 +2,14 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla;
 
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
+import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.BlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_10_2.FrostUtil;
 import br.com.gamemods.minecity.forge.mc_1_10_2.MineCityFrost;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.BlockGrowEvent;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.PlayerTeleportDragonEggEvent;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -94,7 +97,10 @@ public class FrostBlockProtections extends BlockProtections
         if(event.getWorld().isRemote)
             return;
 
-        if(onBlockPlace(event.getPlayer(), event.getBlockSnapshot()))
+        EntityPlayer entity = event.getPlayer();
+        ForgePlayer player = mod.player(entity);
+        IItemStack stack = (IItemStack) (Object) (player.offHand? entity.getHeldItemOffhand() : event.getItemInHand());
+        if(onBlockPlace(entity, event.getBlockSnapshot(), stack, player.offHand))
             event.setCanceled(true);
     }
 

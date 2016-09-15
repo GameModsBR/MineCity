@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.forge.base.ForgeUtil;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.BlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.BlockGrowEvent;
@@ -86,7 +87,7 @@ public class SevenBlockProtections extends BlockProtections
         if(event.world.isRemote)
             return;
 
-        if(onBlockPlace(event.player, event.blockSnapshot))
+        if(onBlockPlace(event.player, event.blockSnapshot, (IItemStack)(Object)event.itemInHand, false))
             event.setCanceled(true);
     }
 

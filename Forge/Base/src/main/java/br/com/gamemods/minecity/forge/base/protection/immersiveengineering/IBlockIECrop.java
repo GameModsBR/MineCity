@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.block.SimpleCrop;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
@@ -52,13 +53,13 @@ public interface IBlockIECrop extends SimpleCrop
     }
 
     @Override
-    default Reaction reactBlockPlace(ForgePlayer<?, ?, ?> player, IBlockSnapshot snap)
+    default Reaction reactBlockPlace(ForgePlayer<?, ?, ?> player, IBlockSnapshot snap, IItemStack hand, boolean offHand)
     {
         BlockPos snapPos = snap.getPosition(player.getServer());
         IState under = snap.getIWorld().getIState(snapPos.x, snapPos.y -1, snapPos.z);
         if(under.getIBlock() == this && under.getIntValueOrMeta("age") == 4)
             return new DoubleBlockReaction(PermissionFlag.HARVEST, snapPos, snapPos.add(Direction.DOWN));
 
-        return SimpleCrop.super.reactBlockPlace(player, snap);
+        return SimpleCrop.super.reactBlockPlace(player, snap, hand, offHand);
     }
 }

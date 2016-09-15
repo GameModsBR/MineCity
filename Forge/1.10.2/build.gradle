@@ -48,10 +48,15 @@ configurations {
     compile.extendsFrom shade
 }
 
+repositories {
+    maven { url = "http://maven.cil.li/" }
+}
+
 dependencies {
     shade project(':Core')
     shade project(':Forge:Base')
     compile "mysql:mysql-connector-java:6.0.3"
+    compile "li.cil.oc:OpenComputers:MC1.10.2-1.6.+:api"
     testCompile fileTree(dir: "run/mods", include: ["*.jar"], exclude:["*Assets*"])
     testCompile fileTree(dir: "run/mods/1.7.10", include: ["*.jar"])
 }
