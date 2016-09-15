@@ -12,7 +12,6 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import static jdk.internal.org.objectweb.asm.Opcodes.ILOAD;
 import static org.objectweb.asm.Opcodes.*;
 
 @Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod")
