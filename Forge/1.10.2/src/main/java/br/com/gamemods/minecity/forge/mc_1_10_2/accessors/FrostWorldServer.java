@@ -115,4 +115,10 @@ public interface FrostWorldServer extends IWorldServer
     {
         return ((WorldServer) this).isAirBlock(new BlockPos(x, y, z));
     }
+
+    @Override
+    default boolean isBlockLoaded(int x, int y, int z)
+    {
+        return ((WorldServer) this).isBlockLoaded(new BlockPos(x, y, z));
+    }
 }

@@ -115,4 +115,11 @@ public interface IWorldServer
     }
 
     boolean isAir(int x, int y, int z);
+
+    boolean isBlockLoaded(int x, int y, int z);
+
+    default boolean isBlockLoaded(Point pos)
+    {
+        return isBlockLoaded(pos.x, pos.y, pos.z);
+    }
 }

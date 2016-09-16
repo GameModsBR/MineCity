@@ -15,6 +15,9 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("li.cil.oc.common.tileentity.Robot",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.IRobotTile");
+
         r.put("li.cil.oc.server.component.Agent",
                 "br.com.gamemods.minecity.forge.base.protection.opencomputers.IAgentComponent");
 
@@ -28,10 +31,10 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
                 "br.com.gamemods.minecity.forge.base.protection.opencomputers.IDrone");
 
         r.put("li.cil.oc.common.block.RobotAfterimage",
-                "br.com.gamemods.minecity.forge.base.protection.opencomputers.ISimpleBlockNoReaction");
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.IRobotAfterimage");
 
         r.put("li.cil.oc.common.block.RobotProxy",
-                "br.com.gamemods.minecity.forge.base.protection.opencomputers.ISimpleBlockNoReaction");
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.IRobotProxy");
 
         r.put("li.cil.oc.common.block.Microcontroller",
                 "br.com.gamemods.minecity.forge.base.protection.opencomputers.IMicrocontroller");

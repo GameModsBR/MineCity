@@ -156,4 +156,10 @@ public interface SevenWorldServer extends IWorldServer
     {
         return ((WorldServer) this).isAirBlock(x, y, z);
     }
+
+    @Override
+    default boolean isBlockLoaded(int x, int y, int z)
+    {
+        return ((WorldServer) this).blockExists(x, y, z);
+    }
 }
