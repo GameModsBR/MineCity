@@ -48,6 +48,7 @@ public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
         ModEnv.seven = true;
 
         return new String[]{
+                "br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.InventoryWorldControlDClassTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.TextBufferTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.PacketHandlerDTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.pamharvestcraft.BlockPamSaplingTransformer",

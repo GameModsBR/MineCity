@@ -15,6 +15,9 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("li.cil.oc.server.component.Agent",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.IAgentComponent");
+
         r.put("li.cil.oc.api.machine.MachineHost",
                 "br.com.gamemods.minecity.forge.base.protection.opencomputers.IMachineHost");
 

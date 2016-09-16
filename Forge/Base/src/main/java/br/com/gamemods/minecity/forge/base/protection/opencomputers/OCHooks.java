@@ -2,11 +2,15 @@ package br.com.gamemods.minecity.forge.base.protection.opencomputers;
 
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.forge.base.ForgeUtil;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.InventoryWorldControlDClassTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.PacketHandlerDTransformer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 import java.lang.reflect.Constructor;
@@ -111,5 +115,14 @@ public class OCHooks
         }
 
         return false;
+    }
+
+    @Referenced(at = InventoryWorldControlDClassTransformer.class)
+    public static boolean onRobotDropItem(IInventory inventory, int slot, int amount, IAgentComponent agent, int face)
+    {
+        MineCityForge mod = ModEnv.entityProtections.mod;
+        IEntityPlayerMP player = (IEntityPlayerMP) agent.fakePlayer();
+        BlockPos pos = player.getBlockPos(mod).add(ForgeUtil.toDirection(face));
+        return mod.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).can(player, PermissionFlag.PICKUP).isPresent();
     }
 }
