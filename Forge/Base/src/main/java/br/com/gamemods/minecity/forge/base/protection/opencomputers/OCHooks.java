@@ -9,13 +9,11 @@ import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLiving;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityItem;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.InventoryWorldControlDClassTransformer;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.PacketHandlerDTransformer;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.TankWorldControlDClassTransformer;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.UpgradeLeashTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.*;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -188,5 +186,31 @@ public class OCHooks
         }
 
         return entities;
+    }
+
+    @Referenced(at = UpgradeTractorBeamTransformer.class)
+    public static List<IEntityItem> onSuck(List<IEntityItem> items, IUpgradeTractorBeam upgrade)
+    {
+        if(items.isEmpty())
+            return items;
+
+        IEnvironmentHost owner = upgrade.owner();
+        IEntityPlayerMP player;
+        if(owner instanceof IEntityPlayerMP)
+            player = (IEntityPlayerMP) owner;
+        else if(owner instanceof IAgent)
+            player = (IEntityPlayerMP) ((IAgent) owner).player();
+        else
+        {
+            items.clear();
+            return items;
+        }
+
+        Iterator<IEntityItem> iter = items.iterator();
+        while(iter.hasNext())
+            if(ModEnv.entityProtections.onPlayerPickupItem(player, iter.next()))
+                iter.remove();
+
+        return items;
     }
 }
