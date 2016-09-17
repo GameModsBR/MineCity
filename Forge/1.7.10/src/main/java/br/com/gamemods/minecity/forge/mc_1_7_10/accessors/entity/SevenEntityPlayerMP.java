@@ -3,11 +3,13 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.accessors.entity;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLiving;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPlayerMPTransformer;
 import io.netty.buffer.Unpooled;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.InventoryEnderChest;
 import net.minecraft.item.ItemStack;
@@ -15,6 +17,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.S06PacketUpdateHealth;
+import net.minecraft.network.play.server.S1BPacketEntityAttach;
 import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -167,5 +170,11 @@ public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingB
     {
         EntityPlayerMP player = (EntityPlayerMP) this;
         sendPacket(new S06PacketUpdateHealth(player.getHealth(), player.getFoodStats().getFoodLevel(), player.getFoodStats().getSaturationLevel()));
+    }
+
+    @Override
+    default void sendLeashState(IEntityLiving entity)
+    {
+        sendPacket(new S1BPacketEntityAttach(1, (Entity) entity, (Entity) entity.getLeashHolder()));
     }
 }

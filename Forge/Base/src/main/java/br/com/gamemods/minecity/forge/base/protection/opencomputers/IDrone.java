@@ -6,7 +6,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTra
 import org.jetbrains.annotations.NotNull;
 
 @Referenced(at = ModInterfacesTransformer.class)
-public interface IDrone extends IEntity
+public interface IDrone extends IEntity, IAgent, IEnvironmentHost, IRotatable
 {
     @NotNull
     @Override

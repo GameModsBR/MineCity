@@ -34,7 +34,7 @@ public interface IEntityAnimal extends IEntityAgeable
     }
 
     @Override
-    default Reaction reactPlayerInteraction(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
+    default Reaction reactPlayerInteractLiving(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
     {
         if(stack != null && !isChild() && isBreedingItem(stack))
             return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.PVC);

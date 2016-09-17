@@ -29,6 +29,12 @@ public interface IVehicularEntity extends IEntityAnimal, IVehicle
     String getOwnerId();
 
     @Override
+    default Reaction reactPlayerInteraction(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
+    {
+        return reactPlayerInteractLiving(player, stack, offHand);
+    }
+
+    @Override
     default Reaction reactPlayerAttack(MineCityForge mod, Permissible player, IItemStack stack,
                                        DamageSource source, float amount, List<Permissible> attackers)
     {
@@ -40,7 +46,7 @@ public interface IVehicularEntity extends IEntityAnimal, IVehicle
     }
 
     @Override
-    default Reaction reactPlayerInteraction(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
+    default Reaction reactPlayerInteractLiving(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
     {
         UUID owner = getEntityOwnerId();
         if(owner != null && owner.equals(player.getUniqueId()))

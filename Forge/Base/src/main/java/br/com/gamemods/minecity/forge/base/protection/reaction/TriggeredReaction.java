@@ -16,23 +16,25 @@ public abstract class TriggeredReaction implements Reaction
     private List<ReactionListener> denialListeners;
     private List<ReactionListener> allowListeners;
 
-    public void addDenialListener(ReactionListener listener)
+    public TriggeredReaction addDenialListener(ReactionListener listener)
     {
         if(denialListeners == null)
             denialListeners = new ArrayList<>(1);
         denialListeners.add(listener);
+        return this;
     }
 
-    public void addAllowListener(ReactionListener listener)
+    public TriggeredReaction addAllowListener(ReactionListener listener)
     {
         if(allowListeners == null)
             allowListeners = new ArrayList<>(1);
         allowListeners.add(listener);
+        return this;
     }
 
-    public void onDenyUpdateInventory()
+    public TriggeredReaction onDenyUpdateInventory()
     {
-        addDenialListener((reaction, permissible, flag, pos, message) -> {
+        return addDenialListener((reaction, permissible, flag, pos, message) -> {
             if(permissible instanceof ForgePlayer)
                 permissible = (Permissible) ((ForgePlayer) permissible).player;
             else if(permissible instanceof ForgePlayerSender)
@@ -62,25 +64,25 @@ public abstract class TriggeredReaction implements Reaction
         allowListeners.forEach(listener -> listener.postReaction(this, permissible, flag, pos, null));
     }
 
-    public void onDenyCloseScreen(IEntityPlayerMP player)
+    public TriggeredReaction onDenyCloseScreen(IEntityPlayerMP player)
     {
-        addDenialListener((reaction, permissible, flag, pos, message) ->
+        return addDenialListener((reaction, permissible, flag, pos, message) ->
                 player.closeScreen()
         );
     }
 
-    public void onDenyUpdateBlockAndTile(IEntityPlayerMP player)
+    public TriggeredReaction onDenyUpdateBlockAndTile(IEntityPlayerMP player)
     {
-        addDenialListener((reaction, permissible, flag, pos, message) ->
+        return addDenialListener((reaction, permissible, flag, pos, message) ->
                 player.getServer().callSyncMethod(() ->
                     player.sendBlockAndTile(pos)
                 )
         );
     }
 
-    public void onDenyUpdateBlockAndTileForced(IEntityPlayerMP player)
+    public TriggeredReaction onDenyUpdateBlockAndTileForced(IEntityPlayerMP player)
     {
-        addDenialListener((reaction, permissible, flag, pos, message) ->
+        return addDenialListener((reaction, permissible, flag, pos, message) ->
                 player.getServer().callSyncMethod(() ->
                 {
                     player.sendFakeAir(pos);

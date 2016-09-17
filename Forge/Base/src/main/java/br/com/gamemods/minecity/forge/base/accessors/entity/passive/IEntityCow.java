@@ -13,7 +13,7 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReacti
 public interface IEntityCow extends IEntityAnimal
 {
     @Override
-    default Reaction reactPlayerInteraction(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
+    default Reaction reactPlayerInteractLiving(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
     {
         if(stack != null && !isChild())
         {

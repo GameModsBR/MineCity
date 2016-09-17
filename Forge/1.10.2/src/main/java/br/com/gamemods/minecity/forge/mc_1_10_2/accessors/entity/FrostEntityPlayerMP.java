@@ -3,20 +3,19 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.accessors.entity;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLiving;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPlayerMPTransformer;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.SPacketBlockChange;
-import net.minecraft.network.play.server.SPacketTitle;
-import net.minecraft.network.play.server.SPacketUpdateHealth;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.*;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -112,5 +111,11 @@ public interface FrostEntityPlayerMP extends IEntityPlayerMP, FrostEntity
     {
         EntityPlayerMP player = (EntityPlayerMP) this;
         sendPacket(new SPacketUpdateHealth(player.getHealth(), player.getFoodStats().getFoodLevel(), player.getFoodStats().getSaturationLevel()));
+    }
+
+    @Override
+    default void sendLeashState(IEntityLiving entity)
+    {
+        sendPacket(new SPacketEntityAttach((Entity)entity, (Entity)entity.getLeashHolder()));
     }
 }

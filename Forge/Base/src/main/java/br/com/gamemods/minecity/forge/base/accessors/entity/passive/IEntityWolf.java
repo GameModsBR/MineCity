@@ -24,7 +24,7 @@ public interface IEntityWolf extends IEntityTameable
     }
 
     @Override
-    default Reaction reactPlayerInteraction(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
+    default Reaction reactPlayerInteractLiving(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
     {
         if(stack != null && !isTamed() && !isAngry() && stack.getIItem().getUnlocalizedName().equals("item.bone"))
             return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.MODIFY);

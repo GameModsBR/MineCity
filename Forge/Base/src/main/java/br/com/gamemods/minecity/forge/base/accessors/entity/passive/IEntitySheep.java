@@ -27,7 +27,7 @@ public interface IEntitySheep extends IEntityAnimal
     }
 
     @Override
-    default Reaction reactPlayerInteraction(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
+    default Reaction reactPlayerInteractLiving(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
     {
         if(stack != null && !isChild())
         {

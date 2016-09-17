@@ -25,7 +25,7 @@ public interface IEntityZombie extends IEntityMob
     }
 
     @Override
-    default Reaction reactPlayerInteraction(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
+    default Reaction reactPlayerInteractLiving(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
     {
         if(stack != null && stack.getMeta() == 0 && isNamed() && isVillager() && stack.getIItem().getUnlocalizedName().equals("item.appleGold"))
             return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.MODIFY);

@@ -6,7 +6,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTra
 import scala.Option;
 
 @Referenced(at= ModInterfacesTransformer.class)
-public interface IRobotTile extends ITileEntity, IAgent
+public interface IRobotTile extends ITileEntity, IAgent, IEnvironmentHost
 {
     Option moveFrom();
 }

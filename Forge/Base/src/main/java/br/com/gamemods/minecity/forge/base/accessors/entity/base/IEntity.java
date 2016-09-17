@@ -443,4 +443,10 @@ public interface IEntity extends MinecraftEntity
                 changes.stream().map(snap -> snap.getPosition(mod)).collect(Collectors.toList())
         );
     }
+
+    default BlockPos getBlockPos(BlockPos from)
+    {
+        Entity entity = (Entity) this;
+        return new BlockPos(from, (int) entity.posX, (int) entity.posY, (int) entity.posZ);
+    }
 }

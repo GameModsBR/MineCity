@@ -6,6 +6,8 @@ import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.forge.base.ForgeUtil;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLiving;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
@@ -13,6 +15,8 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.InventoryWorldControlDClassTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.PacketHandlerDTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.TankWorldControlDClassTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.UpgradeLeashTransformer;
+import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -21,6 +25,8 @@ import scala.Option;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.List;
 
 public class OCHooks
 {
@@ -147,5 +153,40 @@ public class OCHooks
         MineCityForge mod = ModEnv.entityProtections.mod;
         return mod.mineCity.provideChunk(new ChunkPos(mod.world(world), x >> 4, z >> 4)).getFlagHolder(x, y, z)
                 .can((IEntityPlayerMP) agent.fakePlayer(), flag).isPresent();
+    }
+
+    @Referenced(at = UpgradeLeashTransformer.class)
+    public static List<IEntityLiving> onLeash(List<IEntityLiving> entities, IUpgradeLeash module)
+    {
+        MineCityForge mod = ModEnv.entityProtections.mod;
+        IEntity host = (IEntity) module.host();
+        IEntity permissible;
+        if(host instanceof IAgentComponent)
+        {
+            IAgent agent = (IAgent) host;
+            permissible = (IEntityPlayerMP) agent.player();
+        }
+        else
+            permissible = host;
+
+        BlockPos last = host.getBlockPos(mod);
+        ClaimedChunk lastChunk = null;
+        Iterator<IEntityLiving> iter = entities.iterator();
+        while(iter.hasNext())
+        {
+            IEntityLiving entity = iter.next();
+            if(entity.isLeashed())
+                continue;
+
+            if(host instanceof IEntityPlayerMP && !entity.canBeLeashedTo((IEntityPlayerMP) host))
+                continue;
+
+            BlockPos to = entity.getBlockPos(last);
+            lastChunk = mod.mineCity.provideChunk(to.getChunk(), lastChunk);
+            if(lastChunk.getFlagHolder(to).can(permissible, PermissionFlag.MODIFY).isPresent())
+                iter.remove();
+        }
+
+        return entities;
     }
 }

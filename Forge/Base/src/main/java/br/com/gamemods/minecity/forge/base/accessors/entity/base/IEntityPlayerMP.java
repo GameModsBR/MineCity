@@ -291,4 +291,6 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
     {
         return getEntityPos(getServer());
     }
+
+    void sendLeashState(IEntityLiving entity);
 }

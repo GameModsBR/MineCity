@@ -43,7 +43,7 @@ public interface IEntityHorse extends IEntityAnimal
     }
 
     @Override
-    default Reaction reactPlayerInteraction(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
+    default Reaction reactPlayerInteractLiving(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
     {
         if(isChild() || player.getUniqueId().equals(getEntityOwnerId()))
             return NoReaction.INSTANCE;

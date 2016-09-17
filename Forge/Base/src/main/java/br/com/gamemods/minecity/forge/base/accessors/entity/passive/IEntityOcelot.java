@@ -19,7 +19,7 @@ public interface IEntityOcelot extends IEntityTameable
     }
 
     @Override
-    default Reaction reactPlayerInteraction(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
+    default Reaction reactPlayerInteractLiving(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
     {
         if(stack != null && !isTamed() && stack.getIItem().getUnlocalizedName().equals("item.fish"))
             return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.MODIFY);

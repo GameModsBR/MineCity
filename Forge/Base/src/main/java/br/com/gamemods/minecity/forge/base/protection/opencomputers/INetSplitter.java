@@ -8,6 +8,7 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
+import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 
@@ -22,5 +23,12 @@ public interface INetSplitter extends ISimpleBlock
             return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
 
         return ISimpleBlock.super.reactRightClick(pos, state, player, stack, offHand, face);
+    }
+
+    @Override
+    default Reaction reactRightClickActivation(BlockPos pos, IState state, IEntityPlayerMP player,
+                                               IItemStack stack, boolean offHand, Direction face)
+    {
+        return NoReaction.INSTANCE;
     }
 }
