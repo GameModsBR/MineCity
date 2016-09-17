@@ -10,6 +10,7 @@ import br.com.gamemods.minecity.forge.base.protection.vanilla.BlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_10_2.FrostUtil;
 import br.com.gamemods.minecity.forge.mc_1_10_2.MineCityFrost;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.BlockGrowEvent;
+import br.com.gamemods.minecity.forge.mc_1_10_2.event.PistonMoveEvent;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.PlayerTeleportDragonEggEvent;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
@@ -31,6 +32,25 @@ public class FrostBlockProtections extends BlockProtections
     {
         super(mod);
         this.mod = mod;
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onPistonMove(PistonMoveEvent event)
+    {
+        if(event.getWorld().isRemote)
+            return;
+
+        if(onPistonMove(
+                mod.block(event.getWorld(), event.getPos()),
+                (IState) event.getState(),
+                FrostUtil.toDirection(event.direction),
+                event.extend,
+                event.changes,
+                event.movedBy
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

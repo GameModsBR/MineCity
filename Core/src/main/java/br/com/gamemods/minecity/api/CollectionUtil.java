@@ -11,6 +11,76 @@ import java.util.stream.StreamSupport;
 
 public class CollectionUtil
 {
+    /**
+     * Returns a list iterator that swaps all previous/next calls.
+     * <p><b>Important:</b> The returned iterator violates the {@link ListIterator#nextIndex()} and {@link ListIterator#previousIndex()} specifications.
+     */
+    public static <E> ListIterator<E> reverse(ListIterator<E> iterator)
+    {
+        return new ListIterator<E>()
+        {
+            @Override
+            public boolean hasNext()
+            {
+                return iterator.hasPrevious();
+            }
+
+            @Override
+            public E next()
+            {
+                return iterator.previous();
+            }
+
+            @Override
+            public boolean hasPrevious()
+            {
+                return iterator.hasNext();
+            }
+
+            @Override
+            public E previous()
+            {
+                return iterator.next();
+            }
+
+            @Override
+            public int nextIndex()
+            {
+                return iterator.previousIndex();
+            }
+
+            @Override
+            public int previousIndex()
+            {
+                return iterator.nextIndex();
+            }
+
+            @Override
+            public void remove()
+            {
+                iterator.remove();
+            }
+
+            @Override
+            public void set(E e)
+            {
+                iterator.set(e);
+            }
+
+            @Override
+            public void add(E e)
+            {
+                iterator.add(e);
+            }
+        };
+    }
+
+
+    public static <E> Stream<E> reverseStream(ListIterator<E> iterator)
+    {
+        return stream(reverse(iterator));
+    }
+
     public static <K, V extends Comparable<? super V>> SortedSet<Map.Entry<K, V>> sortByValues(Map<K, V> map)
     {
         SortedSet<Map.Entry<K, V>> sortedEntries = new TreeSet<>(

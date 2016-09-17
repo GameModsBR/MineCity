@@ -37,6 +37,21 @@ public class BlockProtections extends ForgeProtections
         super(mod);
     }
 
+    public boolean onPistonMove(BlockPos pos, IState state, Direction dir, boolean extend, List<IBlockSnapshot> changes, Object movedBy)
+    {
+        ClaimedChunk last = mod.mineCity.provideChunk(pos.getChunk());
+
+        Permissible permissible;
+        if(movedBy instanceof Permissible)
+            permissible = (Permissible) movedBy;
+        else
+            permissible = last.getFlagHolder(pos).owner();
+
+        return new MultiBlockReaction(PermissionFlag.MODIFY,
+                changes.stream().map(snap-> snap.getPosition(mod)).collect(Collectors.toList())
+        ).can(mod.mineCity, permissible).isPresent();
+    }
+
     public boolean onFillBucket(IEntityPlayerMP entityPlayer, IWorldServer world, IRayTraceResult target, IItemStack bucket, boolean offHand)
     {
         ForgePlayer player = mod.player(entityPlayer);

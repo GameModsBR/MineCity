@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.BlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.BlockGrowEvent;
+import br.com.gamemods.minecity.forge.mc_1_7_10.event.PistonMoveEvent;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.PlayerTeleportDragonEggEvent;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -31,6 +32,25 @@ public class SevenBlockProtections extends BlockProtections
     {
         super(mod);
         this.mod = mod;
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onPistonMove(PistonMoveEvent event)
+    {
+        if(event.world.isRemote)
+            return;
+
+        if(onPistonMove(
+                new BlockPos(mod.world(event.world), event.x, event.y, event.z),
+                event.state,
+                event.direction,
+                event.extend,
+                event.changes,
+                event.movedBy
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

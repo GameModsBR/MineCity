@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockDragonEggTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockPistonBaseTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.*;
@@ -24,6 +25,7 @@ import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -44,6 +46,48 @@ import java.util.List;
 public class MineCityFrostHooks
 {
     public static Entity spawner;
+    public static Object pistonMovedBy;
+
+    public static void setPistonMovedBy(Object cause)
+    {
+        pistonMovedBy = cause;
+    }
+
+    @Referenced(at = BlockPistonBaseTransformer.class)
+    public static boolean onPistonMove(boolean ret, Throwable ex, Object blockObj, World world, BlockPos pos, EnumFacing dir, boolean extend)
+            throws Throwable
+    {
+        world.captureBlockSnapshots = false;
+        List<BlockSnapshot> changes = new ArrayList<>(world.capturedBlockSnapshots);
+        world.capturedBlockSnapshots.clear();
+        Object movedBy = pistonMovedBy;
+        pistonMovedBy = null;
+
+        try
+        {
+            IBlockState state = changes.stream()
+                    .filter(snap -> snap.getPos().equals(pos)).map(BlockSnapshot::getReplacedBlock)
+                    .findFirst().orElseGet(() -> world.getBlockState(pos));
+
+            if(MinecraftForge.EVENT_BUS.post(new PistonMoveEvent(world, pos, state, dir, extend, changes, movedBy)))
+            {
+                revertChanges(changes);
+                ret = false;
+            }
+            else
+                sendUpdates(changes);
+        }
+        catch(Exception e)
+        {
+            revertChanges(changes);
+            throw e;
+        }
+
+        if(ex != null)
+            throw ex;
+
+        return ret;
+    }
 
     @Referenced(at = PathFinderTransformer.class)
     public static boolean onPathFind(PathFinder pathFinder, PathPoint point, IBlockAccess access, EntityLiving entity)

@@ -1,13 +1,17 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.protection;
 
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockDragonEggTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockPistonBaseTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.*;
+import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityLivingBaseTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPotionTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.*;
@@ -42,6 +46,49 @@ import java.util.List;
 public class MineCitySevenHooks
 {
     public static Entity spawner;
+    public static Object pistonMovedBy;
+
+    public static void setPistonMovedBy(Object cause)
+    {
+        pistonMovedBy = cause;
+    }
+
+    @Referenced(at = BlockPistonBaseTransformer.class)
+    public static boolean onPistonMove(boolean ret, Throwable ex, Object blockObj, World world, int x, int y, int z, int dir)
+            throws Throwable
+    {
+        world.captureBlockSnapshots = false;
+        List<BlockSnapshot> changes = new ArrayList<>(world.capturedBlockSnapshots);
+        world.capturedBlockSnapshots.clear();
+        Object movedBy = pistonMovedBy;
+        pistonMovedBy = null;
+
+        try
+        {
+            SevenBlockState state = changes.stream()
+                    .filter(snap -> snap.x == x && snap.y == y && snap.z == z)
+                    .map(IBlockSnapshot.class::cast).map(IBlockSnapshot::getReplacedState).map(SevenBlockState.class::cast)
+                    .findFirst().orElseGet(() -> (SevenBlockState) ((IWorldServer)world).getIState(x,y,z));
+
+            if(MinecraftForge.EVENT_BUS.post(new PistonMoveEvent(world, x, y, z, state, dir, false, changes, movedBy)))
+            {
+                revertChanges(changes);
+                ret = false;
+            }
+            else
+                sendUpdates(changes);
+        }
+        catch(Exception e)
+        {
+            revertChanges(changes);
+            throw e;
+        }
+
+        if(ex != null)
+            throw ex;
+
+        return ret;
+    }
 
     @Referenced(at = PathFinderTransformer.class)
     public static boolean onPathFind(PathFinder pathFinder, PathPoint point, IBlockAccess access, EntityLiving entity)
