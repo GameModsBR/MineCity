@@ -61,6 +61,10 @@ public interface IDrone extends IEntity, IAgent, IEnvironmentHost, IRotatable
                     )
             );
         }
+        else if(player.getUniqueId().equals(ownerUUID()))
+        {
+            return NoReaction.INSTANCE;
+        }
 
         return new SingleBlockReaction(pos, PermissionFlag.OPEN);
     }
