@@ -281,4 +281,14 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
     }
 
     void sendHealth();
+
+    default BlockPos getBlockPos()
+    {
+        return getBlockPos(getServer());
+    }
+
+    default EntityPos getEntityPos()
+    {
+        return getEntityPos(getServer());
+    }
 }

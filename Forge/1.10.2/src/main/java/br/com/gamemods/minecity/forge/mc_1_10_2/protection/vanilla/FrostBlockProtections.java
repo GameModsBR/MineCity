@@ -1,8 +1,10 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla;
 
+import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.BlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_10_2.FrostUtil;
@@ -12,6 +14,7 @@ import br.com.gamemods.minecity.forge.mc_1_10_2.event.PlayerTeleportDragonEggEve
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.player.BonemealEvent;
+import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -28,6 +31,27 @@ public class FrostBlockProtections extends BlockProtections
     {
         super(mod);
         this.mod = mod;
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onFillBucket(FillBucketEvent event)
+    {
+        if(event.getWorld().isRemote)
+            return;
+
+        EntityPlayer entityPlayer = event.getEntityPlayer();
+        ForgePlayer player = mod.player(entityPlayer);
+
+        if(onFillBucket(
+                (IEntityPlayerMP) entityPlayer,
+                (IWorldServer) event.getWorld(),
+                (IRayTraceResult) event.getTarget(),
+                (IItemStack) (Object) (player.offHand? entityPlayer.getHeldItemOffhand() : entityPlayer.getHeldItemMainhand()),
+                player.offHand
+        ))
+        {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

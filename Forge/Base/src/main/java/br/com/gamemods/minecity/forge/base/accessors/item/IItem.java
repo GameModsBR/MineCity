@@ -7,10 +7,12 @@ import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityItem;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
@@ -108,5 +110,20 @@ public interface IItem
     default Reaction reactPrePlace(Permissible who, IItemStack stack, BlockPos pos)
     {
         return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
+    }
+
+    default Reaction reactFillBucket(IEntityPlayerMP player, IWorldServer world, IRayTraceResult target, IItemStack bucket, boolean offHand)
+    {
+        BlockPos pos;
+        int hitType = target.getHitType();
+        if(hitType == 1)
+            pos = target.getHitBlockPos(player.getServer().world(world));
+        else if(hitType == 2)
+            pos = target.getEntity().getBlockPos(player.getServer());
+        else
+            pos = player.getBlockPos();
+
+        IState state = world.getIState(pos);
+        return state.getIBlock().reactBlockBreak(player.getMineCityPlayer(), state, pos);
     }
 }

@@ -7,11 +7,13 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.MultiBlockReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
@@ -33,6 +35,20 @@ public class BlockProtections extends ForgeProtections
     public BlockProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    public boolean onFillBucket(IEntityPlayerMP entityPlayer, IWorldServer world, IRayTraceResult target, IItemStack bucket, boolean offHand)
+    {
+        ForgePlayer player = mod.player(entityPlayer);
+        Reaction reaction = bucket.getIItem().reactFillBucket(entityPlayer, world, target, bucket, offHand);
+        Optional<Message> denial = reaction.can(mod.mineCity, player);
+        if(denial.isPresent())
+        {
+            player.send(FlagHolder.wrapDeny(denial.get()));
+            return true;
+        }
+
+        return false;
     }
 
     public boolean onBoneMeal(IEntityPlayerMP entity, BlockPos pos, IState state)
