@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.forge.base.ForgeUtil;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
@@ -15,6 +16,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.Ta
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import scala.Option;
 
 import java.lang.reflect.Constructor;
@@ -131,13 +133,19 @@ public class OCHooks
     }
 
     @Referenced(at = TankWorldControlDClassTransformer.class)
-    public static boolean onRobotAccessTank(IAgentComponent agent, Option<IWorldServer> world, int x, int y, int z)
+    public static boolean onRobotAccessTank(IAgentComponent agent, Option<IWorldServer> optionalWorld, int x, int y, int z)
     {
-        if(world.isEmpty())
+        if(optionalWorld.isEmpty())
             return true;
 
+        IWorldServer world = optionalWorld.get();
+        ITileEntity tile = world.getTileEntity(x, y, z);
+        PermissionFlag flag = PermissionFlag.MODIFY;
+        if(tile instanceof IFluidHandler)
+            flag = PermissionFlag.OPEN;
+
         MineCityForge mod = ModEnv.entityProtections.mod;
-        return mod.mineCity.provideChunk(new ChunkPos(mod.world(world.get()), x >> 4, z >> 4)).getFlagHolder(x, y, z)
-                .can((IEntityPlayerMP) agent.fakePlayer(), PermissionFlag.MODIFY).isPresent();
+        return mod.mineCity.provideChunk(new ChunkPos(mod.world(world), x >> 4, z >> 4)).getFlagHolder(x, y, z)
+                .can((IEntityPlayerMP) agent.fakePlayer(), flag).isPresent();
     }
 }
