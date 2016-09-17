@@ -47,4 +47,11 @@ public interface IItemSaddle extends IItem
             return reactInteractEntity((IEntityPlayerMP) player, entity, stack, false);
         return NoReaction.INSTANCE;
     }
+
+    @Override
+    default Reaction reactPlayerAttackDirect(IEntityPlayerMP player, IEntity target, IItemStack stack,
+                                             boolean offHand)
+    {
+        return reactInteractEntity(player, target, stack, offHand);
+    }
 }

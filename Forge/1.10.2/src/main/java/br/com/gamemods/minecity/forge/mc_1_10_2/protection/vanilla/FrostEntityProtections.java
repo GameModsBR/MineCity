@@ -15,10 +15,12 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityAr
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityFishHook;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
+import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.*;
 import br.com.gamemods.minecity.forge.mc_1_10_2.protection.MineCityFrostHooks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -28,10 +30,7 @@ import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.event.entity.player.PlayerDropsEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
+import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -368,6 +367,25 @@ public class FrostEntityProtections extends EntityProtections
                 (IEntity) event.getEntity(),
                 (IEntity) event.igniter,
                 event.ticks
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onPlayerAttack(AttackEntityEvent event)
+    {
+        if(event.getEntity().worldObj.isRemote)
+            return;
+
+        EntityPlayer entity = event.getEntityPlayer();
+        ForgePlayer player = mod.player(entity);
+        if(onPlayerAttack(
+                (IEntityPlayerMP) entity,
+                (IEntity) event.getTarget(),
+                (IItemStack) (Object) (player.offHand? entity.getHeldItemOffhand() : entity.getHeldItemMainhand()),
+                player.offHand
         ))
         {
             event.setCanceled(true);

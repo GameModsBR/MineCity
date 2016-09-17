@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
@@ -42,6 +43,12 @@ public interface IEntitySittableBlock extends IEntity
     @Override
     default Reaction reactPlayerAttack(MineCityForge mod, Permissible player, IItemStack stack,
                                        DamageSource source, float amount, List<Permissible> attackers)
+    {
+        return NoReaction.INSTANCE;
+    }
+
+    @Override
+    default Reaction reactPlayerAttackDirect(IEntityPlayerMP player, IItemStack stack, boolean offHand)
     {
         return NoReaction.INSTANCE;
     }

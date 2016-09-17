@@ -66,6 +66,11 @@ public interface IItem
         return NoReaction.INSTANCE;
     }
 
+    default Reaction reactPlayerAttackDirect(IEntityPlayerMP player, IEntity target, IItemStack stack, boolean offHand)
+    {
+        return NoReaction.INSTANCE;
+    }
+
     default Reaction reactInteractEntityPrecisely(IEntityPlayerMP player, IEntity target, IItemStack stack, boolean offHand, PrecisePoint point)
     {
         return NoReaction.INSTANCE;

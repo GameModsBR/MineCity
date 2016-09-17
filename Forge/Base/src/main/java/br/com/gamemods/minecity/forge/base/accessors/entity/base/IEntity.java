@@ -305,6 +305,30 @@ public interface IEntity extends MinecraftEntity
             return new SingleBlockReaction(getBlockPos(mod), flag);
     }
 
+    default Reaction reactPlayerAttackDirect(IEntityPlayerMP player, IItemStack stack, boolean offHand)
+    {
+        PermissionFlag flag = getPlayerAttackType();
+        if(flag == null)
+            return NoReaction.INSTANCE;
+
+        if(identity().equals(player.identity()))
+            return NoReaction.INSTANCE;
+
+        MineCityForge mod = player.getServer();
+        if(isNamed())
+            return new SingleBlockReaction(getBlockPos(mod), PermissionFlag.MODIFY);
+
+        if(player.identity().uniqueId.equals(getEntityOwnerId()))
+            return NoReaction.INSTANCE;
+
+        BlockPos playerPos = player.getBlockPos(mod);
+
+        if(playerPos != null)
+            return new DoubleBlockReaction(flag, playerPos, getBlockPos(mod));
+        else
+            return new SingleBlockReaction(getBlockPos(mod), flag);
+    }
+
     default Reaction reactPlayerModifyWithProjectile(Permissible permissible, IEntity projectile,
                                                      IState state, IWorldServer world, BlockPos pos)
     {
@@ -448,5 +472,10 @@ public interface IEntity extends MinecraftEntity
     {
         Entity entity = (Entity) this;
         return new BlockPos(from, (int) entity.posX, (int) entity.posY, (int) entity.posZ);
+    }
+
+    default boolean sendSpawnPackets(IEntityPlayerMP player)
+    {
+        return false;
     }
 }

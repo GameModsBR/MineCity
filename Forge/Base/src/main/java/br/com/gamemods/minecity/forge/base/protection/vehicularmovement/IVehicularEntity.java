@@ -6,6 +6,7 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.entity.passive.IEntityAnimal;
 import br.com.gamemods.minecity.forge.base.accessors.entity.vehicle.IVehicle;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
@@ -43,6 +44,16 @@ public interface IVehicularEntity extends IEntityAnimal, IVehicle
             return NoReaction.INSTANCE;
 
         return new SingleBlockReaction(getBlockPos(mod), PermissionFlag.MODIFY);
+    }
+
+    @Override
+    default Reaction reactPlayerAttackDirect(IEntityPlayerMP player, IItemStack stack, boolean offHand)
+    {
+        UUID owner = getEntityOwnerId();
+        if(owner != null && owner.equals(player.identity().getUniqueId()))
+            return NoReaction.INSTANCE;
+
+        return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.MODIFY);
     }
 
     @Override

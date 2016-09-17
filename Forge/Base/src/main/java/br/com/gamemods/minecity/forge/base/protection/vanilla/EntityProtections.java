@@ -683,6 +683,24 @@ public class EntityProtections extends ForgeProtections
         return stack;
     }
 
+    public boolean onPlayerAttack(IEntityPlayerMP player, IEntity target, IItemStack stack, boolean offHand)
+    {
+        Reaction reaction = NoReaction.INSTANCE;
+        if(stack != null)
+            reaction = stack.getIItem().reactPlayerAttackDirect(player, target, stack, offHand);
+
+        reaction = reaction.combine(target.reactPlayerAttackDirect(player, stack, offHand));
+        Optional<Message> denial = reaction.can(mod.mineCity, player);
+        if(denial.isPresent())
+        {
+            player.send(FlagHolder.wrapDeny(denial.get()));
+            return true;
+        }
+
+        target.setWhoDamaged(player.identity());
+        return false;
+    }
+
     public boolean onEntityDamage(IEntity entity, DamageSource source, float amount)
     {
         List<Permissible> attackers = new ArrayList<>(2);

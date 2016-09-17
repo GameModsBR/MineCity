@@ -1,11 +1,15 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.accessors.entity;
 
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenInterfaceTransformer;
+import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S1CPacketEntityMetadata;
 import net.minecraft.world.WorldServer;
 import org.jetbrains.annotations.NotNull;
 
@@ -85,4 +89,23 @@ public interface SevenEntity extends IEntity
         Entity entity = (Entity) this;
         entity.setLocationAndAngles(x, y, z, entity.rotationYaw, entity.rotationPitch);
     }
+
+    @Override
+    default boolean sendSpawnPackets(IEntityPlayerMP player)
+    {
+        Entity entity = (Entity) this;
+        Packet pkt = FMLNetworkHandler.getEntitySpawningPacket(entity);
+        if(pkt == null)
+            return false;
+
+        player.sendPacket(pkt);
+        if(!entity.getDataWatcher().getIsBlank())
+            player.sendPacket(new S1CPacketEntityMetadata(entity.getEntityId(), entity.getDataWatcher(), true));
+
+        continueSendingSpawnPackets(player);
+        return true;
+    }
+
+    default void continueSendingSpawnPackets(IEntityPlayerMP player)
+    {}
 }

@@ -27,10 +27,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.player.EntityInteractEvent;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.event.entity.player.PlayerDropsEvent;
-import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
+import net.minecraftforge.event.entity.player.*;
 
 import java.util.List;
 
@@ -349,6 +346,23 @@ public class SevenEntityProtections extends EntityProtections
                 (IEntity) event.entity,
                 (IEntity) event.igniter,
                 event.ticks
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onPlayerAttack(AttackEntityEvent event)
+    {
+        if(event.entity.worldObj.isRemote)
+            return;
+
+        if(onPlayerAttack(
+                (IEntityPlayerMP) event.entityPlayer,
+                (IEntity) event.target,
+                (IItemStack) (Object) event.entityPlayer.getHeldItem(),
+                false
         ))
         {
             event.setCanceled(true);

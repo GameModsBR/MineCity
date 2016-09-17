@@ -10,6 +10,7 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLiving;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityItem;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
@@ -33,6 +34,7 @@ public class OCHooks
     private static Constructor blockPos;
     private static Object wrenchModule;
     private static Method holdsApplicableWrench;
+    private static Method isWrench;
 
     private static Object pos(int x, int y, int z)
     {
@@ -60,19 +62,37 @@ public class OCHooks
         }
     }
 
+    private static Object getWrenchModule() throws ReflectiveOperationException
+    {
+        if(wrenchModule == null)
+            wrenchModule = Class.forName("li.cil.oc.integration.util.Wrench$").getDeclaredField("MODULE$").get(null);
+        return wrenchModule;
+    }
+
+    public static boolean isWrench(IItemStack stack)
+    {
+        try
+        {
+            if(isWrench == null)
+                isWrench = Class.forName("li.cil.oc.integration.util.Wrench$").getDeclaredMethod("isWrench", ItemStack.class);
+
+            return (boolean) isWrench.invoke(getWrenchModule(), stack);
+        }
+        catch(ReflectiveOperationException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+
     public static boolean holdsApplicableWrench(IEntityPlayerMP player, int x, int y, int z)
     {
         try
         {
             Object pos = pos(x, y, z);
             if(holdsApplicableWrench == null)
-            {
-                Class<?> c = Class.forName("li.cil.oc.integration.util.Wrench$");
-                wrenchModule = c.getDeclaredField("MODULE$").get(null);
-                holdsApplicableWrench = c.getDeclaredMethod("holdsApplicableWrench", EntityPlayer.class, pos.getClass());
-            }
+                holdsApplicableWrench = Class.forName("li.cil.oc.integration.util.Wrench$").getDeclaredMethod("holdsApplicableWrench", EntityPlayer.class, pos.getClass());
 
-            return (boolean) holdsApplicableWrench.invoke(wrenchModule, player, pos);
+            return (boolean) holdsApplicableWrench.invoke(getWrenchModule(), player, pos);
         }
         catch(ReflectiveOperationException e)
         {
