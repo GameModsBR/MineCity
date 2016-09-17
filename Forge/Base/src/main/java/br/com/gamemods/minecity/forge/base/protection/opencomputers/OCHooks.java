@@ -2,16 +2,20 @@ package br.com.gamemods.minecity.forge.base.protection.opencomputers;
 
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.forge.base.ForgeUtil;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.InventoryWorldControlDClassTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.PacketHandlerDTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.TankWorldControlDClassTransformer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import scala.Option;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -124,5 +128,16 @@ public class OCHooks
         IEntityPlayerMP player = (IEntityPlayerMP) agent.fakePlayer();
         BlockPos pos = player.getBlockPos(mod).add(ForgeUtil.toDirection(face));
         return mod.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).can(player, PermissionFlag.PICKUP).isPresent();
+    }
+
+    @Referenced(at = TankWorldControlDClassTransformer.class)
+    public static boolean onRobotAccessTank(IAgentComponent agent, Option<IWorldServer> world, int x, int y, int z)
+    {
+        if(world.isEmpty())
+            return true;
+
+        MineCityForge mod = ModEnv.entityProtections.mod;
+        return mod.mineCity.provideChunk(new ChunkPos(mod.world(world.get()), x >> 4, z >> 4)).getFlagHolder(x, y, z)
+                .can((IEntityPlayerMP) agent.fakePlayer(), PermissionFlag.MODIFY).isPresent();
     }
 }
