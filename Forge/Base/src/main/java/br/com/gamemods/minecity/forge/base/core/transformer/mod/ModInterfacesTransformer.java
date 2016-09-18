@@ -15,6 +15,12 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("li.cil.oc.server.component.traits.InventoryAware",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.IInventoryAware");
+
+        r.put("li.cil.oc.server.component.traits.InventoryWorldControlMk2",
+                "br.com.gamemods.minecity.forge.base.protection.opencomputers.IInventoryWorldControlMk2");
+
         r.put("li.cil.oc.common.item.Delegator",
                 "br.com.gamemods.minecity.forge.base.protection.opencomputers.IDelegator");
 

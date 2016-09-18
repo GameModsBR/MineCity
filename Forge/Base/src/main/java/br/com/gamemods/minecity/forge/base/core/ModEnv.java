@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.core;
 
+import br.com.gamemods.minecity.forge.base.protection.vanilla.BlockProtections;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 
 import java.io.File;
@@ -14,6 +15,7 @@ public class ModEnv
     public static String hookClass;
     public static String rayTraceResultClass;
     public static EntityProtections entityProtections;
+    public static BlockProtections blockProtections;
     public static boolean seven;
 
     public static boolean saveClasses = true;

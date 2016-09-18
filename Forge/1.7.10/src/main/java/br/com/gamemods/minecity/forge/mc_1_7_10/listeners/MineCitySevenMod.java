@@ -97,7 +97,7 @@ public class MineCitySevenMod
         FMLCommonHandler.instance().bus().register(new SevenTickListener(forge));
         MinecraftForge.EVENT_BUS.register(new SevenToolListener(forge));
         MinecraftForge.EVENT_BUS.register(new SevenWorldListener(forge));
-        MinecraftForge.EVENT_BUS.register(new SevenBlockProtections(forge));
+        MinecraftForge.EVENT_BUS.register(ModEnv.blockProtections = new SevenBlockProtections(forge));
         MinecraftForge.EVENT_BUS.register(ModEnv.entityProtections = new SevenEntityProtections(forge));
     }
 

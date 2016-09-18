@@ -19,6 +19,7 @@ import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import scala.Option;
 
@@ -245,5 +246,25 @@ public class OCHooks
             who = ((IAgent) who).ownerId();
 
         return who;
+    }
+
+    @Referenced(at = InventoryWorldControlMk2DClassTransformer.class)
+    public static Option onInventoryControllerAccess(Option inv, IInventoryWorldControlMk2 controller, Option<World> worldOption, int x, int y, int z, int face)
+    {
+        if(worldOption.isEmpty())
+            return null;
+
+        World world = worldOption.get();
+        BlockPos pos = new BlockPos(ModEnv.blockProtections.mod.world(world), x, y, z);
+
+        EntityPlayer fakePlayer = controller.fakePlayer();
+        if(ModEnv.blockProtections.onPlayerRightClickBlock(
+                fakePlayer, false, null, ((IWorldServer) world).getIState(pos), pos, ForgeUtil.toDirection(face)
+        ) != 0)
+        {
+            return null;
+        }
+
+        return inv;
     }
 }
