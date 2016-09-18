@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockPis
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.*;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.UpgradeTractorBeamTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityLivingBaseTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPotionTransformer;
@@ -48,6 +49,7 @@ public class MineCitySevenHooks
     public static Entity spawner;
     public static Object pistonMovedBy;
 
+    @Referenced(at = UpgradeTractorBeamTransformer.class)
     public static void setPistonMovedBy(Object cause)
     {
         pistonMovedBy = cause;

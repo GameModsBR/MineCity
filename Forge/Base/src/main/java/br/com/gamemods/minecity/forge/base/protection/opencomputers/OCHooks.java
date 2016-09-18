@@ -234,6 +234,7 @@ public class OCHooks
         return items;
     }
 
+    @Referenced(at = UpgradeTractorBeamTransformer.class)
     public static Object getPermissible(Object who)
     {
         if(who instanceof Hosted)
