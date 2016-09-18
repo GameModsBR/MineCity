@@ -180,7 +180,8 @@ public class FrostBlockProtections extends BlockProtections
                 event.getItemStack(),
                 (IState) event.getWorld().getBlockState(event.getPos()),
                 mod.block(event.getWorld(), event.getPos()),
-                FrostUtil.toDirection(event.getFace())
+                FrostUtil.toDirection(event.getFace()),
+                true
         );
 
         if(result == 3)

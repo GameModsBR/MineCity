@@ -176,7 +176,8 @@ public class SevenBlockProtections extends BlockProtections
                     event.entityPlayer, false, event.entityPlayer.getHeldItem(),
                     state(event.world.getBlock(event.x, event.y, event.z), event.world.getBlockMetadata(event.x, event.y, event.z)),
                     new BlockPos(mod.world(event.world), event.x, event.y, event.z),
-                    ForgeUtil.toDirection(event.face)
+                    ForgeUtil.toDirection(event.face),
+                    true
             );
 
             if(result == 3)

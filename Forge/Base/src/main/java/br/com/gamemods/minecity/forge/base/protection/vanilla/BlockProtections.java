@@ -191,7 +191,7 @@ public class BlockProtections extends ForgeProtections
         return false;
     }
 
-    public int onPlayerRightClickBlock(EntityPlayer entity, boolean offHand, ItemStack itemStack, IState state, BlockPos pos, Direction face)
+    public int onPlayerRightClickBlock(EntityPlayer entity, boolean offHand, ItemStack itemStack, IState state, BlockPos pos, Direction face, boolean verbose)
     {
         byte result = 0;
 
@@ -224,7 +224,7 @@ public class BlockProtections extends ForgeProtections
             result |= 2;
 
         Message message = denial.orElse(denial2.orElse(null));
-        if(message != null)
+        if(verbose && message != null)
             player.send(FlagHolder.wrapDeny(message));
 
         return result;

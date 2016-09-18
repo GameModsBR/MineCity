@@ -259,7 +259,7 @@ public class OCHooks
 
         EntityPlayer fakePlayer = controller.fakePlayer();
         if(ModEnv.blockProtections.onPlayerRightClickBlock(
-                fakePlayer, false, null, ((IWorldServer) world).getIState(pos), pos, ForgeUtil.toDirection(face)
+                fakePlayer, false, null, ((IWorldServer) world).getIState(pos), pos, ForgeUtil.toDirection(face), false
         ) != 0)
         {
             return null;
