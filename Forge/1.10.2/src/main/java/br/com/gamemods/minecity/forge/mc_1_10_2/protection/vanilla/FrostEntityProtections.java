@@ -350,7 +350,8 @@ public class FrostEntityProtections extends EntityProtections
 
         if(onPlayerPickupItem(
                 (IEntityPlayerMP) event.getEntityPlayer(),
-                (IEntityItem) event.getItem()
+                (IEntityItem) event.getItem(),
+                false
         ))
         {
             event.setCanceled(true);
