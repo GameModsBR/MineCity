@@ -5,7 +5,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.Up
 import net.minecraft.entity.Entity;
 
 @Referenced(at = UpgradeLeashTransformer.class)
-public interface IUpgradeLeash
+public interface IUpgradeLeash extends Hosted
 {
     Entity host();
 }

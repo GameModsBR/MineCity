@@ -135,7 +135,7 @@ public class OCHooks
     {
         MineCityForge mod = player.getServer();
 
-        IEnvironmentHost host = buffer.hostI();
+        IEnvironmentHost host = buffer.host();
         if(host instanceof IScreen)
         {
             BlockPos pos = host.envBlockPos(mod);
@@ -214,7 +214,7 @@ public class OCHooks
         if(items.isEmpty())
             return items;
 
-        IEnvironmentHost owner = upgrade.owner();
+        IEnvironmentHost owner = upgrade.host();
         IEntityPlayerMP player;
         if(owner instanceof IEntityPlayerMP)
             player = (IEntityPlayerMP) owner;
@@ -232,5 +232,16 @@ public class OCHooks
                 iter.remove();
 
         return items;
+    }
+
+    public static Object getPermissible(Object who)
+    {
+        if(who instanceof Hosted)
+            who = ((Hosted) who).host();
+
+        if(who instanceof IAgent)
+            who = ((IAgent) who).ownerId();
+
+        return who;
     }
 }

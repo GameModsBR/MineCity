@@ -38,7 +38,7 @@ public class UpgradeTractorBeamTransformer implements IClassTransformer
         ClassReader reader = new ClassReader(basicClass);
         reader.accept(node, 0);
 
-        MethodNode owner = new MethodNode(ACC_PUBLIC, "owner", "()Lbr/com/gamemods/minecity/forge/base/protection/opencomputers/IEnvironmentHost;", null, null);
+        MethodNode owner = new MethodNode(ACC_PUBLIC, "host", "()Lbr/com/gamemods/minecity/forge/base/protection/opencomputers/IEnvironmentHost;", null, null);
         owner.visitCode();
         owner.visitVarInsn(ALOAD, 0);
         owner.visitMethodInsn(INVOKEVIRTUAL, transformedName.replace('.','/'), "owner", "()Lli/cil/oc/api/internal/Agent;", false);
@@ -58,7 +58,7 @@ public class UpgradeTractorBeamTransformer implements IClassTransformer
         ClassReader reader = new ClassReader(basicClass);
         reader.accept(node, 0);
 
-        MethodNode owner = new MethodNode(ACC_PUBLIC, "owner", "()Lbr/com/gamemods/minecity/forge/base/protection/opencomputers/IEnvironmentHost;", null, null);
+        MethodNode owner = new MethodNode(ACC_PUBLIC, "host", "()Lbr/com/gamemods/minecity/forge/base/protection/opencomputers/IEnvironmentHost;", null, null);
         owner.visitCode();
         owner.visitVarInsn(ALOAD, 0);
         owner.visitMethodInsn(INVOKEVIRTUAL, transformedName.replace('.','/'), "owner", "()Lli/cil/oc/api/network/EnvironmentHost;", false);

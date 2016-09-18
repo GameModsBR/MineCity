@@ -1,10 +1,11 @@
 package br.com.gamemods.minecity.forge.base.protection.opencomputers;
 
 import br.com.gamemods.minecity.forge.base.core.Referenced;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.TextBufferTransformer;
 
-@Referenced(at = ModInterfacesTransformer.class)
-public interface ITextBuffer
+@Referenced(at = TextBufferTransformer.class)
+public interface ITextBuffer extends Hosted
 {
-    IEnvironmentHost hostI();
+    @Referenced(at = TextBufferTransformer.class)
+    IEnvironmentHost host();
 }

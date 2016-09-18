@@ -27,7 +27,7 @@ public interface IEntityShulkerBullet extends EntityProjectile
                 }
                 catch(Exception e)
                 {
-                    System.err.println("[MineCity] Failed to detect the owner of "+this);
+                    System.err.println("[MineCity] Failed to detect the host of "+this);
                     e.printStackTrace();
                 }
                 break;

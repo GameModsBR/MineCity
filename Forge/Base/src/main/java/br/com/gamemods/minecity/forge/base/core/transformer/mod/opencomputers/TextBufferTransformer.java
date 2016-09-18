@@ -29,7 +29,7 @@ public class TextBufferTransformer implements IClassTransformer
         node.interfaces.add(itf);
 
         String host = "br.com.gamemods.minecity.forge.base.protection.opencomputers.IEnvironmentHost".replace('.','/');
-        MethodNode method = new MethodNode(ACC_PUBLIC, "hostI", "()L"+host+";", null, null);
+        MethodNode method = new MethodNode(ACC_PUBLIC, "host", "()L"+host+";", null, null);
         method.visitCode();
         method.visitVarInsn(ALOAD, 0);
         method.visitMethodInsn(INVOKEVIRTUAL, transformedName.replace('.','/'), "host", "()Lli/cil/oc/api/network/EnvironmentHost;", false);
