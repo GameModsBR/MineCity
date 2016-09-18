@@ -20,7 +20,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.IFluidHandler;
 import scala.Option;
 
 import java.lang.reflect.Constructor;
@@ -166,7 +166,7 @@ public class OCHooks
         IWorldServer world = optionalWorld.get();
         ITileEntity tile = world.getTileEntity(x, y, z);
         PermissionFlag flag = PermissionFlag.MODIFY;
-        if(tile instanceof IFluidHandler)
+        if(tile instanceof IFluidHandler || (!ModEnv.seven && tile instanceof net.minecraftforge.fluids.capability.IFluidHandler))
             flag = PermissionFlag.OPEN;
 
         MineCityForge mod = ModEnv.entityProtections.mod;
