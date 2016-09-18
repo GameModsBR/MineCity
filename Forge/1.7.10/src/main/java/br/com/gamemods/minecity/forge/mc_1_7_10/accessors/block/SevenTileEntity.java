@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenInterfaceTransformer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -35,6 +36,12 @@ public interface SevenTileEntity extends ITileEntity
     default int getPosZ()
     {
         return ((TileEntity) this).zCoord;
+    }
+
+    @Override
+    default IWorldServer getIWorld()
+    {
+        return (IWorldServer) ((TileEntity) this).getWorldObj();
     }
 
     @Override

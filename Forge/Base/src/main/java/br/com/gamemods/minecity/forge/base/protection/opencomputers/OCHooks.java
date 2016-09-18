@@ -15,10 +15,12 @@ import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.*;
+import br.com.gamemods.minecity.forge.base.protection.ModHooks;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.IFluidHandler;
 import scala.Option;
@@ -266,5 +268,21 @@ public class OCHooks
         }
 
         return inv;
+    }
+
+    @Referenced(at = AdapterTransformer.class)
+    public static TileEntity onAdapterAccess(ITileEntity accessed, IAdapter adapter)
+    {
+        if(ModHooks.onBlockAccessOther((World) accessed.getIWorld(),
+                accessed.getPosX(), accessed.getPosY(), accessed.getPosZ(),
+                adapter.getPosX(), adapter.getPosY(), adapter.getPosZ(),
+                PermissionFlag.MODIFY
+        ).isPresent())
+        {
+            // OC will refuse to adapt their own stuff
+            return (TileEntity) adapter;
+        }
+
+        return (TileEntity) accessed;
     }
 }
