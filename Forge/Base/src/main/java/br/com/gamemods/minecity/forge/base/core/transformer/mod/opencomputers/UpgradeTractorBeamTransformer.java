@@ -95,7 +95,7 @@ public class UpgradeTractorBeamTransformer implements IClassTransformer
                             list.add(new MethodInsnNode(INVOKESTATIC,
                                     "br/com/gamemods/minecity/forge/base/protection/opencomputers/OCHooks",
                                     "onSuck",
-                                    "(Ljava/util/List;Lbr/com/gamemods/minecity/forge/base/protection/opencomputers/IUpgradeTractorBeam;)Ljava/util/List;",
+                                    "(Ljava/util/List;Lbr/com/gamemods/minecity/forge/base/protection/opencomputers/Hosted;)Ljava/util/List;",
                                     false
                             ));
                             method.instructions.insert(ins, list);

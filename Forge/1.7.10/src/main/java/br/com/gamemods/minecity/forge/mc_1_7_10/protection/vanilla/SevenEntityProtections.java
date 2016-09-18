@@ -329,7 +329,8 @@ public class SevenEntityProtections extends EntityProtections
 
         if(onPlayerPickupItem(
                 (IEntityPlayerMP) event.entityPlayer,
-                (IEntityItem) event.item
+                (IEntityItem) event.item,
+                false
         ))
         {
             event.setCanceled(true);

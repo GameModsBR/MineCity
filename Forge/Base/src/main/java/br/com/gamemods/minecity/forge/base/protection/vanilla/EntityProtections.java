@@ -337,7 +337,7 @@ public class EntityProtections extends ForgeProtections
         return false;
     }
 
-    public boolean onPlayerPickupItem(IEntityPlayerMP entity, IEntityItem entityItem)
+    public boolean onPlayerPickupItem(IEntityPlayerMP entity, IEntityItem entityItem, boolean silent)
     {
         if(entityItem.isAllowedToPickup(entity.identity()))
             return false;
@@ -371,7 +371,8 @@ public class EntityProtections extends ForgeProtections
                 player.disablePickup = true;
             }
 
-            player.send(FlagHolder.wrapDeny(denial.get()));
+            if(!silent)
+                player.send(FlagHolder.wrapDeny(denial.get()));
             return true;
         }
 

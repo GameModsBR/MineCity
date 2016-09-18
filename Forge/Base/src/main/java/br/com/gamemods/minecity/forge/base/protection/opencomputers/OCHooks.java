@@ -209,12 +209,13 @@ public class OCHooks
     }
 
     @Referenced(at = UpgradeTractorBeamTransformer.class)
-    public static List<IEntityItem> onSuck(List<IEntityItem> items, IUpgradeTractorBeam upgrade)
+    @Referenced(at = MagnetProviderTransformer.class)
+    public static List<IEntityItem> onSuck(List<IEntityItem> items, Hosted upgrade)
     {
         if(items.isEmpty())
             return items;
 
-        IEnvironmentHost owner = upgrade.host();
+        Object owner = upgrade.host();
         IEntityPlayerMP player;
         if(owner instanceof IEntityPlayerMP)
             player = (IEntityPlayerMP) owner;
@@ -228,7 +229,7 @@ public class OCHooks
 
         Iterator<IEntityItem> iter = items.iterator();
         while(iter.hasNext())
-            if(ModEnv.entityProtections.onPlayerPickupItem(player, iter.next()))
+            if(ModEnv.entityProtections.onPlayerPickupItem(player, iter.next(), true))
                 iter.remove();
 
         return items;
