@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.protection;
 
 import br.com.gamemods.minecity.api.shape.Point;
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
@@ -13,6 +14,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNT
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.*;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.AdapterTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.InventoryTransferDClassTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.UpgradeTractorBeamTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityLivingBaseTransformer;
@@ -41,6 +43,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.BlockSnapshot;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
+import scala.Option;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -308,6 +311,14 @@ public class MineCitySevenHooks
     public static Point toPoint(int x, int y, int z)
     {
         return new Point(x, y, z);
+    }
+
+    @Referenced(at = InventoryTransferDClassTransformer.class)
+    @SuppressWarnings("unchecked")
+    public static BlockPos toPos(Object obj, int x, int y, int z)
+    {
+        Option<IWorldServer> opt = (Option<IWorldServer>) obj;
+        return new BlockPos(ModEnv.blockProtections.mod.world(opt.get()), x, y, z);
     }
 
     private MineCitySevenHooks(){}

@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.protection;
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockDragonEggTransformer;
@@ -42,6 +43,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
+import scala.Option;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -327,6 +329,13 @@ public class MineCityFrostHooks
     {
         Vec3i pos = (Vec3i) obj;
         return new Point(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    @SuppressWarnings("unchecked")
+    public static br.com.gamemods.minecity.api.world.BlockPos toPos(Object obj, int x, int y, int z)
+    {
+        Option<IWorldServer> opt = (Option<IWorldServer>) obj;
+        return new br.com.gamemods.minecity.api.world.BlockPos(ModEnv.blockProtections.mod.world(opt.get()), x, y, z);
     }
 
     private MineCityFrostHooks(){}

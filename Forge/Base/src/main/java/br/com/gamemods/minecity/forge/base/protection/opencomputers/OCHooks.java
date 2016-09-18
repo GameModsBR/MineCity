@@ -278,4 +278,25 @@ public class OCHooks
                 PermissionFlag.MODIFY
         ).isPresent();
     }
+
+    @Referenced(at = InventoryTransferDClassTransformer.class)
+    public static boolean onInventoryTransferAccess(Hosted hosted, BlockPos pos)
+    {
+        Object obj = hosted.host();
+        BlockPos host;
+        if(obj instanceof ITileEntity)
+            host = ((ITileEntity) obj).getBlockPos(ModEnv.entityProtections.mod);
+        else if(obj instanceof IEnvironmentHost)
+            host = ((IEnvironmentHost) obj).envBlockPos(ModEnv.entityProtections.mod);
+        else if(obj instanceof BlockPos)
+            host = (BlockPos) obj;
+        else
+            return true;
+
+        return ModHooks.onBlockAccessOther(pos.world.getInstance(World.class),
+                pos.x, pos.y, pos.z,
+                host.x, host.y, host.z,
+                PermissionFlag.OPEN).isPresent()
+        ;
+    }
 }
