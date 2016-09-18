@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.mc_1_10_2.protection;
 
+import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
@@ -9,6 +10,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockPis
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.*;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.AdapterTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.UpgradeTractorBeamTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPotionTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.*;
@@ -31,6 +33,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -317,6 +320,13 @@ public class MineCityFrostHooks
     {
         FishingHookBringEntityEvent event = new FishingHookBringEntityEvent(hook.caughtEntity, hook);
         return MinecraftForge.EVENT_BUS.post(event);
+    }
+
+    @Referenced(at = AdapterTransformer.class)
+    public static Point toPoint(Object obj)
+    {
+        Vec3i pos = (Vec3i) obj;
+        return new Point(pos.getX(), pos.getY(), pos.getZ());
     }
 
     private MineCityFrostHooks(){}

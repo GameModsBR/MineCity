@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.base.protection.opencomputers;
 
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.forge.base.ForgeUtil;
@@ -20,7 +21,6 @@ import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.IFluidHandler;
 import scala.Option;
@@ -271,18 +271,11 @@ public class OCHooks
     }
 
     @Referenced(at = AdapterTransformer.class)
-    public static TileEntity onAdapterAccess(ITileEntity accessed, IAdapter adapter)
+    public static boolean onAdapterAccess(IAdapter adapter, IWorldServer world, Point pos)
     {
-        if(ModHooks.onBlockAccessOther((World) accessed.getIWorld(),
-                accessed.getPosX(), accessed.getPosY(), accessed.getPosZ(),
+        return ModHooks.onBlockAccessOther((World) world, pos.x, pos.y, pos.z,
                 adapter.getPosX(), adapter.getPosY(), adapter.getPosZ(),
                 PermissionFlag.MODIFY
-        ).isPresent())
-        {
-            // OC will refuse to adapt their own stuff
-            return (TileEntity) adapter;
-        }
-
-        return (TileEntity) accessed;
+        ).isPresent();
     }
 }

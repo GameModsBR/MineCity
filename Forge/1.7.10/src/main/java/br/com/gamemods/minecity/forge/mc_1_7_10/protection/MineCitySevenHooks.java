@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.protection;
 
+import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
@@ -11,6 +12,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockPis
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.*;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.AdapterTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.UpgradeTractorBeamTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityLivingBaseTransformer;
@@ -300,6 +302,12 @@ public class MineCitySevenHooks
     {
         FishingHookBringEntityEvent event = new FishingHookBringEntityEvent(hook.field_146043_c, hook);
         return MinecraftForge.EVENT_BUS.post(event);
+    }
+
+    @Referenced(at = AdapterTransformer.class)
+    public static Point toPoint(int x, int y, int z)
+    {
+        return new Point(x, y, z);
     }
 
     private MineCitySevenHooks(){}
