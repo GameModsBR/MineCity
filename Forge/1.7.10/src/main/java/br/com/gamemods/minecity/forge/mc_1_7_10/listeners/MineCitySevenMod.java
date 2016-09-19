@@ -10,6 +10,7 @@ import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.SevenSnapshotHandler;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.opencomputers.SevenRobotProtections;
+import br.com.gamemods.minecity.forge.mc_1_7_10.protection.protectmyplane.PlaneListener;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenBlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenEntityProtections;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -99,6 +100,13 @@ public class MineCitySevenMod
         MinecraftForge.EVENT_BUS.register(new SevenWorldListener(forge));
         MinecraftForge.EVENT_BUS.register(ModEnv.blockProtections = new SevenBlockProtections(forge));
         MinecraftForge.EVENT_BUS.register(ModEnv.entityProtections = new SevenEntityProtections(forge));
+    }
+
+    @Mod.EventHandler
+    @Optional.Method(modid = "ProtectMyPlane")
+    public void onPostInitPlane(FMLPostInitializationEvent event)
+    {
+        MinecraftForge.EVENT_BUS.register(new PlaneListener(forge));
     }
 
     @Optional.Method(modid = "OpenComputers")

@@ -15,6 +15,15 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("mcheli.wrapper.W_EntityContainer",
+                "br.com.gamemods.minecity.forge.base.protection.mcheli.W_EntityContainer");
+
+        r.put("mcheli.wrapper.W_Entity",
+                "br.com.gamemods.minecity.forge.base.protection.mcheli.IWEntity");
+
+        r.put("mcheli.aircraft.MCH_EntityAircraft",
+                "br.com.gamemods.minecity.forge.base.protection.mcheli.IEntityAircraft");
+
         r.put("li.cil.oc.common.tileentity.Adapter",
                 "br.com.gamemods.minecity.forge.base.protection.opencomputers.IAdapter");
 
