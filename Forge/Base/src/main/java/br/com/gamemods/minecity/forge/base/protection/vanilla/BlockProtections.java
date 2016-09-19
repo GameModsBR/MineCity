@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.protection.vanilla;
 
+import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.Permissible;
@@ -16,6 +17,7 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.MultiBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
@@ -23,9 +25,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.BlockSnapshot;
 
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class BlockProtections extends ForgeProtections
@@ -144,6 +148,8 @@ public class BlockProtections extends ForgeProtections
         IBlockSnapshot snap = (IBlockSnapshot) snapshot;
         ForgePlayer player = mod.player(entity);
         Reaction reaction = snap.getCurrentState().getIBlock().reactBlockPlace(player, snap, hand, offHand);
+        if(hand != null)
+            reaction = reaction.combine(hand.getIItem().reactBlockPlace((IEntityPlayerMP) entity, hand, offHand, snap));
 
         Optional<Message> denial = reaction.can(mod.mineCity, player);
         if(denial.isPresent())
@@ -171,21 +177,37 @@ public class BlockProtections extends ForgeProtections
     }
 
     @SuppressWarnings("unchecked")
-    public boolean onBlockMultiPlace(EntityPlayer entity, BlockPos blockPos, Collection<BlockSnapshot> replacedBlocks)
+    public boolean onBlockMultiPlace(EntityPlayer entity, BlockPos blockPos, List<BlockSnapshot> replacedBlocks, IItemStack hand, boolean offHand)
     {
         ForgePlayer player = mod.player(entity);
-        ClaimedChunk chunk = null;
-        for(IBlockSnapshot state : (Collection<IBlockSnapshot>) (Collection) replacedBlocks)
+        List<IBlockSnapshot> snapshots = (List) replacedBlocks;
+
+        Reaction reaction;
+        if(hand != null)
+            reaction = hand.getIItem().reactBlockMultiPlace(
+                    (IEntityPlayerMP) entity, hand, offHand, blockPos, snapshots
+            );
+        else
+            reaction = NoReaction.INSTANCE;
+
+        Set<BlockPos> checkedPos = new HashSet<>((int)(snapshots.size()*0.75));
+        AtomicReference<BlockPos> last = new AtomicReference<>(blockPos);
+        AtomicReference<Reaction> atomicReaction = new AtomicReference<>(reaction);
+        CollectionUtil.reverseStream(snapshots.listIterator()).forEachOrdered(snap-> {
+            BlockPos pos = snap.getPosition(mod, last.get());
+            last.set(pos);
+
+            if(checkedPos.add(pos))
+                atomicReaction.set(atomicReaction.get().combine(
+                        snap.getCurrentState().getIBlock().reactBlockPlace(player, snap, hand, offHand)
+                ));
+        });
+
+        Optional<Message> denial = atomicReaction.get().can(mod.mineCity, player);
+        if(denial.isPresent())
         {
-            blockPos = new BlockPos(blockPos, state.getX(), state.getY(), state.getZ());
-            chunk = mod.mineCity.provideChunk(blockPos.getChunk(), chunk);
-            FlagHolder holder = chunk.getFlagHolder(blockPos);
-            Optional<Message> denial = holder.can(player, PermissionFlag.MODIFY);
-            if(denial.isPresent())
-            {
-                player.send(FlagHolder.wrapDeny(denial.get()));
-                return true;
-            }
+            player.send(FlagHolder.wrapDeny(denial.get()));
+            return true;
         }
 
         return false;

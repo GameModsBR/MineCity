@@ -15,6 +15,12 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("ic2.core.item.tool.ItemTreetap",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IItemTreeTap");
+
+        r.put("ic2.core.item.ItemMulti",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IItemMulti");
+
         r.put("ic2.core.item.ItemFluidCell",
                 "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IItemFluidCell");
 

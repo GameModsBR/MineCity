@@ -157,7 +157,9 @@ public class SevenBlockProtections extends BlockProtections
         if(onBlockMultiPlace(
                 event.player,
                 new BlockPos(mod.world(event.world), event.x, event.y, event.z),
-                event.getReplacedBlockSnapshots()
+                event.getReplacedBlockSnapshots(),
+                (IItemStack) (Object) event.itemInHand,
+                false
         ))
         {
             event.setCanceled(true);

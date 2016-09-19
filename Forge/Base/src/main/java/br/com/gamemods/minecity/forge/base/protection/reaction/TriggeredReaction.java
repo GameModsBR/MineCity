@@ -3,13 +3,16 @@ package br.com.gamemods.minecity.forge.base.protection.reaction;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityItem;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayerSender;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public abstract class TriggeredReaction implements Reaction
 {
@@ -88,6 +91,30 @@ public abstract class TriggeredReaction implements Reaction
                     player.sendFakeAir(pos);
                     player.sendBlockAndTile(pos);
                 })
+        );
+    }
+
+    public TriggeredReaction allowToPickupHarvest(IEntityPlayerMP player)
+    {
+        return allowToPickup(player, item-> item.getStack().getIItem().isHarvest(item.getStack()));
+    }
+
+    public TriggeredReaction allowToPickup(IEntityPlayerMP player, Predicate<IEntityItem> cond)
+    {
+        return addAllowListener((reaction, permissible, flag, pos, message) ->
+                player.getServer().consumeItemsOrAddOwnerIf(pos.toEntity(), 1.05, 1, 1, null, player.identity(), cond)
+        );
+    }
+
+    public TriggeredReaction allowToPickup(IEntityPlayerMP player, PrecisePoint precisePos, Predicate<IEntityItem> cond)
+    {
+        return allowToPickup(player, precisePos, 1.05, cond);
+    }
+
+    public TriggeredReaction allowToPickup(IEntityPlayerMP player, PrecisePoint precisePos, double maxDistance, Predicate<IEntityItem> cond)
+    {
+        return addAllowListener((reaction, permissible, flag, pos, message) ->
+                player.getServer().consumeItemsOrAddOwnerIf(precisePos, maxDistance, 1, 1, null, player.identity(), cond)
         );
     }
 }

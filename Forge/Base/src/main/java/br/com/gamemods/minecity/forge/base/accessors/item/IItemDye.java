@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
+import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
@@ -22,7 +23,6 @@ public interface IItemDye extends IItem
     @Override
     default Reaction reactRightClickBlock(IEntityPlayerMP player, IItemStack stack, boolean offHand, IState state, BlockPos pos, Direction face)
     {
-        assert pos.world.instance != null;
         int meta = stack.getMeta();
         if(meta == 15)
         {
@@ -30,7 +30,7 @@ public interface IItemDye extends IItem
             if(block instanceof BlockCrops)
                 return new SingleBlockReaction(pos, PermissionFlag.HARVEST);
             else if(block instanceof BlockTallGrass &&
-                    !(((IWorldServer)pos.world.instance).getIBlock(pos.x, pos.y-1, pos.z) instanceof BlockTallGrass))
+                    !(pos.world.getInstance(IWorldServer.class).getIBlock(pos.x, pos.y-1, pos.z) instanceof BlockTallGrass))
                 return new SingleBlockReaction(pos.add(Direction.UP), PermissionFlag.MODIFY);
             else
                 return NoReaction.INSTANCE;
@@ -46,6 +46,17 @@ public interface IItemDye extends IItem
             return NoReaction.INSTANCE;
 
         return new SingleBlockReaction(pos.add(face.getOpposite()), PermissionFlag.MODIFY);
+    }
+
+    @Override
+    default Reaction reactBlockPlace(IEntityPlayerMP player, IItemStack stack, boolean offHand,
+                                     IBlockSnapshot snap)
+    {
+        BlockPos pos = snap.getPosition(player.getServer());
+        if(stack.getMeta() != 15)
+            return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
+
+        return NoReaction.INSTANCE;
     }
 
     @Override

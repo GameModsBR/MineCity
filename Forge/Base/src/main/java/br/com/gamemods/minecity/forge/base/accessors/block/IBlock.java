@@ -61,7 +61,7 @@ public interface IBlock
 
     default Reaction reactBlockPlace(ForgePlayer<?, ?, ?> player, IBlockSnapshot snap, IItemStack hand, boolean offHand)
     {
-        return reactPrePlace(player, hand, snap.getPosition(player.getServer()));
+        return NoReaction.INSTANCE;
     }
 
     default Reaction reactBlockBreak(ForgePlayer<?,?,?> player, IState state, BlockPos pos)

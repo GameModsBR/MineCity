@@ -164,8 +164,18 @@ public class FrostBlockProtections extends BlockProtections
         if(event.getWorld().isRemote)
             return;
 
-        if(onBlockMultiPlace(event.getPlayer(), mod.block(event.getWorld(), event.getPos()), event.getReplacedBlockSnapshots()))
+        EntityPlayer entity = event.getPlayer();
+        ForgePlayer player = mod.player(entity);
+        IItemStack stack = (IItemStack) (Object) (player.offHand? entity.getHeldItemOffhand() : event.getItemInHand());
+        if(onBlockMultiPlace(
+                entity,
+                mod.block(event.getWorld(), event.getPos()),
+                event.getReplacedBlockSnapshots(),
+                stack, player.offHand
+        ))
+        {
             event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
