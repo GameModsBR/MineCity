@@ -110,7 +110,7 @@ public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockClickExtendsOpenTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockModifyExtendsOpenTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockNoReactExtendsOpenTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemModifyOppositeReactorTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemModifyFaceReactorTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.ProjectileTransformer"
         };
     }

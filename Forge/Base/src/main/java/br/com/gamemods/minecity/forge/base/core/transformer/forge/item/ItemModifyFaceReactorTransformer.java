@@ -6,13 +6,13 @@ import br.com.gamemods.minecity.forge.base.core.transformer.InsertInterfaceTrans
 import java.util.Arrays;
 
 @Referenced
-public class ItemModifyOppositeReactorTransformer extends InsertInterfaceTransformer
+public class ItemModifyFaceReactorTransformer extends InsertInterfaceTransformer
 {
     @Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod")
     @Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
-    public ItemModifyOppositeReactorTransformer()
+    public ItemModifyFaceReactorTransformer()
     {
-        super("br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyOppositeReactor", Arrays.asList(
+        super("br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyFaceReactor", Arrays.asList(
                 "net.minecraft.item.ItemFlintAndSteel",
                 "net.minecraft.item.ItemFireball",
                 "net.minecraft.item.ItemArmorStand",

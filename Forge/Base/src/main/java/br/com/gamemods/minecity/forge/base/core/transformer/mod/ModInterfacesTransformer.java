@@ -15,6 +15,30 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("ic2.core.item.ItemFluidCell",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IItemFluidCell");
+
+        r.put("ic2.core.block.BlockFoam",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IBlockFoam");
+
+        r.put("ic2.core.item.tool.ItemToolPainter",
+                "br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyFirstReactor");
+
+        r.put("ic2.core.item.tool.ItemToolCutter",
+                "br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyReactor");
+
+        r.put("ic2.core.item.tool.ItemObscurator",
+                "br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyFirstReactor");
+
+        r.put("ic2.core.item.crafting.UpgradeKit",
+                "br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyFirstReactor");
+
+        r.put("ic2.core.item.ItemUpgradeKit",
+                "br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyFirstReactor");
+
+        r.put("ic2.core.item.tool.ItemToolWrench",
+                "br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyFirstReactor");
+
         r.put("mcheli.wrapper.W_EntityContainer",
                 "br.com.gamemods.minecity.forge.base.protection.mcheli.W_EntityContainer");
 
