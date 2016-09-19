@@ -68,7 +68,7 @@ public class EntityParticleTransformer implements IClassTransformer
                         );
                         wrapper.visitMethodInsn(INVOKESTATIC,
                                 "br/com/gamemods/minecity/forge/base/protection/industrialcraft/ICHooks",
-                                "onEntityChangeBlock", "(Lnet/minecraft/entity/Entity;Lnet/minecraft/world/World;Lbr/com/gamemods/minecity/api/shape/Point;)Z",
+                                "onEntityBreakBlock", "(Lnet/minecraft/entity/Entity;Lnet/minecraft/world/World;Lbr/com/gamemods/minecity/api/shape/Point;)Z",
                                 false
                         );
                         Label label = new Label();
@@ -120,7 +120,7 @@ public class EntityParticleTransformer implements IClassTransformer
                         );
                         wrapper.visitMethodInsn(INVOKESTATIC,
                                 "br/com/gamemods/minecity/forge/base/protection/industrialcraft/ICHooks",
-                                "onEntityChangeBlock", "(Lnet/minecraft/entity/Entity;Lnet/minecraft/world/World;Lbr/com/gamemods/minecity/api/shape/Point;)Z",
+                                "onEntityBreakBlock", "(Lnet/minecraft/entity/Entity;Lnet/minecraft/world/World;Lbr/com/gamemods/minecity/api/shape/Point;)Z",
                                 false
                         );
                         Label label = new Label();
@@ -170,7 +170,7 @@ public class EntityParticleTransformer implements IClassTransformer
                         );
                         wrapper.visitMethodInsn(INVOKESTATIC,
                                 "br/com/gamemods/minecity/forge/base/protection/industrialcraft/ICHooks",
-                                "onEntityChangeBlock", "(Lnet/minecraft/entity/Entity;Lnet/minecraft/world/World;Lbr/com/gamemods/minecity/api/shape/Point;)Z",
+                                "onEntityBreakBlock", "(Lnet/minecraft/entity/Entity;Lnet/minecraft/world/World;Lbr/com/gamemods/minecity/api/shape/Point;)Z",
                                 false
                         );
                         Label label = new Label();
@@ -218,7 +218,7 @@ public class EntityParticleTransformer implements IClassTransformer
                         );
                         wrapper.visitMethodInsn(INVOKESTATIC,
                                 "br/com/gamemods/minecity/forge/base/protection/industrialcraft/ICHooks",
-                                "onEntityChangeBlock", "(Lnet/minecraft/entity/Entity;Lnet/minecraft/world/World;Lbr/com/gamemods/minecity/api/shape/Point;)Z",
+                                "onEntityBreakBlock", "(Lnet/minecraft/entity/Entity;Lnet/minecraft/world/World;Lbr/com/gamemods/minecity/api/shape/Point;)Z",
                                 false
                         );
                         Label label = new Label();
@@ -264,7 +264,7 @@ public class EntityParticleTransformer implements IClassTransformer
                         );
                         wrapper.visitMethodInsn(INVOKESTATIC,
                                 "br/com/gamemods/minecity/forge/base/protection/industrialcraft/ICHooks",
-                                "onEntityChangeBlock", "(Lnet/minecraft/entity/Entity;Lnet/minecraft/world/World;Lbr/com/gamemods/minecity/api/shape/Point;)Z",
+                                "onEntityBreakBlock", "(Lnet/minecraft/entity/Entity;Lnet/minecraft/world/World;Lbr/com/gamemods/minecity/api/shape/Point;)Z",
                                 false
                         );
                         Label label = new Label();

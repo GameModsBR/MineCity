@@ -683,4 +683,18 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
 
         return player;
     }
+
+    public Optional<ForgePlayer> player(Identity identity)
+    {
+        return server.getIPlayerList().getIPlayers().stream()
+                .filter(p-> p.getUniqueID().equals(identity.uniqueId))
+                .map(this::player).findFirst();
+    }
+
+    public Optional<ForgePlayer> player(Permissible who)
+    {
+        if(who instanceof IEntityPlayerMP)
+            return Optional.of(player((IEntityPlayerMP) who));
+        return player(who.identity());
+    }
 }

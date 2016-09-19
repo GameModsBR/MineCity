@@ -48,6 +48,7 @@ public class ForgePlayer
     public boolean offHand;
     public boolean disablePickup;
     public boolean disablePickupHarvest;
+    private boolean disableProjectDenial;
 
     public ForgePlayer(S cmd)
     {
@@ -446,5 +447,15 @@ public class ForgePlayer
     {
         cmd.sender.kick(mod.transformer.toLegacy(message));
         return true;
+    }
+
+    public void sendProjectileDenial(Message denial)
+    {
+        if(disableProjectDenial)
+            return;
+
+        send(FlagHolder.wrapDeny(denial));
+        mod.callSyncMethodDelayed(()-> disableProjectDenial=false, 5);
+        disableProjectDenial = true;
     }
 }

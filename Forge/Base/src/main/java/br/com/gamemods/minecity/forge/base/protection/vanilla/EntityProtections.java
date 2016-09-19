@@ -141,12 +141,11 @@ public class EntityProtections extends ForgeProtections
 
         Permissible who = relative.stream().filter(FILTER_PLAYER).findFirst().orElse(entity);
 
-        Reaction reaction =entity.reactImpactPost(mod, traceResult, changes, who, relative);
-
+        Reaction reaction = entity.reactImpactPost(mod, traceResult, changes, who, relative);
         Optional<Message> denial = reaction.can(mod.mineCity, who);
         if(denial.isPresent())
         {
-            who.send(FlagHolder.wrapDeny(denial.get()));
+            mod.player(who).ifPresent(player -> player.sendProjectileDenial(denial.get()));
             return true;
         }
 
@@ -760,5 +759,13 @@ public class EntityProtections extends ForgeProtections
                 iterator.remove();
             }
         }
+    }
+
+    public List<Permissible> getRelatives(IEntity entity)
+    {
+        List<Permissible> list = new ArrayList<>(2);
+        addRelativeEntity(entity, list);
+        initPlayers(list);
+        return list;
     }
 }
