@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.unchecked.BiIntFunction;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
@@ -767,5 +768,33 @@ public class EntityProtections extends ForgeProtections
         addRelativeEntity(entity, list);
         initPlayers(list);
         return list;
+    }
+
+    public boolean onEntityTrample(IEntity entity, IWorldServer world, int posX, int posY, int posZ)
+    {
+        List<Permissible> relatives = getRelatives(entity);
+        Optional<Permissible> opt = relatives.stream().filter(FILTER_PLAYER).findFirst();
+        if(opt.isPresent())
+        {
+            Permissible player = opt.get();
+            Optional<Message> denial = mod.mineCity.provideChunk(
+                    new ChunkPos(mod.world(world), posX >> 4, posZ >> 4)).getFlagHolder(posX, posY, posZ)
+                    .can(player, PermissionFlag.MODIFY);
+
+            return denial.isPresent();
+        }
+
+        return relatives.stream().filter(IEntity.class::isInstance).map(IEntity.class::cast)
+                .anyMatch(en ->
+                {
+                    if(en.getPlayerAttackType() == PermissionFlag.PVM)
+                        return true;
+
+                    BlockPos pos = en.getBlockPos(mod);
+                    ClaimedChunk chunk = mod.mineCity.provideChunk(pos.getChunk());
+                    Identity<?> from = chunk.getFlagHolder(pos).owner();
+                    return mod.mineCity.provideChunk(new ChunkPos(mod.world(world), posX >> 4, posZ >> 4)).getFlagHolder(posX, posY, posZ)
+                            .can(from, PermissionFlag.MODIFY).isPresent();
+                });
     }
 }

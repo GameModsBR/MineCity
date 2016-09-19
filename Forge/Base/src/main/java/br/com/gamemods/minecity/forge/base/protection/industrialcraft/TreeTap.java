@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.base.protection.industrialcraft;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.forge.base.ForgeUtil;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
@@ -21,11 +22,17 @@ public interface TreeTap extends IItem
     default Reaction reactRightClickBlock(IEntityPlayerMP player, IItemStack stack, boolean offHand,
                                           IState state, BlockPos pos, Direction face)
     {
-        if(state.getIBlock().getUnlocalizedName().equals("ic2.rubber_wood"))
+        String blockName = state.getIBlock().getUnlocalizedName();
+        boolean sameFace;
+        boolean wet;
+        if(blockName.equals("ic2.rubber_wood"))
         {
-            boolean wet;
+            Integer stateVal = state.getEnumOrdinalValue("state");
+            if(stateVal == null)
+                return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
+
             Direction to;
-            switch(state.getEnumOrdinalOrMeta("state"))
+            switch(stateVal)
             {
                 case 3: wet = false; to = Direction.NORTH; break;
                 case 4: wet = false; to = Direction.SOUTH; break;
@@ -39,10 +46,24 @@ public interface TreeTap extends IItem
                     return NoReaction.INSTANCE;
             }
 
-            if(face == to)
-                return new SingleBlockReaction(pos, wet? PermissionFlag.HARVEST : PermissionFlag.MODIFY)
-                        .allowToPickupHarvest(player);
+            sameFace = to == face;
         }
+        else if(blockName.equals("blockRubWood"))
+        {
+            int meta = state.getIntValueOrMeta("metadata");
+            if(meta < 2)
+                return NoReaction.INSTANCE;
+
+            sameFace = meta % 6 == ForgeUtil.toForge(face);
+            wet = meta < 6;
+        }
+        else
+            return NoReaction.INSTANCE;
+
+        if(sameFace)
+            return new SingleBlockReaction(pos, wet? PermissionFlag.HARVEST : PermissionFlag.MODIFY)
+                    .allowToPickupHarvest(player);
+
         return NoReaction.INSTANCE;
     }
 

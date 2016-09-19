@@ -19,4 +19,18 @@ public class ForgeUtil
             default: throw new NoSuchElementException(Integer.toString(blockFace));
         }
     }
+
+    public static int toForge(Direction face)
+    {
+        switch(face)
+        {
+            case DOWN: return 0;
+            case UP: return 1;
+            case NORTH: return 2;
+            case SOUTH: return 3;
+            case WEST: return 4;
+            case EAST: return 5;
+            default: throw new NoSuchElementException(face.name());
+        }
+    }
 }
