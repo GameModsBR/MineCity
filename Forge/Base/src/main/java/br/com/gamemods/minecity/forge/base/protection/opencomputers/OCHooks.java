@@ -280,7 +280,7 @@ public class OCHooks
     }
 
     @Referenced(at = InventoryTransferDClassTransformer.class)
-    public static boolean onInventoryTransferAccess(Hosted hosted, BlockPos pos)
+    public static Option onInventoryTransferAccess(Hosted hosted, BlockPos pos)
     {
         Object obj = hosted.host();
         BlockPos host;
@@ -291,12 +291,17 @@ public class OCHooks
         else if(obj instanceof BlockPos)
             host = (BlockPos) obj;
         else
-            return true;
+            return Option.empty();
 
-        return ModHooks.onBlockAccessOther(pos.world.getInstance(World.class),
+        if(ModHooks.onBlockAccessOther(pos.world.getInstance(World.class),
                 pos.x, pos.y, pos.z,
                 host.x, host.y, host.z,
                 PermissionFlag.OPEN).isPresent()
-        ;
+        )
+        {
+            return Option.empty();
+        }
+
+        return null;
     }
 }
