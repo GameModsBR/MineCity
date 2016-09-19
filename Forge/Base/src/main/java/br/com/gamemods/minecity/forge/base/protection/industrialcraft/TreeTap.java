@@ -15,7 +15,7 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 
 @Referenced(at = ModInterfacesTransformer.class)
-public interface IItemTreeTap extends IItem
+public interface TreeTap extends IItem
 {
     @Override
     default Reaction reactRightClickBlock(IEntityPlayerMP player, IItemStack stack, boolean offHand,
