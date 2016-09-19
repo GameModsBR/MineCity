@@ -29,6 +29,9 @@ public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingB
     @Override
     default void sendPacket(Packet packet)
     {
+        if(!hasNetHandler())
+            return;
+
         ((EntityPlayerMP) this).playerNetServerHandler.sendPacket(packet);
     }
 
@@ -176,5 +179,11 @@ public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingB
     default void sendLeashState(IEntityLiving entity)
     {
         sendPacket(new S1BPacketEntityAttach(1, (Entity) entity, (Entity) entity.getLeashHolder()));
+    }
+
+    @Override
+    default boolean hasNetHandler()
+    {
+        return ((EntityPlayerMP) this).playerNetServerHandler != null;
     }
 }

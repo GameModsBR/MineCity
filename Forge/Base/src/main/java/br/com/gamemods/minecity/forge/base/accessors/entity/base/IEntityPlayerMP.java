@@ -142,7 +142,8 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
 
     default void sendPacket(Packet packet)
     {
-        ((EntityPlayerMP) this).connection.sendPacket(packet);
+        if(hasNetHandler())
+            ((EntityPlayerMP) this).connection.sendPacket(packet);
     }
 
     default void kick(String reason)
@@ -293,4 +294,9 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
     }
 
     void sendLeashState(IEntityLiving entity);
+
+    default boolean hasNetHandler()
+    {
+        return ((EntityPlayerMP) this).connection != null;
+    }
 }
