@@ -6,6 +6,8 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
@@ -28,6 +30,7 @@ import br.com.gamemods.minecity.forge.base.command.ForgeTransformer;
 import br.com.gamemods.minecity.forge.base.protection.SnapshotHandler;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Inconsistency;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -40,6 +43,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.BlockSnapshot;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.common.util.FakePlayerFactory;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -640,5 +645,42 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
     public IItemStack stack(ItemStack stack)
     {
         return (IItemStack) (Object) stack;
+    }
+
+    public IEntityPlayerMP playerOrFake(Permissible permissible, IWorldServer fakeWorld)
+    {
+        if(permissible instanceof IEntityPlayerMP)
+            return (IEntityPlayerMP) permissible;
+
+        return playerOrFake(permissible.identity(), fakeWorld);
+    }
+
+    public IEntityPlayerMP playerOrFake(Identity<?> identity, IWorldServer fakeWorld)
+    {
+        if(identity.getType() != Identity.Type.PLAYER)
+            throw  new IllegalArgumentException(identity.toString());
+
+        return server.getIPlayerList().getIPlayers().stream()
+                .filter(p-> p.getUniqueID().equals(identity.uniqueId))
+                .findFirst().orElseGet(()->
+                        (IEntityPlayerMP) FakePlayerFactory.get(
+                                (WorldServer) fakeWorld,
+                                new GameProfile((UUID) identity.uniqueId, identity.getName())
+                        )
+                );
+    }
+
+    public IEntityPlayerMP playerOrFake(Identity<?> identity, IWorldServer world, double fakeX, double fakeY, double fakeZ)
+    {
+        IEntityPlayerMP player = playerOrFake(identity, world);
+        if(player instanceof FakePlayer)
+        {
+            FakePlayer fake = (FakePlayer) player;
+            fake.posX = fakeX;
+            fake.posY = fakeY;
+            fake.posZ = fakeZ;
+        }
+
+        return player;
     }
 }

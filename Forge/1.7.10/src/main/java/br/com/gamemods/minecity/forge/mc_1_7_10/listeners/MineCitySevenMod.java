@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.forge.base.command.RootCommand;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.SevenSnapshotHandler;
+import br.com.gamemods.minecity.forge.mc_1_7_10.protection.industrialcraft.SevenIndustrialCraftListener;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.opencomputers.SevenRobotProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.protectmyplane.PlaneListener;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenBlockProtections;
@@ -100,6 +101,13 @@ public class MineCitySevenMod
         MinecraftForge.EVENT_BUS.register(new SevenWorldListener(forge));
         MinecraftForge.EVENT_BUS.register(ModEnv.blockProtections = new SevenBlockProtections(forge));
         MinecraftForge.EVENT_BUS.register(ModEnv.entityProtections = new SevenEntityProtections(forge));
+    }
+
+    @Mod.EventHandler
+    @Optional.Method(modid = "IC2")
+    public void onPostInitIC(FMLPostInitializationEvent event)
+    {
+        MinecraftForge.EVENT_BUS.register(new SevenIndustrialCraftListener(forge));
     }
 
     @Mod.EventHandler

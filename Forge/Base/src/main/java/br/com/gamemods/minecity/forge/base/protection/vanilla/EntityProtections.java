@@ -438,7 +438,7 @@ public class EntityProtections extends ForgeProtections
         return false;
     }
 
-    private void initPlayers(Collection<? extends Permissible> collection)
+    public void initPlayers(Collection<? extends Permissible> collection)
     {
         collection.stream().filter(IEntityPlayerMP.class::isInstance).map(IEntityPlayerMP.class::cast).forEach(mod::player);
     }
@@ -549,7 +549,7 @@ public class EntityProtections extends ForgeProtections
                 .map(MinecraftEntity::getIdentity).anyMatch(identity::equals);
     }
 
-    private void addRelativeEntity(ProjectileShooter shooter, List<Permissible> list)
+    public void addRelativeEntity(ProjectileShooter shooter, List<Permissible> list)
     {
         boolean found = false;
         IEntity owner = shooter.getEntity();
@@ -591,7 +591,7 @@ public class EntityProtections extends ForgeProtections
         }
     }
 
-    private void addRelativeEntity(IEntity entity, List<Permissible> list)
+    public void addRelativeEntity(IEntity entity, List<Permissible> list)
     {
         IEntity owner;
         if(entity instanceof Projectile)

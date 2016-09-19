@@ -11,6 +11,9 @@ public class ForgeInterfaceTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("cpw.mods.fml.common.registry.IThrowableEntity",
+                "br.com.gamemods.minecity.forge.base.accessors.entity.projectile.ThrowableEntity");
+
         r.put("net.minecraft.entity.EntityLeashKnot",
                 "br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityLeashKnot");
 

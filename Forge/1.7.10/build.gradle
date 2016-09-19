@@ -37,6 +37,7 @@ configurations {
 
 repositories {
     maven { url = "http://maven.cil.li/" }
+    maven { url = "http://maven.ic2.player.to/" }
 }
 
 dependencies {
@@ -45,6 +46,7 @@ dependencies {
     shade "org.mcstats.forge:metrics:R8-SNAPSHOT"
     compile "mysql:mysql-connector-java:5.1.32"
     compile "li.cil.oc:OpenComputers:MC1.7.10-1.6.+:api"
+    compile "net.industrial-craft:industrialcraft-2:2.2.825-experimental:dev"
     testCompile fileTree(dir: "run/mods", include: ["*.jar"], exclude:["*Assets*"])
     testCompile fileTree(dir: "run/mods/1.7.10", include: ["*.jar"])
 }

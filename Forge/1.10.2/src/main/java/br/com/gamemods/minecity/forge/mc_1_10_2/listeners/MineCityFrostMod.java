@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.forge.base.command.RootCommand;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.mc_1_10_2.MineCityFrost;
 import br.com.gamemods.minecity.forge.mc_1_10_2.command.FrostTransformer;
+import br.com.gamemods.minecity.forge.mc_1_10_2.protection.FrostIndustrialCraftListener;
 import br.com.gamemods.minecity.forge.mc_1_10_2.protection.FrostSnapshotHandler;
 import br.com.gamemods.minecity.forge.mc_1_10_2.protection.opencomputers.FrostRobotProtections;
 import br.com.gamemods.minecity.forge.mc_1_10_2.protection.vanilla.FrostBlockProtections;
@@ -88,6 +89,13 @@ public class MineCityFrostMod
         MinecraftForge.EVENT_BUS.register(new FrostWorldListener(forge));
         MinecraftForge.EVENT_BUS.register(ModEnv.blockProtections = new FrostBlockProtections(forge));
         MinecraftForge.EVENT_BUS.register(ModEnv.entityProtections = new FrostEntityProtections(forge));
+    }
+
+    @Mod.EventHandler
+    @Optional.Method(modid = "IC2")
+    public void onPostInitIC(FMLPostInitializationEvent event)
+    {
+        MinecraftForge.EVENT_BUS.register(new FrostIndustrialCraftListener(forge));
     }
 
     @Optional.Method(modid = "OpenComputers")
