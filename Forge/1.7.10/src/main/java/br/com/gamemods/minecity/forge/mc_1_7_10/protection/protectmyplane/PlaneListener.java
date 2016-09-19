@@ -35,7 +35,7 @@ public class PlaneListener extends SevenEntityProtections
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onAircraftAttack(AircraftAttackEvent event)
     {
-        if(event.entity.worldObj.isRemote)
+        if(event.entity.worldObj.isRemote || event.source.damageType.equals("starve"))
             return;
 
         List<Permissible> involved = new ArrayList<>(2);
