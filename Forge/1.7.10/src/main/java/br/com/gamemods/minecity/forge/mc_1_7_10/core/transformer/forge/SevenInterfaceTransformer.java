@@ -14,6 +14,9 @@ public class SevenInterfaceTransformer extends ForgeInterfaceTransformer
     {
         Map<String, String> r = getReplacements();
 
+        r.put("cpw.mods.fml.common.registry.IThrowableEntity",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.accessors.entity.SevenThrowableEntity");
+
         r.put("net.minecraft.nbt.NBTTagCompound",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.accessors.SevenNBTTagCompound");
 

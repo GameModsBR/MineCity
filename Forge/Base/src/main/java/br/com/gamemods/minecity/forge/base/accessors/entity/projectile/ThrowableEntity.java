@@ -9,10 +9,15 @@ import net.minecraftforge.fml.common.registry.IThrowableEntity;
 @Referenced(at = ForgeInterfaceTransformer.class)
 public interface ThrowableEntity extends EntityProjectile
 {
+    default IEntity getThrower()
+    {
+        return (IEntity) ((IThrowableEntity) this).getThrower();
+    }
+
     @Override
     default void detectShooter(MineCityForge mod)
     {
-        IEntity shooter = (IEntity) ((IThrowableEntity) this).getThrower();
+        IEntity shooter = getThrower();
         if(shooter == null)
             setShooter(new ProjectileShooter(getEntityPos(mod)));
         else
