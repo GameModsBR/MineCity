@@ -1,8 +1,10 @@
 package br.com.gamemods.minecity.api;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -11,6 +13,12 @@ import java.util.stream.StreamSupport;
 
 public class CollectionUtil
 {
+    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor)
+    {
+        Map<Object,Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
+
     /**
      * Returns a list iterator that swaps all previous/next calls.
      * <p><b>Important:</b> The returned iterator violates the {@link ListIterator#nextIndex()} and {@link ListIterator#previousIndex()} specifications.
