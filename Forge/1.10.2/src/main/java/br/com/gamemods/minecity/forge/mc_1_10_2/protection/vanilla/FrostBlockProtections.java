@@ -204,4 +204,30 @@ public class FrostBlockProtections extends BlockProtections
         else if(result == 2)
             event.setUseBlock(Event.Result.DENY);
     }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onPlayerRightClickBlock(PlayerInteractEvent.LeftClickBlock event)
+    {
+        if(event.getWorld().isRemote)
+            return;
+
+        int result = onPlayerLeftClickBlock(
+                (IEntityPlayerMP) event.getEntityPlayer(),
+                (IState) event.getWorld().getBlockState(event.getPos()),
+                mod.block(event.getWorld(), event.getPos()),
+                FrostUtil.toDirection(event.getFace()),
+                (IItemStack) (Object) event.getItemStack(),
+                event.getHand() == EnumHand.OFF_HAND
+        );
+
+        if(result == 3)
+            event.setCanceled(true);
+        else if(result == 1)
+        {
+            event.setUseItem(Event.Result.DENY);
+            event.setCanceled(true);
+        }
+        else if(result == 2)
+            event.setUseBlock(Event.Result.DENY);
+    }
 }

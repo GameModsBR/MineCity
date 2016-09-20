@@ -213,6 +213,35 @@ public class BlockProtections extends ForgeProtections
         return false;
     }
 
+    public int onPlayerLeftClickBlock(IEntityPlayerMP player, IState state, BlockPos pos, Direction face, IItemStack stack, boolean offHand)
+    {
+        byte result = 0;
+        ForgePlayer forgePlayer = mod.player(player);
+        forgePlayer.offHand = offHand;
+        Optional<Message> denial;
+        if(stack == null)
+            denial = Optional.empty();
+        else
+        {
+             denial = stack.getIItem().reactLeftClickBlock(player, state, pos, face, stack, offHand)
+                    .can(mod.mineCity, player);
+
+            if(denial.isPresent())
+                result = 1;
+        }
+
+        Reaction reaction = state.getIBlock().reactLeftClick(player, state, pos, face, stack, offHand);
+        Optional<Message> denial2 = reaction.can(mod.mineCity, player);
+        if(denial2.isPresent())
+            result |= 2;
+
+        Message message = denial.orElse(denial2.orElse(null));
+        if(message != null)
+            player.send(FlagHolder.wrapDeny(message));
+
+        return result;
+    }
+
     public int onPlayerRightClickBlock(EntityPlayer entity, boolean offHand, ItemStack itemStack, IState state, BlockPos pos, Direction face, boolean verbose)
     {
         byte result = 0;

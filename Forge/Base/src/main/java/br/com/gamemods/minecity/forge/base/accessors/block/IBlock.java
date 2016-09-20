@@ -118,4 +118,9 @@ public interface IBlock
     {
         return getHardness(state, pos.world.getInstance(IWorldServer.class), pos.x, pos.y, pos.z);
     }
+
+    default Reaction reactLeftClick(IEntityPlayerMP player, IState state, BlockPos pos, Direction face, IItemStack stack, boolean offHand)
+    {
+        return NoReaction.INSTANCE;
+    }
 }

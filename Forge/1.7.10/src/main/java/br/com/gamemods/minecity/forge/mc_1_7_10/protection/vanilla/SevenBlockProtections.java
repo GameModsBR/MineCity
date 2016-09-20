@@ -194,6 +194,24 @@ public class SevenBlockProtections extends BlockProtections
             if(onItemRightClick(event.entityPlayer, event.entityPlayer.getHeldItem(), false))
                 event.setCanceled(true);
         }
+        else if(event.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK)
+        {
+            int result = onPlayerLeftClickBlock(
+                    (IEntityPlayerMP) event.entityPlayer,
+                    state(event.world.getBlock(event.x, event.y, event.z), event.world.getBlockMetadata(event.x, event.y, event.z)),
+                    new BlockPos(mod.world(event.world), event.x, event.y, event.z),
+                    ForgeUtil.toDirection(event.face),
+                    (IItemStack) (Object) event.entityPlayer.getHeldItem(),
+                    false
+            );
+
+            if(result == 3)
+                event.setCanceled(true);
+            else if(result == 1)
+                event.useItem = Event.Result.DENY;
+            else if(result == 2)
+                event.useBlock = Event.Result.DENY;
+        }
     }
 
     private IState state(Block block, int meta)

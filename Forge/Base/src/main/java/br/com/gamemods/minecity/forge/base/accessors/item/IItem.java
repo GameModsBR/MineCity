@@ -149,4 +149,9 @@ public interface IItem
         IState state = world.getIState(pos);
         return state.getIBlock().reactBlockBreak(player.getMineCityPlayer(), state, pos);
     }
+
+    default Reaction reactLeftClickBlock(IEntityPlayerMP player, IState state, BlockPos pos, Direction face, IItemStack stack, boolean offHand)
+    {
+        return NoReaction.INSTANCE;
+    }
 }

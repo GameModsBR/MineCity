@@ -74,6 +74,15 @@ public abstract class TriggeredReaction implements Reaction
         );
     }
 
+    public TriggeredReaction onDenyUpdateBlock(IEntityPlayerMP player)
+    {
+        return addDenialListener((reaction, permissible, flag, pos, message) ->
+                player.getServer().callSyncMethod(() ->
+                        player.sendBlock(pos)
+                )
+        );
+    }
+
     public TriggeredReaction onDenyUpdateBlockAndTile(IEntityPlayerMP player)
     {
         return addDenialListener((reaction, permissible, flag, pos, message) ->

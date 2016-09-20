@@ -15,6 +15,9 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("ic2.core.block.BlockScaffold",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IBlockScaffold");
+
         r.put("ic2.core.item.tool.ItemSprayer",
                 "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IItemSprayer");
 
