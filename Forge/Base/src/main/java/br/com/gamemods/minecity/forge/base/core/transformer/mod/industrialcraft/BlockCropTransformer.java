@@ -25,8 +25,6 @@ public class BlockCropTransformer implements IClassTransformer
         ClassReader reader = new ClassReader(basicClass);
         reader.accept(node, 0);
 
-        node.interfaces.add("br/com/gamemods/minecity/forge/base/protection/industrialcraft/IBlockCropIC2");
-
         for(MethodNode method : node.methods)
         {
             if(method.name.equals("onEntityCollision"))
@@ -36,7 +34,7 @@ public class BlockCropTransformer implements IClassTransformer
                 list.add(new VarInsnNode(ALOAD, 1));
                 list.add(new MethodInsnNode(INVOKESTATIC,
                         "br/com/gamemods/minecity/forge/base/protection/industrialcraft/ICHooks",
-                        "onEntityTrample", "(Lbr/com/gamemods/minecity/forge/base/accessors/block/ITileEntity;Lbr/com/gamemods/minecity/forge/base/accessors/entity/base;)Z",
+                        "onEntityTrample", "(Lbr/com/gamemods/minecity/forge/base/accessors/block/ITileEntity;Lbr/com/gamemods/minecity/forge/base/accessors/entity/base/IEntity;)Z",
                         false
                 ));
                 LabelNode labelNode = new LabelNode();

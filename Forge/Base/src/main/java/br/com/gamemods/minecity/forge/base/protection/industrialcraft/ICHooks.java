@@ -26,9 +26,11 @@ public class ICHooks
     @Referenced(at = BlockCropTransformer.class)
     public static boolean onEntityTrample(ITileEntity tile, IEntity entity)
     {
-        return ModEnv.entityProtections.onEntityTrample(entity,
-                tile.getIWorld(), tile.getPosX(), tile.getPosY(), tile.getPosZ()
-        );
+        return !entity.isRemote() &&
+                ModEnv.entityProtections.onEntityTrample(entity, tile.getIWorld(), tile.getPosX(), tile.getPosY(),
+                        tile.getPosZ()
+                );
+
     }
 
     @Referenced(at = EntityParticleTransformer.class)

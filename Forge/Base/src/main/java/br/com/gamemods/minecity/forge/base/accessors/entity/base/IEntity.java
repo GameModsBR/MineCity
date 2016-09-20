@@ -478,4 +478,9 @@ public interface IEntity extends MinecraftEntity
     {
         return false;
     }
+
+    default boolean isRemote()
+    {
+        return ((Entity) this).worldObj.isRemote;
+    }
 }
