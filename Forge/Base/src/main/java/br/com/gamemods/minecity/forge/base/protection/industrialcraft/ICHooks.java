@@ -169,4 +169,14 @@ public class ICHooks
 
         return accessed;
     }
+
+    @Referenced(at = TileEntityMinerTransformer.class)
+    public static boolean onMinerModify(ITileEntity tile, int x, int y, int z)
+    {
+        return !ModHooks.onBlockAccessOther
+                ((World) tile.getIWorld(), x, y, z,
+                tile.getPosX(), tile.getPosY(), tile.getPosZ(),
+                PermissionFlag.MODIFY
+        ).isPresent();
+    }
 }
