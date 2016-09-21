@@ -17,6 +17,7 @@ import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.MultiBlockReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
@@ -154,4 +155,7 @@ public interface IItem
     {
         return NoReaction.INSTANCE;
     }
+
+    @Referenced(at = ItemTransformer.class)
+    IRayTraceResult rayTrace(IWorldServer world, IEntityPlayerMP player, boolean liquid);
 }

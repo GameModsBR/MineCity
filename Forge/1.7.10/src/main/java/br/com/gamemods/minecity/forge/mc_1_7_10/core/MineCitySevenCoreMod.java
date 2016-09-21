@@ -48,7 +48,9 @@ public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
         ModEnv.seven = true;
 
         return new String[]{
-                "br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.BlockCropTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.ICropTileTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.CropCardTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityCropTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.EntityParticleTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.InventoryTransferDClassTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.TransposerTransformer",
@@ -82,6 +84,7 @@ public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.forgemultipart.BlockMultiPartTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.forgemultipart.EventHandlerTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockPistonBaseTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemBucketTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.PathFinderTransformer",

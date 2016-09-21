@@ -15,6 +15,21 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("ic2.core.item.tool.ItemWeedingTrowel",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IItemWeedingTrowel");
+
+        r.put("ic2.core.crop.cropcard.CropWeed",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.ICropWeeds");
+
+        r.put("ic2.core.crop.CropWeed",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.ICropWeeds");
+
+        r.put("ic2.core.crop.cropcard.CropVenomilia",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.ICropVenomillia");
+
+        r.put("ic2.core.crop.CropVenomilia",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.ICropVenomillia");
+
         r.put("ic2.core.crop.BlockCrop",
                 "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IBlockCropIC2");
 
@@ -35,6 +50,9 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
 
         r.put("ic2.core.item.ItemMulti",
                 "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IItemMulti");
+
+        r.put("ic2.core.item.resources.ItemCell",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IItemFluidCell");
 
         r.put("ic2.core.item.ItemFluidCell",
                 "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IItemFluidCell");

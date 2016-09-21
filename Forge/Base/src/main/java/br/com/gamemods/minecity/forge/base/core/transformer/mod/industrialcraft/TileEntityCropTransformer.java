@@ -13,7 +13,7 @@ import static org.objectweb.asm.Opcodes.*;
 @Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod")
 @Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
 @MethodPatcher
-public class BlockCropTransformer implements IClassTransformer
+public class TileEntityCropTransformer implements IClassTransformer
 {
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass)
