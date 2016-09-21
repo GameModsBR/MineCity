@@ -6,7 +6,6 @@ import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
-import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
@@ -17,7 +16,7 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 
 @Referenced(at = ModInterfacesTransformer.class)
-public interface IItemWeedingTrowel extends IItem
+public interface IItemWeedingTrowel extends IItemIC2
 {
     @Override
     default Reaction reactRightClickBlockFirstUse(IEntityPlayerMP player, IItemStack stack, boolean offHand,
@@ -40,5 +39,11 @@ public interface IItemWeedingTrowel extends IItem
             return new SingleBlockReaction(pos, PermissionFlag.HARVEST).allowToPickupHarvest(player);
         else
             return NoReaction.INSTANCE;
+    }
+
+    @Override
+    default boolean isHarvest(IItemStack stack)
+    {
+        return false;
     }
 }

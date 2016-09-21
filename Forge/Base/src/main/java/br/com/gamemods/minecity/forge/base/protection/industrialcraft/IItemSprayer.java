@@ -6,7 +6,6 @@ import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
-import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
@@ -17,7 +16,7 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.RevertDeniedReact
 import java.util.Collection;
 
 @Referenced(at = ModInterfacesTransformer.class)
-public interface IItemSprayer extends IItem
+public interface IItemSprayer extends IItemIC2
 {
     @Override
     default Reaction reactRightClickBlock(IEntityPlayerMP player, IItemStack stack, boolean offHand,
@@ -31,5 +30,11 @@ public interface IItemSprayer extends IItem
                                           BlockPos blockPos, Collection<IBlockSnapshot> snapshots)
     {
         return new RevertDeniedReaction(entity.getServer(), snapshots, PermissionFlag.MODIFY);
+    }
+
+    @Override
+    default boolean isHarvest(IItemStack stack)
+    {
+        return false;
     }
 }
