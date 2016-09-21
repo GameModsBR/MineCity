@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.command.RootCommand;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
+import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.SevenSnapshotHandler;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.industrialcraft.SevenIndustrialCraftListener;
@@ -47,13 +48,13 @@ public class MineCitySevenMod
         forge.logger = event.getModLog();
         forge.selectionTool = Items.wooden_hoe;
         forge.selectionPallet = selection -> {
-            selection.cornerA = Blocks.glowstone;
-            selection.cornerB = Blocks.lit_redstone_lamp;
-            selection.corners = Blocks.lit_furnace;
-            selection.linesA = Blocks.gold_block;
-            selection.linesB = Blocks.lapis_block;
-            selection.lines = Blocks.sponge;
-            selection.extension = Blocks.glowstone;
+            selection.cornerA = new SevenBlockState(Blocks.glowstone, 0);
+            selection.cornerB = new SevenBlockState(Blocks.lit_redstone_lamp, 0);
+            selection.corners = new SevenBlockState(Blocks.lit_furnace, 0);
+            selection.linesA = new SevenBlockState(Blocks.gold_block, 0);
+            selection.linesB = new SevenBlockState(Blocks.lapis_block, 0);
+            selection.lines = new SevenBlockState(Blocks.sponge, 0);
+            selection.extension = new SevenBlockState(Blocks.glowstone, 0);
         };
 
         LegacyFormat.BLACK.server = EnumChatFormatting.BLACK;
