@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.api.command;
 
 import br.com.gamemods.minecity.api.StringUtil;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -8,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Optional;
 
-public class Message
+public final class Message
 {
     @SuppressWarnings("CheckTagEmptyBody")
     @Language(value = "XML", suffix = "</minecity-messages>")
@@ -32,6 +33,18 @@ public class Message
 
     @Nullable
     private final Object[][] args;
+
+    /**
+     * Marks that this is a denial message returned by a FlagHolder.
+     * Note that this can be changed concurrently so there's no guarantee that this value is precise.
+     */
+    public PermissionFlag lastFlag;
+
+    /**
+     * The last FlagHolder's owner name that returned this message as a denial message.
+     * Note that this can be changed concurrently so there's no guarantee that this value is precise.
+     */
+    public Message lastOwner;
 
     public static Object[][] errorArgs(Throwable ex)
     {

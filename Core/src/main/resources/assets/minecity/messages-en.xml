@@ -1647,6 +1647,37 @@
     </cmd>
     <action>
         <msg id="denied">You don't have permission to perform this action.</msg>
+        <denied>
+            <msg id="owner"><darkred>${header}> </darkred><red>${msg}</red><gray> ~ ${owner}</gray></msg>
+            <msg id="anonymous"><darkred>${header}> </darkred><red>${msg}</red></msg>
+            <city>
+                <msg id="admin">${name}</msg>
+                <msg id="normal">${name} ~ ${owner}</msg>
+            </city>
+            <plot>
+                <msg id="admin">${name} : ${city}</msg>
+                <msg id="normal">${name} ~ ${owner} : ${city}</msg>
+            </plot>
+            <reserve>
+                <msg id="admin"><i>Reserved to ${name}</i></msg>
+                <msg id="normal"><i>Reserved to ${name} ~ ${owner}</i></msg>
+            </reserve>
+            <perm>
+                <msg id="fallback">Action</msg>
+                <msg id="enter">Enter</msg>
+                <msg id="click">Click</msg>
+                <msg id="pickup">Pickup</msg>
+                <msg id="harvest">Harvest</msg>
+                <msg id="open">Open</msg>
+                <msg id="modify">Modify</msg>
+                <msg id="leave">Leave</msg>
+                <msg id="pvp">PVP</msg>
+                <msg id="pvc">PVC</msg>
+                <msg id="pvm">PVM</msg>
+                <msg id="vehicle">Vehicle</msg>
+                <msg id="ride">Ride</msg>
+            </perm>
+        </denied>
         <msg id="group-loading">You can't perform this action yet, your permission groups are still loading.</msg>
         <teleport>
             <msg id="unsupported">Unsupported operation</msg>

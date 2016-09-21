@@ -60,6 +60,9 @@ public final class City extends ExceptStoredHolder
 
     private boolean invalid;
 
+    private Message ownerNameCache;
+    private byte ownerNameLife = Byte.MAX_VALUE;
+
     /**
      * Create and save a city immediately
      * @param owner The city's owner
@@ -263,13 +266,13 @@ public final class City extends ExceptStoredHolder
     public Optional<Message> can(@NotNull Identity<?> identity, @NotNull PermissionFlag action)
     {
         if(invalid)
-            return Optional.of(INCONSISTENT_CITY_MESSAGE);
+            return Optional.of(mark(INCONSISTENT_CITY_MESSAGE, action));
 
         if(identity.equals(owner))
             return Optional.empty();
 
         if(identity.getType() == Identity.Type.NATURE)
-            return Optional.of(new Message("Cities are protected from natural actions"));
+            return Optional.of(mark(new Message("Cities are protected from natural actions"), action));
 
         return super.can(identity, action);
     }
@@ -279,7 +282,7 @@ public final class City extends ExceptStoredHolder
     public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
     {
         if(invalid)
-            return Optional.of(INCONSISTENT_CITY_MESSAGE);
+            return Optional.of(mark(INCONSISTENT_CITY_MESSAGE, action));
 
         if(entity.getIdentity().equals(owner))
             return Optional.empty();
@@ -307,7 +310,9 @@ public final class City extends ExceptStoredHolder
         storage.setName(this, identity, name);
         this.identityName = identity;
         this.name = name;
+        ownerNameCache = null;
         groups.values().forEach(Group::updateCityName);
+        plots().forEach(Plot::updateCityName);
     }
 
     @NotNull
@@ -609,6 +614,8 @@ public final class City extends ExceptStoredHolder
 
         storage.setOwner(this, owner);
         this.owner = owner.getType() == Identity.Type.ADMINS? new AdminCity(this) : owner;
+        ownerNameCache = null;
+        plots().forEach(Plot::updateCityName);
     }
 
     /**
@@ -675,5 +682,28 @@ public final class City extends ExceptStoredHolder
                 "id=" + id +
                 ", identityName='" + identityName + '\'' +
                 "}";
+    }
+
+    @Override
+    public Message ownerName()
+    {
+        Message cache = this.ownerNameCache;
+        if(cache != null && --ownerNameLife > 0)
+            return this.ownerNameCache;
+
+        ownerNameLife = 127;
+        Message msg;
+        if(owner.getType() == Identity.Type.ADMINS)
+        {
+            msg = new Message("action.denied.city.admin", "${name}", new Object[]{"name", name});
+        }
+        else
+        {
+            msg = new Message("action.denied.city.normal", "${name} ~ ${owner}", new Object[][]{
+                    {"name", name}, {"owner", owner.getName()}
+            });
+        }
+
+        return this.ownerNameCache = msg;
     }
 }

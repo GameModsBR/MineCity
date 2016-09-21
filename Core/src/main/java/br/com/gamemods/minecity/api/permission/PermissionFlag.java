@@ -1,5 +1,7 @@
 package br.com.gamemods.minecity.api.permission;
 
+import br.com.gamemods.minecity.api.command.Message;
+
 public enum PermissionFlag
 {
     /**
@@ -67,9 +69,11 @@ public enum PermissionFlag
     public final boolean defaultCity;
     public final boolean defaultPlot;
     public final boolean canBypass;
+    public final Message header;
 
     PermissionFlag(boolean defaultNature, boolean defaultReserve, boolean defaultCity, boolean defaultPlot)
     {
+        header = header();
         this.defaultNature = defaultNature;
         this.defaultReserve = defaultReserve;
         this.defaultCity = defaultCity;
@@ -79,10 +83,20 @@ public enum PermissionFlag
 
     PermissionFlag(boolean defaultNature, boolean defaultReserve, boolean defaultCity, boolean defaultPlot, boolean canBypass)
     {
+        header = header();
         this.defaultNature = defaultNature;
         this.defaultReserve = defaultReserve;
         this.defaultCity = defaultCity;
         this.defaultPlot = defaultPlot;
         this.canBypass = canBypass;
+    }
+
+    @SuppressWarnings("LanguageMismatch")
+    private Message header()
+    {
+        String name = name();
+        if(name.length() != 3)
+            name = name.charAt(0) + name.substring(1).toLowerCase();
+        return new Message("action.denied.perms."+name.toLowerCase(), name);
     }
 }

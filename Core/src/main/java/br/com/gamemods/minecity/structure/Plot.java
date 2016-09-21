@@ -58,6 +58,10 @@ public final class Plot extends ExceptStoredHolder
 
     private AdminPlot adminOwner;
 
+    private Message ownerNameCache;
+
+    private byte ownerNameLife;
+
     public Plot(@NotNull MineCity mineCity, @NotNull ICityStorage storage, @NotNull IExceptPermissionStorage permissionStorage, int id,
                 @NotNull Island island, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
                 @NotNull BlockPos spawn, @NotNull Shape shape, @Nullable Message defaultMessage)
@@ -116,10 +120,10 @@ public final class Plot extends ExceptStoredHolder
     public Optional<Message> can(@NotNull Identity<?> identity, @NotNull PermissionFlag action)
     {
         if(invalid)
-            return Optional.of(INCONSISTENT_PLOT_MESSAGE);
+            return Optional.of(mark(INCONSISTENT_PLOT_MESSAGE, action));
 
         if(identity.getType() == Identity.Type.NATURE)
-            return Optional.of(new Message("Plots are protected from natural actions"));
+            return Optional.of(mark(new Message("Plots are protected from natural actions"), action));
 
         if(owner != null)
         {
@@ -142,7 +146,7 @@ public final class Plot extends ExceptStoredHolder
         if(status != null)
         {
             if(status.message != null)
-                return Optional.of(status.message);
+                return Optional.of(mark(status.message, action));
 
             if(action.canBypass)
                 return Optional.empty();
@@ -150,7 +154,7 @@ public final class Plot extends ExceptStoredHolder
 
         Message message = generalPermissions.get(action);
         if(message != null)
-            return Optional.of(message);
+            return Optional.of(mark(message, action));
 
         return island.getCity().can(identity, action);
     }
@@ -160,7 +164,7 @@ public final class Plot extends ExceptStoredHolder
     public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
     {
         if(invalid)
-            return Optional.of(INCONSISTENT_PLOT_MESSAGE);
+            return Optional.of(mark(INCONSISTENT_PLOT_MESSAGE, action));
 
         Identity<UUID> identity = entity.getIdentity();
         if(owner != null)
@@ -178,7 +182,7 @@ public final class Plot extends ExceptStoredHolder
         if(status != null)
         {
             if(status.message != null)
-                return Optional.of(status.message);
+                return Optional.of(mark(status.message, action));
 
             if(action.canBypass)
                 return Optional.empty();
@@ -186,7 +190,7 @@ public final class Plot extends ExceptStoredHolder
 
         Message message = generalPermissions.get(action);
         if(message != null)
-            return Optional.of(message);
+            return Optional.of(mark(message, action));
 
         return island.getCity().can(identity, action);
     }
@@ -217,6 +221,7 @@ public final class Plot extends ExceptStoredHolder
 
         storage.setOwner(this, owner);
         this.owner = owner;
+        ownerNameCache = null;
     }
 
     @Slow
@@ -400,5 +405,39 @@ public final class Plot extends ExceptStoredHolder
                 ", name='" + name + '\'' +
                 ", owner=" + owner +
                 '}';
+    }
+
+    @Override
+    public Message ownerName()
+    {
+        PlayerID owner = this.owner;
+        if(owner == null)
+            return island.getCity().ownerName();
+
+        Message cache = this.ownerNameCache;
+        if(cache != null && --ownerNameLife > 0)
+            return this.ownerNameCache;
+
+        ownerNameLife = 127;
+        Message msg;
+        if(owner.getType() == Identity.Type.ADMINS)
+        {
+            msg = new Message("action.denied.plot.admin", "${name} : ${city}", new Object[][]{
+                    {"name", name}, {"city", getCity().getName()}
+            });
+        }
+        else
+        {
+            msg = new Message("action.denied.plot.normal", "${name} ~ ${owner} : ${city}", new Object[][]{
+                    {"name", name}, {"owner", owner.getName()}, {"city", getCity().getName()}
+            });
+        }
+
+        return this.ownerNameCache = msg;
+    }
+
+    public void updateCityName()
+    {
+        ownerNameCache = null;
     }
 }

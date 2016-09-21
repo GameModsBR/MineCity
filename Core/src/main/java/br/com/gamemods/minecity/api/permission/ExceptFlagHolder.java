@@ -62,13 +62,13 @@ public class ExceptFlagHolder extends SimpleFlagHolder
         if(status != null)
         {
             if(status.message != null)
-                return Optional.of(status.message);
+                return Optional.of(mark(status.message, action));
 
             if(action.canBypass)
                 return Optional.empty();
         }
 
-        return Optional.ofNullable(generalPermissions.get(action));
+        return Optional.ofNullable(mark(generalPermissions.get(action), action));
     }
 
     @Nullable
@@ -107,13 +107,13 @@ public class ExceptFlagHolder extends SimpleFlagHolder
         if(direct != null)
         {
             if(direct.message != null)
-                return Optional.of(direct.message);
+                return Optional.of(mark(direct.message, action));
 
             if(action.canBypass)
                 return Optional.empty();
         }
 
-        return Optional.ofNullable(generalPermissions.get(action));
+        return Optional.ofNullable(mark(generalPermissions.get(action), action));
     }
 
     /**

@@ -1,7 +1,6 @@
 package br.com.gamemods.minecity.api.permission;
 
 import br.com.gamemods.minecity.api.CollectionUtil;
-import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +15,7 @@ import java.util.stream.Stream;
 public interface FlagHolder
 {
     Message DEFAULT_DENIAL_MESSAGE = new Message("action.denied", "You don't have permission to perform this action.");
+    Message FALLBACK_FLAG = new Message("action.perm.fallback", "Action");
 
     /**
      * The owner of this object
@@ -24,6 +24,11 @@ public interface FlagHolder
     default Identity<?> owner()
     {
         return ServerAdmins.INSTANCE;
+    }
+
+    default Message ownerName()
+    {
+        return Message.string(owner().getName());
     }
 
     /**
@@ -57,6 +62,21 @@ public interface FlagHolder
             return can((MinecraftEntity) permissible, action);
         else
             return can(permissible.identity(), action);
+    }
+
+    default Message mark(Message denial, PermissionFlag flag)
+    {
+        return mark(denial, flag, ownerName());
+    }
+
+    static Message mark(Message denial, PermissionFlag flag, Message owner)
+    {
+        if(denial == null)
+            return null;
+
+        denial.lastFlag = flag;
+        denial.lastOwner = owner;
+        return denial;
     }
 
     /**
@@ -196,6 +216,16 @@ public interface FlagHolder
      */
     static Message wrapDeny(Message message)
     {
-        return new Message("", LegacyFormat.RED+"${msg}", new Object[]{"msg", message});
+        PermissionFlag flag = message.lastFlag;
+        Message owner = message.lastOwner;
+        Message header = flag == null? FALLBACK_FLAG : flag.header;
+        if(owner != null)
+            return new Message("action.denied.owner", "<msg><darkred>${header}</darkred><red>${msg}</red><gray> ~ ${owner}</gray></msg>", new Object[][]{
+                    {"header", header}, {"msg", message}, {"owner", owner}
+            });
+        else
+            return new Message("action.denied.anonymous", "<msg><darkred>${header}</darkred><red>${msg}</red></msg>", new Object[][]{
+                    {"header", header}, {"msg", message}
+            });
     }
 }
