@@ -15,6 +15,7 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityRecyclerTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.*;
 import br.com.gamemods.minecity.forge.base.protection.ModHooks;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
@@ -303,5 +304,12 @@ public class OCHooks
         }
 
         return null;
+    }
+
+    @Referenced(at = TileEntityRecyclerTransformer.class)
+    public static boolean isRecyclerBlacklisted(ItemStack stack)
+    {
+        //noinspection ConstantConditions
+        return !(stack == null || !stack.hasTagCompound() || stack.getTagCompound().getByte("MineCity") != 1);
     }
 }
