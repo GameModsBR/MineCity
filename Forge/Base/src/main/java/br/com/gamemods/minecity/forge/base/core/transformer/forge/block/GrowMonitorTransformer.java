@@ -82,7 +82,7 @@ public class GrowMonitorTransformer implements IClassTransformer
                 CollectionUtil.stream(method.instructions.iterator())
                         .filter(ins-> ins.getOpcode() == RETURN)
                         .map(ins-> method.instructions.indexOf(ins))
-                        .sorted(Comparator.reverseOrder()).map(Integer::intValue)
+                        .sorted(Comparator.reverseOrder()).mapToInt(Integer::intValue)
                         .forEachOrdered(index -> {
                             InsnList list = new InsnList();
                             list = new InsnList();

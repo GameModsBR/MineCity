@@ -54,7 +54,7 @@ public class PlaneListener extends SevenEntityProtections
         if(opt.isPresent() && opt.get().identity().uniqueId.equals(event.ownerId))
             return;
 
-        if(onEntityDamage((IEntity) event.entity, event.source, event.amount))
+        if(onEntityDamage((IEntity) event.entity, event.source, event.amount, false))
             event.setCanceled(true);
     }
 

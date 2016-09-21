@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.protection.vanilla;
 
+import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
@@ -29,6 +30,7 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.nbt.INBTTagCompound;
 import br.com.gamemods.minecity.forge.base.accessors.world.IChunk;
 import br.com.gamemods.minecity.forge.base.accessors.world.IChunkCache;
+import br.com.gamemods.minecity.forge.base.accessors.world.IExplosion;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.ShooterDamageSource;
@@ -37,16 +39,21 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -58,6 +65,56 @@ public class EntityProtections extends ForgeProtections
     public EntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    public void onExplosionDetonate(IWorldServer world, IExplosion explosion, List<IEntity> entities, List<BlockPos> blocks)
+    {
+        IEntityLivingBase igniter = explosion.getWhoPlaced();
+        final IEntity exploder;
+        {
+            IEntity ex = explosion.getExploder();
+            if(ex == null)
+            {
+                ex = (IEntity) new EntityTNTPrimed((World) world, explosion.getExplosionX(),
+                        explosion.getExplosionY(), explosion.getExplosionZ(), (EntityLivingBase) igniter
+                );
+            }
+
+            exploder = ex;
+        }
+
+        if(!entities.isEmpty())
+        {
+            DamageSource damage = new EntityDamageSourceIndirect("explosion", (Entity) exploder,
+                    igniter == null? (Entity) exploder : (Entity) igniter
+            ).setExplosion();
+
+            entities.removeIf(entity -> onEntityDamage(entity, damage, 10, true));
+        }
+
+        List<Permissible> relative = new ArrayList<>(4);
+        relative.add(exploder);
+        addRelativeEntity(exploder, relative);
+        if(igniter != null)
+        {
+            relative.add(igniter);
+            addRelativeEntity(igniter, relative);
+        }
+        initPlayers(relative);
+
+        Permissible who = relative.stream().filter(FILTER_PLAYER).findFirst()
+                .orElseGet(()-> relative.stream().filter(p-> p.identity().getType() != Identity.Type.ENTITY)
+                        .findFirst().orElse(igniter != null? igniter : exploder));
+
+
+        AtomicReference<ClaimedChunk> last = new AtomicReference<>();
+        MineCity mineCity = mod.mineCity;
+        blocks.removeIf(pos ->
+        {
+            ClaimedChunk chunk = mineCity.provideChunk(pos.getChunk(), last.get());
+            last.set(chunk);
+            return chunk.getFlagHolder(pos).can(who, PermissionFlag.MODIFY).isPresent();
+        });
     }
 
     public boolean onPathFind(PathFinder pathFinder, PathPoint point, IBlockAccess access, EntityLiving entity)
@@ -702,7 +759,7 @@ public class EntityProtections extends ForgeProtections
         return false;
     }
 
-    public boolean onEntityDamage(IEntity entity, DamageSource source, float amount)
+    public boolean onEntityDamage(IEntity entity, DamageSource source, float amount, boolean silent)
     {
         List<Permissible> attackers = new ArrayList<>(2);
         IItemStack stack = getAttackers(source, attackers);
@@ -719,7 +776,10 @@ public class EntityProtections extends ForgeProtections
             reaction = reaction.combine(entity.reactPlayerAttack(mod, player, stack, source, amount, attackers));
             Optional<Message> denial = reaction.can(mod.mineCity, player);
             if(denial.isPresent())
-                player.send(FlagHolder.wrapDeny(denial.get()));
+            {
+                if(!silent)
+                    player.send(FlagHolder.wrapDeny(denial.get()));
+            }
             else
                 entity.setWhoDamaged((PlayerID) player.identity());
 

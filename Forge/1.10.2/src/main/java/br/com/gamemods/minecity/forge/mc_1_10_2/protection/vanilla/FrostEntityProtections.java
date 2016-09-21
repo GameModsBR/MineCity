@@ -14,6 +14,7 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.EntityPro
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityArrow;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityFishHook;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
+import br.com.gamemods.minecity.forge.base.accessors.world.IExplosion;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
@@ -31,9 +32,11 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.player.*;
+import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.AbstractList;
 import java.util.List;
 
 public class FrostEntityProtections extends EntityProtections
@@ -41,6 +44,85 @@ public class FrostEntityProtections extends EntityProtections
     public FrostEntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    @SuppressWarnings("unchecked")
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onExplosion(ExplosionEvent.Detonate event)
+    {
+        if(event.getWorld().isRemote)
+            return;
+
+        onExplosionDetonate(
+                (IWorldServer) event.getWorld(),
+                (IExplosion) event.getExplosion(),
+                (List) event.getAffectedEntities(),
+                new AbstractList<br.com.gamemods.minecity.api.world.BlockPos>()
+                {
+                    List<net.minecraft.util.math.BlockPos> base = event.getAffectedBlocks();
+                    IWorldServer world = (IWorldServer) event.getWorld();
+                    br.com.gamemods.minecity.api.world.BlockPos last;
+
+                    @Override
+                    public br.com.gamemods.minecity.api.world.BlockPos get(int index)
+                    {
+                        net.minecraft.util.math.BlockPos cp = base.get(index);
+                        br.com.gamemods.minecity.api.world.BlockPos bp;
+                        if(last == null)
+                            last = bp = new br.com.gamemods.minecity.api.world.BlockPos(mod.world(world), cp.getX(), cp.getY(), cp.getZ());
+                        else
+                            last = bp = new br.com.gamemods.minecity.api.world.BlockPos(last, cp.getX(), cp.getY(), cp.getZ());
+
+                        bp.getChunk();
+                        return bp;
+                    }
+
+                    @Override
+                    public br.com.gamemods.minecity.api.world.BlockPos set(int index, br.com.gamemods.minecity.api.world.BlockPos pos)
+                    {
+                        br.com.gamemods.minecity.api.world.BlockPos prev = get(index);
+                        base.set(index, new net.minecraft.util.math.BlockPos(pos.x, pos.y, pos.z));
+                        return prev;
+                    }
+
+                    @Override
+                    public br.com.gamemods.minecity.api.world.BlockPos remove(int index)
+                    {
+                        br.com.gamemods.minecity.api.world.BlockPos removed = get(index);
+                        base.remove(index);
+                        return removed;
+                    }
+
+                    @Override
+                    public boolean remove(Object o)
+                    {
+                        if(o instanceof br.com.gamemods.minecity.api.world.BlockPos)
+                        {
+                            br.com.gamemods.minecity.api.world.BlockPos pos = (br.com.gamemods.minecity.api.world.BlockPos) o;
+                            return base.remove(new net.minecraft.util.math.BlockPos(pos.x, pos.y, pos.z));
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public void add(int index, br.com.gamemods.minecity.api.world.BlockPos pos)
+                    {
+                        base.add(index, new net.minecraft.util.math.BlockPos(pos.x, pos.y, pos.z));
+                    }
+
+                    @Override
+                    public boolean add(br.com.gamemods.minecity.api.world.BlockPos pos)
+                    {
+                        return base.add(new net.minecraft.util.math.BlockPos(pos.x, pos.y, pos.z));
+                    }
+
+                    @Override
+                    public int size()
+                    {
+                        return base.size();
+                    }
+                }
+        );
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -402,7 +484,8 @@ public class FrostEntityProtections extends EntityProtections
         if(onEntityDamage(
                 (IEntityLivingBase) event.getEntityLiving(),
                 event.getSource(),
-                event.getAmount()
+                event.getAmount(),
+                false
         ))
         {
             event.setCanceled(true);
@@ -418,7 +501,8 @@ public class FrostEntityProtections extends EntityProtections
         if(onEntityDamage(
                 (IEntity) event.getEntity(),
                 event.source,
-                event.amount
+                event.amount,
+                false
         ))
         {
             event.setCanceled(true);
@@ -434,7 +518,8 @@ public class FrostEntityProtections extends EntityProtections
         if(onEntityDamage(
                 (IEntity) event.getEntity(),
                 event.source,
-                event.amount
+                event.amount,
+                false
         ))
         {
             event.setCanceled(true);

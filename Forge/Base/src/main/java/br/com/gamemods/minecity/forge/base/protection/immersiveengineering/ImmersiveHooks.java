@@ -148,7 +148,8 @@ public class ImmersiveHooks
         MineCityForge mod = ModEnv.entityProtections.mod;
         mod.player(attacker);
 
-        if(ModEnv.entityProtections.onEntityDamage(attacked, new EntityDamageSourceIndirect("teleport", shooter, shooter), 1f))
+        if(ModEnv.entityProtections.onEntityDamage(attacked, new EntityDamageSourceIndirect("teleport", shooter, shooter), 1f,
+                false))
         {
             event.setCanceled(true);
             return event;
@@ -198,8 +199,9 @@ public class ImmersiveHooks
                 && !ModEnv.entityProtections.onEntityDamage(
                         (IEntity) entity,
                         new EntityDamageSourceIndirect(source.damageType, shooter, shooter).setProjectile(),
-                        damage
-                    )
+                        damage,
+                false
+        )
                 && entity.attackEntityFrom(source, damage)
         ;
     }

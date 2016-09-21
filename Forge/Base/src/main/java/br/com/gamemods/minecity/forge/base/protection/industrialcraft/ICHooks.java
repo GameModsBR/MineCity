@@ -7,16 +7,22 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.EntityParticleTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.ExplosionIC2Transformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityCropTransformer;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.world.World;
 
 import java.lang.reflect.Method;
@@ -85,5 +91,26 @@ public class ICHooks
         }
 
         return false;
+    }
+
+    @Referenced(at = ExplosionIC2Transformer.class)
+    public static List<IEntity> onExplosionDamage(List<IEntity> entities, IExplosionIC2 explosion)
+    {
+        if(entities.isEmpty())
+            return entities;
+
+        IEntity exploder = explosion.getExploder();
+        IEntityLivingBase igniter = explosion.getIgniter();
+        if(exploder == null)
+        {
+            exploder = (IEntity) new EntityTNTPrimed((World) explosion.getWorld(),
+                    explosion.getExplosionX(), explosion.getExplosionY(), explosion.getExplosionZ(),
+                    (EntityLivingBase) igniter
+            );
+        }
+
+        DamageSource source = new EntityDamageSourceIndirect("explosion.ic2", (Entity) exploder, igniter == null? (Entity)exploder : (Entity)igniter);
+        entities.removeIf(entity -> ModEnv.entityProtections.onEntityDamage(entity, source, 10, true));
+        return entities;
     }
 }

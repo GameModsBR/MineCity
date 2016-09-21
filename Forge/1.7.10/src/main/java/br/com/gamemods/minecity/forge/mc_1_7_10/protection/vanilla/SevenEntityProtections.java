@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla;
 
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
@@ -12,6 +13,7 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.EntityPro
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityArrow;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityFishHook;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
+import br.com.gamemods.minecity.forge.base.accessors.world.IExplosion;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
@@ -22,13 +24,16 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.entity.Entity;
+import net.minecraft.world.ChunkPosition;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.*;
+import net.minecraftforge.event.world.ExplosionEvent;
 
+import java.util.AbstractList;
 import java.util.List;
 
 public class SevenEntityProtections extends EntityProtections
@@ -36,6 +41,85 @@ public class SevenEntityProtections extends EntityProtections
     public SevenEntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    @SuppressWarnings("unchecked")
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onExplosion(ExplosionEvent.Detonate event)
+    {
+        if(event.world.isRemote)
+            return;
+
+        onExplosionDetonate(
+                (IWorldServer) event.world,
+                (IExplosion) event.explosion,
+                (List) event.getAffectedEntities(),
+                new AbstractList<BlockPos>()
+                {
+                    List<ChunkPosition> base = event.getAffectedBlocks();
+                    IWorldServer world = (IWorldServer) event.world;
+                    BlockPos last;
+
+                    @Override
+                    public BlockPos get(int index)
+                    {
+                        ChunkPosition cp = base.get(index);
+                        BlockPos bp;
+                        if(last == null)
+                            last = bp = new BlockPos(mod.world(world), cp.chunkPosX, cp.chunkPosY, cp.chunkPosZ);
+                        else
+                            last = bp = new BlockPos(last, cp.chunkPosX, cp.chunkPosY, cp.chunkPosZ);
+
+                        bp.getChunk();
+                        return bp;
+                    }
+
+                    @Override
+                    public BlockPos set(int index, BlockPos pos)
+                    {
+                        BlockPos prev = get(index);
+                        base.set(index, new ChunkPosition(pos.x, pos.y, pos.z));
+                        return prev;
+                    }
+
+                    @Override
+                    public BlockPos remove(int index)
+                    {
+                        BlockPos removed = get(index);
+                        base.remove(index);
+                        return removed;
+                    }
+
+                    @Override
+                    public boolean remove(Object o)
+                    {
+                        if(o instanceof BlockPos)
+                        {
+                            BlockPos pos = (BlockPos) o;
+                            return base.remove(new ChunkPosition(pos.x, pos.y, pos.z));
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public void add(int index, BlockPos pos)
+                    {
+                        base.add(index, new ChunkPosition(pos.x, pos.y, pos.z));
+                    }
+
+                    @Override
+                    public boolean add(BlockPos pos)
+                    {
+                        return base.add(new ChunkPosition(pos.x, pos.y, pos.z));
+                    }
+
+                    @Override
+                    public int size()
+                    {
+                        return base.size();
+                    }
+                }
+        );
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -379,7 +463,8 @@ public class SevenEntityProtections extends EntityProtections
         if(onEntityDamage(
                 (IEntityLivingBase) event.entity,
                 event.source,
-                event.ammount
+                event.ammount,
+                false
         ))
         {
             event.setCanceled(true);
@@ -395,7 +480,8 @@ public class SevenEntityProtections extends EntityProtections
         if(onEntityDamage(
                 (IEntity) event.entity,
                 event.source,
-                event.amount
+                event.amount,
+                false
         ))
         {
             event.setCanceled(true);
@@ -411,7 +497,8 @@ public class SevenEntityProtections extends EntityProtections
         if(onEntityDamage(
                 (IEntity) event.entity,
                 event.source,
-                event.amount
+                event.amount,
+                false
         ))
         {
             event.setCanceled(true);

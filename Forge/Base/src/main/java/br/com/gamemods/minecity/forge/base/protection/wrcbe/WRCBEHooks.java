@@ -43,7 +43,7 @@ public class WRCBEHooks
             return true;
 
         ShooterDamageSource custom = new ShooterDamageSource("bolt", shooter);
-        return ModEnv.entityProtections.onEntityDamage(entity, custom, 1);
+        return ModEnv.entityProtections.onEntityDamage(entity, custom, 1, false);
     }
 
     @Referenced(at = WirelessBoltTransformer.class)
@@ -54,7 +54,7 @@ public class WRCBEHooks
             return false;
 
         ShooterDamageSource custom = new ShooterDamageSource(source.damageType, shooter);
-        return !ModEnv.entityProtections.onEntityDamage((IEntity) entity, custom, damage) &&
+        return !ModEnv.entityProtections.onEntityDamage((IEntity) entity, custom, damage, false) &&
                 entity.attackEntityFrom(source, damage);
 
     }
@@ -75,6 +75,6 @@ public class WRCBEHooks
     public static boolean onJammerJamEntity(IJammerPart part, IEntity entity)
     {
         ShooterDamageSource custom = new ShooterDamageSource("bolt", new ProjectileShooter(part.tileI().getBlockPos(ModEnv.entityProtections.mod).toEntity()));
-        return ModEnv.entityProtections.onEntityDamage(entity, custom, 1);
+        return ModEnv.entityProtections.onEntityDamage(entity, custom, 1, false);
     }
 }
