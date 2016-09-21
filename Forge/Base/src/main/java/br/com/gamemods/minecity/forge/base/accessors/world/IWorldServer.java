@@ -8,6 +8,7 @@ import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
+import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
@@ -121,5 +122,12 @@ public interface IWorldServer
     default boolean isBlockLoaded(Point pos)
     {
         return isBlockLoaded(pos.x, pos.y, pos.z);
+    }
+
+    IBlockSnapshot getBlockSnapshot(int x, int y, int z);
+
+    default IBlockSnapshot getBlockSnapshot(Point p)
+    {
+        return getBlockSnapshot(p.x, p.y, p.z);
     }
 }

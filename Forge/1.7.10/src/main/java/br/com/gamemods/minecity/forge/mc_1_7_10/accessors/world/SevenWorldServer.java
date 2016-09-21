@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
+import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
@@ -20,8 +21,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.Collection;
@@ -161,5 +164,11 @@ public interface SevenWorldServer extends IWorldServer
     default boolean isBlockLoaded(int x, int y, int z)
     {
         return ((WorldServer) this).blockExists(x, y, z);
+    }
+
+    @Override
+    default IBlockSnapshot getBlockSnapshot(int x, int y, int z)
+    {
+        return (IBlockSnapshot) BlockSnapshot.getBlockSnapshot((World)this, x, y, z);
     }
 }

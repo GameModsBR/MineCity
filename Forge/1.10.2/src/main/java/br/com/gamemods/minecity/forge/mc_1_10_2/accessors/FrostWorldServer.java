@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.api.shape.PreciseCuboid;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
+import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
@@ -18,7 +19,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.BlockSnapshot;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -120,5 +123,11 @@ public interface FrostWorldServer extends IWorldServer
     default boolean isBlockLoaded(int x, int y, int z)
     {
         return ((WorldServer) this).isBlockLoaded(new BlockPos(x, y, z));
+    }
+
+    @Override
+    default IBlockSnapshot getBlockSnapshot(int x, int y, int z)
+    {
+        return (IBlockSnapshot) BlockSnapshot.getBlockSnapshot((World)this, new BlockPos(x, y, z));
     }
 }

@@ -14,6 +14,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNT
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.*;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.EntityParticleTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityTerraTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.AdapterTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.InventoryTransferDClassTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.UpgradeTractorBeamTransformer;
@@ -310,6 +311,7 @@ public class MineCitySevenHooks
 
     @Referenced(at = AdapterTransformer.class)
     @Referenced(at = EntityParticleTransformer.class)
+    @Referenced(at = TileEntityTerraTransformer.class)
     public static Point toPoint(int x, int y, int z)
     {
         return new Point(x, y, z);

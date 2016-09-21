@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
@@ -20,22 +21,27 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.*;
 import br.com.gamemods.minecity.forge.base.protection.ModHooks;
 import br.com.gamemods.minecity.forge.base.protection.ShooterDamageSource;
+import br.com.gamemods.minecity.forge.base.protection.reaction.RevertDeniedReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.world.World;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Referenced
 public class ICHooks
 {
+    private static ITileEntity terraforming;
     private static Method getBaseSeed;
     private static Object crops;
     private static Method hasCompleteHazmat;
@@ -178,5 +184,45 @@ public class ICHooks
                 tile.getPosX(), tile.getPosY(), tile.getPosZ(),
                 PermissionFlag.MODIFY
         ).isPresent();
+    }
+
+    @Referenced(at = TileEntityTerraTransformer.class)
+    public static boolean onTerraformStart(TileEntity tile, World world, Point point)
+    {
+        ITileEntity te = (ITileEntity) tile;
+        MineCityForge mod = ModEnv.blockProtections.mod;
+        BlockPos tilePos = te.getBlockPos(mod);
+        if(new SingleBlockReaction(point.toBlock(mod.world(world)), PermissionFlag.MODIFY)
+                .can(mod.mineCity,mod.mineCity.provideChunk(tilePos.getChunk()).getFlagHolder(tilePos).owner())
+                .isPresent())
+        {
+            return false;
+        }
+
+        terraforming = te;
+        world.captureBlockSnapshots = true;
+        return false;
+    }
+
+    @Referenced(at = TileEntityTerraTransformer.class)
+    public static boolean onTerraformEnds(boolean success, TileEntity tile, World world)
+    {
+        world.captureBlockSnapshots = false;
+        terraforming = null;
+        @SuppressWarnings("unchecked")
+        List<IBlockSnapshot> captured = new ArrayList(world.capturedBlockSnapshots);
+        world.capturedBlockSnapshots.clear();
+
+        if(captured.isEmpty())
+            return success;
+
+        MineCityForge mod = ModEnv.blockProtections.mod;
+        BlockPos pos = ((ITileEntity) tile).getBlockPos(mod);
+        return !new RevertDeniedReaction(mod, captured, PermissionFlag.MODIFY)
+                .addAllowListener((reaction, permissible, flag, p, message) -> MineCityForge.snapshotHandler.send(p))
+                .can(mod.mineCity, mod.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).owner())
+                .isPresent() && success;
+
+
     }
 }
