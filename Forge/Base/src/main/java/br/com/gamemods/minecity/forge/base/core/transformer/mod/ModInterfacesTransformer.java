@@ -15,6 +15,12 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put(" ic2.core.block.machine.tileentity.TileEntityTeleporter",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.ITileEntityTeleporter");
+
+        r.put("ic2.core.item.tool.ItemFrequencyTransmitter",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IItemFrequencyTransmitter");
+
         r.put("ic2.core.item.ItemIC2",
                 "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IItemIC2");
 
