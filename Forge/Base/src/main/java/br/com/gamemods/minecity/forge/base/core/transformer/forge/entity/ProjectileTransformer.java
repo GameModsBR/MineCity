@@ -28,6 +28,7 @@ public class ProjectileTransformer extends InsertSetterGetterTransformer
                         "net.minecraft.entity.item.EntityEnderEye",
                         "net.minecraft.entity.item.EntityTNTPrimed",
                         "net.minecraft.entity.projectile.EntityFireball",
+                        "net.minecraft.entity.item.EntityItem",
                         "ic2.core.item.tool.EntityMiningLaser"
                 )
         );

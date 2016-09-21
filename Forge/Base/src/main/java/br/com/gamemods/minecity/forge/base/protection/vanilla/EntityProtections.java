@@ -304,6 +304,10 @@ public class EntityProtections extends ForgeProtections
 
     public boolean onItemToss(IEntityPlayerMP entityPlayer, IEntityItem entityItem)
     {
+        ProjectileShooter shooter = entityItem.getShooter();
+        if(shooter == null)
+            entityItem.setShooter(new ProjectileShooter(entityItem.getEntityPos(mod), entityPlayer));
+
         ForgePlayer player = mod.player(entityPlayer);
 
         IItemStack stack = entityItem.getStack();

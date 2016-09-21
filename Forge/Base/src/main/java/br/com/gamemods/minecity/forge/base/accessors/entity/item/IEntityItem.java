@@ -2,18 +2,48 @@ package br.com.gamemods.minecity.forge.base.accessors.entity.item;
 
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.EntityProjectile;
+import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.ProjectileShooter;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import net.minecraft.entity.item.EntityItem;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
-public interface IEntityItem extends Pickable
+public interface IEntityItem extends Pickable, EntityProjectile
 {
+    @Override
+    default void detectShooter(MineCityForge mod)
+    {
+        String thrower = getItemThrower();
+        if(thrower == null)
+        {
+            setShooter(new ProjectileShooter(getEntityPos(mod)));
+            return;
+        }
+
+        IEntityPlayerMP player = getIWorld().getPlayerByName(thrower);
+        if(player == null)
+        {
+            player = mod.server.getIPlayerList().getIPlayers().stream().filter(
+                    p -> p.getName().equals(thrower)).findFirst().orElse(null);
+            if(player == null)
+            {
+                setShooter(new ProjectileShooter(getEntityPos(mod)));
+                return;
+            }
+        }
+
+        setShooter(new ProjectileShooter(getEntityPos(mod), player));
+    }
+
     @Override
     default EntityItem getForgeEntity()
     {
@@ -79,5 +109,17 @@ public interface IEntityItem extends Pickable
     default int getItemAge()
     {
         return ((EntityItem) this).age;
+    }
+
+    default String getItemThrower()
+    {
+        return ((EntityItem) this).getThrower();
+    }
+
+    @NotNull
+    @Override
+    default Type getType()
+    {
+        return Type.ITEM;
     }
 }

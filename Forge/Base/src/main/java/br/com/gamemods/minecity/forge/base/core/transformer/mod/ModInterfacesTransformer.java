@@ -15,6 +15,12 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("ic2.core.item.ItemRadioactive",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.RadioactiveItem");
+
+        r.put("ic2.core.item.reactor.ItemReactorUranium",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.RadioactiveItem");
+
         r.put("ic2.core.item.ItemScrapbox",
                 "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IItemScrapbox");
 

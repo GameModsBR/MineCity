@@ -40,6 +40,22 @@ public class ICHooks
 {
     private static Method getBaseSeed;
     private static Object crops;
+    private static Method hasCompleteHazmat;
+
+    public static boolean hasCompleteHazmat(IEntityLivingBase entity)
+    {
+        try
+        {
+            if(hasCompleteHazmat == null)
+                hasCompleteHazmat = Class.forName("ic2.core.item.armor.ItemArmorHazmat").getDeclaredMethod("hasCompleteHazmat", EntityLivingBase.class);
+
+            return (boolean) hasCompleteHazmat.invoke(null, entity);
+        }
+        catch(ReflectiveOperationException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
 
     public static Object getBaseSeed(IItemStack stack)
     {
