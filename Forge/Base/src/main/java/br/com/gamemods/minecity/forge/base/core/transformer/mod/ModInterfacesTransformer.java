@@ -15,6 +15,9 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("appeng.block.AEBaseItemBlock",
+                "br.com.gamemods.minecity.forge.base.protection.appeng.IAEBaseItemBlock");
+
         r.put("appeng.block.misc.BlockTinyTNT",
                 "br.com.gamemods.minecity.forge.base.protection.appeng.IBlockTinyTNT");
 
