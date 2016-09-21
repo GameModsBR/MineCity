@@ -8,15 +8,18 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityArrow;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityTNTPrimed;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.EntityTinyTNTPrimedTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.WirelessTerminalGuiObjectTransformer;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.world.World;
@@ -85,5 +88,13 @@ public class AppengHooks
         }
 
         return false;
+    }
+
+    @Referenced(at = WirelessTerminalGuiObjectTransformer.class)
+    public static boolean onPlayerAccessWap(EntityPlayer player, World world, int x, int y, int z)
+    {
+        MineCityForge mod = ModEnv.entityProtections.mod;
+        return mod.mineCity.provideChunk(new ChunkPos(mod.world(world), x>>4, z>>4)).getFlagHolder(x, y, z)
+               .can((IEntityPlayerMP) player, PermissionFlag.OPEN).isPresent();
     }
 }
