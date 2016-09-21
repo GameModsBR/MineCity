@@ -7,21 +7,26 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public class MultiBlockReaction extends TriggeredReaction
 {
-    private PermissionFlag flag;
-    private List<BlockPos> blocks;
+    private final PermissionFlag flag;
+    private final Collection<BlockPos> blocks;
 
     public MultiBlockReaction(@NotNull PermissionFlag flag, @NotNull Collection<BlockPos> blocks)
     {
+        this(flag, new LinkedHashSet<>(blocks));
+    }
+
+    private MultiBlockReaction(@NotNull PermissionFlag flag, @NotNull  LinkedHashSet<BlockPos> blocks)
+    {
         this.flag = flag;
-        this.blocks = new ArrayList<>(blocks);
+        this.blocks = blocks;
     }
 
     @Override
@@ -40,5 +45,19 @@ public class MultiBlockReaction extends TriggeredReaction
                 })
                 .filter(Optional::isPresent).map(Optional::get)
         ;
+    }
+
+    public static TriggeredReaction create(@NotNull PermissionFlag flag, @NotNull Collection<BlockPos> blocks)
+    {
+        int size = blocks.size();
+        if(size == 1)
+            return new SingleBlockReaction(blocks.iterator().next(), flag);
+        else if(size == 2)
+        {
+            Iterator<BlockPos> iterator = blocks.iterator();
+            return new DoubleBlockReaction(flag, iterator.next(), iterator.next());
+        }
+
+        return new MultiBlockReaction(flag, blocks);
     }
 }

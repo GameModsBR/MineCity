@@ -483,4 +483,9 @@ public interface IEntity extends MinecraftEntity
     {
         return ((Entity) this).worldObj.isRemote;
     }
+
+    default boolean isBurning()
+    {
+        return getForgeEntity().isBurning();
+    }
 }

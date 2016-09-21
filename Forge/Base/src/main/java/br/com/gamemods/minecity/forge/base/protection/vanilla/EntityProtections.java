@@ -829,6 +829,7 @@ public class EntityProtections extends ForgeProtections
     public List<Permissible> getRelatives(IEntity entity)
     {
         List<Permissible> list = new ArrayList<>(2);
+        list.add(entity);
         addRelativeEntity(entity, list);
         initPlayers(list);
         return list;
