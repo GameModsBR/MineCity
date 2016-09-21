@@ -15,4 +15,7 @@ public interface CropTile extends ITileEntity
 
     @Referenced(at = ICropTileTransformer.class)
     int getCropSize();
+
+    @Referenced(at = ICropTileTransformer.class)
+    void setCropPlanted(ICropCard crop);
 }

@@ -35,6 +35,28 @@ public class CropCardTransformer implements IClassTransformer
         method.visitEnd();
         node.methods.add(method);
 
+        method = new MethodNode(ACC_PUBLIC, "getGain", "(Lbr.com.gamemods.minecity.forge.base.protection.industrialcraft.CropTile;)Lbr.com.gamemods.minecity.forge.base.accessors.item.IItemStack;".replace('.','/'),null,null);
+        method.visitCode();
+        method.visitVarInsn(ALOAD, 0);
+        method.visitVarInsn(ALOAD, 1);
+        method.visitMethodInsn(INVOKEVIRTUAL, transformedName.replace('.','/'), "getGain", "(Lic2/api/crops/ICropTile;)Lnet/minecraft/item/ItemStack;", false);
+        method.visitTypeInsn(CHECKCAST, "java/lang/Object");
+        method.visitTypeInsn(CHECKCAST, "br.com.gamemods.minecity.forge.base.accessors.item.IItemStack".replace('.','/'));
+        method.visitInsn(ARETURN);
+        method.visitEnd();
+        node.methods.add(method);
+
+        method = new MethodNode(ACC_PUBLIC, "getSeeds", "(Lbr.com.gamemods.minecity.forge.base.protection.industrialcraft.CropTile;)Lbr.com.gamemods.minecity.forge.base.accessors.item.IItemStack;".replace('.','/'),null,null);
+        method.visitCode();
+        method.visitVarInsn(ALOAD, 0);
+        method.visitVarInsn(ALOAD, 1);
+        method.visitMethodInsn(INVOKEVIRTUAL, transformedName.replace('.','/'), "getSeeds", "(Lic2/api/crops/ICropTile;)Lnet/minecraft/item/ItemStack;", false);
+        method.visitTypeInsn(CHECKCAST, "java/lang/Object");
+        method.visitTypeInsn(CHECKCAST, "br.com.gamemods.minecity.forge.base.accessors.item.IItemStack".replace('.','/'));
+        method.visitInsn(ARETURN);
+        method.visitEnd();
+        node.methods.add(method);
+
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         node.accept(writer);
         basicClass = ModEnv.saveClass(transformedName, writer.toByteArray());

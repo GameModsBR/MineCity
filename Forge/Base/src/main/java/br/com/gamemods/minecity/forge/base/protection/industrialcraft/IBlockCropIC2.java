@@ -54,10 +54,12 @@ public interface IBlockCropIC2 extends IBlock
                 case "ic2.itemFertilizer":
                 case "item.bucketWater":
                 case "ic2.itemCellWater":
-                case "ic2.itemWeedEx":
                 case "item.seeds":
                 case "ic2.itemCellHydrant":
                     return new SingleBlockReaction(pos, PermissionFlag.HARVEST);
+
+                case "ic2.itemWeedEx":
+                    return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
 
                 default:
                     switch(stack.getUnlocalizedName())
@@ -84,11 +86,19 @@ public interface IBlockCropIC2 extends IBlock
             return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
 
         CropTile crop = (CropTile) tile;
-        ICropCard planted = crop.getCropPlanted();
-        if(!crop.isCrossingBase() && (planted == null || !planted.canBeHarvested((CropTile) tile)))
-            return new SingleBlockReaction(pos, PermissionFlag.MODIFY).allowToPickupHarvest(player);
+        ICropCard plant = crop.getCropPlanted();
+        if(plant == null)
+        {
+            if(crop.isCrossingBase())
+                return new SingleBlockReaction(pos, PermissionFlag.MODIFY)
+                        .allowToPickup(player,
+                                item -> item.getStack().getIItem().getUnlocalizedName().equals("item.stick")
+                        );
 
-        return new SingleBlockReaction(pos, PermissionFlag.HARVEST).allowToPickupHarvest(player);
+            return NoReaction.INSTANCE;
+        }
+
+        return plant.reactLeftClick(pos, crop, player);
     }
 
     @Override

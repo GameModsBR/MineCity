@@ -37,6 +37,16 @@ public class ICropTileTransformer implements IClassTransformer
         getCropPlanted.visitEnd();
         node.methods.add(getCropPlanted);
 
+        MethodNode setCropPlanted = new MethodNode(ASM5, ACC_PUBLIC, "setCropPlanted", "(Lbr.com.gamemods.minecity.forge.base.protection.industrialcraft.ICropCard;)V".replace('.','/'),null,null);
+        setCropPlanted.visitCode();
+        setCropPlanted.visitVarInsn(ALOAD, 0);
+        setCropPlanted.visitVarInsn(ALOAD, 1);
+        setCropPlanted.visitTypeInsn(CHECKCAST, "ic2/api/crops/CropCard");
+        setCropPlanted.visitMethodInsn(INVOKEINTERFACE, transformedName.replace('.','/'), "setCrop", "(Lic2/api/crops/CropCard;)V", true);
+        setCropPlanted.visitInsn(RETURN);
+        setCropPlanted.visitEnd();
+        node.methods.add(setCropPlanted);
+
         if(node.methods.stream().noneMatch(m-> m.name.equals("isCrossingBase") && m.desc.equals("()Z")))
         {
             MethodNode isCrossingBase = new MethodNode(ASM5, ACC_PUBLIC, "isCrossingBase", "()Z", null, null);

@@ -19,4 +19,13 @@ public interface ICropVenomillia extends ICropCard
 
         return ICropCard.super.reactRightClick(pos, crop, player);
     }
+
+    @Override
+    default Reaction reactLeftClick(BlockPos pos, CropTile crop, IEntityPlayerMP player)
+    {
+        if(!player.isSneaking())
+            return new SingleBlockReaction(pos, PermissionFlag.MODIFY).allowToPickupHarvest(player);
+
+        return ICropCard.super.reactRightClick(pos, crop, player);
+    }
 }
