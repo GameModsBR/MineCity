@@ -15,6 +15,12 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("appeng.items.tools.powered.ToolColorApplicator",
+                "br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyReactor");
+
+        r.put("appeng.items.tools.ToolNetworkTool",
+                "br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyReactor");
+
         r.put("appeng.block.AEBaseItem",
                 "br.com.gamemods.minecity.forge.base.protection.appeng.IAEBaseItem");
 
