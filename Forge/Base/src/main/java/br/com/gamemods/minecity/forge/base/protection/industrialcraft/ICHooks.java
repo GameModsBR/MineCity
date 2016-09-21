@@ -17,10 +17,8 @@ import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.EntityParticleTransformer;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.ExplosionIC2Transformer;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityCropTransformer;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityTeslaTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.*;
+import br.com.gamemods.minecity.forge.base.protection.ModHooks;
 import br.com.gamemods.minecity.forge.base.protection.ShooterDamageSource;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import net.minecraft.entity.Entity;
@@ -151,5 +149,24 @@ public class ICHooks
                 || ModEnv.entityProtections.onEntityDamage(entity, source, 20, true)
         );
         return entities;
+    }
+
+    @Referenced(at = TileEntityCropmatronTransformer.class)
+    public static ITileEntity onTileAccessOther(ITileEntity accessed, ITileEntity from)
+    {
+        if(accessed == null)
+            return null;
+
+        Optional<Message> denial = ModHooks.onBlockAccessOther(
+                (World) accessed.getIWorld(),
+                accessed.getPosX(), accessed.getPosY(), accessed.getPosZ(),
+                from.getPosX(), from.getPosY(), from.getPosZ(),
+                PermissionFlag.MODIFY
+        );
+
+        if(denial.isPresent())
+            return null;
+
+        return accessed;
     }
 }
