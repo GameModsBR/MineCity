@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.base.protection.industrialcraft;
 
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
@@ -13,6 +14,7 @@ import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.ProjectileShooter;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
@@ -30,6 +32,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
@@ -247,5 +250,51 @@ public class ICHooks
         ClaimedChunk claim = mod.mineCity.provideChunk(new ChunkPos(mod.world(world), x, z), tileChunk);
         return claim.getFlagHolder().can(owner, PermissionFlag.MODIFY).isPresent()
             || claim.getPlots().stream().anyMatch(plot-> plot.can(owner, PermissionFlag.MODIFY).isPresent());
+    }
+
+    @Referenced(at = TileEntityTeleporterTransformer.class)
+    public static boolean onTeleport(ITileEntityTeleporter teleporter, IEntity user)
+    {
+        NBTTagCompound data = ((Entity) user).getEntityData();
+        byte cooldown = data.getByte("MC$TPCooldown");
+        if(cooldown > 0)
+        {
+            data.setByte("MC$TPCooldown", --cooldown);
+            return true;
+        }
+
+        MineCityForge mod = ModEnv.entityProtections.mod;
+        BlockPos target = teleporter.getTarget(mod);
+        if(target == null)
+            return false;
+
+        Optional<Message> denial;
+        if(user instanceof IEntityPlayerMP)
+        {
+            mod.player((IEntityPlayerMP) user);
+            denial = mod.mineCity.provideChunk(target.getChunk())
+                    .getFlagHolder(target).can(user,PermissionFlag.ENTER);
+        }
+        else
+        {
+            ClaimedChunk targetClaim = mod.mineCity.provideChunk(target.getChunk());
+            FlagHolder flagHolder = targetClaim.getFlagHolder(target);
+            BlockPos from = user.getBlockPos(target);
+            Identity<?> owner = mod.mineCity.provideChunk(from.getChunk(), targetClaim).getFlagHolder(from).owner();
+            denial = flagHolder.can(owner, PermissionFlag.MODIFY);
+        }
+
+        if(denial.isPresent())
+        {
+            data.setByte("MC$TPCooldown", (byte) 60);
+            user.send(FlagHolder.wrapDeny(denial.get()));
+            return true;
+        }
+        else if(cooldown > 0)
+        {
+            data.setByte("MC$TPCooldown", (byte) 0);
+        }
+
+        return false;
     }
 }

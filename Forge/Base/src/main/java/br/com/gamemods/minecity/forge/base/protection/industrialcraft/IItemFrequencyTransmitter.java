@@ -19,7 +19,7 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReacti
 public interface IItemFrequencyTransmitter extends IItem
 {
     @Override
-    default Reaction reactRightClickBlock(IEntityPlayerMP player, IItemStack stack, boolean offHand,
+    default Reaction reactRightClickBlockFirstUse(IEntityPlayerMP player, IItemStack stack, boolean offHand,
                                           IState state, BlockPos pos, Direction face)
     {
         ITileEntity tile = pos.world.getInstance(IWorldServer.class).getTileEntity(pos);
