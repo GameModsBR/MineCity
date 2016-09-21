@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockPis
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.*;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.BiomeUtilTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.EntityParticleTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityTerraTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.AdapterTransformer;
@@ -329,6 +330,7 @@ public class MineCityFrostHooks
     @Referenced(at = AdapterTransformer.class)
     @Referenced(at = EntityParticleTransformer.class)
     @Referenced(at = TileEntityTerraTransformer.class)
+    @Referenced(at = BiomeUtilTransformer.class)
     public static Point toPoint(Object obj)
     {
         Vec3i pos = (Vec3i) obj;

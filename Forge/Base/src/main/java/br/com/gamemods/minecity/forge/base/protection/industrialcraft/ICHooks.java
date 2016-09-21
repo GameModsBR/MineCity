@@ -6,6 +6,7 @@ import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
@@ -24,6 +25,7 @@ import br.com.gamemods.minecity.forge.base.protection.ShooterDamageSource;
 import br.com.gamemods.minecity.forge.base.protection.reaction.RevertDeniedReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
+import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityTNTPrimed;
@@ -222,7 +224,28 @@ public class ICHooks
                 .addAllowListener((reaction, permissible, flag, p, message) -> MineCityForge.snapshotHandler.send(p))
                 .can(mod.mineCity, mod.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).owner())
                 .isPresent() && success;
+    }
 
+    @Referenced(at = BiomeUtilTransformer.class)
+    public static boolean onChangeBiome(World world, Point point)
+    {
+        return onChangeBiome(world, point.x>>4, point.z>>4);
+    }
 
+    @Referenced(at = TileEntityTerraTransformer.class)
+    public static boolean onChangeBiome(World world, int x, int z)
+    {
+        ITileEntity tile = ICHooks.terraforming;
+        if(tile == null)
+            return false;
+
+        MineCityForge mod = ModEnv.blockProtections.mod;
+        BlockPos tilePos = tile.getBlockPos(mod);
+        ClaimedChunk tileChunk = mod.mineCity.provideChunk(tilePos.getChunk());
+        Identity<?> owner = tileChunk.getFlagHolder(tilePos).owner();
+
+        ClaimedChunk claim = mod.mineCity.provideChunk(new ChunkPos(mod.world(world), x, z), tileChunk);
+        return claim.getFlagHolder().can(owner, PermissionFlag.MODIFY).isPresent()
+            || claim.getPlots().stream().anyMatch(plot-> plot.can(owner, PermissionFlag.MODIFY).isPresent());
     }
 }

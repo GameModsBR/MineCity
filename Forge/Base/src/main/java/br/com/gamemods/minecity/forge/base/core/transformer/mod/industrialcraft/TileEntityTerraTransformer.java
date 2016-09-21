@@ -7,10 +7,7 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.BasicTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.tree.*;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -137,7 +134,21 @@ public class TileEntityTerraTransformer extends BasicTransformer
                                 return true;
                             }
                         });
-                break;
+            }
+            else if(method.name.equals("setBiomeAt"))
+            {
+                InsnList list = new InsnList();
+                list.add(new VarInsnNode(ALOAD, 0));
+                list.add(new VarInsnNode(ILOAD, 1));
+                list.add(new VarInsnNode(ILOAD, 2));
+                list.add(new MethodInsnNode(INVOKESTATIC, "br.com.gamemods.minecity.forge.base.protection.industrialcraft.ICHooks".replace('.','/'),
+                        "onChangeBiome", "(Lnet/minecraft/world/World;II)Z", false
+                ));
+                LabelNode labelNode = new LabelNode();
+                list.add(new JumpInsnNode(IFEQ, labelNode));
+                list.add(new InsnNode(RETURN));
+                list.add(labelNode);
+                method.instructions.insert(list);
             }
         }
 
