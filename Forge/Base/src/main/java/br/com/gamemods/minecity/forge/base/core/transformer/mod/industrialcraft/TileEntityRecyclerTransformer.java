@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft;
 
+import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.BasicTransformer;
 import org.objectweb.asm.ClassReader;
@@ -7,6 +8,7 @@ import org.objectweb.asm.tree.*;
 
 import static org.objectweb.asm.Opcodes.*;
 
+@MethodPatcher
 @Referenced
 public class TileEntityRecyclerTransformer extends BasicTransformer
 {

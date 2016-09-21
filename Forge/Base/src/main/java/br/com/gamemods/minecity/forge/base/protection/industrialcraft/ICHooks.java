@@ -1,13 +1,17 @@
 package br.com.gamemods.minecity.forge.base.protection.industrialcraft;
 
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.Permissible;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.Point;
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
+import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.ProjectileShooter;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
@@ -16,6 +20,8 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.EntityParticleTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.ExplosionIC2Transformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityCropTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityTeslaTransformer;
+import br.com.gamemods.minecity.forge.base.protection.ShooterDamageSource;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -111,6 +117,23 @@ public class ICHooks
 
         DamageSource source = new EntityDamageSourceIndirect("explosion.ic2", (Entity) exploder, igniter == null? (Entity)exploder : (Entity)igniter);
         entities.removeIf(entity -> ModEnv.entityProtections.onEntityDamage(entity, source, 10, true));
+        return entities;
+    }
+
+    @Referenced(at = TileEntityTeslaTransformer.class)
+    public static List<IEntity> onTeslaDamage(List<IEntity> entities, ITileEntity tesla)
+    {
+        if(entities.isEmpty())
+            return entities;
+
+        MineCityForge mod = ModEnv.blockProtections.mod;
+        BlockPos teslaPos = tesla.getBlockPos(mod);
+        Identity<?> owner = mod.mineCity.provideChunk(teslaPos.getChunk()).getFlagHolder(teslaPos).owner();
+        DamageSource source = new ShooterDamageSource("bolt", new ProjectileShooter(teslaPos.toEntity(), owner));
+        entities.removeIf(entity ->
+                owner.getType() == Identity.Type.NATURE && entity.getPlayerAttackType() == PermissionFlag.PVP
+                || ModEnv.entityProtections.onEntityDamage(entity, source, 20, true)
+        );
         return entities;
     }
 }
