@@ -103,26 +103,21 @@ public class AppengHooks
     }
 
     @Referenced(at = ToolMassCannonTransformer.class)
-    public static int onMassCannonHit(World world, EntityPlayer player, IRayTraceResult result, Enum<?> type, float penetration)
+    public static boolean onMassCannonHit(World world, EntityPlayer player, IRayTraceResult result, Enum<?> type)
     {
         int ord = type.ordinal();
         if(ord == 2) // ENTITY
         {
-            DamageSource source = new EntityDamageSource("ae2.cannon", player);
-            if(ModEnv.entityProtections.onEntityDamage(result.getEntity(), source, 2, false))
-                return (int) Math.ceil(penetration / 20f);
-            return -1;
+            DamageSource source = new EntityDamageSource("masscannon", player);
+            return ModEnv.entityProtections.onEntityDamage(result.getEntity(), source, 2, false);
         }
         else if(ord == 1) // BLOCK
         {
             MineCityForge mod = ModEnv.blockProtections.mod;
             BlockPos pos = result.getHitBlockPos(mod.world(world));
-            if(mod.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).can((IEntityPlayerMP) player, PermissionFlag.MODIFY).isPresent())
-                return (int) Math.ceil(penetration);
-            else
-                return -1;
+            return mod.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).can((IEntityPlayerMP) player, PermissionFlag.MODIFY).isPresent();
         }
 
-        return -1;
+        return false;
     }
 }

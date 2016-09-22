@@ -35,7 +35,7 @@ public class ToolMassCannonTransformer extends BasicTransformer
 
         for(MethodNode method : node.methods)
         {
-            if(method.name.equals("standardAmmo"))
+            if(method.name.equals("standardAmmo") || method.name.equals("shootPaintBalls"))
             {
                 CollectionUtil.stream(method.instructions.iterator())
                         .filter(ins-> ins.getOpcode() == GETSTATIC).map(FieldInsnNode.class::cast)
@@ -50,35 +50,22 @@ public class ToolMassCannonTransformer extends BasicTransformer
                             JumpInsnNode jump = (JumpInsnNode) method.instructions.get(i+1);
                             VarInsnNode var = (VarInsnNode) method.instructions.get(i-2);
                             FieldInsnNode fd = (FieldInsnNode) method.instructions.get(i);
-                            LabelNode label = jump.label;
 
                             InsnList list = new InsnList();
                             list.add(new VarInsnNode(ALOAD, 2));
                             list.add(new VarInsnNode(ALOAD, 3));
                             list.add(new VarInsnNode(ALOAD, var.var));
                             list.add(new FieldInsnNode(fd.getOpcode(), fd.owner, fd.name, fd.desc));
-                            list.add(new VarInsnNode(FLOAD, 1));
                             list.add(new MethodInsnNode(INVOKESTATIC,
                                     appengHook,
                                     "onMassCannonHit",
-                                    "(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;L"+iTrace+";Ljava/lang/Enum;F)I",
+                                    "(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;L"+iTrace+";Ljava/lang/Enum;)Z",
                                     false
                             ));
-                            list.add(new InsnNode(ICONST_M1));
-                            list.add(new InsnNode(DUP2));
-                            list.add(new InsnNode(POP));
                             LabelNode labelNode = new LabelNode();
-                            list.add(new JumpInsnNode(IF_ICMPEQ, labelNode));
-                            list.add(new InsnNode(I2F));
-                            list.add(new VarInsnNode(FLOAD, 1));
-                            list.add(new InsnNode(SWAP));
-                            list.add(new InsnNode(FSUB));
-                            list.add(new VarInsnNode(FSTORE, 1));
-                            //list.add(new InsnNode(ICONST_1));
-                            //list.add(new VarInsnNode(ISTORE, 13));
-                            list.add(new JumpInsnNode(GOTO, label));
+                            list.add(new JumpInsnNode(IFEQ, labelNode));
+                            list.add(new InsnNode(RETURN));
                             list.add(labelNode);
-                            list.add(new InsnNode(POP));
                             method.instructions.insert(jump, list);
                         });
             }
