@@ -15,6 +15,15 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("appeng.items.parts.ItemFacade",
+                "br.com.gamemods.minecity.forge.base.protection.appeng.IItemMultiPart");
+
+        r.put("appeng.items.parts.ItemMultiPart",
+                "br.com.gamemods.minecity.forge.base.protection.appeng.IItemMultiPart");
+
+        r.put("appeng.items.tools.quartz.ToolQuartzWrench",
+                "br.com.gamemods.minecity.forge.base.protection.appeng.IItemToolQuartzWrench");
+
         r.put("appeng.items.tools.powered.ToolEntropyManipulator",
                 "br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyReactor");
 

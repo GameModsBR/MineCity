@@ -5,6 +5,8 @@ import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
+import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.forge.base.ForgeUtil;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
@@ -17,12 +19,14 @@ import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.EntityTinyTNTPrimedTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.PartPlacementTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.ToolMassCannonTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.WirelessTerminalGuiObjectTransformer;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
@@ -116,6 +120,32 @@ public class AppengHooks
             MineCityForge mod = ModEnv.blockProtections.mod;
             BlockPos pos = result.getHitBlockPos(mod.world(world));
             return mod.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).can((IEntityPlayerMP) player, PermissionFlag.MODIFY).isPresent();
+        }
+
+        return false;
+    }
+
+    @Referenced(at = PartPlacementTransformer.class)
+    public static boolean onPartPlace(ItemStack mcStack, int x, int y, int z, int mcFace, EntityPlayer mcPlayer, World mcWorld, int packetType, int depth)
+    {
+        if(mcWorld.isRemote || depth > 3)
+            return false;
+
+        MineCityForge mod = ModEnv.blockProtections.mod;
+        Direction face = ForgeUtil.toDirection(mcFace);
+        BlockPos pos = new BlockPos(mod.world(mcWorld), x, y, z);
+        if(ModEnv.blockProtections.onPlayerRightClickBlock(mcPlayer, false, mcStack, ((IWorldServer)mcWorld).getIState(pos), pos, face, true) != 0)
+        {
+            IEntityPlayerMP player = (IEntityPlayerMP) mcPlayer;
+            //player.sendFakeAir(x, y, z);
+            player.sendBlockAndTile(x, y, z);
+            /*
+            mod.callSyncMethodDelayed(()-> {
+                player.sendFakeAir(x, y, z);
+                player.sendBlockAndTile(x, y, z);
+            }, 3*20);
+            */
+            return true;
         }
 
         return false;

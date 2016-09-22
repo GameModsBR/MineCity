@@ -47,6 +47,7 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
         ModEnv.rayTraceResultClass = "net.minecraft.util.math.RayTraceResult";
 
         return new String[]{
+                "br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.PartPlacementTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.ToolMassCannonTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.WirelessTerminalGuiObjectTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.BlockTinyTNTTransformer",
