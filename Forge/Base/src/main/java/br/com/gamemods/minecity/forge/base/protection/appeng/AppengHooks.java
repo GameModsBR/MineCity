@@ -3,8 +3,10 @@ package br.com.gamemods.minecity.forge.base.protection.appeng;
 import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
@@ -15,12 +17,14 @@ import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.EntityTinyTNTPrimedTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.ToolMassCannonTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.WirelessTerminalGuiObjectTransformer;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.world.World;
 
@@ -96,5 +100,29 @@ public class AppengHooks
         MineCityForge mod = ModEnv.entityProtections.mod;
         return mod.mineCity.provideChunk(new ChunkPos(mod.world(world), x>>4, z>>4)).getFlagHolder(x, y, z)
                .can((IEntityPlayerMP) player, PermissionFlag.OPEN).isPresent();
+    }
+
+    @Referenced(at = ToolMassCannonTransformer.class)
+    public static int onMassCannonHit(World world, EntityPlayer player, IRayTraceResult result, Enum<?> type, float penetration)
+    {
+        int ord = type.ordinal();
+        if(ord == 2) // ENTITY
+        {
+            DamageSource source = new EntityDamageSource("ae2.cannon", player);
+            if(ModEnv.entityProtections.onEntityDamage(result.getEntity(), source, 2, false))
+                return (int) Math.ceil(penetration / 20f);
+            return -1;
+        }
+        else if(ord == 1) // BLOCK
+        {
+            MineCityForge mod = ModEnv.blockProtections.mod;
+            BlockPos pos = result.getHitBlockPos(mod.world(world));
+            if(mod.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).can((IEntityPlayerMP) player, PermissionFlag.MODIFY).isPresent())
+                return (int) Math.ceil(penetration);
+            else
+                return -1;
+        }
+
+        return -1;
     }
 }

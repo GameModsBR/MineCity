@@ -299,4 +299,10 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
     {
         return ((EntityPlayerMP) this).connection != null;
     }
+
+    default int getAge()
+    {
+        EntityPlayerMP p = (EntityPlayerMP) this;
+        return p.getAge();
+    }
 }

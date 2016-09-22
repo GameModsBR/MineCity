@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.forge.base.core.transformer;
 
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import net.minecraft.launchwrapper.IClassTransformer;
+import org.intellij.lang.annotations.MagicConstant;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 public abstract class BasicTransformer implements IClassTransformer
 {
+    @MagicConstant(flagsFromClass = ClassWriter.class)
     protected int writerFlags = ClassWriter.COMPUTE_MAXS;
     private final Set<String> accept;
 
