@@ -18,10 +18,8 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityTN
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.EntityTinyTNTPrimedTransformer;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.PartPlacementTransformer;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.ToolMassCannonTransformer;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.WirelessTerminalGuiObjectTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.*;
+import br.com.gamemods.minecity.forge.base.protection.ModHooks;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -31,6 +29,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 
 import java.util.List;
 
@@ -141,5 +140,12 @@ public class AppengHooks
         }
 
         return false;
+    }
+
+    @Referenced(at = PartAnnihilationPaneTransformer.class)
+    public static boolean onPartModify(IAEBasePart part, WorldServer mcWorld, int x, int y, int z)
+    {
+        BlockPos pos = part.getHost().getPos(ModEnv.blockProtections.mod);
+        return ModHooks.onBlockAccessOther(mcWorld, x, y, z, pos.x, pos.y, pos.z, PermissionFlag.MODIFY).isPresent();
     }
 }

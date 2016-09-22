@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft
 
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
+import br.com.gamemods.minecity.forge.base.core.transformer.BasicTransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -25,7 +26,7 @@ public class ICropTileTransformer implements IClassTransformer
         ClassNode node = new ClassNode(ASM5);
         ClassReader reader = new ClassReader(basicClass);
         reader.accept(node, 0);
-        node.version = 52;
+        node.version = BasicTransformer.JAVA8;
 
         node.interfaces.add("br.com.gamemods.minecity.forge.base.protection.industrialcraft.CropTile".replace('.','/'));
 

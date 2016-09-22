@@ -3,7 +3,6 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.protection;
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
-import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockDragonEggTransformer;
@@ -11,6 +10,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockPis
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.*;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.IPartHostTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.BiomeUtilTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.EntityParticleTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityTeleporterTransformer;
@@ -340,10 +340,18 @@ public class MineCityFrostHooks
     }
 
     @SuppressWarnings("unchecked")
+    @Referenced(at = IPartHostTransformer.class)
     public static br.com.gamemods.minecity.api.world.BlockPos toPos(Object obj, int x, int y, int z)
     {
-        Option<IWorldServer> opt = (Option<IWorldServer>) obj;
-        return new br.com.gamemods.minecity.api.world.BlockPos(ModEnv.blockProtections.mod.world(opt.get()), x, y, z);
+        World world;
+        if(obj instanceof World)
+            world = (World) obj;
+        else if(obj instanceof Option)
+            world = (World) ((Option)obj).get();
+        else
+            throw new UnsupportedOperationException(obj.getClass().toString());
+
+        return new br.com.gamemods.minecity.api.world.BlockPos(ModEnv.blockProtections.mod.world(world), x, y, z);
     }
 
     private MineCityFrostHooks(){}

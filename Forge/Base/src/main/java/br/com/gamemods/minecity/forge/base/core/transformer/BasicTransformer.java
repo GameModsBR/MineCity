@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 public abstract class BasicTransformer implements IClassTransformer
 {
+    public static final int JAVA8 = 52;
+
     @MagicConstant(flagsFromClass = ClassWriter.class)
     protected int writerFlags = ClassWriter.COMPUTE_MAXS;
     private final Set<String> accept;

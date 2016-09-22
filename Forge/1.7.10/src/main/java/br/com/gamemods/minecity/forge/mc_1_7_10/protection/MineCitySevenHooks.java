@@ -13,6 +13,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockPis
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.*;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.IPartHostTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.EntityParticleTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityTerraTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.AdapterTransformer;
@@ -318,11 +319,18 @@ public class MineCitySevenHooks
     }
 
     @Referenced(at = InventoryTransferDClassTransformer.class)
-    @SuppressWarnings("unchecked")
+    @Referenced(at = IPartHostTransformer.class)
     public static BlockPos toPos(Object obj, int x, int y, int z)
     {
-        Option<IWorldServer> opt = (Option<IWorldServer>) obj;
-        return new BlockPos(ModEnv.blockProtections.mod.world(opt.get()), x, y, z);
+        World world;
+        if(obj instanceof World)
+            world = (World) obj;
+        else if(obj instanceof Option)
+            world = (World) ((Option)obj).get();
+        else
+            throw new UnsupportedOperationException(obj.getClass().toString());
+
+        return new BlockPos(ModEnv.blockProtections.mod.world(world), x, y, z);
     }
 
     private MineCitySevenHooks(){}
