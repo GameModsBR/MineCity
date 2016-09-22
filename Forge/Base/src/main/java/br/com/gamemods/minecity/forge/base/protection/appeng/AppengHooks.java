@@ -136,15 +136,7 @@ public class AppengHooks
         BlockPos pos = new BlockPos(mod.world(mcWorld), x, y, z);
         if(ModEnv.blockProtections.onPlayerRightClickBlock(mcPlayer, false, mcStack, ((IWorldServer)mcWorld).getIState(pos), pos, face, true) != 0)
         {
-            IEntityPlayerMP player = (IEntityPlayerMP) mcPlayer;
-            //player.sendFakeAir(x, y, z);
-            player.sendBlockAndTile(x, y, z);
-            /*
-            mod.callSyncMethodDelayed(()-> {
-                player.sendFakeAir(x, y, z);
-                player.sendBlockAndTile(x, y, z);
-            }, 3*20);
-            */
+            ((IEntityPlayerMP) mcPlayer).sendBlockAndTile(x, y, z);
             return true;
         }
 

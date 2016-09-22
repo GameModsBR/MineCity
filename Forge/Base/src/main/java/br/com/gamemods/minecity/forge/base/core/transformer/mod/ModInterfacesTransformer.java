@@ -15,6 +15,9 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("appeng.fmp.CableBusPart",
+                "br.com.gamemods.minecity.forge.base.protection.appeng.ICableBusPart");
+
         r.put("appeng.items.parts.ItemFacade",
                 "br.com.gamemods.minecity.forge.base.protection.appeng.IItemMultiPart");
 
