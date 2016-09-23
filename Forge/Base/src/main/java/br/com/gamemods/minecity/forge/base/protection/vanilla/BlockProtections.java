@@ -143,15 +143,19 @@ public class BlockProtections extends ForgeProtections
         return react.can(mod.mineCity, player).isPresent();
     }
 
-    public boolean onBlockPlace(EntityPlayer entity, BlockSnapshot snapshot, IItemStack hand, boolean offHand)
+    public Reaction onBlockPlaceLogic(ForgePlayer<?,?,?> player, BlockSnapshot snapshot, IItemStack hand, boolean offHand)
     {
         IBlockSnapshot snap = (IBlockSnapshot) snapshot;
-        ForgePlayer player = mod.player(entity);
         Reaction reaction = snap.getCurrentState().getIBlock().reactBlockPlace(player, snap, hand, offHand);
         if(hand != null)
-            reaction = reaction.combine(hand.getIItem().reactBlockPlace((IEntityPlayerMP) entity, hand, offHand, snap));
+            return reaction.combine(hand.getIItem().reactBlockPlace(player.cmd.sender, hand, offHand, snap));
+        return reaction;
+    }
 
-        Optional<Message> denial = reaction.can(mod.mineCity, player);
+    public boolean onBlockPlace(EntityPlayer entity, BlockSnapshot snapshot, IItemStack hand, boolean offHand)
+    {
+        ForgePlayer player = mod.player(entity);
+        Optional<Message> denial = onBlockPlaceLogic(player, snapshot, hand, offHand).can(mod.mineCity, player);
         if(denial.isPresent())
         {
             player.send(FlagHolder.wrapDeny(denial.get()));
@@ -177,15 +181,14 @@ public class BlockProtections extends ForgeProtections
     }
 
     @SuppressWarnings("unchecked")
-    public boolean onBlockMultiPlace(EntityPlayer entity, BlockPos blockPos, List<BlockSnapshot> replacedBlocks, IItemStack hand, boolean offHand)
+    public Reaction onBlockMultiPlaceLogic(ForgePlayer<?,?,?> player, BlockPos blockPos, List<BlockSnapshot> replacedBlocks, IItemStack hand, boolean offHand)
     {
-        ForgePlayer player = mod.player(entity);
         List<IBlockSnapshot> snapshots = (List) replacedBlocks;
 
         Reaction reaction;
         if(hand != null)
             reaction = hand.getIItem().reactBlockMultiPlace(
-                    (IEntityPlayerMP) entity, hand, offHand, blockPos, snapshots
+                    player.cmd.sender, hand, offHand, blockPos, snapshots
             );
         else
             reaction = NoReaction.INSTANCE;
@@ -203,7 +206,14 @@ public class BlockProtections extends ForgeProtections
                 ));
         });
 
-        Optional<Message> denial = atomicReaction.get().can(mod.mineCity, player);
+        return atomicReaction.get();
+    }
+
+    public boolean onBlockMultiPlace(EntityPlayer entity, BlockPos blockPos, List<BlockSnapshot> replacedBlocks, IItemStack hand, boolean offHand)
+    {
+        ForgePlayer player = mod.player(entity);
+        Optional<Message> denial = onBlockMultiPlaceLogic(player, blockPos, replacedBlocks, hand, offHand)
+                .can(mod.mineCity, player);
         if(denial.isPresent())
         {
             player.send(FlagHolder.wrapDeny(denial.get()));

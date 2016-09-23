@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
 public interface IItemStack
@@ -15,7 +16,7 @@ public interface IItemStack
 
     default int getMeta()
     {
-        return getStack().getMetadata();
+        return getStack().getItemDamage();
     }
 
     default IItem getIItem()
@@ -46,5 +47,20 @@ public interface IItemStack
     default boolean isTool(String tool)
     {
         return getIItem().getToolClasses(this).contains(tool);
+    }
+
+    default NBTTagCompound getTag()
+    {
+        return getStack().getTagCompound();
+    }
+
+    default void setMeta(int meta)
+    {
+        getStack().setItemDamage(meta);
+    }
+
+    default void setTag(NBTTagCompound tag)
+    {
+        getStack().setTagCompound(tag);
     }
 }

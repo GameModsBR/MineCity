@@ -37,6 +37,18 @@ public final class BlockPos extends Point implements Serializable
         }
     }
 
+    public BlockPos(@Nullable BlockPos other, @NotNull WorldDim world, int x, int y, int z)
+    {
+        this(world, x, y, z);
+        if(other != null && world.equals(other.world) && other.x>>4 == x>>4 && other.z>>4 == z>>4)
+        {
+            if(other.chunk == null)
+                chunk = other.getChunk();
+            else
+                chunk = other.chunk;
+        }
+    }
+
     @NotNull
     @Override
     public <T> BlockPos apply(@Nullable T x, @Nullable T y, @Nullable T z, @NotNull BiFunction<Integer, T, Integer> op)

@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.protection;
 
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.protection.SnapshotHandler;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.BlockSnapshot;
@@ -32,15 +33,17 @@ public class FrostSnapshotHandler implements SnapshotHandler
     @SuppressWarnings("unchecked")
     public void send(List<IBlockSnapshot> changes)
     {
-        HashSet<BlockPos> notified = new HashSet<>();
         for(BlockSnapshot snapshot : (List<BlockSnapshot>) (List) changes)
         {
-            BlockPos snapPos = snapshot.getPos();
-            if(notified.contains(snapPos))
-                continue;
+            int flag = snapshot.getFlag();
+            World world = snapshot.getWorld();
+            IBlockState oldBlock = snapshot.getReplacedBlock();
+            IBlockState newBlock = world.getBlockState(snapshot.getPos());
+            //noinspection ConstantConditions
+            if(newBlock != null && !(newBlock.getBlock().hasTileEntity(newBlock)))
+                newBlock.getBlock().onBlockAdded(world, snapshot.getPos(), newBlock);
 
-            snapshot.getWorld().notifyBlockUpdate(snapPos, snapshot.getReplacedBlock(), snapshot.getCurrentBlock(), snapshot.getFlag());
-            notified.add(snapPos);
+            world.markAndNotifyBlock(snapshot.getPos(), null, oldBlock, newBlock, flag);
         }
     }
 }

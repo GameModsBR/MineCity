@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.protection;
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.protection.SnapshotHandler;
+import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.BlockSnapshot;
 
@@ -32,7 +33,20 @@ public class SevenSnapshotHandler implements SnapshotHandler
     public void send(List<IBlockSnapshot> changes)
     {
         changes.stream().map(BlockSnapshot.class::cast).forEachOrdered(snapshot ->
-                snapshot.world.markBlockForUpdate(snapshot.x, snapshot.y, snapshot.z)
-        );
+        {
+            World world = snapshot.world;
+            int x = snapshot.x;
+            int y = snapshot.y;
+            int z = snapshot.z;
+            int meta = world.getBlockMetadata(x, y, z);
+            int flag = snapshot.flag;
+            Block oldBlock = snapshot.replacedBlock;
+            Block newBlock = world.getBlock(x, y, z);
+            //noinspection ConstantConditions
+            if(newBlock != null && !(newBlock.hasTileEntity(meta)))
+                newBlock.onBlockAdded(world, x, y, z);
+
+            world.markAndNotifyBlock(x, y, z, null, oldBlock, newBlock, flag);
+        });
     }
 }

@@ -10,11 +10,13 @@ import br.com.gamemods.minecity.forge.base.ForgeUtil;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
+import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityArrow;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityTNTPrimed;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
@@ -25,17 +27,102 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.BlockSnapshot;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Referenced
 public class AppengHooks
 {
+    private static int meta;
+    private static int size;
+    private static NBTTagCompound tag;
+    private static Identity<?> owner;
+
+    @Referenced(at = PartFormationPlaneTransformer.class)
+    public static boolean onPrePlace(IAEBasePart part, ItemStack mcStack, EntityPlayer mcPlayer, World mcWorld, int x, int y, int z, int mcSide)
+    {
+        IItemStack stack = (IItemStack) (Object) mcStack;
+        meta = stack.getMeta();
+        size = stack.getSize();
+        tag = stack.getTag();
+        if(tag != null)
+            tag = tag.copy();
+
+        MineCityForge mod = ModEnv.blockProtections.mod;
+        BlockPos fromPos = part.getHost().getPos(mod);
+        BlockPos placePos = new BlockPos(fromPos, mod.world(mcWorld), x, y, z);
+
+        owner = mod.mineCity.provideChunk(fromPos.getChunk()).getFlagHolder(fromPos).owner();
+        if(stack.getIItem().reactPrePlace(owner, stack, placePos).can(mod.mineCity, owner).isPresent())
+            return true;
+
+        mcWorld.captureBlockSnapshots = true;
+        return false;
+    }
+
+    @Referenced(at = PartFormationPlaneTransformer.class)
+    public static boolean onPostPlace(boolean result, IAEBasePart part, ItemStack mcStack, EntityPlayer mcPlayer, World mcWorld, int x, int y, int z, int mcSide)
+    {
+        mcWorld.captureBlockSnapshots = false;
+        List<BlockSnapshot> snapshots = new ArrayList<>(mcWorld.capturedBlockSnapshots);
+        mcWorld.capturedBlockSnapshots.clear();
+
+        IItemStack stack = (IItemStack) (Object) mcStack;
+
+        if(result)
+        {
+            MineCityForge mod = ModEnv.blockProtections.mod;
+            int newMeta = stack.getMeta();
+            int newSize = stack.getSize();
+            NBTTagCompound newTag = stack.getTag();
+            if(newTag != null)
+                newTag = newTag.copy();
+
+            stack.setMeta(meta);
+            stack.setSize(size);
+            if(tag != null)
+                stack.setTag(tag);
+
+            int size = snapshots.size();
+            boolean cancelled;
+            BlockSnapshot snapshot = snapshots.get(0);
+            if(size > 1)
+                cancelled = ModEnv.blockProtections.onBlockMultiPlaceLogic(mod.player(mcPlayer), ((IBlockSnapshot) snapshot).getPosition(mod), snapshots, stack, false)
+                        .can(mod.mineCity, owner).isPresent();
+            else
+                cancelled = size == 1 && ModEnv.blockProtections.onBlockPlaceLogic(mod.player(mcPlayer), snapshot, stack, false)
+                        .can(mod.mineCity, owner).isPresent();
+
+            if(cancelled)
+            {
+                result = false;
+
+                //noinspection unchecked
+                MineCityForge.snapshotHandler.restore((List)snapshots);
+            }
+            else
+            {
+                stack.setMeta(newMeta);
+                stack.setSize(newSize);
+                stack.setTag(newTag);
+
+                //noinspection unchecked
+                MineCityForge.snapshotHandler.send((List) snapshots);
+            }
+        }
+
+        mcWorld.capturedBlockSnapshots.clear();
+        return result;
+    }
+
     @Referenced(at = EntityTinyTNTPrimedTransformer.class)
     public static List<IEntity> onTinyTntDamage(List<IEntity> entities, IEntityTNTPrimed tnt)
     {
