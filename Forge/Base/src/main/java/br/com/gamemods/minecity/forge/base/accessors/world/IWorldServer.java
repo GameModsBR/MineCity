@@ -6,6 +6,7 @@ import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.forge.base.accessors.IMinecraftServer;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
@@ -129,5 +130,10 @@ public interface IWorldServer
     default IBlockSnapshot getBlockSnapshot(Point p)
     {
         return getBlockSnapshot(p.x, p.y, p.z);
+    }
+
+    default IMinecraftServer getServer()
+    {
+        return (IMinecraftServer) ((WorldServer) this).getMinecraftServer();
     }
 }

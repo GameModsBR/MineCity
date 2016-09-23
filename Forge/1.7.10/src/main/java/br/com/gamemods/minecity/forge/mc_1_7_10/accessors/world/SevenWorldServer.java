@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.accessors.world;
 import br.com.gamemods.minecity.api.shape.PreciseCuboid;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.forge.base.accessors.IMinecraftServer;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
@@ -170,5 +171,11 @@ public interface SevenWorldServer extends IWorldServer
     default IBlockSnapshot getBlockSnapshot(int x, int y, int z)
     {
         return (IBlockSnapshot) BlockSnapshot.getBlockSnapshot((World)this, x, y, z);
+    }
+
+    @Override
+    default IMinecraftServer getServer()
+    {
+        return (IMinecraftServer) ((WorldServer) this).func_73046_m();
     }
 }

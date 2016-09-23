@@ -21,7 +21,6 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.*;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.IMob;
@@ -372,16 +371,16 @@ public interface IEntity extends MinecraftEntity
     @Nullable
     default UUID getEntityOwnerId()
     {
-        if(this instanceof IEntityOwnable)
-            return ((IEntityOwnable) this).getOwnerId();
+        if(this instanceof EntityOwnable)
+            return ((EntityOwnable) this).getOwnerId();
         return null;
     }
 
     @Nullable
     default IEntityLivingBase getEntityOwner()
     {
-        if(this instanceof IEntityOwnable)
-            return (IEntityLivingBase) ((IEntityOwnable) this).getOwner();
+        if(this instanceof EntityOwnable)
+            return (IEntityLivingBase) ((EntityOwnable) this).getOwner();
         return null;
     }
 
