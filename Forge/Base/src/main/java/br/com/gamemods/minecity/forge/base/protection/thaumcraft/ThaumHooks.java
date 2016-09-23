@@ -58,7 +58,10 @@ public class ThaumHooks
         try
         {
             if(triggers == null)
+            {
                 triggers = Class.forName("thaumcraft.api.wands.WandTriggerRegistry").getDeclaredField("triggers");
+                triggers.setAccessible(true);
+            }
 
             return (Map) triggers.get(null);
         }
