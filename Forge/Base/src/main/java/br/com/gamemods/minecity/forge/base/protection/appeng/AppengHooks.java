@@ -24,6 +24,7 @@ import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.*;
 import br.com.gamemods.minecity.forge.base.protection.ModHooks;
+import br.com.gamemods.minecity.forge.base.protection.forgemultipart.IBlockMultipart;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.block.Block;
@@ -48,6 +49,12 @@ public class AppengHooks
     private static int size;
     private static NBTTagCompound tag;
     private static Identity<?> owner;
+
+    public static boolean containsNetworkBlock(IWorldServer world, BlockPos pos)
+    {
+        IBlock block = world.getIBlock(pos);
+        return block instanceof IAEBaseTileBlock || block instanceof IBlockMultipart;
+    }
 
     @Referenced(at = PartFormationPlaneTransformer.class)
     public static boolean onPrePlace(IAEBasePart part, ItemStack mcStack, EntityPlayer mcPlayer, World mcWorld, int x, int y, int z, int mcSide)
