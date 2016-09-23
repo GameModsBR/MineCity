@@ -15,6 +15,30 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("thaumcraft.common.blocks.BlockArcaneDoor",
+                "br.com.gamemods.minecity.forge.base.protection.thaumcraft.IBlockArcaneDoor");
+
+        r.put("thaumcraft.api.wands.ItemFocusBasic",
+                "br.com.gamemods.minecity.forge.base.protection.thaumcraft.IItemFocusBasic");
+
+        r.put("thaumcraft.api.wands.IWandTriggerManager",
+                "br.com.gamemods.minecity.forge.base.protection.thaumcraft.WandTriggerManager");
+
+        r.put("thaumcraft.api.wands.IWandable",
+                "br.com.gamemods.minecity.forge.base.protection.thaumcraft.Wandable");
+
+        r.put("thaumcraft.common.tiles.TileOwned",
+                "br.com.gamemods.minecity.forge.base.protection.thaumcraft.ITileOwned");
+
+        r.put("thaumcraft.common.items.wands.ItemWandCasting",
+                "br.com.gamemods.minecity.forge.base.protection.thaumcraft.IItemWandCasting");
+
+        r.put("thaumcraft.common.blocks.BlockWoodenDevice",
+                "br.com.gamemods.minecity.forge.base.protection.thaumcraft.IBlockWoodenDevice");
+
+        r.put("thaumcraft.common.blocks.BlockCosmeticOpaque",
+                "br.com.gamemods.minecity.forge.base.protection.thaumcraft.IBlockCosmeticOpaque");
+
         r.put("appeng.block.misc.BlockInterface",
                 "br.com.gamemods.minecity.forge.base.protection.appeng.ICableBusPart");
 
