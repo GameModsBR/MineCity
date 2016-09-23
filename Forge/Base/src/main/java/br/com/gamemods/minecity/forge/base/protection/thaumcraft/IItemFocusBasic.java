@@ -17,12 +17,15 @@ public interface IItemFocusBasic extends IItem
 {
     default Reaction reactFocusRightClick(IItemStack stack, IWorldServer world, IEntityPlayerMP player, IRayTraceResult result)
     {
-        int hitType = result.getHitType();
-        if(hitType == 1)
-            return new SingleBlockReaction(result.getHitBlockPos(player.getServer().world(world)), PermissionFlag.MODIFY);
-        else if(hitType == 2)
-            return result.getEntity().reactPlayerAttackDirect(player, stack, false);
-        else
-            return NoReaction.INSTANCE;
+        if(result != null)
+        {
+            int hitType = result.getHitType();
+            if(hitType == 1)
+                return new SingleBlockReaction(result.getHitBlockPos(player.getServer().world(world)), PermissionFlag.MODIFY);
+            else if(hitType == 2)
+                return result.getEntity().reactPlayerAttackDirect(player, stack, false);
+        }
+
+        return NoReaction.INSTANCE;
     }
 }
