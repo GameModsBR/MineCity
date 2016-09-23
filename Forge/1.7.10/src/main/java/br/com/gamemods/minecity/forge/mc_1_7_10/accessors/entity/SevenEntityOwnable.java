@@ -68,7 +68,7 @@ public interface SevenEntityOwnable extends EntityOwnable
 
             Optional<UUID> found = ((IEntity) this).getIWorld().getServer().getUsernameCache().entrySet()
                     .parallelStream().filter(e -> e.getValue().equals(name)).map(Map.Entry::getKey)
-                    .findFirst();
+                    .findAny();
 
             if(found.isPresent())
             {
