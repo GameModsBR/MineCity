@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.protection.appeng;
 
+import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
@@ -14,6 +15,7 @@ import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.item.Pickable;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityArrow;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityTNTPrimed;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
@@ -23,6 +25,7 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.*;
 import br.com.gamemods.minecity.forge.base.protection.ModHooks;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
+import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -234,5 +237,25 @@ public class AppengHooks
     {
         BlockPos pos = part.getHost().getPos(ModEnv.blockProtections.mod);
         return ModHooks.onBlockAccessOther(mcWorld, x, y, z, pos.x, pos.y, pos.z, PermissionFlag.MODIFY).isPresent();
+    }
+
+    @Referenced(at = PartFormationPlaneTransformer.class)
+    public static boolean onSpawn(IAEBasePart part, Entity mcEntity)
+    {
+        MineCityForge mod = ModEnv.entityProtections.mod;
+        IEntity entity = (IEntity) mcEntity;
+
+        BlockPos from = part.getHost().getPos(mod);
+        BlockPos to = entity.getBlockPos(mod);
+
+        ClaimedChunk fc = mod.mineCity.provideChunk(from.getChunk());
+        ClaimedChunk tc = mod.mineCity.provideChunk(to.getChunk(), fc);
+
+        if(tc.getFlagHolder(to).can(fc.getFlagHolder(from).owner(), PermissionFlag.PICKUP).isPresent())
+            return true;
+
+        if(owner.getType() == Identity.Type.PLAYER && entity instanceof Pickable)
+            ((Pickable) entity).allowToPickup((PlayerID) owner);
+        return false;
     }
 }
