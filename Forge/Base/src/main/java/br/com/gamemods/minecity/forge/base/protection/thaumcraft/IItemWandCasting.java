@@ -66,7 +66,7 @@ public interface IItemWandCasting extends IItem
             return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
         }
 
-        return NoReaction.INSTANCE;
+        return reaction;
     }
 
     @Override

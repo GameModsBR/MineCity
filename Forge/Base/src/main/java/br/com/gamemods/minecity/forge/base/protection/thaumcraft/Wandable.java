@@ -21,7 +21,7 @@ public interface Wandable
     default Reaction reactWandRightClick(IEntityPlayerMP player, IItemStack stack, boolean offHand, IState state, BlockPos pos,
                                          Direction face, AtomicBoolean tile)
     {
-        return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
+        return new SingleBlockReaction(pos, PermissionFlag.MODIFY).onDenyUpdateInventory();
     }
 
     default Reaction reactWandRightClick(IWorldServer world, IItemStack stack, IEntityPlayerMP player, BlockPos hit,
