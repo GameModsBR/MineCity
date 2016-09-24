@@ -101,6 +101,7 @@ public class ForgePlayer
             {
                 player.stopUsingItem();
                 send(FlagHolder.wrapDeny(denial.get()));
+                player.sendResetItemInHand();
             }
         }
     }

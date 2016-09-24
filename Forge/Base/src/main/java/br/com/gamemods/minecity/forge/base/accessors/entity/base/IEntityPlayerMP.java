@@ -305,4 +305,19 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
         EntityPlayerMP p = (EntityPlayerMP) this;
         return p.getAge();
     }
+
+    default void sendResetItemInHand()
+    {
+        EntityPlayerMP player = (EntityPlayerMP) this;
+        int slot = player.inventory.currentItem;
+        ItemStack stack = player.inventory.getCurrentItem();
+        if(stack != null)
+        {
+            player.inventory.setInventorySlotContents(slot, null);
+            player.inventoryContainer.detectAndSendChanges();
+        }
+
+        player.inventory.setInventorySlotContents(slot, stack);
+        player.inventoryContainer.detectAndSendChanges();
+    }
 }
