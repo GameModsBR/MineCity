@@ -1,13 +1,12 @@
 package br.com.gamemods.minecity.forge.base.core.transformer;
 
-import br.com.gamemods.minecity.forge.base.core.ModEnv;
-import net.minecraft.launchwrapper.IClassTransformer;
-import org.objectweb.asm.*;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.MethodNode;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 
 /**
  * Makes a class implements an interface with a setter and getter.
@@ -23,13 +22,8 @@ import java.util.HashSet;
  *     }
  * </code></pre>
  */
-public class InsertSetterGetterTransformer implements IClassTransformer
+public class InsertSetterGetterTransformer extends BasicTransformer
 {
-    /**
-     * The SRG name of the class that will be transformed
-     */
-    private Collection<String> classNames;
-
     /**
      * The type of the field that will be added to the class
      */
@@ -58,10 +52,10 @@ public class InsertSetterGetterTransformer implements IClassTransformer
     public InsertSetterGetterTransformer(String className, String fieldClass, String fieldName,
                                          String interfaceClass, String setterMethodName, String getterMethodName)
     {
-        this.classNames = Collections.singleton(className);
+        super(className);
         this.fieldClass = fieldClass;
         this.fieldName = fieldName;
-        this.interfaceClass = interfaceClass;
+        this.interfaceClass = interfaceClass == null? "" : interfaceClass;
         this.setterMethodName = setterMethodName;
         this.getterMethodName = getterMethodName;
     }
@@ -70,62 +64,43 @@ public class InsertSetterGetterTransformer implements IClassTransformer
                                          String setterMethodName, String getterMethodName,
                                          Collection<String> classNames)
     {
-        this.classNames = new HashSet<>(classNames);
+        super(classNames);
         this.fieldClass = fieldClass;
         this.fieldName = fieldName;
-        this.interfaceClass = interfaceClass;
+        this.interfaceClass = interfaceClass == null? "" : interfaceClass;
         this.setterMethodName = setterMethodName;
         this.getterMethodName = getterMethodName;
     }
 
     @Override
-    public byte[] transform(String name, String srgName, byte[] bytes)
+    protected void patch(String srgName, ClassNode node, ClassReader reader)
     {
-        if(classNames.contains(srgName))
-        {
-            ClassReader reader = new ClassReader(bytes);
-            ClassWriter writer = new ClassWriter(reader, Opcodes.ASM4);
-            String fieldClassName = fieldClass.replace('.','/');
-            String interfaceClassName = interfaceClass.replace('.','/');
-            String thisClassName = srgName.replace('.','/');
+        String fieldClassName = fieldClass.replace('.','/');
+        String interfaceClassName = interfaceClass.replace('.','/');
+        String thisClassName = srgName.replace('.','/');
 
-            ClassVisitor visitor = new ClassVisitor(Opcodes.ASM4, writer)
-            {
-                @Override
-                public void visit(int version, int access, String name, String signature, String superName, String[] interfaces)
-                {
-                    interfaces = Arrays.copyOf(interfaces, interfaces.length + 1);
-                    interfaces[interfaces.length-1] = interfaceClassName;
-                    super.visit(version, access, name, signature, superName, interfaces);
-                }
-            };
+        if(!interfaceClassName.isEmpty())
+            node.interfaces.add(interfaceClassName);
 
-            reader.accept(visitor, ClassReader.EXPAND_FRAMES);
+        node.fields.add(new FieldNode(Opcodes.ACC_PUBLIC, fieldName, "L"+fieldClassName+";", null, null));
 
-            writer.visitField(Opcodes.ACC_PUBLIC, fieldName, "L"+fieldClassName+";", null, null).visitEnd();
+        MethodNode methodVisitor = new MethodNode(Opcodes.ACC_PUBLIC, getterMethodName, "()L"+fieldClassName+";", null, null);
+        methodVisitor.visitCode();
+        methodVisitor.visitVarInsn(Opcodes.ALOAD, 0);
+        methodVisitor.visitFieldInsn(Opcodes.GETFIELD, thisClassName, fieldName, "L"+fieldClassName+";");
+        methodVisitor.visitInsn(Opcodes.ARETURN);
+        methodVisitor.visitMaxs(1, 2);
+        methodVisitor.visitEnd();
+        node.methods.add(methodVisitor);
 
-            MethodVisitor methodVisitor = visitor.visitMethod(Opcodes.ACC_PUBLIC, getterMethodName, "()L"+fieldClassName+";", null, null);
-            methodVisitor.visitCode();
-            methodVisitor.visitVarInsn(Opcodes.ALOAD, 0);
-            methodVisitor.visitFieldInsn(Opcodes.GETFIELD, thisClassName, fieldName, "L"+fieldClassName+";");
-            methodVisitor.visitInsn(Opcodes.ARETURN);
-            methodVisitor.visitMaxs(1, 2);
-            methodVisitor.visitEnd();
-
-            methodVisitor = visitor.visitMethod(Opcodes.ACC_PUBLIC, setterMethodName, "(L"+fieldClassName+";)V", null, null);
-            methodVisitor.visitCode();
-            methodVisitor.visitVarInsn(Opcodes.ALOAD, 0);
-            methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
-            methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, thisClassName, fieldName, "L"+fieldClassName+";");
-            methodVisitor.visitInsn(Opcodes.RETURN);
-            methodVisitor.visitMaxs(2, 2);
-            methodVisitor.visitEnd();
-
-            bytes = writer.toByteArray();
-            ModEnv.saveClass(srgName, bytes);
-            return bytes;
-        }
-
-        return bytes;
+        methodVisitor = new MethodNode(Opcodes.ACC_PUBLIC, setterMethodName, "(L"+fieldClassName+";)V", null, null);
+        methodVisitor.visitCode();
+        methodVisitor.visitVarInsn(Opcodes.ALOAD, 0);
+        methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
+        methodVisitor.visitFieldInsn(Opcodes.PUTFIELD, thisClassName, fieldName, "L"+fieldClassName+";");
+        methodVisitor.visitInsn(Opcodes.RETURN);
+        methodVisitor.visitMaxs(2, 2);
+        methodVisitor.visitEnd();
+        node.methods.add(methodVisitor);
     }
 }

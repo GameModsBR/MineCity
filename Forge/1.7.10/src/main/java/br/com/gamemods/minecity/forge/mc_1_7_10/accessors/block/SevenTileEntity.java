@@ -5,11 +5,11 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
-import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenInterfaceTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.SevenTileEntityTransformer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-@Referenced(at = SevenInterfaceTransformer.class)
+@Referenced(at = SevenTileEntityTransformer.class)
 public interface SevenTileEntity extends ITileEntity
 {
     @Override
@@ -49,5 +49,38 @@ public interface SevenTileEntity extends ITileEntity
     {
         TileEntity tile = (TileEntity) this;
         return new BlockPos(mod.world(tile.getWorldObj()), tile.xCoord, tile.yCoord, tile.zCoord);
+    }
+
+    @Referenced(at = SevenTileEntityTransformer.class)
+    NBTTagCompound getMineCityCustomData();
+
+    @Referenced(at = SevenTileEntityTransformer.class)
+    void setMineCityCustomData(NBTTagCompound tag);
+
+    @Override
+    default NBTTagCompound getCustomData()
+    {
+        NBTTagCompound nbt = getMineCityCustomData();
+        if(nbt == null)
+            setMineCityCustomData(nbt = new NBTTagCompound());
+
+        return nbt;
+    }
+
+    @Referenced(at = SevenTileEntityTransformer.class)
+    default void saveMineCityData(NBTTagCompound base)
+    {
+        NBTTagCompound nbt = getMineCityCustomData();
+        if(nbt == null)
+            return;
+
+        base.setTag("mienCityData", nbt);
+    }
+
+    @Referenced(at = SevenTileEntityTransformer.class)
+    default void loadMineCityData(NBTTagCompound base)
+    {
+        if(base.hasKey("mineCityData"))
+            setMineCityCustomData(base.getCompoundTag("mineCityData"));
     }
 }

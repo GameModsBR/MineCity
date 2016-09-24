@@ -26,9 +26,6 @@ public class SevenInterfaceTransformer extends ForgeInterfaceTransformer
         r.put("net.minecraft.nbt.NBTTagCompound",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.accessors.SevenNBTTagCompound");
 
-        r.put("net.minecraft.tileentity.TileEntity",
-                "br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenTileEntity");
-
         r.put("net.minecraft.entity.passive.EntityTameable",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.accessors.entity.SevenEntityTameable");
 

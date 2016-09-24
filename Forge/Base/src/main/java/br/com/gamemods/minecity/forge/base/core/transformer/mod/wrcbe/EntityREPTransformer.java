@@ -2,11 +2,9 @@ package br.com.gamemods.minecity.forge.base.core.transformer.mod.wrcbe;
 
 import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
-import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertSetterGetterTransformer;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
 
 import java.util.Comparator;
@@ -29,16 +27,9 @@ public class EntityREPTransformer extends InsertSetterGetterTransformer
     }
 
     @Override
-    public byte[] transform(String name, String transformedName, byte[] basicClass)
+    protected void patch(String transformedName, ClassNode node, ClassReader reader)
     {
-        if(!"codechicken.wirelessredstone.addons.EntityREP".equals(transformedName))
-            return basicClass;
-
-        basicClass = super.transform(name, transformedName, basicClass);
-
-        ClassNode node = new ClassNode();
-        ClassReader reader = new ClassReader(basicClass);
-        reader.accept(node, 0);
+        super.patch(transformedName, node, reader);
 
         String bolt = "br/com/gamemods/minecity/forge/base/protection/wrcbe/IWirelessBolt";
 
@@ -74,11 +65,5 @@ public class EntityREPTransformer extends InsertSetterGetterTransformer
         method.visitInsn(ARETURN);
         method.visitEnd();
         node.methods.add(method);
-
-
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-        node.accept(writer);
-        basicClass = ModEnv.saveClass(transformedName, writer.toByteArray());
-        return basicClass;
     }
 }

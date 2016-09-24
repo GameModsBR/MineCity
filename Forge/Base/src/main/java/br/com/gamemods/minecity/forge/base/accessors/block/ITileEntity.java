@@ -51,4 +51,9 @@ public interface ITileEntity
     {
         return new BlockPos(mod.world(getIWorld()), getPosX(), getPosY(), getPosZ());
     }
+
+    default NBTTagCompound getCustomData()
+    {
+        return ((TileEntity) this).getTileData();
+    }
 }

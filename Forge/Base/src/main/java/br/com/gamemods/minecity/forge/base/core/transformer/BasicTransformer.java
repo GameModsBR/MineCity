@@ -48,7 +48,7 @@ public abstract class BasicTransformer implements IClassTransformer
     }
 
     @Override
-    public byte[] transform(String name, String transformedName, byte[] basicClass)
+    final public byte[] transform(String name, String transformedName, byte[] basicClass)
     {
         if(!accept(transformedName))
             return basicClass;

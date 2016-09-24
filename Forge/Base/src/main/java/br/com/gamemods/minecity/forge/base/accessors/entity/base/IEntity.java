@@ -462,8 +462,11 @@ public interface IEntity extends MinecraftEntity
 
     default Reaction reactImpactPost(MineCityForge mod, IRayTraceResult traceResult, List<IBlockSnapshot> changes, Permissible who, List<Permissible> relative)
     {
-        return new MultiBlockReaction(PermissionFlag.MODIFY,
-                changes.stream().map(snap -> snap.getPosition(mod)).collect(Collectors.toList())
+        if(changes.isEmpty())
+            return NoReaction.INSTANCE;
+
+        return MultiBlockReaction.create(PermissionFlag.MODIFY,
+                changes.stream().map(snap -> snap.getPosition(mod)).collect(Collectors.toSet())
         );
     }
 

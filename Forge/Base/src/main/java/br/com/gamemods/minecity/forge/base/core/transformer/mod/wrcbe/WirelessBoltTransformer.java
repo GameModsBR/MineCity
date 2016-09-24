@@ -2,11 +2,9 @@ package br.com.gamemods.minecity.forge.base.core.transformer.mod.wrcbe;
 
 import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
-import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.InsertSetterGetterTransformer;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.tree.*;
 
@@ -33,16 +31,9 @@ public class WirelessBoltTransformer extends InsertSetterGetterTransformer
     }
 
     @Override
-    public byte[] transform(String name, String transformedName, byte[] basicClass)
+    protected void patch(String transformedName, ClassNode node, ClassReader reader)
     {
-        if(!"codechicken.wirelessredstone.core.WirelessBolt".equals(transformedName))
-            return basicClass;
-
-        basicClass = super.transform(name, transformedName, basicClass);
-
-        ClassNode node = new ClassNode();
-        ClassReader reader = new ClassReader(basicClass);
-        reader.accept(node, 0);
+        super.patch(transformedName, node, reader);
 
         MethodNode wrapper = new MethodNode(ACC_PUBLIC + ACC_STATIC, "mineCity$etherJamEntity",
                 "(Lcodechicken/wirelessredstone/core/RedstoneEther;Lnet/minecraft/entity/EntityLivingBase;ZLcodechicken/wirelessredstone/core/WirelessBolt;)V",
@@ -182,10 +173,5 @@ public class WirelessBoltTransformer extends InsertSetterGetterTransformer
 
         node.methods.add(wrapper);
         node.methods.add(jamWrapper);
-
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
-        node.accept(writer);
-        basicClass = ModEnv.saveClass(transformedName, writer.toByteArray());
-        return basicClass;
     }
 }
