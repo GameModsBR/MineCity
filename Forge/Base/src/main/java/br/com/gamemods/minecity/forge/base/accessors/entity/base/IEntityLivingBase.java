@@ -72,4 +72,20 @@ public interface IEntityLivingBase extends IEntity
         else
             return new SingleBlockReaction(getBlockPos(mod), flag);
     }
+
+    default IItemStack getActiveItemStack()
+    {
+        return (IItemStack)(Object)((EntityLivingBase) this).getActiveItemStack();
+    }
+
+    default int getActiveItemUseCount()
+    {
+        EntityLivingBase entity = (EntityLivingBase) this;
+        return entity.getItemInUseCount();
+    }
+
+    default void stopUsingItem()
+    {
+        ((EntityLivingBase) this).stopActiveHand();
+    }
 }

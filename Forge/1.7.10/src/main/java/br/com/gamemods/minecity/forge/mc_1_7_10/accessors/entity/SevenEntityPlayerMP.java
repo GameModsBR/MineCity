@@ -8,8 +8,10 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPlayerMPTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPlayerTransformer;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.InventoryEnderChest;
 import net.minecraft.item.ItemStack;
@@ -185,5 +187,20 @@ public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingB
     default boolean hasNetHandler()
     {
         return ((EntityPlayerMP) this).playerNetServerHandler != null;
+    }
+
+    @Referenced(at = SevenEntityPlayerTransformer.class)
+    @Override
+    IItemStack getActiveItemStack();
+
+    @Referenced(at = SevenEntityPlayerTransformer.class)
+    @Override
+    int getActiveItemUseCount();
+
+    @Override
+    default void stopUsingItem()
+    {
+        EntityPlayer player = (EntityPlayer) this;
+        player.stopUsingItem();
     }
 }

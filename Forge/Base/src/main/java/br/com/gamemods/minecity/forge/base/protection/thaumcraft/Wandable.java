@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
+import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 
@@ -27,5 +28,10 @@ public interface Wandable
                                          AtomicBoolean finalize)
     {
         return new SingleBlockReaction(hit, PermissionFlag.MODIFY);
+    }
+
+    default Reaction onUsingWandTick(IItemStack stack, IEntityPlayerMP player, int count)
+    {
+        return NoReaction.INSTANCE;
     }
 }

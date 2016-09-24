@@ -158,4 +158,9 @@ public interface IItem
 
     @Referenced(at = ItemTransformer.class)
     IRayTraceResult rayTrace(IWorldServer world, IEntityPlayerMP player, boolean liquid);
+
+    default Reaction reactItemUseTick(IEntityPlayerMP player, IItemStack stack, int count)
+    {
+        return NoReaction.INSTANCE;
+    }
 }

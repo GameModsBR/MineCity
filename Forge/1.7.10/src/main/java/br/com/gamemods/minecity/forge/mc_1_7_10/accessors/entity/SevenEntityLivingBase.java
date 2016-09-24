@@ -29,4 +29,22 @@ public interface SevenEntityLivingBase extends IEntityLivingBase, SevenEntity
     {
         ((EntityLivingBase) this).setPositionAndUpdate(x, y, z);
     }
+
+    @Override
+    default IItemStack getActiveItemStack()
+    {
+        return null;
+    }
+
+    @Override
+    default int getActiveItemUseCount()
+    {
+        return 0;
+    }
+
+    @Override
+    default void stopUsingItem()
+    {
+        // Unsupported
+    }
 }

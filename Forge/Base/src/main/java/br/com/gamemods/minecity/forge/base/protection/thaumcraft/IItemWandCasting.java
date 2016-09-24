@@ -16,6 +16,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTra
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -100,7 +101,7 @@ public interface IItemWandCasting extends IItem
         }
 
         IItemFocusBasic focus = getFocus(stack);
-        if(focus != null)
+        if(focus != null && !ThaumHooks.isOnWandCooldown(player))
             return reaction.combine(focus.reactFocusRightClick(stack, world, player, result));
 
         return reaction;
@@ -109,5 +110,32 @@ public interface IItemWandCasting extends IItem
     default IItemFocusBasic getFocus(IItemStack stack)
     {
         return ThaumHooks.getFocus(this, stack);
+    }
+
+    default Wandable getObjectInUse(IItemStack stack, IWorldServer world)
+    {
+        NBTTagCompound tag = stack.getTag();
+        if(tag != null && tag.hasKey("IIUX"))
+        {
+            ITileEntity tile = world.getTileEntity(tag.getInteger("IIUX"), tag.getInteger("IIUY"), tag.getInteger("IIUZ"));
+            if(tile instanceof Wandable)
+                return (Wandable) tile;
+        }
+
+        return null;
+    }
+
+    @Override
+    default Reaction reactItemUseTick(IEntityPlayerMP player, IItemStack stack, int count)
+    {
+        Wandable wandable = getObjectInUse(stack, player.getIWorld());
+        if(wandable != null)
+            return wandable.onUsingWandTick(stack, player, count);
+
+        IItemFocusBasic focus = getFocus(stack);
+        if(focus != null && !ThaumHooks.isOnWandCooldown(player))
+            return focus.onUsingFocusTick(stack, player, count);
+
+        return NoReaction.INSTANCE;
     }
 }

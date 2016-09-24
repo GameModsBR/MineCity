@@ -12,7 +12,9 @@ import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.protection.ForgeMovementListener;
+import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.protection.MovementMonitor;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.DisplayedSelection;
@@ -84,6 +86,23 @@ public class ForgePlayer
         cmd.tick();
         updateGroups();
         checkPosition();
+        checkItemUse();
+    }
+
+    private void checkItemUse()
+    {
+        IEntityPlayerMP player = (IEntityPlayerMP) this.player;
+        IItemStack itemInUse = player.getActiveItemStack();
+        if(itemInUse != null)
+        {
+            Reaction reaction = itemInUse.getIItem().reactItemUseTick(player, itemInUse, player.getActiveItemUseCount());
+            Optional<Message> denial = reaction.can(mod.mineCity, player);
+            if(denial.isPresent())
+            {
+                player.stopUsingItem();
+                send(FlagHolder.wrapDeny(denial.get()));
+            }
+        }
     }
 
     public void checkStepOnFakeBlock()

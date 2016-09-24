@@ -2,10 +2,12 @@ package br.com.gamemods.minecity.forge.base.protection.thaumcraft;
 
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.TileNodeTransformer;
 import br.com.gamemods.minecity.forge.base.protection.ModHooks;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -22,6 +24,25 @@ public class ThaumHooks
     private static Field triggers;
     private static Field configWardedStone;
     private static Method wandGetFocus;
+    private static Method isOnCooldown;
+
+    public static boolean isOnWandCooldown(IEntityPlayerMP player)
+    {
+        try
+        {
+            if(isOnCooldown == null)
+            {
+                isOnCooldown = Class.forName("thaumcraft.common.items.wands.WandManager").getDeclaredMethod("isOnCooldown", EntityLivingBase.class);
+                isOnCooldown.setAccessible(true);
+            }
+
+            return (boolean) isOnCooldown.invoke(null, player);
+        }
+        catch(ReflectiveOperationException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
 
     public static IItemFocusBasic getFocus(IItemWandCasting wand, IItemStack stack)
     {

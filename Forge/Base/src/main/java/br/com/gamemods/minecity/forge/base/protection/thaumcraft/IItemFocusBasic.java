@@ -28,4 +28,9 @@ public interface IItemFocusBasic extends IItem
 
         return NoReaction.INSTANCE;
     }
+
+    default Reaction onUsingFocusTick(IItemStack stack, IEntityPlayerMP player, int count)
+    {
+        return NoReaction.INSTANCE;
+    }
 }
