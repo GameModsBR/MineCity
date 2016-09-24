@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityItem;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
@@ -160,6 +161,11 @@ public interface IItem
     IRayTraceResult rayTrace(IWorldServer world, IEntityPlayerMP player, boolean liquid);
 
     default Reaction reactItemUseTick(IEntityPlayerMP player, IItemStack stack, int count)
+    {
+        return NoReaction.INSTANCE;
+    }
+
+    default Reaction reactLivingSwing(IEntityLivingBase living, IItemStack stack)
     {
         return NoReaction.INSTANCE;
     }

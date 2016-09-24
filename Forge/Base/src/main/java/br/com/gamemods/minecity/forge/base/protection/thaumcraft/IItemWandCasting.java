@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
@@ -137,5 +138,15 @@ public interface IItemWandCasting extends IItem
             return focus.onUsingFocusTick(stack, player, count);
 
         return NoReaction.INSTANCE;
+    }
+
+    @Override
+    default Reaction reactLivingSwing(IEntityLivingBase living, IItemStack stack)
+    {
+        IItemFocusBasic focus = getFocus(stack);
+        if(focus == null || ThaumHooks.isOnWandCooldown(living))
+            return NoReaction.INSTANCE;
+
+        return focus.reactLivingSwing(living, stack);
     }
 }

@@ -2,8 +2,10 @@ package br.com.gamemods.minecity.forge.base.protection.thaumcraft;
 
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
@@ -36,6 +38,26 @@ public class ThaumHooks
     private static Method wandGetFocus;
     private static Method isOnCooldown;
     private static Method getArchitectBlocks;
+    private static Method focusTradeTrace;
+
+    public static IRayTraceResult getFocusTradeTraceFromPlayer(IItemFocusTrade trade, IWorldServer world, IEntityPlayerMP player)
+    {
+        try
+        {
+            if(focusTradeTrace == null)
+            {
+                focusTradeTrace = Class.forName("thaumcraft.common.items.wands.foci.ItemFocusTrade").getDeclaredMethod(
+                        "getMovingObjectPositionFromPlayer", World.class, EntityPlayer.class
+                );
+                focusTradeTrace.setAccessible(true);
+            }
+            return (IRayTraceResult) focusTradeTrace.invoke(trade, world, player);
+        }
+        catch(ReflectiveOperationException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
 
     @SuppressWarnings("unchecked")
     public static List<IBlockCoordinates> getArchitectBlocks(IItemFocusWarding item, IItemStack stack, IWorldServer world, int x, int y, int z, int side, IEntityPlayerMP player)
@@ -53,7 +75,7 @@ public class ThaumHooks
         }
     }
 
-    public static boolean isOnWandCooldown(IEntityPlayerMP player)
+    public static boolean isOnWandCooldown(IEntityLivingBase player)
     {
         try
         {

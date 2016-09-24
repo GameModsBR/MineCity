@@ -15,14 +15,14 @@ public interface ITileWarded extends ITileEntity
 {
     default void setPlacedBy(UUID id)
     {
-        getCustomData().setString("MC$PB2", id.toString());
+        getCustomData().setString("MC$O", id.toString());
         ((TileEntity) this).markDirty();
     }
 
     @Nullable
     default UUID getPlacedBy()
     {
-        String placedBy = getCustomData().getString("MC$PB2");
+        String placedBy = getCustomData().getString("MC$O");
         if(placedBy.isEmpty())
             return null;
 

@@ -64,6 +64,20 @@ public class EntityProtections extends ForgeProtections
         super(mod);
     }
 
+    public boolean onLivingSwing(IItem item, IEntityLivingBase living, IItemStack stack)
+    {
+        Optional<Message> denial = item.reactLivingSwing(living, stack).combine(living.reactSwing(item, stack))
+                .can(mod.mineCity, living);
+
+        if(denial.isPresent())
+        {
+            living.send(FlagHolder.wrapDeny(denial.get()));
+            return true;
+        }
+
+        return false;
+    }
+
     public void onExplosionDetonate(IEntity impacting, IWorldServer world, IExplosion explosion, List<IEntity> entities,
                                     List<BlockPos> blocks)
     {

@@ -4,7 +4,10 @@ import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
@@ -331,6 +334,14 @@ public class MineCitySevenHooks
             throw new UnsupportedOperationException(obj.getClass().toString());
 
         return new BlockPos(ModEnv.blockProtections.mod.world(world), x, y, z);
+    }
+
+    @Referenced(at = EntityLivingBaseTransformer.class)
+    public static boolean onLivingSwing(IItem item, IEntityLivingBase living, IItemStack stack)
+    {
+        return !((EntityLivingBase) living).worldObj.isRemote &&
+                ModEnv.entityProtections.onLivingSwing(item, living, stack);
+
     }
 
     private MineCitySevenHooks(){}

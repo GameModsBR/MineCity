@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
@@ -87,5 +88,10 @@ public interface IEntityLivingBase extends IEntity
     default void stopUsingItem()
     {
         ((EntityLivingBase) this).stopActiveHand();
+    }
+
+    default Reaction reactSwing(IItem item, IItemStack stack)
+    {
+        return NoReaction.INSTANCE;
     }
 }
