@@ -9,9 +9,9 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
-import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.IEntityThrowable;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.ApproveReaction;
@@ -19,6 +19,7 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.RevertDeniedReaction;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
+import br.com.gamemods.minecity.forge.base.tile.ITileEntityData;
 
 import java.util.List;
 import java.util.Set;
@@ -49,7 +50,6 @@ public interface IEntityShockOrb extends IEntityThrowable
             return IEntityThrowable.super.reactImpactPost(mod, traceResult, changes, who, relative);
 
         Reaction reaction = NoReaction.INSTANCE;
-        IWorldServer world = getIWorld();
         Set<BlockPos> positions = changes.stream().map(snap-> snap.getPosition(mod)).collect(Collectors.toSet());
         if(positions.stream().anyMatch(NOT_AIRY))
         {
@@ -62,13 +62,11 @@ public interface IEntityShockOrb extends IEntityThrowable
         }
 
         return new ApproveReaction(changes.get(0).getPosition(mod), PermissionFlag.MODIFY).addAllowListener((r, permissible, flag, first, message) ->
-                changes.stream().filter(snap-> !NOT_AIRY.test(snap.getPosition(mod))).forEach(snap->
-                        mod.callSyncMethod(()-> {
-                            ITileEntity tile = snap.getCurrentTileEntity();
-                            if(tile instanceof ITileNode)
-                                ((ITileNode) tile).setOwner(player);
-                        })
-                )
+                changes.stream().filter(snap-> !NOT_AIRY.test(snap.getPosition(mod))).forEach(snap->{
+                    ITileEntityData tile = ModEnv.dataSupplier.get();
+                    tile.setOwner(player);
+                    snap.getIWorld().setTile(snap.getX(), snap.getY(), snap.getZ(), tile);
+                })
         ).combine(reaction);
     }
 }

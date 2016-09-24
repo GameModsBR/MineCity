@@ -13,12 +13,14 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
+import br.com.gamemods.minecity.forge.base.tile.ITileEntityData;
 import br.com.gamemods.minecity.forge.mc_1_7_10.SevenUtil;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlock;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenMetadataProperty;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.world.SevenWorldServerTransformer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -177,5 +179,11 @@ public interface SevenWorldServer extends IWorldServer
     default IMinecraftServer getServer()
     {
         return (IMinecraftServer) ((WorldServer) this).func_73046_m();
+    }
+
+    @Override
+    default void setTile(int x, int y, int z, ITileEntityData tile)
+    {
+        ((WorldServer) this).setTileEntity(x, y, z, (TileEntity) tile);
     }
 }

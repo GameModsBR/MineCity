@@ -10,11 +10,13 @@ import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
+import br.com.gamemods.minecity.forge.base.tile.ITileEntityData;
 import br.com.gamemods.minecity.forge.mc_1_10_2.FrostUtil;
 import br.com.gamemods.minecity.forge.mc_1_10_2.accessors.block.FrostBlock;
 import br.com.gamemods.minecity.forge.mc_1_10_2.accessors.block.FrostState;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostWorldServerTransformer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -129,5 +131,11 @@ public interface FrostWorldServer extends IWorldServer
     default IBlockSnapshot getBlockSnapshot(int x, int y, int z)
     {
         return (IBlockSnapshot) BlockSnapshot.getBlockSnapshot((World)this, new BlockPos(x, y, z));
+    }
+
+    @Override
+    default void setTile(int x, int y, int z, ITileEntityData tile)
+    {
+        ((WorldServer) this).setTileEntity(new BlockPos(x, y, z), (TileEntity) tile);
     }
 }

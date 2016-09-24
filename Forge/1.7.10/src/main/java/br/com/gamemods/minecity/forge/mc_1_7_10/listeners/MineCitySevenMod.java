@@ -15,10 +15,12 @@ import br.com.gamemods.minecity.forge.mc_1_7_10.protection.opencomputers.SevenRo
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.protectmyplane.PlaneListener;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenBlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenEntityProtections;
+import br.com.gamemods.minecity.forge.mc_1_7_10.tileentity.SevenTileEntityData;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.event.*;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -41,6 +43,9 @@ public class MineCitySevenMod
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) throws IOException, SAXException
     {
+        GameRegistry.registerTileEntity(SevenTileEntityData.class, "MineCityData");
+        ModEnv.dataSupplier = SevenTileEntityData::new;
+
         MathUtil.sin = MathHelper::sin;
         MathUtil.cos = MathHelper::cos;
 

@@ -2,9 +2,11 @@ package br.com.gamemods.minecity.forge.base.core;
 
 import br.com.gamemods.minecity.forge.base.protection.vanilla.BlockProtections;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
+import br.com.gamemods.minecity.forge.base.tile.ITileEntityData;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.function.Supplier;
 
 public class ModEnv
 {
@@ -17,6 +19,8 @@ public class ModEnv
     public static EntityProtections entityProtections;
     public static BlockProtections blockProtections;
     public static boolean seven;
+
+    public static Supplier<ITileEntityData> dataSupplier;
 
     public static boolean saveClasses = true;
 

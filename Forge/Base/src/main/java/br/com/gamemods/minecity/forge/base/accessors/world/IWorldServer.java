@@ -16,6 +16,7 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.world.WorldServerTransformer;
+import br.com.gamemods.minecity.forge.base.tile.ITileEntityData;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import org.jetbrains.annotations.Nullable;
@@ -136,4 +137,6 @@ public interface IWorldServer
     {
         return (IMinecraftServer) ((WorldServer) this).getMinecraftServer();
     }
+
+    void setTile(int x, int y, int z, ITileEntityData tile);
 }
