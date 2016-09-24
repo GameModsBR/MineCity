@@ -51,6 +51,7 @@ public class SevenEntityProtections extends EntityProtections
             return;
 
         onExplosionDetonate(
+                (IEntity) MineCitySevenHooks.spawner,
                 (IWorldServer) event.world,
                 (IExplosion) event.explosion,
                 (List) event.getAffectedEntities(),

@@ -64,7 +64,8 @@ public class EntityProtections extends ForgeProtections
         super(mod);
     }
 
-    public void onExplosionDetonate(IWorldServer world, IExplosion explosion, List<IEntity> entities, List<BlockPos> blocks)
+    public void onExplosionDetonate(IEntity impacting, IWorldServer world, IExplosion explosion, List<IEntity> entities,
+                                    List<BlockPos> blocks)
     {
         IEntityLivingBase igniter = explosion.getWhoPlaced();
         final IEntity exploder;
@@ -72,9 +73,13 @@ public class EntityProtections extends ForgeProtections
             IEntity ex = explosion.getExploder();
             if(ex == null)
             {
-                ex = (IEntity) new EntityTNTPrimed((World) world, explosion.getExplosionX(),
-                        explosion.getExplosionY(), explosion.getExplosionZ(), (EntityLivingBase) igniter
-                );
+                if(impacting != null)
+                    ex = impacting;
+
+                if(ex == null)
+                    ex = (IEntity) new EntityTNTPrimed((World) world, explosion.getExplosionX(),
+                            explosion.getExplosionY(), explosion.getExplosionZ(), (EntityLivingBase) igniter
+                    );
             }
 
             exploder = ex;

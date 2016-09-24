@@ -54,6 +54,7 @@ public class FrostEntityProtections extends EntityProtections
             return;
 
         onExplosionDetonate(
+                (IEntity) MineCityFrostHooks.spawner,
                 (IWorldServer) event.getWorld(),
                 (IExplosion) event.getExplosion(),
                 (List) event.getAffectedEntities(),

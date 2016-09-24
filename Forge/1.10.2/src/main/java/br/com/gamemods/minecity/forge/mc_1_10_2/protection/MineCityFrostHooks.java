@@ -55,7 +55,7 @@ import java.util.List;
 @Referenced
 public class MineCityFrostHooks
 {
-    public static Entity spawner;
+    public static volatile Entity spawner;
     public static Object pistonMovedBy;
 
     @Referenced(at = UpgradeTractorBeamTransformer.class)
