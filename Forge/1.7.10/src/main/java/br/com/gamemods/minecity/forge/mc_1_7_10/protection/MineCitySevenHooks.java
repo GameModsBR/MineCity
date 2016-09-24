@@ -25,6 +25,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.Up
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityLivingBaseTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.entity.SevenEntityPotionTransformer;
+import br.com.gamemods.minecity.forge.mc_1_7_10.core.transformer.forge.world.SevenWorldServerTransformer;
 import br.com.gamemods.minecity.forge.mc_1_7_10.event.*;
 import cpw.mods.fml.common.eventhandler.Event;
 import net.minecraft.block.Block;
@@ -342,6 +343,17 @@ public class MineCitySevenHooks
         return !((EntityLivingBase) living).worldObj.isRemote &&
                 ModEnv.entityProtections.onLivingSwing(item, living, stack);
 
+    }
+
+    @Referenced(at = SevenWorldServerTransformer.class)
+    public static boolean canMineBlock(World mcWorld, EntityPlayer mcPlayer, int x, int y, int z)
+    {
+        IWorldServer world = (IWorldServer) mcWorld;
+        return ModEnv.blockProtections.onBlockBreak(mcPlayer,
+                world.getIState(x, y, z),
+                new BlockPos(ModEnv.blockProtections.mod.world(world), x, y, z),
+                false
+        );
     }
 
     private MineCitySevenHooks(){}

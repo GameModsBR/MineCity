@@ -167,13 +167,19 @@ public class BlockProtections extends ForgeProtections
 
     public boolean onBlockBreak(EntityPlayer entity, IState state, BlockPos pos)
     {
+        return onBlockBreak(entity, state, pos, true);
+    }
+
+    public boolean onBlockBreak(EntityPlayer entity, IState state, BlockPos pos, boolean verbose)
+    {
         ForgePlayer player = mod.player(entity);
         Reaction reaction = state.getIBlock().reactBlockBreak(player, state, pos);
 
         Optional<Message> denial = reaction.can(mod.mineCity, player);
         if(denial.isPresent())
         {
-            player.send(FlagHolder.wrapDeny(denial.get()));
+            if(verbose)
+                player.send(FlagHolder.wrapDeny(denial.get()));
             return true;
         }
 

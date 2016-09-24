@@ -6,6 +6,7 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBa
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
+import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockDragonEggTransformer;
@@ -21,6 +22,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.AdapterTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.UpgradeTractorBeamTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPotionTransformer;
+import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostWorldServerTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.*;
 import net.minecraft.block.BlockDragonEgg;
 import net.minecraft.block.state.IBlockState;
@@ -362,7 +364,20 @@ public class MineCityFrostHooks
     {
         return !((EntityLivingBase) living).worldObj.isRemote &&
                 ModEnv.entityProtections.onLivingSwing(item, living, stack);
+    }
 
+    @Referenced(at = FrostWorldServerTransformer.class)
+    public static boolean canMineBlock(World mcWorld, EntityPlayer mcPlayer, BlockPos pos)
+    {
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
+        IWorldServer world = (IWorldServer) mcWorld;
+        return ModEnv.blockProtections.onBlockBreak(mcPlayer,
+                world.getIState(x, y, z),
+                new br.com.gamemods.minecity.api.world.BlockPos(ModEnv.blockProtections.mod.world(world), x, y, z),
+                false
+        );
     }
 
     private MineCityFrostHooks(){}
