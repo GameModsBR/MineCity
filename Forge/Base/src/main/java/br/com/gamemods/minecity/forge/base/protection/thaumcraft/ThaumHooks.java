@@ -1,17 +1,22 @@
 package br.com.gamemods.minecity.forge.base.protection.thaumcraft;
 
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
+import br.com.gamemods.minecity.forge.base.accessors.item.ItemBlockBase;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.BlockAiryTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.ServerTickEventsFMLTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.TileNodeTransformer;
 import br.com.gamemods.minecity.forge.base.protection.ModHooks;
 import br.com.gamemods.minecity.forge.base.tile.ITileEntityData;
@@ -29,6 +34,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Referenced
 public class ThaumHooks
@@ -190,5 +196,19 @@ public class ThaumHooks
                 (IEntity) mcEntity,
                 new EntityDamageSource(source.damageType, (Entity) player), amount, true
         );
+    }
+
+    @Referenced(at = ServerTickEventsFMLTransformer.class)
+    public static boolean onSwapperSwap(EntityPlayer mcPlayer, ItemStack target, World mcWorld, int x, int y, int z)
+    {
+        IEntityPlayerMP player = (IEntityPlayerMP) mcPlayer;
+        IItemStack stack = (IItemStack) (Object) target;
+        IItem item = stack.getIItem();
+        if(!(item instanceof ItemBlockBase))
+            return true;
+
+        Optional<Message> denial = ((ItemBlockBase) item).getIBlock().reactPrePlace(player, stack, new BlockPos(player.getServer().world(mcWorld), x, y, z))
+                .can(player.getServer().mineCity, player);
+        return denial.isPresent();
     }
 }
