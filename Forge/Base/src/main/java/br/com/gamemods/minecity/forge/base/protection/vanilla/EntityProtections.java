@@ -17,7 +17,10 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
-import br.com.gamemods.minecity.forge.base.accessors.entity.base.*;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IPotionEffect;
 import br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityItem;
 import br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityXPOrb;
 import br.com.gamemods.minecity.forge.base.accessors.entity.item.Pickable;
@@ -228,8 +231,7 @@ public class EntityProtections extends ForgeProtections
 
     public boolean onEntityEnterWorld(IEntity entity, BlockPos pos, IEntity spawner)
     {
-        if(entity instanceof EntityOwnable)
-            ((EntityOwnable) entity).detectOwner();
+        entity.onEnterWorld(pos, spawner);
 
         if(spawner == null)
             return false;
@@ -599,13 +601,7 @@ public class EntityProtections extends ForgeProtections
 
     public void onEntityEnterChunk(Entity entity, int fromX, int fromZ, int toX, int toZ)
     {
-        if(entity.ticksExisted != 0 || !(entity instanceof Projectile))
-            return;
-
-        Projectile projectile = (Projectile) entity;
-        ProjectileShooter shooter = projectile.getShooter();
-        if(shooter == null)
-            projectile.detectShooter(mod);
+        ((IEntity) entity).onEnterChunk(mod, fromX, fromZ, toX, toZ);
     }
 
     private boolean shouldAdd(IEntity owner, List<Permissible> list)

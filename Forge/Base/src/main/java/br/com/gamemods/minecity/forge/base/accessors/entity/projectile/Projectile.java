@@ -111,4 +111,11 @@ public interface Projectile
             return null;
         }
     }
+
+    default void onProjectileEnterChunk(MineCityForge mod, int fromX, int fromZ, int toX, int toZ)
+    {
+        ProjectileShooter shooter = getShooter();
+        if(shooter == null)
+            detectShooter(mod);
+    }
 }

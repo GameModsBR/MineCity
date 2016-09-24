@@ -14,6 +14,7 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
+import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.Projectile;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
@@ -489,5 +490,22 @@ public interface IEntity extends MinecraftEntity
     default boolean isBurning()
     {
         return getForgeEntity().isBurning();
+    }
+
+    default void onEnterWorld(BlockPos pos, IEntity spawner)
+    {
+        if(this instanceof EntityOwnable)
+            ((EntityOwnable) this).detectOwner();
+    }
+
+    default int getTicksExisted()
+    {
+        return ((Entity) this).ticksExisted;
+    }
+
+    default void onEnterChunk(MineCityForge mod, int fromX, int fromZ, int toX, int toZ)
+    {
+        if(getTicksExisted() == 0 && this instanceof Projectile)
+            ((Projectile) this).onProjectileEnterChunk(mod, fromX, fromZ, toX, toZ);
     }
 }

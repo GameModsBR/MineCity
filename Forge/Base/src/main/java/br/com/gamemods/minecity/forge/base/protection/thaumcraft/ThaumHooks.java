@@ -31,20 +31,49 @@ import net.minecraft.world.World;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Referenced
 public class ThaumHooks
 {
+    public static volatile UUID fireBatSpawner;
+
     private static Field triggers;
     private static Field configWardedStone;
     private static Method wandGetFocus;
     private static Method isOnCooldown;
     private static Method getArchitectBlocks;
     private static Method focusTradeTrace;
+    private static Method getPointedEntity;
+    private static Field fireBatOwner;
+
+    public static IEntityPlayerMP getOwner(IEntityFireBat entity)
+    {
+        try
+        {
+            if(fireBatOwner == null)
+                fireBatOwner = Class.forName("thaumcraft.common.entities.monster.EntityFireBat").getDeclaredField("owner");
+            return (IEntityPlayerMP) fireBatOwner.get(entity);
+        }
+        catch(ReflectiveOperationException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+
+    public static IEntity getPointedEntity(IWorldServer world, IEntityPlayerMP player, double range, Class<?> clazz)
+    {
+        try
+        {
+            if(getPointedEntity == null)
+                getPointedEntity = Class.forName("thaumcraft.common.lib.utils.EntityUtils").getDeclaredMethod("getPointedEntity", World.class, EntityPlayer.class, double.class, Class.class);
+            return (IEntity) getPointedEntity.invoke(null, world, player, range, clazz);
+        }
+        catch(ReflectiveOperationException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
 
     public static IRayTraceResult getFocusTradeTraceFromPlayer(IItemFocusTrade trade, IWorldServer world, IEntityPlayerMP player)
     {
