@@ -15,6 +15,7 @@ import br.com.gamemods.minecity.forge.base.protection.ModHooks;
 import br.com.gamemods.minecity.forge.base.tile.ITileEntityData;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
@@ -34,6 +35,23 @@ public class ThaumHooks
     private static Field configWardedStone;
     private static Method wandGetFocus;
     private static Method isOnCooldown;
+    private static Method getArchitectBlocks;
+
+    @SuppressWarnings("unchecked")
+    public static List<IBlockCoordinates> getArchitectBlocks(IItemFocusWarding item, IItemStack stack, IWorldServer world, int x, int y, int z, int side, IEntityPlayerMP player)
+    {
+        try
+        {
+            if(getArchitectBlocks == null)
+                getArchitectBlocks = Class.forName("thaumcraft.common.items.wands.foci.ItemFocusWarding").getDeclaredMethod("getArchitectBlocks", ItemStack.class, World.class, int.class, int.class, int.class, int.class, EntityPlayer.class);
+
+            return (List) getArchitectBlocks.invoke(item, stack, world, x, y, z, side, player);
+        }
+        catch(ReflectiveOperationException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
 
     public static boolean isOnWandCooldown(IEntityPlayerMP player)
     {

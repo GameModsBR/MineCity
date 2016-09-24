@@ -74,7 +74,7 @@ public interface SevenTileEntity extends ITileEntity
         if(nbt == null)
             return;
 
-        base.setTag("mienCityData", nbt);
+        base.setTag("mineCityData", nbt);
     }
 
     @Referenced(at = SevenTileEntityTransformer.class)

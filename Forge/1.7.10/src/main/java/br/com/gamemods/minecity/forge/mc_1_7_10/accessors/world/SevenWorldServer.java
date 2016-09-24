@@ -186,4 +186,10 @@ public interface SevenWorldServer extends IWorldServer
     {
         ((WorldServer) this).setTileEntity(x, y, z, (TileEntity) tile);
     }
+
+    @Override
+    default boolean isNormalCube(int x, int y, int z, boolean def)
+    {
+        return ((WorldServer) this).isBlockNormalCubeDefault(x, y, z, def);
+    }
 }

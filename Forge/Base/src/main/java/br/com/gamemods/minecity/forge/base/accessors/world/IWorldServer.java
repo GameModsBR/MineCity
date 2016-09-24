@@ -139,4 +139,11 @@ public interface IWorldServer
     }
 
     void setTile(int x, int y, int z, ITileEntityData tile);
+
+    boolean isNormalCube(int x, int y, int z, boolean def);
+
+    default boolean isNormalCube(BlockPos pos, boolean def)
+    {
+        return isNormalCube(pos.x, pos.y, pos.z, def);
+    }
 }

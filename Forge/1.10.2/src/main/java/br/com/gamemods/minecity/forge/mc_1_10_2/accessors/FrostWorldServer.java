@@ -138,4 +138,10 @@ public interface FrostWorldServer extends IWorldServer
     {
         ((WorldServer) this).setTileEntity(new BlockPos(x, y, z), (TileEntity) tile);
     }
+
+    @Override
+    default boolean isNormalCube(int x, int y, int z, boolean def)
+    {
+        return ((WorldServer) this).isBlockNormalCube(new BlockPos(x, y, z), def);
+    }
 }
