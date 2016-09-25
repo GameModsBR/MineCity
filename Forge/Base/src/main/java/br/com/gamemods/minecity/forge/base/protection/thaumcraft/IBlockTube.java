@@ -1,31 +1,21 @@
 package br.com.gamemods.minecity.forge.base.protection.thaumcraft;
 
+import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
-import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenReactor;
+import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.BlockAndSidesReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.DoubleBlockReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import org.jetbrains.annotations.Nullable;
 
 @Referenced(at = ModInterfacesTransformer.class)
-public interface IBlockWoodenDevice extends IBlockOpenReactor, IBlockPlaceMetaReaction
+public interface IBlockTube extends IBlockOpenReactor
 {
-    @Nullable
     @Override
-    default Reaction reactPlace(BlockPos pos, int meta)
+    default Reaction reactPrePlace(Permissible who, IItemStack stack, BlockPos pos)
     {
-        switch(meta)
-        {
-            case 4:
-                return new BlockAndSidesReaction(PermissionFlag.MODIFY, pos);
-            case 5:
-                return new DoubleBlockReaction(PermissionFlag.MODIFY, pos, pos.add(Direction.DOWN));
-        }
-
-        return null;
+        return new BlockAndSidesReaction(PermissionFlag.MODIFY, pos);
     }
 }

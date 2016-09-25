@@ -6,24 +6,28 @@ import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenReactor;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.BlockAndSidesReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.DoubleBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.MultiBlockReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
 
 @Referenced(at = ModInterfacesTransformer.class)
-public interface IBlockWoodenDevice extends IBlockOpenReactor, IBlockPlaceMetaReaction
+public interface IBlockStoneDevice extends IBlockOpenReactor, IBlockPlaceMetaReaction
 {
-    @Nullable
     @Override
     default Reaction reactPlace(BlockPos pos, int meta)
     {
         switch(meta)
         {
-            case 4:
-                return new BlockAndSidesReaction(PermissionFlag.MODIFY, pos);
+            case 0:
             case 5:
-                return new DoubleBlockReaction(PermissionFlag.MODIFY, pos, pos.add(Direction.DOWN));
+            case 9:
+            case 10:
+            case 12:
+                return new DoubleBlockReaction(PermissionFlag.MODIFY, pos, pos.add(Direction.UP));
+            case 11:
+                return MultiBlockReaction.create(PermissionFlag.MODIFY, Arrays.asList(pos, pos.add(Direction.DOWN), pos.add(Direction.DOWN, 2)));
         }
 
         return null;
