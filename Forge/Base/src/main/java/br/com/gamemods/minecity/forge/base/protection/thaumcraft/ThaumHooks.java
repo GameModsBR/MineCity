@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
@@ -257,6 +258,7 @@ public class ThaumHooks
     }
 
     @Referenced(at = ItemElementalSwordTransformer.class)
+    @Referenced(at = ItemElementalAxeTransformer.class)
     public static List<IEntity> onItemMoveEntity(List<IEntity> movedEntities, Item mcItem, ItemStack mcStack, EntityPlayer mcPlayer, int useCount)
     {
         if(movedEntities.isEmpty() || mcPlayer.worldObj.isRemote)
@@ -267,7 +269,7 @@ public class ThaumHooks
         {
             if(ModEnv.entityProtections.onEntityPullEntity(entity, player, false))
             {
-                entity.getObservers().forEach(p-> p.sendTeleport(entity));
+                player.getServer().callSyncMethod(()-> entity.getObservers().forEach(p-> p.sendTeleport(entity)));
                 return true;
             }
 
@@ -275,5 +277,20 @@ public class ThaumHooks
         });
 
         return movedEntities;
+    }
+
+    @Referenced(at = BlockUtilsTransformer.class)
+    public static boolean onPlayerBreak(EntityPlayer mcPlayer, World mcWorld, int x, int y, int z)
+    {
+        if(mcWorld.isRemote)
+            return false;
+
+        if(mcPlayer == null)
+            return true;
+
+        IWorldServer world = (IWorldServer) mcWorld;
+        WorldDim dim = ModEnv.blockProtections.mod.world(mcWorld);
+        BlockPos pos = new BlockPos(dim, x, y, z);
+        return ModEnv.blockProtections.onBlockBreak(mcPlayer, world.getIState(pos), pos, false);
     }
 }
