@@ -328,4 +328,9 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
     }
 
     void sendTeleport(IEntity entity);
+
+    default void setSneaking(boolean val)
+    {
+        getForgeEntity().setSneaking(val);
+    }
 }
