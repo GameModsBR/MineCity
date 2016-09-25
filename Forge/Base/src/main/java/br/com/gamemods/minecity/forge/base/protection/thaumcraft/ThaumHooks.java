@@ -16,6 +16,7 @@ import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.BlockAiryTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.EntityPrimalOrbTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.ServerTickEventsFMLTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.TileNodeTransformer;
 import br.com.gamemods.minecity.forge.base.protection.ModHooks;
@@ -239,5 +240,13 @@ public class ThaumHooks
         Optional<Message> denial = ((ItemBlockBase) item).getIBlock().reactPrePlace(player, stack, new BlockPos(player.getServer().world(mcWorld), x, y, z))
                 .can(player.getServer().mineCity, player);
         return denial.isPresent();
+    }
+
+    @Referenced(at = EntityPrimalOrbTransformer.class)
+    public static boolean onEntityChangeBiome(Entity mcEntity, World mcWorld, int x, int z)
+    {
+        return !mcWorld.isRemote &&
+                ModHooks.onEntityChangeBiome((IEntity) mcEntity, (IWorldServer) mcWorld, x, z).isPresent();
+
     }
 }

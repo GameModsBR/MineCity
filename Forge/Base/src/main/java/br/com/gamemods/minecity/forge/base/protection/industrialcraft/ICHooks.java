@@ -7,7 +7,6 @@ import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.world.BlockPos;
-import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
@@ -239,17 +238,7 @@ public class ICHooks
     public static boolean onChangeBiome(World world, int x, int z)
     {
         ITileEntity tile = ICHooks.terraforming;
-        if(tile == null)
-            return false;
-
-        MineCityForge mod = ModEnv.blockProtections.mod;
-        BlockPos tilePos = tile.getBlockPos(mod);
-        ClaimedChunk tileChunk = mod.mineCity.provideChunk(tilePos.getChunk());
-        Identity<?> owner = tileChunk.getFlagHolder(tilePos).owner();
-
-        ClaimedChunk claim = mod.mineCity.provideChunk(new ChunkPos(mod.world(world), x, z), tileChunk);
-        return claim.getFlagHolder().can(owner, PermissionFlag.MODIFY).isPresent()
-            || claim.getPlots().stream().anyMatch(plot-> plot.can(owner, PermissionFlag.MODIFY).isPresent());
+        return tile != null && ModHooks.onTileEntityChangeBiome(tile, (IWorldServer) world, x, z).isPresent();
     }
 
     @Referenced(at = TileEntityTeleporterTransformer.class)
