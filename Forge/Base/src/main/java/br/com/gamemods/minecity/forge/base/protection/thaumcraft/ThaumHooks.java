@@ -15,10 +15,7 @@ import br.com.gamemods.minecity.forge.base.accessors.item.ItemBlockBase;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.BlockAiryTransformer;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.EntityPrimalOrbTransformer;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.ServerTickEventsFMLTransformer;
-import br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.TileNodeTransformer;
+import br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.*;
 import br.com.gamemods.minecity.forge.base.protection.ModHooks;
 import br.com.gamemods.minecity.forge.base.tile.ITileEntityData;
 import net.minecraft.entity.Entity;
@@ -248,5 +245,11 @@ public class ThaumHooks
         return !mcWorld.isRemote &&
                 ModHooks.onEntityChangeBiome((IEntity) mcEntity, (IWorldServer) mcWorld, x, z).isPresent();
 
+    }
+
+    @Referenced(at = EntityFrostShardTransformer.class)
+    public static boolean onEntityApplyNegativeEffect(EntityLivingBase affected, Entity applier)
+    {
+        return ModEnv.entityProtections.onEntityDamage((IEntity) affected, new EntityDamageSource("generic", applier), 1, true);
     }
 }
