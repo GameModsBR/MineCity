@@ -19,6 +19,7 @@ public class ModEnv
 
     public static String hookClass;
     public static String rayTraceResultClass;
+    public static String aabbClass;
     public static EntityProtections entityProtections;
     public static BlockProtections blockProtections;
     public static boolean seven;

@@ -320,4 +320,12 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
         player.inventory.setInventorySlotContents(slot, stack);
         player.inventoryContainer.detectAndSendChanges();
     }
+
+    default boolean canSee(IEntity entity)
+    {
+        //noinspection SuspiciousMethodCalls
+        return entity.getObservers().contains(this);
+    }
+
+    void sendTeleport(IEntity entity);
 }

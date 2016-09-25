@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.accessors.entity;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLiving;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
@@ -117,5 +118,11 @@ public interface FrostEntityPlayerMP extends IEntityPlayerMP, FrostEntity
     default void sendLeashState(IEntityLiving entity)
     {
         sendPacket(new SPacketEntityAttach((Entity)entity, (Entity)entity.getLeashHolder()));
+    }
+
+    @Override
+    default void sendTeleport(IEntity entity)
+    {
+        sendPacket(new SPacketEntityTeleport((Entity) entity));
     }
 }

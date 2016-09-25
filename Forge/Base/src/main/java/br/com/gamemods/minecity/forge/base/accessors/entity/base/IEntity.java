@@ -33,6 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -507,5 +508,11 @@ public interface IEntity extends MinecraftEntity
     {
         if(getTicksExisted() == 0 && this instanceof Projectile)
             ((Projectile) this).onProjectileEnterChunk(mod, fromX, fromZ, toX, toZ);
+    }
+
+    @SuppressWarnings("unchecked")
+    default Set<IEntityPlayerMP> getObservers()
+    {
+        return (Set) getWorld().getEntityTracker().getTrackingPlayers((Entity) this);
     }
 }

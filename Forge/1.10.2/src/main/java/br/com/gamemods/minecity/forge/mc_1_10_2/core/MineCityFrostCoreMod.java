@@ -45,6 +45,7 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
     {
         ModEnv.hookClass = "br.com.gamemods.minecity.forge.mc_1_10_2.protection.MineCityFrostHooks";
         ModEnv.rayTraceResultClass = "net.minecraft.util.math.RayTraceResult";
+        ModEnv.aabbClass = "net.minecraft.util.math.AxisAlignedBB";
 
         return new String[]{
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.PartFormationPlaneTransformer",

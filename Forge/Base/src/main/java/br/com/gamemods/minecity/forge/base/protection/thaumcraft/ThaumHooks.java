@@ -21,6 +21,7 @@ import br.com.gamemods.minecity.forge.base.tile.ITileEntityData;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
@@ -253,5 +254,26 @@ public class ThaumHooks
     public static boolean onEntityApplyNegativeEffect(EntityLivingBase affected, Entity applier)
     {
         return ModEnv.entityProtections.onEntityDamage((IEntity) affected, new EntityDamageSource("generic", applier), 1, true);
+    }
+
+    @Referenced(at = ItemElementalSwordTransformer.class)
+    public static List<IEntity> onItemMoveEntity(List<IEntity> movedEntities, Item mcItem, ItemStack mcStack, EntityPlayer mcPlayer, int useCount)
+    {
+        if(movedEntities.isEmpty() || mcPlayer.worldObj.isRemote)
+            return movedEntities;
+
+        IEntityPlayerMP player = (IEntityPlayerMP) mcPlayer;
+        movedEntities.removeIf(entity ->
+        {
+            if(ModEnv.entityProtections.onEntityPullEntity(entity, player, false))
+            {
+                entity.getObservers().forEach(p-> p.sendTeleport(entity));
+                return true;
+            }
+
+            return false;
+        });
+
+        return movedEntities;
     }
 }

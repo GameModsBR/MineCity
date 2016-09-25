@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.accessors.entity;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLiving;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
@@ -18,10 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.S06PacketUpdateHealth;
-import net.minecraft.network.play.server.S1BPacketEntityAttach;
-import net.minecraft.network.play.server.S23PacketBlockChange;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.*;
 import net.minecraft.tileentity.TileEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -202,5 +200,11 @@ public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingB
     {
         EntityPlayer player = (EntityPlayer) this;
         player.stopUsingItem();
+    }
+
+    @Override
+    default void sendTeleport(IEntity entity)
+    {
+        sendPacket(new S18PacketEntityTeleport((Entity) entity));
     }
 }
