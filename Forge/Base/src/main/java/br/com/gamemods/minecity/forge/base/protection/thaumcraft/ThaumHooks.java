@@ -249,6 +249,7 @@ public class ThaumHooks
 
     @Referenced(at = EntityFrostShardTransformer.class)
     @Referenced(at = EntityPechBlastTransformer.class)
+    @Referenced(at = EntityPrimalArrowTransformer.class)
     public static boolean onEntityApplyNegativeEffect(EntityLivingBase affected, Entity applier)
     {
         return ModEnv.entityProtections.onEntityDamage((IEntity) affected, new EntityDamageSource("generic", applier), 1, true);
