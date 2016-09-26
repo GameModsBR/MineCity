@@ -2,9 +2,11 @@ package br.com.gamemods.minecity.forge.mc_1_7_10.protection;
 
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.forge.base.ForgeUtil;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
@@ -39,6 +41,7 @@ import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.potion.PotionEffect;
@@ -360,6 +363,17 @@ public class MineCitySevenHooks
                 world.getIState(x, y, z),
                 new BlockPos(ModEnv.blockProtections.mod.world(world), x, y, z),
                 false
+        );
+    }
+
+    @Referenced(at = EntityPlayerTransformer.class)
+    public static boolean canPlayerEdit(EntityPlayer player, int x, int y, int z, int side, ItemStack mcStack)
+    {
+        return !player.worldObj.isRemote && ModEnv.blockProtections.onPlayerCheckEdit(
+                (IEntityPlayerMP) player,
+                x, y, z,
+                ForgeUtil.toDirection(side),
+                (IItemStack) (Object) mcStack
         );
     }
 

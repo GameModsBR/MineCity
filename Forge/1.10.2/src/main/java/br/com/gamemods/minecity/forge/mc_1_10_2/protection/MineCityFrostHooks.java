@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.mc_1_10_2.protection;
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
@@ -21,6 +22,7 @@ import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityTerraTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.AdapterTransformer;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.opencomputers.UpgradeTractorBeamTransformer;
+import br.com.gamemods.minecity.forge.mc_1_10_2.FrostUtil;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPotionTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostWorldServerTransformer;
 import br.com.gamemods.minecity.forge.mc_1_10_2.event.*;
@@ -382,6 +384,17 @@ public class MineCityFrostHooks
                 world.getIState(x, y, z),
                 new br.com.gamemods.minecity.api.world.BlockPos(ModEnv.blockProtections.mod.world(world), x, y, z),
                 false
+        );
+    }
+
+    @Referenced(at = EntityPlayerTransformer.class)
+    public static boolean canPlayerEdit(EntityPlayer player, BlockPos mcPos, EnumFacing facing, ItemStack stack)
+    {
+        return !player.worldObj.isRemote && ModEnv.blockProtections.onPlayerCheckEdit(
+                (IEntityPlayerMP) player,
+                mcPos.getX(), mcPos.getY(), mcPos.getZ(),
+                FrostUtil.toDirection(facing),
+                (IItemStack) (Object) stack
         );
     }
 

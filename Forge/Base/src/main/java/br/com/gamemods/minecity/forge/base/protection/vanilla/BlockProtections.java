@@ -165,6 +165,57 @@ public class BlockProtections extends ForgeProtections
         return false;
     }
 
+    public boolean onPlayerCheckEdit(IEntityPlayerMP player, int x, int y, int z, Direction dir, IItemStack stack)
+    {
+        IWorldServer world = player.getIWorld();
+        BlockPos pos = new BlockPos(mod.world(world), x, y, z);
+        IItem.PlayerEditAction action;
+        if(stack != null)
+        {
+            IItem item = stack.getIItem();
+            action = item.onPlayerCheckEdit(player, pos, dir, stack);
+            Reaction reaction;
+            switch(action)
+            {
+                case REACT:
+                    reaction = item.reactPlayerCheckEdit(player, pos, dir, stack);
+                    break;
+
+                case SIMULATE_PRE_PLACE:
+                    reaction = item.reactPrePlace(player, stack, pos);
+                    break;
+
+                default:
+                    reaction = null;
+            }
+
+            if(reaction != null)
+            {
+                Optional<Message> denial = reaction.can(mod.mineCity, player);
+                if(denial.isPresent())
+                {
+                    player.send(FlagHolder.wrapDeny(denial.get()));
+                    return true;
+                }
+
+                return false;
+            }
+        }
+        else
+        {
+            action = IItem.PlayerEditAction.SIMULATE_BREAK;
+        }
+
+        switch(action)
+        {
+            case NOTHING:
+                return false;
+
+            default:
+                return onBlockBreak((EntityPlayer) player, world.getIState(pos), pos, false);
+        }
+    }
+
     public boolean onBlockBreak(EntityPlayer entity, IState state, BlockPos pos)
     {
         return onBlockBreak(entity, state, pos, true);

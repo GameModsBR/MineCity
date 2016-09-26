@@ -169,4 +169,19 @@ public interface IItem
     {
         return NoReaction.INSTANCE;
     }
+
+    default PlayerEditAction onPlayerCheckEdit(IEntityPlayerMP player, BlockPos pos, Direction side, IItemStack stack)
+    {
+        return PlayerEditAction.SIMULATE_PRE_PLACE;
+    }
+
+    default Reaction reactPlayerCheckEdit(IEntityPlayerMP player, BlockPos pos, Direction side, IItemStack stack)
+    {
+        return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
+    }
+
+    enum PlayerEditAction
+    {
+        NOTHING, SIMULATE_BREAK, SIMULATE_PRE_PLACE, REACT;
+    }
 }
