@@ -15,6 +15,12 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("thaumcraft.common.items.ItemKey",
+                "br.com.gamemods.minecity.forge.base.protection.thaumcraft.IItemKey");
+
+        r.put("thaumcraft.common.blocks.ItemArcaneDoor",
+                "br.com.gamemods.minecity.forge.base.protection.thaumcraft.IItemArcaneDoor");
+
         r.put("thaumcraft.common.items.ItemEssence",
                 "br.com.gamemods.minecity.forge.base.protection.thaumcraft.IItemEssence");
 

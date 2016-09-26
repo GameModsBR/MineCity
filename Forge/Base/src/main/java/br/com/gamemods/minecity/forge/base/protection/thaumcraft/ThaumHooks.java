@@ -46,6 +46,52 @@ public class ThaumHooks
     private static Method focusTradeTrace;
     private static Method getPointedEntity;
     private static Field fireBatOwner;
+    private static Field tileOwnedOwner;
+    private static Field tileOwnedAccess;
+
+    public static String getOwner(ITileOwned tile)
+    {
+        try
+        {
+            if(tileOwnedOwner == null)
+                tileOwnedOwner = Class.forName("thaumcraft.common.tiles.TileOwned").getDeclaredField("owner");
+            return (String) tileOwnedOwner.get(tile);
+        }
+        catch(ReflectiveOperationException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+
+    public static void setOwner(ITileOwned tile, String owner)
+    {
+        if(tileOwnedOwner == null)
+            getOwner(tile);
+
+        try
+        {
+            tileOwnedOwner.set(tile, owner);
+        }
+        catch(ReflectiveOperationException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<String> getAccessList(ITileOwned tile)
+    {
+        try
+        {
+            if(tileOwnedAccess == null)
+                tileOwnedAccess = Class.forName("thaumcraft.common.tiles.TileOwned").getDeclaredField("accessList");
+            return (List) tileOwnedAccess.get(tile);
+        }
+        catch(ReflectiveOperationException e)
+        {
+            throw new UnsupportedOperationException(e);
+        }
+    }
 
     public static IEntityPlayerMP getOwner(IEntityFireBat entity)
     {
@@ -293,5 +339,21 @@ public class ThaumHooks
         WorldDim dim = ModEnv.blockProtections.mod.world(mcWorld);
         BlockPos pos = new BlockPos(dim, x, y, z);
         return ModEnv.blockProtections.onBlockBreak(mcPlayer, world.getIState(pos), pos, false);
+    }
+
+    @Referenced(at = BlockWoodenDeviceTransformer.class)
+    public static void checkOwnableOwner(World world, int x, int y, int z, Entity entity)
+    {
+        if(world.isRemote)
+            return;
+
+        ITileEntity tile = ((IWorldServer) world).getTileEntity(x, y, z);
+        if(entity instanceof IEntityPlayerMP && tile instanceof ITileOwned)
+        {
+            ITileOwned owned = (ITileOwned) tile;
+            PlayerID id = ((IEntityPlayerMP) entity).identity();
+            owned.isOwner(id);
+            owned.hasAccess(id);
+        }
     }
 }
