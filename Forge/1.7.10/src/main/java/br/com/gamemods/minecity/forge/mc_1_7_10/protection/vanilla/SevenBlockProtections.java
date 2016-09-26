@@ -53,7 +53,7 @@ public class SevenBlockProtections extends BlockProtections
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onFillBucket(FillBucketEvent event)
     {
         if(event.world.isRemote)

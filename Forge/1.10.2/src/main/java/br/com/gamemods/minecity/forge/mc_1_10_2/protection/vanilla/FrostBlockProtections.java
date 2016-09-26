@@ -53,7 +53,7 @@ public class FrostBlockProtections extends BlockProtections
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onFillBucket(FillBucketEvent event)
     {
         if(event.getWorld().isRemote)

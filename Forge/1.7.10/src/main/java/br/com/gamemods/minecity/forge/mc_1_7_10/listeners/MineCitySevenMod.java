@@ -34,7 +34,7 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 
 @Mod(modid = ModEnv.MOD_ID, name = ModEnv.MOD_NAME, version = ModEnv.MOD_VERSION, acceptableRemoteVersions = "*",
-        dependencies = "before:OpenComputers"
+        dependencies = "before:OpenComputers;before:CoFHCore"
 )
 public class MineCitySevenMod
 {
@@ -86,6 +86,12 @@ public class MineCitySevenMod
         LegacyFormat.ITALIC.server = EnumChatFormatting.ITALIC;
 
         forge.onPreInit(new Configuration(event.getSuggestedConfigurationFile()), event.getModLog(), new SevenTransformer());
+        MineCityForge.snapshotHandler = new SevenSnapshotHandler();
+        FMLCommonHandler.instance().bus().register(new SevenTickListener(forge));
+        MinecraftForge.EVENT_BUS.register(new SevenToolListener(forge));
+        MinecraftForge.EVENT_BUS.register(new SevenWorldListener(forge));
+        MinecraftForge.EVENT_BUS.register(ModEnv.blockProtections = new SevenBlockProtections(forge));
+        MinecraftForge.EVENT_BUS.register(ModEnv.entityProtections = new SevenEntityProtections(forge));
     }
 
     @Mod.EventHandler
@@ -100,13 +106,6 @@ public class MineCitySevenMod
         {
             forge.logger.warn("MCStats metrics failed to start", e);
         }
-
-        MineCityForge.snapshotHandler = new SevenSnapshotHandler();
-        FMLCommonHandler.instance().bus().register(new SevenTickListener(forge));
-        MinecraftForge.EVENT_BUS.register(new SevenToolListener(forge));
-        MinecraftForge.EVENT_BUS.register(new SevenWorldListener(forge));
-        MinecraftForge.EVENT_BUS.register(ModEnv.blockProtections = new SevenBlockProtections(forge));
-        MinecraftForge.EVENT_BUS.register(ModEnv.entityProtections = new SevenEntityProtections(forge));
     }
 
     @Mod.EventHandler

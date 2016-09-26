@@ -29,7 +29,7 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 
 @Mod(modid = ModEnv.MOD_ID, name = ModEnv.MOD_ID, version = ModEnv.MOD_VERSION, acceptableRemoteVersions = "*",
-        dependencies = "before:OpenComputers"
+        dependencies = "before:OpenComputers;before:CoFHCore"
 )
 public class MineCityFrostMod
 {
@@ -78,11 +78,6 @@ public class MineCityFrostMod
         LegacyFormat.ITALIC.server = TextFormatting.ITALIC;
 
         forge.onPreInit(new Configuration(event.getSuggestedConfigurationFile()), event.getModLog(), new FrostTransformer());
-    }
-
-    @Mod.EventHandler
-    public void onPostInit(FMLPostInitializationEvent event)
-    {
         MineCityForge.snapshotHandler = new FrostSnapshotHandler();
         MinecraftForge.EVENT_BUS.register(new FrostTickListener(forge));
         MinecraftForge.EVENT_BUS.register(new FrostToolListener(forge));
