@@ -43,6 +43,22 @@ public class SevenEntityProtections extends EntityProtections
         super(mod);
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onEntityReceivePotionEffect(EntityReceivePotionEffect event)
+    {
+        if(event.entity.worldObj.isRemote)
+            return;
+
+        if(onEntityReceivePotionEffect(
+                (IEntityLivingBase) event.entityLiving,
+                (IPotionEffect) event.effect,
+                event.source, event.sourceClass, event.methodName, event.methodDesc, event.methodParams
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onExplosion(ExplosionEvent.Detonate event)

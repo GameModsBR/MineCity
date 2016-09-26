@@ -267,6 +267,16 @@ public class MineCityFrostHooks
             entity.setFire(fireTicks);
     }
 
+    @Referenced(at = AddPotionEffectObserverTransformer.class)
+    public static boolean onEntityReceivePotionEffect
+            (EntityLivingBase mcEntity, PotionEffect mcEffect, Object source, Class<?> sourceClass,
+             String methodName, String methodDesc, Object[] methodParams)
+    {
+        return MinecraftForge.EVENT_BUS.post(new EntityReceivePotionEffect(
+                mcEntity, mcEffect, source, sourceClass, methodName, methodDesc, methodParams
+        ));
+    }
+
     @Referenced(at = EntityEnderCrystalTransformer.class)
     public static boolean onEntityDamage(Entity entity, DamageSource source, float amount)
     {

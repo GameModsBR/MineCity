@@ -46,6 +46,22 @@ public class FrostEntityProtections extends EntityProtections
         super(mod);
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onEntityReceivePotionEffect(EntityReceivePotionEffect event)
+    {
+        if(event.getEntity().worldObj.isRemote)
+            return;
+
+        if(onEntityReceivePotionEffect(
+                (IEntityLivingBase) event.getEntityLiving(),
+                (IPotionEffect) event.effect,
+                event.source, event.sourceClass, event.methodName, event.methodDesc, event.methodParams
+        ))
+        {
+            event.setCanceled(true);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onExplosion(ExplosionEvent.Detonate event)

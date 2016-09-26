@@ -17,10 +17,7 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
-import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
-import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
-import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
-import br.com.gamemods.minecity.forge.base.accessors.entity.base.IPotionEffect;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.*;
 import br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityItem;
 import br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityXPOrb;
 import br.com.gamemods.minecity.forge.base.accessors.entity.item.Pickable;
@@ -65,6 +62,66 @@ public class EntityProtections extends ForgeProtections
     public EntityProtections(MineCityForge mod)
     {
         super(mod);
+    }
+
+    public boolean onEntityReceivePotionEffect
+            (IEntityLivingBase entity, IPotionEffect effect, Object source, Class<?> sourceClass,
+             String methodName, String methodDesc, List<?> methodParams)
+    {
+        IEntity sourceEntity;
+        PotionApplier.Action action;
+        DamageSource damage;
+        if(source instanceof PotionApplier)
+        {
+            PotionApplier applier = (PotionApplier) source;
+            action = applier.getPotionAction(
+                    entity, effect, sourceClass, methodName, methodDesc, methodParams
+            );
+            sourceEntity = applier.getPotionSource(
+                    entity, effect, sourceClass, methodName, methodDesc, methodParams
+            );
+            damage = applier.getPotionDamageSource(
+                    sourceEntity, entity, effect, sourceClass, methodName, methodDesc, methodParams
+            );
+        }
+        else
+        {
+            action = PotionApplier.Action.SIMULATE_POTION;
+            if(source instanceof IEntity)
+                sourceEntity = (IEntity) source;
+            else
+                sourceEntity = null;
+
+            damage = null;
+        }
+
+        if(action == PotionApplier.Action.SIMULATE_POTION && sourceEntity == null)
+            action = PotionApplier.Action.SIMULATE_DAMAGE_VERBOSE;
+
+        switch(action)
+        {
+            case NOTHING:
+                return false;
+
+            case SIMULATE_POTION:
+                return onPotionApply(entity, effect, sourceEntity);
+
+            case SIMULATE_DAMAGE_SILENT:
+            case SIMULATE_DAMAGE_VERBOSE:
+            {
+                if(damage == null)
+                {
+                    if(sourceEntity != null)
+                        damage = new EntityDamageSource("potion", (Entity) sourceEntity);
+                    else
+                        damage = new DamageSource("generic");
+                }
+                return onEntityDamage(entity, damage, 1, action == PotionApplier.Action.SIMULATE_DAMAGE_SILENT);
+            }
+
+            default:
+                throw new UnsupportedOperationException(action.toString());
+        }
     }
 
     public boolean onLivingSwing(IItem item, IEntityLivingBase living, IItemStack stack)
