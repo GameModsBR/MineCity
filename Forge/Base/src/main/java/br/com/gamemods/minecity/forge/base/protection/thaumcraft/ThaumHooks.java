@@ -242,6 +242,7 @@ public class ThaumHooks
     }
 
     @Referenced(at = EntityPrimalOrbTransformer.class)
+    @Referenced(at = EntityBottleTaintTransformer.class)
     public static boolean onEntityChangeBiome(Entity mcEntity, World mcWorld, int x, int z)
     {
         return !mcWorld.isRemote &&
