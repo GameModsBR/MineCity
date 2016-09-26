@@ -4,13 +4,14 @@ import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
+import br.com.gamemods.minecity.forge.base.accessors.world.Positioned;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
-public interface ITileEntity
+public interface ITileEntity extends Positioned
 {
     default TileEntity getForgeTile()
     {
@@ -22,6 +23,7 @@ public interface ITileEntity
         return ((TileEntity) this).serializeNBT();
     }
 
+    @Override
     default IWorldServer getIWorld()
     {
         return (IWorldServer) ((TileEntity) this).getWorld();

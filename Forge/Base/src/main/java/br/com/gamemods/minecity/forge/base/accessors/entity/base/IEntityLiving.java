@@ -1,8 +1,8 @@
 package br.com.gamemods.minecity.forge.base.accessors.entity.base;
 
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.permission.Permissible;
-import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.permission.*;
+import br.com.gamemods.minecity.api.unchecked.BiIntFunction;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemLead;
@@ -12,10 +12,14 @@ import br.com.gamemods.minecity.forge.base.protection.reaction.ApproveReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
+import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.pathfinding.PathFinder;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
+import net.minecraft.world.IBlockAccess;
 
 import java.util.List;
 import java.util.UUID;
@@ -105,5 +109,79 @@ public interface IEntityLiving extends IEntityLivingBase
 
         if(attackers.contains(this))
             setTarget(null);
+    }
+
+    @SuppressWarnings("SimplifiableIfStatement")
+    default boolean canGoFromTo(PathFinder pathFinder, PathPoint point, IBlockAccess access, PermissionFlag attack,
+                                ClaimedChunk from, ClaimedChunk to, FlagHolder fromHolder, FlagHolder toHolder)
+    {
+        Identity<?> fromOwner = fromHolder.owner();
+        Identity<?> toOwner = toHolder.owner();
+        if(attack == null || fromHolder == toHolder || fromOwner.equals(toOwner))
+            return true;
+
+        Identity<?> owner = getPlayerOwner();
+        if(owner == null)
+            owner = fromOwner;
+
+        if(owner.equals(toOwner))
+            return true;
+
+        if(owner.getType() == Identity.Type.NATURE && (attack == PermissionFlag.PVM || attack == PermissionFlag.PVC))
+        {
+            switch(attack)
+            {
+                case PVM:
+                    if(toHolder instanceof SimpleFlagHolder)
+                        return !((SimpleFlagHolder) toHolder).can(attack).isPresent();
+                    return true;
+
+                case PVC:
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        return !toHolder.can(owner, PermissionFlag.ENTER).isPresent() && !toHolder.can(owner, attack).isPresent();
+    }
+
+    default int canGoFromToWidth()
+    {
+        return (int) Math.floor(((EntityLiving) this).width + 1);
+    }
+
+    default int canGoFromToHeight()
+    {
+        return 1;
+    }
+
+    default boolean canGoFromTo(BiIntFunction<ClaimedChunk> getClaim, ClaimedChunk from, FlagHolder fromHolder,
+                                PathFinder pathFinder, PathPoint point, IBlockAccess access)
+    {
+        int width = canGoFromToWidth();
+        int height = canGoFromToHeight();
+        Identity<?> fromId = fromHolder.owner();
+        PermissionFlag attack = getPlayerAttackType();
+
+        for(int ix = -width; ix <= width; ix++)
+            for(int iy = -height; iy <= height; iy++)
+                for(int iz = -width; iz <= width; iz++)
+                {
+                    ClaimedChunk to = getClaim.apply((point.xCoord + ix) >> 4, (point.zCoord + iz) >> 4);
+                    if(to == null)
+                        return false;
+
+                    FlagHolder toHolder = to.getFlagHolder(point.xCoord + ix, point.yCoord + iy, point.zCoord + iz);
+                    if(!canGoFromTo(pathFinder, point, access, attack, from, to, fromHolder, toHolder))
+                        return false;
+
+                    Identity<?> toId = toHolder.owner();
+                    if(fromId.equals(toId))
+                        return true;
+                }
+
+        return true;
     }
 }

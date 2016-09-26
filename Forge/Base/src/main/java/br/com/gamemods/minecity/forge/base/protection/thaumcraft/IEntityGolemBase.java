@@ -13,10 +13,7 @@ import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.TriggeredReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import org.jetbrains.annotations.Nullable;
@@ -101,6 +98,15 @@ public interface IEntityGolemBase extends IEntityCreature
     }
 
     @Override
+    default Reaction reactPlayerAttackDirect(IEntityPlayerMP player, IItemStack stack, boolean offHand)
+    {
+        if(stack != null && stack.getIItem().getUnlocalizedName().equals("item.GolemBell"))
+            return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.MODIFY);
+
+        return new DoubleBlockReaction(PermissionFlag.MODIFY, getBlockPos(player.getServer()), player.getBlockPos());
+    }
+
+    @Override
     default Reaction reactPlayerInteractLiving(ForgePlayer<?, ?, ?> fp, IItemStack stack, boolean offHand)
     {
         IEntityPlayerMP player = fp.cmd.sender;
@@ -115,7 +121,13 @@ public interface IEntityGolemBase extends IEntityCreature
 
             byte core = getCore();
 
-            if(core == -1 && itemName.equals("item.ItemGolemCore") || itemName.equals("item.ItemGolemUpgrade") || itemName.equals("item.ItemGolemDecoration"))
+            if(core == -1 && itemName.equals("item.ItemGolemCore"))
+                return transfer(new SingleBlockReaction(getBlockPos(fp.getServer()), PermissionFlag.MODIFY), fp)
+                        .onDenyUpdateInventory().addDenialListener((reaction, permissible, flag, pos, message) -> {
+                            sendAllWatchableData(player);
+                        });
+
+            if(itemName.equals("item.ItemGolemUpgrade") || itemName.equals("item.ItemGolemDecoration"))
                 return transfer(new SingleBlockReaction(getBlockPos(fp.getServer()), PermissionFlag.MODIFY), fp);
 
             if(itemName.equals("item.cookie"))

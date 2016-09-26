@@ -17,6 +17,7 @@ import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.Projectile;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
+import br.com.gamemods.minecity.forge.base.accessors.world.Positioned;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
@@ -39,7 +40,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
-public interface IEntity extends MinecraftEntity
+public interface IEntity extends MinecraftEntity, Positioned
 {
     default Entity getForgeEntity()
     {
@@ -79,6 +80,7 @@ public interface IEntity extends MinecraftEntity
         return (WorldServer) ((Entity) this).getEntityWorld();
     }
 
+    @Override
     default IWorldServer getIWorld()
     {
         return (IWorldServer) ((Entity) this).getEntityWorld();
@@ -368,6 +370,15 @@ public interface IEntity extends MinecraftEntity
     default Identity<?> identity()
     {
         return getIdentity();
+    }
+
+    default PlayerID getPlayerOwner()
+    {
+        UUID id = getEntityOwnerId();
+        if(id == null)
+            return null;
+
+        return PlayerID.get(id, this::createPlayerId);
     }
 
     @Nullable

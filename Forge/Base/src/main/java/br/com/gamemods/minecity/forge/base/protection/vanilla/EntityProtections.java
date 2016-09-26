@@ -195,7 +195,6 @@ public class EntityProtections extends ForgeProtections
 
     public boolean onPathFind(PathFinder pathFinder, PathPoint point, IBlockAccess access, EntityLiving entity)
     {
-        int width = (int) Math.floor(entity.width+1);
         BiIntFunction<ClaimedChunk> getClaim;
         ClaimedChunk from;
         if(access instanceof IChunkCache)
@@ -227,22 +226,8 @@ public class EntityProtections extends ForgeProtections
             };
         }
 
-        Identity<?> fromId = from.getFlagHolder((int) entity.posX, (int) entity.posY, (int) entity.posZ).owner();
-
-        for(int ix = -width; ix <= width; ix++)
-            for(int iy = -1; iy <= 1; iy++)
-                for(int iz = -width; iz <= width; iz++)
-                {
-                    ClaimedChunk to = getClaim.apply((point.xCoord + ix) >> 4, (point.zCoord + iz) >> 4);
-                    if(to == null)
-                        return true;
-
-                    Identity<?> toId = to.getFlagHolder(point.xCoord,point.yCoord,point.zCoord).owner();
-                    if(!fromId.equals(toId))
-                        return true;
-                }
-
-        return false;
+        FlagHolder fromHolder = from.getFlagHolder((int) entity.posX, (int) entity.posY, (int) entity.posZ);
+        return !((IEntityLiving) entity).canGoFromTo(getClaim, from, fromHolder, pathFinder, point, access);
     }
 
     public boolean onPreImpact(IEntity entity, IRayTraceResult traceResult)

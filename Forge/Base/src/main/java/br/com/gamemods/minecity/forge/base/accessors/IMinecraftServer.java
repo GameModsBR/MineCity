@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.forge.base.accessors;
 import br.com.gamemods.minecity.api.PlayerID;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.UsernameCache;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -26,10 +27,14 @@ public interface IMinecraftServer
         return (IPlayerList) ((MinecraftServer) this).getPlayerList();
     }
 
+    @NotNull
     default PlayerID getPlayerId(UUID uuid)
     {
         String name = UsernameCache.getLastKnownUsername(uuid);
-        return new PlayerID(uuid, name != null? name : "???");
+        PlayerID id = PlayerID.get(uuid, "???");
+        if(name != null)
+            id.setName(name);
+        return id;
     }
 
     @Nullable
