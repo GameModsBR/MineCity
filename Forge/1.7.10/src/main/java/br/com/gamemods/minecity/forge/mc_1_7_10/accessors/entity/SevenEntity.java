@@ -9,6 +9,7 @@ import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S13PacketDestroyEntities;
 import net.minecraft.network.play.server.S1CPacketEntityMetadata;
 import net.minecraft.world.WorldServer;
 import org.jetbrains.annotations.NotNull;
@@ -106,6 +107,19 @@ public interface SevenEntity extends IEntity
         return true;
     }
 
+    @Override
+    default void sendAllWatchableData(IEntityPlayerMP p)
+    {
+        Entity entity = (Entity) this;
+        p.sendPacket(new S1CPacketEntityMetadata(entity.getEntityId(), entity.getDataWatcher(), true));
+    }
+
     default void continueSendingSpawnPackets(IEntityPlayerMP player)
     {}
+
+    @Override
+    default void sendDestroyPacket(IEntityPlayerMP p)
+    {
+        p.sendPacket(new S13PacketDestroyEntities(((Entity)this).getEntityId()));
+    }
 }

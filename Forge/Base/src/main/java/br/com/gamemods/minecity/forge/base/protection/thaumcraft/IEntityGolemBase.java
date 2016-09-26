@@ -64,6 +64,13 @@ public interface IEntityGolemBase extends IEntityCreature
     {
         setOwner(player.getName());
         ((Entity) this).getEntityData().setString("mineCity$gOwner", player.uniqueId.toString());
+        if(getCore() > -1)
+            getObservers().forEach(this::sendAllWatchableData);
+        else
+        {
+            getObservers().forEach(this::sendDestroyPacket);
+            ModEnv.entityProtections.mod.callSyncMethod(()-> getObservers().forEach(this::sendSpawnPackets));
+        }
     }
 
     @Override

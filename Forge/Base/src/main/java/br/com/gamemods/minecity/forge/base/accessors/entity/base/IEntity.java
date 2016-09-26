@@ -483,6 +483,10 @@ public interface IEntity extends MinecraftEntity
         return false;
     }
 
+    void sendAllWatchableData(IEntityPlayerMP p);
+
+    void sendDestroyPacket(IEntityPlayerMP p);
+
     default boolean isRemote()
     {
         return ((Entity) this).worldObj.isRemote;

@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostInterfaceTransformer;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.SPacketDestroyEntities;
 import net.minecraft.network.play.server.SPacketEntityMetadata;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import org.jetbrains.annotations.NotNull;
@@ -39,4 +40,17 @@ public interface FrostEntity extends IEntity, ICommander
 
     default void continueSendingSpawnPackets(IEntityPlayerMP player)
     {}
+
+    @Override
+    default void sendAllWatchableData(IEntityPlayerMP p)
+    {
+        Entity entity = (Entity) this;
+        p.sendPacket(new SPacketEntityMetadata(entity.getEntityId(), entity.getDataManager(), true));
+    }
+
+    @Override
+    default void sendDestroyPacket(IEntityPlayerMP p)
+    {
+        p.sendPacket(new SPacketDestroyEntities(((Entity)this).getEntityId()));
+    }
 }
