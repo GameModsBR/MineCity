@@ -826,7 +826,7 @@ public class EntityProtections extends ForgeProtections
                     return reaction.can(mod.mineCity, player).isPresent();
                 }
 
-                return false;
+                return true;
             }
 
             default:
