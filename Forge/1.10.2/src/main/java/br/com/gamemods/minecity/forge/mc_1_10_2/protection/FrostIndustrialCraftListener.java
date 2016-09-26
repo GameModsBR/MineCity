@@ -27,10 +27,6 @@ public class FrostIndustrialCraftListener extends IndustrialCraftProtections
                 (new EntityDamageSourceIndirect("arrow", event.lasershot, event.owner)).setProjectile(),
                 event.power,
                 false
-        ) || onEntityIgniteEntityEvent(
-                (IEntity) event.hitEntity,
-                (IEntity) event.lasershot,
-                (int)event.power * (event.smelt? 2 : 1)
         ))
         {
             event.setCanceled(true);

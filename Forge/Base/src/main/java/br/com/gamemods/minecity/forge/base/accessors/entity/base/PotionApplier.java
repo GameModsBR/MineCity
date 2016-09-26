@@ -31,9 +31,9 @@ public interface PotionApplier
                                                List<?> methodParams)
     {
         if(sourceEntity != null)
-            return new EntityDamageSource("generic", (Entity) sourceEntity);
+            return new EntityDamageSource("potion", (Entity) sourceEntity).setMagicDamage();
 
-        return new DamageSource("generic");
+        return new DamageSource("potion").setMagicDamage();
     }
 
     enum Action

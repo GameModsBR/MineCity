@@ -255,16 +255,11 @@ public class MineCityFrostHooks
     }
 
     @Referenced(at = EntityIgnitionTransformer.class)
-    public static void onIgnite(Entity entity, int fireTicks, @Nullable Object source, Class<?> sourceClass, String method, String desc)
+    public static boolean onIgnite(Entity entity, int fireTicks, @Nullable Object source, Class<?> sourceClass, String method, String desc, Object[] methodParams)
     {
-        Event event;
-        if(source instanceof Entity)
-            event = new EntityIgniteEntityEvent(entity, (Entity) source, fireTicks, source, sourceClass, method, desc);
-        else
-            event = new EntityIgniteEvent(entity, fireTicks, source, sourceClass, method, desc);
-
-        if(!MinecraftForge.EVENT_BUS.post(event))
-            entity.setFire(fireTicks);
+        return MinecraftForge.EVENT_BUS.post(new EntityIgniteEvent(
+                entity, fireTicks, source, sourceClass, method, desc, methodParams
+        ));
     }
 
     @Referenced(at = AddPotionEffectObserverTransformer.class)

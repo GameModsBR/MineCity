@@ -752,27 +752,86 @@ public class EntityProtections extends ForgeProtections
         }
     }
 
-    public boolean onEntityIgniteEntityEvent(IEntity entity, IEntity igniter, int seconds)
+    public boolean onEntityIgniteEvent
+            (IEntity entity, int seconds, Object source, Class<?> sourceClass,
+             String sourceMethod, String sourceMethodDesc, List<?> methodParams)
     {
-        if(entity == igniter || entity.getFireTicks() >= seconds * 20)
+        if(source == entity || entity.getFireTicks() >= seconds * 20)
             return false;
 
-        List<Permissible> attackers = new ArrayList<>(1);
-        attackers.add(igniter);
-        addRelativeEntity(igniter, attackers);
-
-        initPlayers(attackers);
-
-        Optional<Permissible> optionalPlayer = attackers.stream().filter(FILTER_PLAYER).findFirst();
-
-        if(optionalPlayer.isPresent())
+        IEntity sourceEntity;
+        Incendiary.Action action;
+        DamageSource damage;
+        if(source instanceof Incendiary)
         {
-            Permissible player = optionalPlayer.get();
-            Reaction reaction = entity.reactPlayerIgnition(mod, player, igniter, seconds, attackers);
-            return reaction.can(mod.mineCity, player).isPresent();
+            Incendiary incendiary = (Incendiary) source;
+            action = incendiary.getIncendiaryAction(
+                    entity, seconds, sourceClass, sourceMethod, sourceMethodDesc, methodParams
+            );
+            sourceEntity = incendiary.getIncendiarySource(
+                    entity, seconds, sourceClass, sourceMethod, sourceMethodDesc, methodParams
+            );
+            damage = incendiary.getIncendiaryDamage(
+                    sourceEntity, entity, seconds, sourceClass, sourceMethod, sourceMethodDesc, methodParams
+            );
+        }
+        else
+        {
+            damage = null;
+            action = Incendiary.Action.PLAYER_IGNITION;
+            if(source instanceof IEntity)
+                sourceEntity = (IEntity) source;
+            else
+                sourceEntity = null;
         }
 
-        return false;
+        if(sourceEntity == entity)
+            return false;
+
+        if(action == Incendiary.Action.PLAYER_IGNITION && sourceEntity == null)
+            return true;
+
+        switch(action)
+        {
+            case NOTHING:
+                return false;
+
+            case SIMULATE_DAMAGE_SILENT:
+            case SIMULATE_DAMAGE_VERBOSE:
+            {
+                if(damage == null)
+                {
+                    if(sourceEntity != null)
+                        damage = new EntityDamageSource("potion", (Entity) sourceEntity);
+                    else
+                        damage = new DamageSource("generic");
+                }
+                return onEntityDamage(entity, damage, 1, action == Incendiary.Action.SIMULATE_DAMAGE_SILENT);
+            }
+
+            case PLAYER_IGNITION:
+            {
+                List<Permissible> attackers = new ArrayList<>(1);
+                attackers.add(sourceEntity);
+                addRelativeEntity(sourceEntity, attackers);
+
+                initPlayers(attackers);
+
+                Optional<Permissible> optionalPlayer = attackers.stream().filter(FILTER_PLAYER).findFirst();
+
+                if(optionalPlayer.isPresent())
+                {
+                    Permissible player = optionalPlayer.get();
+                    Reaction reaction = entity.reactPlayerIgnition(mod, player, sourceEntity, seconds, attackers);
+                    return reaction.can(mod.mineCity, player).isPresent();
+                }
+
+                return false;
+            }
+
+            default:
+                throw new UnsupportedOperationException(action.toString());
+        }
     }
 
     public IItemStack getAttackers(DamageSource source, final List<Permissible> attackers)

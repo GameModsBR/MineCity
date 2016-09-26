@@ -458,15 +458,17 @@ public class FrostEntityProtections extends EntityProtections
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onEntityIgniteEntityEvent(EntityIgniteEntityEvent event)
+    public void onEntityIgniteEntityEvent(EntityIgniteEvent event)
     {
-        if(event.igniter.worldObj.isRemote)
+        if(event.getEntity().worldObj.isRemote)
             return;
 
-        if(onEntityIgniteEntityEvent(
+        if(onEntityIgniteEvent(
                 (IEntity) event.getEntity(),
-                (IEntity) event.igniter,
-                event.ticks
+                event.ticks,
+                event.source, event.sourceClass,
+                event.sourceMethod, event.sourceMethodDesc,
+                event.methodParams
         ))
         {
             event.setCanceled(true);
