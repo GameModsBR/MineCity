@@ -149,9 +149,11 @@ public interface IEntityGolemBase extends IEntityCreature
                 }
             }
         }
-        else if(id.equals(identity.getUniqueId()) && !ownerName.equals(identity.getName()))
+        else if(id.equals(identity.getUniqueId()))
         {
-            setOwner(identity.getName());
+            if(!ownerName.equals(identity.getName()))
+                setOwner(identity.getName());
+
             return reaction;
         }
 
