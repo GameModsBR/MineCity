@@ -141,7 +141,8 @@ public interface IEntityLiving extends IEntityLivingBase
             }
         }
 
-        return !toHolder.can(owner, PermissionFlag.ENTER).isPresent() && !toHolder.can(owner, flag).isPresent();
+        return !toHolder.can(owner, PermissionFlag.ENTER).isPresent() && !toHolder.can(owner, flag).isPresent()
+                && !fromHolder.can(toOwner, PermissionFlag.ENTER).isPresent() && !fromHolder.can(toOwner, flag).isPresent();
     }
 
     default int canGoFromToWidth()
