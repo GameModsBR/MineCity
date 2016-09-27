@@ -4,10 +4,14 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
+import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityAIBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
@@ -28,6 +32,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -355,5 +360,44 @@ public class ThaumHooks
             owned.isOwner(id);
             owned.hasAccess(id);
         }
+    }
+
+    @Referenced(at = GolemHelperAndAITransformer.class)
+    public static boolean onGolemAiScanTile(@Nullable IEntityGolemBase golem, @Nullable IEntityAIBase ai,
+                                            World world, int x, int y, int z)
+    {
+        if(world.isRemote)
+            return false;
+
+        if(golem == null)
+        {
+            if(ai == null)
+            {
+                new UnsupportedOperationException("Failed to find the golem entity and the AI task").printStackTrace();
+                return true;
+            }
+
+            if(!(ai instanceof GolemAI))
+            {
+                new UnsupportedOperationException("Failed to find the golem entity and the AI:"+ai+" is not a GolemAI").printStackTrace();
+                return true;
+            }
+
+            golem = ((GolemAI) ai).getTheGolem();
+            if(golem == null)
+            {
+                new UnsupportedOperationException("Failed to find the golem entity and the AI:"+ai+" does not have a golem").printStackTrace();
+                return true;
+            }
+        }
+
+        PlayerID owner = golem.getPlayerOwner();
+        if(owner == null)
+            return true;
+
+        MineCityForge mod = ModEnv.blockProtections.mod;
+        EntityPos pos = golem.getEntityPos(mod);
+        IState state = ((IWorldServer) world).getIState(x, y, z);
+        return ModEnv.blockProtections.onBlockBreak((EntityPlayer)mod.playerOrFake(owner, pos), state, new BlockPos(mod.world(world), x, y, z), false);
     }
 }

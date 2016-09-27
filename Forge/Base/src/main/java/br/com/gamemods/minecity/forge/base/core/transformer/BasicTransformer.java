@@ -25,6 +25,7 @@ public abstract class BasicTransformer implements IClassTransformer
 
     @MagicConstant(flagsFromClass = ClassWriter.class)
     protected int writerFlags = ClassWriter.COMPUTE_MAXS;
+    protected boolean abort;
     private final Set<String> accept;
 
     public BasicTransformer(Collection<String> transformedNames)
@@ -64,7 +65,14 @@ public abstract class BasicTransformer implements IClassTransformer
         reader.accept(node, 0);
 
         System.out.println("Patching "+transformedName);
+        abort = false;
         patch(transformedName, node, reader);
+
+        if(abort)
+        {
+            System.out.println("The patch to "+transformedName+" has been aborted");
+            return basicClass;
+        }
 
         ClassWriter writer = new ClassWriter(writerFlags);
         node.accept(writer);
@@ -78,6 +86,11 @@ public abstract class BasicTransformer implements IClassTransformer
         return bytes;
     }
 
+    public static boolean is(int access, int type)
+    {
+        return (access & type) > 0;
+    }
+
     public static AbstractInsnNode intIns(int i)
     {
         if(i >= 0 && i <= 5)
@@ -86,6 +99,35 @@ public abstract class BasicTransformer implements IClassTransformer
             return new InsnNode(ICONST_M1);
         else
             return new IntInsnNode(BIPUSH, i);
+    }
+
+    public static int varIndex(boolean staticMethod, String desc, String searchType)
+    {
+        Matcher paramMatcher = allParamsPattern.matcher(desc);
+        if(!paramMatcher.find())
+            return -1;
+
+        String paramGroup = paramMatcher.group(1);
+        Matcher matcher = paramsPattern.matcher(paramGroup);
+        int i = staticMethod? 0 : 1;
+        while(matcher.find())
+        {
+            String type = matcher.group(2);
+            if(type.equals(searchType))
+                return i;
+
+            switch(type.charAt(0))
+            {
+                case 'D':
+                case 'J':
+                    i += 2;
+                    break;
+                default:
+                    i++;
+            }
+        }
+
+        return -1;
     }
 
     public static InsnList arrayOfParams(boolean staticMethod, String desc)

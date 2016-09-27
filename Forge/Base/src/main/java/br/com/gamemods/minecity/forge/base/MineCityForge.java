@@ -697,4 +697,9 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
             return Optional.of(player((IEntityPlayerMP) who));
         return player(who.identity());
     }
+
+    public IEntityPlayerMP playerOrFake(Identity<?> owner, EntityPos entityPos)
+    {
+        return playerOrFake(owner, (IWorldServer) world(entityPos.world), entityPos.x, entityPos.y, entityPos.z);
+    }
 }
