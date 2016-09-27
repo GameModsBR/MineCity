@@ -117,17 +117,17 @@ public interface IEntityLiving extends IEntityLivingBase
     {
         Identity<?> fromOwner = fromHolder.owner();
         Identity<?> toOwner = toHolder.owner();
-        if(flag == null || fromHolder == toHolder || fromOwner.equals(toOwner))
+        if(flag == null || fromHolder == toHolder)
             return true;
 
-        Identity<?> owner = getPlayerOwner();
-        if(owner == null)
-            owner = fromOwner;
+        Identity<?> entityOwner = getPlayerOwner();
+        if(entityOwner == null)
+            entityOwner = fromOwner;
 
-        if(owner.equals(toOwner))
+        if(entityOwner.equals(toOwner))
             return true;
 
-        if(owner.getType() == Identity.Type.NATURE)
+        if(entityOwner.getType() == Identity.Type.NATURE)
         {
             switch(flag)
             {
@@ -136,13 +136,21 @@ public interface IEntityLiving extends IEntityLivingBase
                         return !((SimpleFlagHolder) toHolder).can(flag).isPresent();
                     return true;
 
+                case PVC:
+                    return true;
+
                 default:
                     return false;
             }
         }
 
-        return !toHolder.can(owner, PermissionFlag.ENTER).isPresent() && !toHolder.can(owner, flag).isPresent()
-                && !fromHolder.can(toOwner, PermissionFlag.ENTER).isPresent() && !fromHolder.can(toOwner, flag).isPresent();
+        if(toHolder.can(entityOwner, PermissionFlag.ENTER).isPresent() || toHolder.can(entityOwner, flag).isPresent())
+            return false;
+
+        if(!fromOwner.equals(entityOwner))
+            return true;
+
+        return !fromHolder.can(toOwner, PermissionFlag.ENTER).isPresent() && !fromHolder.can(toOwner, flag).isPresent();
     }
 
     default int canGoFromToWidth()
@@ -166,8 +174,7 @@ public interface IEntityLiving extends IEntityLivingBase
     {
         int width = canGoFromToWidth();
         int height = canGoFromToHeight();
-        Identity<?> fromId = fromHolder.owner();
-        PermissionFlag attack = getPathFinderFlag(getClaim, from, fromHolder, pathFinder, point, access);
+        PermissionFlag flag = getPathFinderFlag(getClaim, from, fromHolder, pathFinder, point, access);
 
         for(int ix = -width; ix <= width; ix++)
             for(int iy = -height; iy <= height; iy++)
@@ -178,12 +185,8 @@ public interface IEntityLiving extends IEntityLivingBase
                         return false;
 
                     FlagHolder toHolder = to.getFlagHolder(point.xCoord + ix, point.yCoord + iy, point.zCoord + iz);
-                    if(!canGoFromTo(pathFinder, point, access, attack, from, to, fromHolder, toHolder))
+                    if(!canGoFromTo(pathFinder, point, access, flag, from, to, fromHolder, toHolder))
                         return false;
-
-                    Identity<?> toId = toHolder.owner();
-                    if(fromId.equals(toId))
-                        return true;
                 }
 
         return true;
