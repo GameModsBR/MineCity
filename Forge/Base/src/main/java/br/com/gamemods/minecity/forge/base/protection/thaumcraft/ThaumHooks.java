@@ -14,6 +14,7 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityAIBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.item.ItemBlockBase;
@@ -37,6 +38,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.BiPredicate;
 
 @Referenced
 public class ThaumHooks
@@ -399,5 +401,46 @@ public class ThaumHooks
         EntityPos pos = golem.getEntityPos(mod);
         IState state = ((IWorldServer) world).getIState(x, y, z);
         return ModEnv.blockProtections.onBlockBreak((EntityPlayer)mod.playerOrFake(owner, pos), state, new BlockPos(mod.world(world), x, y, z), false);
+    }
+
+    public static List<IEntity> onEntityPull(List<IEntity> list, IEntity entity, BiPredicate<Boolean, IEntity> pr)
+    {
+        if(list.isEmpty() || entity.isRemote())
+            return list;
+
+        list.removeIf(item-> pr.test(item instanceof IEntityItem && ModEnv.entityProtections.onEntityPullEntity(item, entity, false), item));
+        return list;
+    }
+
+    @Referenced(at = EntityTravelingTrunkTransformer.class)
+    public static List<IEntity> onEntityPull(List<IEntity> list, IEntity entity)
+    {
+        return onEntityPull(list, entity, (r, e)-> {
+            if(r)
+                e.getObservers().forEach(p-> p.sendTeleport(e));
+
+            return r;
+        });
+    }
+
+    @Referenced(at = AIItemPickupTransformer.class)
+    public static List<IEntity> onEntityPickup(List<IEntity> list, IEntityAIBase ai)
+    {
+        if(ai instanceof GolemAI)
+            return onEntityPull(list, ((GolemAI) ai).getTheGolem(), (r,e)-> r);
+
+        return list;
+    }
+
+    @Referenced(at = AIItemPickupTransformer.class)
+    public static boolean onEntityPickup(Entity pickedUp, GolemAI ai)
+    {
+        if(!(pickedUp instanceof IEntityItem) || ModEnv.entityProtections.onEntityPullEntity((IEntityItem)pickedUp, ai.getTheGolem(), false))
+        {
+            ai.resetTask();
+            return true;
+        }
+
+        return false;
     }
 }

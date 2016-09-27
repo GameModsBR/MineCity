@@ -127,16 +127,13 @@ public interface IEntityLiving extends IEntityLivingBase
         if(owner.equals(toOwner))
             return true;
 
-        if(owner.getType() == Identity.Type.NATURE && (flag == PermissionFlag.PVM || flag == PermissionFlag.PVC))
+        if(owner.getType() == Identity.Type.NATURE)
         {
             switch(flag)
             {
                 case PVM:
                     if(toHolder instanceof SimpleFlagHolder)
                         return !((SimpleFlagHolder) toHolder).can(flag).isPresent();
-                    return true;
-
-                case PVC:
                     return true;
 
                 default:

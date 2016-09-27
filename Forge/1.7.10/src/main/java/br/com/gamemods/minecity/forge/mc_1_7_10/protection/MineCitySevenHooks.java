@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.ForgeUtil;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.OnImpact;
@@ -243,7 +244,11 @@ public class MineCitySevenHooks
 
         Event event = new XpOrbTargetPlayerEvent(player, orb);
         if(MinecraftForge.EVENT_BUS.post(event))
+        {
+            IEntity e = (IEntity) orb;
+            e.getObservers().forEach(p-> p.sendTeleport(e));
             return null;
+        }
         else
             return player;
     }

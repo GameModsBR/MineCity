@@ -49,6 +49,8 @@ public class MineCitySevenCoreMod implements IFMLLoadingPlugin, IFMLCallHook
         ModEnv.seven = true;
 
         return new String[]{
+                "br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.AIItemPickupTransformer",
+                "br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.EntityTravelingTrunkTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.GolemHelperAndAITransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.BlockWoodenDeviceTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.EntityBottleTaintTransformer",
