@@ -32,6 +32,11 @@ public interface IEntityLiving extends IEntityLivingBase
         return (EntityLiving) this;
     }
 
+    default IPathNavigate getNavigator()
+    {
+        return (IPathNavigate) ((EntityLiving) this).getNavigator();
+    }
+
     default void setTarget(IEntityLivingBase target)
     {
         getForgeEntity().setAttackTarget((EntityLivingBase) target);

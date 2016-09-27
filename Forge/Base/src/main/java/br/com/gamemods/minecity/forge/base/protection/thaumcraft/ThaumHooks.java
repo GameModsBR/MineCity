@@ -10,10 +10,7 @@ import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.IRayTraceResult;
 import br.com.gamemods.minecity.forge.base.accessors.block.IState;
 import br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;
-import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
-import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityAIBase;
-import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityLivingBase;
-import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
+import br.com.gamemods.minecity.forge.base.accessors.entity.base.*;
 import br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
@@ -427,9 +424,23 @@ public class ThaumHooks
     public static List<IEntity> onEntityPickup(List<IEntity> list, IEntityAIBase ai)
     {
         if(ai instanceof GolemAI)
-            return onEntityPull(list, ((GolemAI) ai).getTheGolem(), (r,e)-> r);
+        {
+            IEntityGolemBase golem = ((GolemAI) ai).getTheGolem();
+            return onEntityPull(list, golem, (r, e) -> r || e instanceof IEntityItem && !canGolemReach(golem, e));
+        }
 
         return list;
+    }
+
+    private static boolean canGolemReach(IEntityGolemBase golem, IEntity e)
+    {
+        IPath path = golem.getNavigator().getPathToEntity(e);
+        if(path == null)
+            return false;
+
+        IPathPoint finalPoint = path.getFinalPoint();
+        double distance = finalPoint.toPrecisePoint().distance(e.getEntityPos());
+        return distance <= 1.45;
     }
 
     @Referenced(at = AIItemPickupTransformer.class)

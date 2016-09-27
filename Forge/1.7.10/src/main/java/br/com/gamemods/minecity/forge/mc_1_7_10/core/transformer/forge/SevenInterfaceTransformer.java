@@ -14,6 +14,14 @@ public class SevenInterfaceTransformer extends ForgeInterfaceTransformer
     {
         Map<String, String> r = getReplacements();
 
+        r.put("net.minecraft.pathfinding.PathEntity",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.accessors.entity.SevenPathEntity");
+
+        r.remove("net.minecraft.pathfinding.Path");
+
+        r.put("net.minecraft.pathfinding.PathNavigate",
+                "br.com.gamemods.minecity.forge.mc_1_7_10.accessors.entity.SevenPathNavigator");
+
         r.put("net.minecraft.entity.IEntityOwnable",
                 "br.com.gamemods.minecity.forge.mc_1_7_10.accessors.entity.SevenEntityOwnable");
 

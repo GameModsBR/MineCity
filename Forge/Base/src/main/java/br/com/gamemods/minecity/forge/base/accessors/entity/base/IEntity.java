@@ -8,6 +8,7 @@ import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
@@ -529,5 +530,17 @@ public interface IEntity extends MinecraftEntity, Positioned
     default Set<IEntityPlayerMP> getObservers()
     {
         return (Set) getWorld().getEntityTracker().getTrackingPlayers((Entity) this);
+    }
+
+    default Point getBlockPos()
+    {
+        Entity e = (Entity) this;
+        return new Point((int) e.posX, (int) e.posY, (int) e.posZ);
+    }
+
+    default PrecisePoint getEntityPos()
+    {
+        Entity e = (Entity) this;
+        return new PrecisePoint(e.posX, e.posY, e.posZ);
     }
 }

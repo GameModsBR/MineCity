@@ -14,6 +14,9 @@ public class FrostInterfaceTransformer extends ForgeInterfaceTransformer
     {
         Map<String, String> r = getReplacements();
 
+        r.put("net.minecraft.pathfinding.Path",
+                "br.com.gamemods.minecity.forge.mc_1_10_2.accessors.entity.FrostPath");
+
         r.put("net.minecraft.world.Explosion",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.accessors.FrostExplosion");
 
