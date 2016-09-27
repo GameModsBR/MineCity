@@ -112,12 +112,12 @@ public interface IEntityLiving extends IEntityLivingBase
     }
 
     @SuppressWarnings("SimplifiableIfStatement")
-    default boolean canGoFromTo(PathFinder pathFinder, PathPoint point, IBlockAccess access, PermissionFlag attack,
+    default boolean canGoFromTo(PathFinder pathFinder, PathPoint point, IBlockAccess access, PermissionFlag flag,
                                 ClaimedChunk from, ClaimedChunk to, FlagHolder fromHolder, FlagHolder toHolder)
     {
         Identity<?> fromOwner = fromHolder.owner();
         Identity<?> toOwner = toHolder.owner();
-        if(attack == null || fromHolder == toHolder || fromOwner.equals(toOwner))
+        if(flag == null || fromHolder == toHolder || fromOwner.equals(toOwner))
             return true;
 
         Identity<?> owner = getPlayerOwner();
@@ -127,13 +127,13 @@ public interface IEntityLiving extends IEntityLivingBase
         if(owner.equals(toOwner))
             return true;
 
-        if(owner.getType() == Identity.Type.NATURE && (attack == PermissionFlag.PVM || attack == PermissionFlag.PVC))
+        if(owner.getType() == Identity.Type.NATURE && (flag == PermissionFlag.PVM || flag == PermissionFlag.PVC))
         {
-            switch(attack)
+            switch(flag)
             {
                 case PVM:
                     if(toHolder instanceof SimpleFlagHolder)
-                        return !((SimpleFlagHolder) toHolder).can(attack).isPresent();
+                        return !((SimpleFlagHolder) toHolder).can(flag).isPresent();
                     return true;
 
                 case PVC:
@@ -144,7 +144,7 @@ public interface IEntityLiving extends IEntityLivingBase
             }
         }
 
-        return !toHolder.can(owner, PermissionFlag.ENTER).isPresent() && !toHolder.can(owner, attack).isPresent();
+        return !toHolder.can(owner, PermissionFlag.ENTER).isPresent() && !toHolder.can(owner, flag).isPresent();
     }
 
     default int canGoFromToWidth()
@@ -157,13 +157,19 @@ public interface IEntityLiving extends IEntityLivingBase
         return 1;
     }
 
+    default PermissionFlag getPathFinderFlag(BiIntFunction<ClaimedChunk> getClaim, ClaimedChunk from, FlagHolder fromHolder,
+                                             PathFinder pathFinder, PathPoint point, IBlockAccess access)
+    {
+        return getPlayerAttackType();
+    }
+
     default boolean canGoFromTo(BiIntFunction<ClaimedChunk> getClaim, ClaimedChunk from, FlagHolder fromHolder,
                                 PathFinder pathFinder, PathPoint point, IBlockAccess access)
     {
         int width = canGoFromToWidth();
         int height = canGoFromToHeight();
         Identity<?> fromId = fromHolder.owner();
-        PermissionFlag attack = getPlayerAttackType();
+        PermissionFlag attack = getPathFinderFlag(getClaim, from, fromHolder, pathFinder, point, access);
 
         for(int ix = -width; ix <= width; ix++)
             for(int iy = -height; iy <= height; iy++)
