@@ -28,6 +28,10 @@ public interface IBlockJar extends IBlockOpenReactor
     default Reaction reactRightClick(BlockPos pos, IState state, IEntityPlayerMP player, IItemStack stack,
                                      boolean offHand, Direction face)
     {
-        return new SingleBlockReaction(pos, PermissionFlag.OPEN).onDenyUpdateBlockAndTile(player);
+        return new SingleBlockReaction(pos,
+                stack != null && stack.getIItem() instanceof IItemResource && stack.getMeta() == 13?
+                    PermissionFlag.MODIFY:
+                    PermissionFlag.OPEN
+        ).onDenyUpdateBlockAndTile(player);
     }
 }
