@@ -26,6 +26,7 @@ public abstract class BasicTransformer implements IClassTransformer
     @MagicConstant(flagsFromClass = ClassWriter.class)
     protected int writerFlags = ClassWriter.COMPUTE_MAXS;
     protected boolean abort;
+    protected boolean verbose = true;
     private final Set<String> accept;
 
     public BasicTransformer(Collection<String> transformedNames)
@@ -49,9 +50,18 @@ public abstract class BasicTransformer implements IClassTransformer
         this.accept = Collections.singleton(accept);
     }
 
+    public BasicTransformer(boolean acceptAll)
+    {
+        if(!acceptAll)
+            throw new IllegalArgumentException();
+
+        accept = Collections.emptySet();
+        verbose = false;
+    }
+
     public boolean accept(String name)
     {
-        return this.accept.contains(name);
+        return accept.isEmpty() || this.accept.contains(name);
     }
 
     @Override
@@ -64,13 +74,15 @@ public abstract class BasicTransformer implements IClassTransformer
         ClassReader reader = new ClassReader(basicClass);
         reader.accept(node, 0);
 
-        System.out.println("Patching "+transformedName);
+        if(verbose)
+            System.out.println("Patching "+transformedName);
         abort = false;
         patch(transformedName, node, reader);
 
         if(abort)
         {
-            System.out.println("The patch to "+transformedName+" has been aborted");
+            if(verbose)
+                System.out.println("The patch to "+transformedName+" has been aborted");
             return basicClass;
         }
 

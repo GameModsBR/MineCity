@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
+import br.com.gamemods.minecity.forge.base.core.transformer.BasicTransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -52,20 +53,30 @@ import static org.objectweb.asm.Opcodes.*;
  *     }
  * </pre></code>
  */
-@Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod")
-@Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
+
+@Referenced
 @MethodPatcher
-public class GrowMonitorTransformer implements IClassTransformer
+public class GrowMonitorTransformer extends BasicTransformer
 {
     private String hookClass = ModEnv.hookClass.replace('.','/');
 
-    @Override
-    public byte[] transform(String s, String srg, byte[] bytes)
+    @Referenced("br.com.gamemods.minecity.forge.mc_1_7_10.core.MineCitySevenCoreMod")
+    @Referenced("br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod")
+    public GrowMonitorTransformer()
     {
-        ClassNode node = new ClassNode();
-        ClassReader reader = new ClassReader(bytes);
-        reader.accept(node, 0);
+        super(true);
+        this.writerFlags = ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS;
+    }
 
+    public GrowMonitorTransformer(String accept)
+    {
+        super(accept);
+        this.writerFlags = ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS;
+    }
+
+    @Override
+    protected void patch(String srg, ClassNode node, ClassReader reader)
+    {
         boolean patched = false;
         for(MethodNode method : node.methods)
         {
@@ -75,58 +86,8 @@ public class GrowMonitorTransformer implements IClassTransformer
             {
                 if(method.instructions.size() == 0)
                     break;
-
-                System.out.println("\n | - Inserting try-finally block to "+srg+"#"+method.name+method.desc);
                 patched = true;
-
-                CollectionUtil.stream(method.instructions.iterator())
-                        .filter(ins-> ins.getOpcode() == RETURN)
-                        .map(ins-> method.instructions.indexOf(ins))
-                        .sorted(Comparator.reverseOrder()).mapToInt(Integer::intValue)
-                        .forEachOrdered(index -> {
-                            InsnList list = new InsnList();
-                            list = new InsnList();
-                            list.add(new InsnNode(ACONST_NULL));
-                            list.add(new VarInsnNode(ALOAD, 0));
-                            list.add(new VarInsnNode(ALOAD, 1));
-                            list.add(new VarInsnNode(ALOAD, 3));
-                            list.add(new VarInsnNode(ALOAD, 4));
-                            list.add(new MethodInsnNode(INVOKESTATIC,
-                                    hookClass, "onGrowableGrow",
-                                    "(Ljava/lang/Throwable;Ljava/lang/Object;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;)V",
-                                    false
-                            ));
-                            method.instructions.insertBefore(method.instructions.get(index), list);
-                        });
-
-                InsnList list = new InsnList();
-                LabelNode labelStart = new LabelNode();
-                LabelNode labelEnd = new LabelNode();
-                LabelNode labelCatch = new LabelNode();
-
-                list.add(labelStart);
-                list.add(new VarInsnNode(ALOAD, 1));
-                list.add(new MethodInsnNode(INVOKESTATIC,
-                        hookClass, "startCapturingBlocks", "(Lnet/minecraft/world/World;)V", false
-                ));
-                method.instructions.insert(list);
-
-                list = new InsnList();
-                list.add(labelEnd);
-                list.add(labelCatch);
-                list.add(new VarInsnNode(ALOAD, 0));
-                list.add(new VarInsnNode(ALOAD, 1));
-                list.add(new VarInsnNode(ALOAD, 3));
-                list.add(new VarInsnNode(ALOAD, 4));
-                list.add(new MethodInsnNode(INVOKESTATIC,
-                        hookClass, "onGrowableGrow",
-                        "(Ljava/lang/Throwable;Ljava/lang/Object;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;)V",
-                        false
-                ));
-                list.add(new InsnNode(RETURN));
-
-                method.instructions.add(list);
-                method.tryCatchBlocks.add(new TryCatchBlockNode(labelStart, labelEnd, labelCatch, null));
+                patchGrowFrost(srg, method);
                 break;
             }
 
@@ -135,71 +96,126 @@ public class GrowMonitorTransformer implements IClassTransformer
             {
                 if(method.instructions.size() == 0)
                     break;
-
-                System.out.println("\n | - Inserting try-finally block to "+srg+"#"+method.name+method.desc);
                 patched = true;
-
-                CollectionUtil.stream(method.instructions.iterator())
-                        .filter(ins-> ins.getOpcode() == RETURN)
-                        .map(ins-> method.instructions.indexOf(ins))
-                        .sorted(Comparator.reverseOrder()).map(Integer::intValue)
-                        .forEachOrdered(index -> {
-                            InsnList list = new InsnList();
-                            list = new InsnList();
-                            list.add(new InsnNode(ACONST_NULL));
-                            list.add(new VarInsnNode(ALOAD, 0));
-                            list.add(new VarInsnNode(ALOAD, 1));
-                            list.add(new VarInsnNode(ILOAD, 3));
-                            list.add(new VarInsnNode(ILOAD, 4));
-                            list.add(new VarInsnNode(ILOAD, 5));
-                            list.add(new MethodInsnNode(INVOKESTATIC,
-                                    hookClass, "onGrowableGrow",
-                                    "(Ljava/lang/Throwable;Ljava/lang/Object;Lnet/minecraft/world/World;III)V",
-                                    false
-                            ));
-                            method.instructions.insertBefore(method.instructions.get(index), list);
-                        });
-
-                InsnList list = new InsnList();
-                LabelNode labelStart = new LabelNode();
-                LabelNode labelEnd = new LabelNode();
-                LabelNode labelCatch = new LabelNode();
-
-                list.add(labelStart);
-                list.add(new VarInsnNode(ALOAD, 1));
-                list.add(new MethodInsnNode(INVOKESTATIC,
-                        hookClass, "startCapturingBlocks", "(Lnet/minecraft/world/World;)V", false
-                ));
-                method.instructions.insert(list);
-
-                list = new InsnList();
-                list.add(labelEnd);
-                list.add(labelCatch);
-                list.add(new VarInsnNode(ALOAD, 0));
-                list.add(new VarInsnNode(ALOAD, 1));
-                list.add(new VarInsnNode(ILOAD, 3));
-                list.add(new VarInsnNode(ILOAD, 4));
-                list.add(new VarInsnNode(ILOAD, 5));
-                list.add(new MethodInsnNode(INVOKESTATIC,
-                        hookClass, "onGrowableGrow",
-                        "(Ljava/lang/Throwable;Ljava/lang/Object;Lnet/minecraft/world/World;III)V",
-                        false
-                ));
-                list.add(new InsnNode(RETURN));
-
-                method.instructions.add(list);
-                method.tryCatchBlocks.add(new TryCatchBlockNode(labelStart, labelEnd, labelCatch, null));
+                patchGrowSeven(srg, method, 0, 1, 3, 4, 5);
                 break;
             }
         }
 
         if(!patched)
-            return bytes;
+            this.abort = true;
+    }
 
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
-        node.accept(writer);
-        bytes = writer.toByteArray();
-        ModEnv.saveClass(srg, bytes);
-        return bytes;
+    protected void patchGrowFrost(String srg, MethodNode method)
+    {
+        System.out.println("\n | - Inserting try-finally block to "+srg+"#"+method.name+method.desc);
+
+        CollectionUtil.stream(method.instructions.iterator())
+                .filter(ins-> ins.getOpcode() == RETURN)
+                .map(ins-> method.instructions.indexOf(ins))
+                .sorted(Comparator.reverseOrder()).mapToInt(Integer::intValue)
+                .forEachOrdered(index -> {
+                    InsnList list = new InsnList();
+                    list = new InsnList();
+                    list.add(new InsnNode(ACONST_NULL));
+                    list.add(new VarInsnNode(ALOAD, 0));
+                    list.add(new VarInsnNode(ALOAD, 1));
+                    list.add(new VarInsnNode(ALOAD, 3));
+                    list.add(new VarInsnNode(ALOAD, 4));
+                    list.add(new MethodInsnNode(INVOKESTATIC,
+                            hookClass, "onGrowableGrow",
+                            "(Ljava/lang/Throwable;Ljava/lang/Object;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;)V",
+                            false
+                    ));
+                    method.instructions.insertBefore(method.instructions.get(index), list);
+                });
+
+        InsnList list = new InsnList();
+        LabelNode labelStart = new LabelNode();
+        LabelNode labelEnd = new LabelNode();
+        LabelNode labelCatch = new LabelNode();
+
+        list.add(labelStart);
+        list.add(new VarInsnNode(ALOAD, 1));
+        list.add(new MethodInsnNode(INVOKESTATIC,
+                hookClass, "startCapturingBlocks", "(Lnet/minecraft/world/World;)V", false
+        ));
+        method.instructions.insert(list);
+
+        list = new InsnList();
+        list.add(labelEnd);
+        list.add(labelCatch);
+        list.add(new VarInsnNode(ALOAD, 0));
+        list.add(new VarInsnNode(ALOAD, 1));
+        list.add(new VarInsnNode(ALOAD, 3));
+        list.add(new VarInsnNode(ALOAD, 4));
+        list.add(new MethodInsnNode(INVOKESTATIC,
+                hookClass, "onGrowableGrow",
+                "(Ljava/lang/Throwable;Ljava/lang/Object;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;)V",
+                false
+        ));
+        list.add(new InsnNode(RETURN));
+
+        method.instructions.add(list);
+        method.tryCatchBlocks.add(new TryCatchBlockNode(labelStart, labelEnd, labelCatch, null));
+    }
+
+    /**
+     * @param params this world x y z
+     */
+    protected void patchGrowSeven(String srg, MethodNode method, int... params)
+    {
+        System.out.println("\n | - Inserting try-finally block to "+srg+"#"+method.name+method.desc);
+
+        CollectionUtil.stream(method.instructions.iterator())
+                .filter(ins-> ins.getOpcode() == RETURN)
+                .map(ins-> method.instructions.indexOf(ins))
+                .sorted(Comparator.reverseOrder()).map(Integer::intValue)
+                .forEachOrdered(index -> {
+                    InsnList list = new InsnList();
+                    list = new InsnList();
+                    list.add(new InsnNode(ACONST_NULL));
+                    list.add(new VarInsnNode(ALOAD, params[0]));
+                    list.add(new VarInsnNode(ALOAD, params[1]));
+                    list.add(new VarInsnNode(ILOAD, params[2]));
+                    list.add(new VarInsnNode(ILOAD, params[3]));
+                    list.add(new VarInsnNode(ILOAD, params[4]));
+                    list.add(new MethodInsnNode(INVOKESTATIC,
+                            hookClass, "onGrowableGrow",
+                            "(Ljava/lang/Throwable;Ljava/lang/Object;Lnet/minecraft/world/World;III)V",
+                            false
+                    ));
+                    method.instructions.insertBefore(method.instructions.get(index), list);
+                });
+
+        InsnList list = new InsnList();
+        LabelNode labelStart = new LabelNode();
+        LabelNode labelEnd = new LabelNode();
+        LabelNode labelCatch = new LabelNode();
+
+        list.add(labelStart);
+        list.add(new VarInsnNode(ALOAD, 1));
+        list.add(new MethodInsnNode(INVOKESTATIC,
+                hookClass, "startCapturingBlocks", "(Lnet/minecraft/world/World;)V", false
+        ));
+        method.instructions.insert(list);
+
+        list = new InsnList();
+        list.add(labelEnd);
+        list.add(labelCatch);
+        list.add(new VarInsnNode(ALOAD, params[0]));
+        list.add(new VarInsnNode(ALOAD, params[1]));
+        list.add(new VarInsnNode(ILOAD, params[2]));
+        list.add(new VarInsnNode(ILOAD, params[3]));
+        list.add(new VarInsnNode(ILOAD, params[4]));
+        list.add(new MethodInsnNode(INVOKESTATIC,
+                hookClass, "onGrowableGrow",
+                "(Ljava/lang/Throwable;Ljava/lang/Object;Lnet/minecraft/world/World;III)V",
+                false
+        ));
+        list.add(new InsnNode(RETURN));
+
+        method.instructions.add(list);
+        method.tryCatchBlocks.add(new TryCatchBlockNode(labelStart, labelEnd, labelCatch, null));
     }
 }
