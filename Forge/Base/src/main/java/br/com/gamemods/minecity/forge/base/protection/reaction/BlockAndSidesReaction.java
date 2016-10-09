@@ -12,6 +12,7 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class BlockAndSidesReaction extends TriggeredReaction
@@ -19,6 +20,7 @@ public class BlockAndSidesReaction extends TriggeredReaction
     private BlockPos base;
     private PermissionFlag flag;
     private EnumSet<Direction> sides;
+    private Predicate<BlockPos> condition = pos-> true;
 
     public BlockAndSidesReaction(PermissionFlag flag, BlockPos base, EnumSet<Direction> sides)
     {
@@ -43,13 +45,19 @@ public class BlockAndSidesReaction extends TriggeredReaction
         sides.add(Direction.WEST);
     }
 
+    public BlockAndSidesReaction condition(Predicate<BlockPos> condition)
+    {
+        this.condition = condition;
+        return this;
+    }
+
     @Override
     public Stream<Message> stream(MineCity mineCity, Permissible permissible)
     {
         AtomicReference<ClaimedChunk> lastClaim = new AtomicReference<>();
         return Stream.of(
                 Stream.of(base),
-                sides.stream().map(base::add)
+                sides.stream().map(base::add).filter(condition)
         ).flatMap(Function.identity()).map(pos-> {
             ClaimedChunk claim = mineCity.provideChunk(pos.getChunk(), lastClaim.get());
             lastClaim.set(claim);
