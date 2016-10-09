@@ -58,6 +58,37 @@ public class TileNodeTransformer extends BasicTransformer
         setBiomeAt.visitInsn(RETURN);
         setBiomeAt.visitEnd();
 
+        MethodNode spreadFibres = new MethodNode(ACC_PUBLIC|ACC_STATIC, "mineCity$spreadFibres", "(Lnet/minecraft/world/World;IIIL"+name.replace('.','/')+";)Z", null, null);
+        spreadFibres.visitCode();
+        spreadFibres.visitVarInsn(ALOAD, 4);
+        spreadFibres.visitVarInsn(ALOAD, 0);
+        spreadFibres.visitVarInsn(ILOAD, 1);
+        spreadFibres.visitVarInsn(ILOAD, 2);
+        spreadFibres.visitVarInsn(ILOAD, 3);
+        spreadFibres.visitMethodInsn(INVOKESTATIC,
+                "br.com.gamemods.minecity.forge.base.protection.thaumcraft.ThaumHooks".replace('.','/'),
+                "onTileSpreadFibres",
+                "(Lnet/minecraft/tileentity/TileEntity;Lnet/minecraft/world/World;III)Z",
+                false
+        );
+        elseLabel = new Label();
+        spreadFibres.visitJumpInsn(IFEQ, elseLabel);
+        spreadFibres.visitInsn(ICONST_0);
+        spreadFibres.visitInsn(IRETURN);
+        spreadFibres.visitLabel(elseLabel);
+        spreadFibres.visitVarInsn(ALOAD, 0);
+        spreadFibres.visitVarInsn(ILOAD, 1);
+        spreadFibres.visitVarInsn(ILOAD, 2);
+        spreadFibres.visitVarInsn(ILOAD, 3);
+        spreadFibres.visitMethodInsn(INVOKESTATIC,
+                "thaumcraft.common.blocks.BlockTaintFibres".replace('.','/'),
+                "spreadFibres",
+                "(Lnet/minecraft/world/World;III)Z",
+                false
+        );
+        spreadFibres.visitInsn(IRETURN);
+        spreadFibres.visitEnd();
+
         for(MethodNode method : node.methods)
         {
             if(method.name.equals("handleHungryNodeSecond"))
@@ -128,6 +159,22 @@ public class TileNodeTransformer extends BasicTransformer
                             return true;
                         });
             }
+            else if(method.name.equals("handleTaintNode"))
+            {
+                CollectionUtil.stream(method.instructions.iterator())
+                        .filter(ins-> ins.getOpcode() == INVOKESTATIC).map(MethodInsnNode.class::cast)
+                        .filter(ins-> ins.owner.equals("thaumcraft/common/blocks/BlockTaintFibres"))
+                        .filter(ins-> ins.desc.equals("(Lnet/minecraft/world/World;III)Z"))
+                        .filter(ins-> ins.name.equals("spreadFibres"))
+                        .anyMatch(ins-> {
+                            method.instructions.insertBefore(ins, new VarInsnNode(ALOAD, 0));
+                            ins.itf = false;
+                            ins.owner = name.replace('.','/');
+                            ins.name = spreadFibres.name;
+                            ins.desc = spreadFibres.desc;
+                            return true;
+                        });
+            }
 
             CollectionUtil.stream(method.instructions.iterator())
                     .filter(ins-> ins.getOpcode() == INVOKESTATIC).map(MethodInsnNode.class::cast)
@@ -147,5 +194,6 @@ public class TileNodeTransformer extends BasicTransformer
 
         node.methods.add(Objects.requireNonNull(wrapperNode.get(), "mineCity$onNodeBreak was not generated"));
         node.methods.add(setBiomeAt);
+        node.methods.add(spreadFibres);
     }
 }
