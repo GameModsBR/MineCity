@@ -327,6 +327,13 @@ public class ThaumHooks
 
     }
 
+    @Referenced(at = TileNodeTransformer.class)
+    public static boolean onTileChangeBiome(TileEntity mcTile, World mcWorld, int x, int y)
+    {
+        return !mcWorld.isRemote &&
+                ModHooks.onTileEntityChangeBiome((ITileEntity) mcTile, (IWorldServer) mcWorld, x, y).isPresent();
+    }
+
     @Referenced(at = EntityFrostShardTransformer.class)
     @Referenced(at = EntityPechBlastTransformer.class)
     @Referenced(at = EntityPrimalArrowTransformer.class)

@@ -9,6 +9,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.tree.*;
 
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -28,6 +29,35 @@ public class TileNodeTransformer extends BasicTransformer
     protected void patch(String name, ClassNode node, ClassReader reader)
     {
         AtomicReference<MethodNode> wrapperNode = new AtomicReference<>();
+        MethodNode setBiomeAt = new MethodNode(ACC_PUBLIC|ACC_STATIC, "mineCity$setBiomeAt", "(Lnet/minecraft/world/World;IILnet/minecraft/world/biome/BiomeGenBase;L"+name.replace('.','/')+";)V", null, null);
+        setBiomeAt.visitCode();
+        setBiomeAt.visitVarInsn(ALOAD, 4);
+        setBiomeAt.visitVarInsn(ALOAD, 0);
+        setBiomeAt.visitVarInsn(ILOAD, 1);
+        setBiomeAt.visitVarInsn(ILOAD, 2);
+        setBiomeAt.visitMethodInsn(INVOKESTATIC,
+                "br.com.gamemods.minecity.forge.base.protection.thaumcraft.ThaumHooks".replace('.','/'),
+                "onTileChangeBiome",
+                "(Lnet/minecraft/tileentity/TileEntity;Lnet/minecraft/world/World;II)Z",
+                false
+        );
+        Label elseLabel = new Label();
+        setBiomeAt.visitJumpInsn(IFEQ, elseLabel);
+        setBiomeAt.visitInsn(RETURN);
+        setBiomeAt.visitLabel(elseLabel);
+        setBiomeAt.visitVarInsn(ALOAD, 0);
+        setBiomeAt.visitVarInsn(ILOAD, 1);
+        setBiomeAt.visitVarInsn(ILOAD, 2);
+        setBiomeAt.visitVarInsn(ALOAD, 3);
+        setBiomeAt.visitMethodInsn(INVOKESTATIC,
+                "thaumcraft.common.lib.utils.Utils".replace('.','/'),
+                "setBiomeAt",
+                "(Lnet/minecraft/world/World;IILnet/minecraft/world/biome/BiomeGenBase;)V",
+                false
+        );
+        setBiomeAt.visitInsn(RETURN);
+        setBiomeAt.visitEnd();
+
         for(MethodNode method : node.methods)
         {
             if(method.name.equals("handleHungryNodeSecond"))
@@ -98,8 +128,24 @@ public class TileNodeTransformer extends BasicTransformer
                             return true;
                         });
             }
+
+            CollectionUtil.stream(method.instructions.iterator())
+                    .filter(ins-> ins.getOpcode() == INVOKESTATIC).map(MethodInsnNode.class::cast)
+                    .filter(ins-> ins.owner.equals("thaumcraft/common/lib/utils/Utils"))
+                    .filter(ins-> ins.name.equals("setBiomeAt"))
+                    .filter(ins-> ins.desc.equals("(Lnet/minecraft/world/World;IILnet/minecraft/world/biome/BiomeGenBase;)V"))
+                    .map(ins-> method.instructions.indexOf(ins)).sorted(Comparator.reverseOrder())
+                    .map(i-> (MethodInsnNode) method.instructions.get(i))
+                    .forEachOrdered(ins-> {
+                        method.instructions.insertBefore(ins, new VarInsnNode(ALOAD, 0));
+                        ins.itf = false;
+                        ins.owner = name.replace('.','/');
+                        ins.name = setBiomeAt.name;
+                        ins.desc = setBiomeAt.desc;
+                    });
         }
 
         node.methods.add(Objects.requireNonNull(wrapperNode.get(), "mineCity$onNodeBreak was not generated"));
+        node.methods.add(setBiomeAt);
     }
 }
