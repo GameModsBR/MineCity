@@ -89,4 +89,16 @@ public class ModHooks
                 .findFirst()
                 ;
     }
+
+    public static Optional<Message> onTileAccessOther(ITileEntity target, ITileEntity from, PermissionFlag flag)
+    {
+        MineCityForge mod = ModEnv.blockProtections.mod;
+        BlockPos targetPos = target.getBlockPos(mod);
+        BlockPos fromPos = from.getBlockPos(mod);
+        return onBlockAccessOther(targetPos.world.getInstance(World.class),
+                targetPos.x, targetPos.y, targetPos.z,
+                fromPos.x, fromPos.y, fromPos.z,
+                flag
+        );
+    }
 }
