@@ -2,14 +2,15 @@ package br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft;
 
 import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.BasicTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.tree.*;
+
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -26,6 +27,7 @@ public class TileNodeTransformer extends BasicTransformer
     @Override
     protected void patch(String name, ClassNode node, ClassReader reader)
     {
+        AtomicReference<MethodNode> wrapperNode = new AtomicReference<>();
         for(MethodNode method : node.methods)
         {
             if(method.name.equals("handleHungryNodeSecond"))
@@ -36,7 +38,7 @@ public class TileNodeTransformer extends BasicTransformer
                         .filter(ins-> ins.desc.equals("(IIIZ)Z"))
                         .anyMatch(ins-> {
                             MethodNode wrapper = new MethodNode(ACC_PUBLIC|ACC_STATIC,
-                                    "mineCity$wrapper",
+                                    "mineCity$onNodeBreak",
                                     "(Lnet/minecraft/world/World;IIIZL"+name.replace('.','/')+";)Z",
                                     null, null
                             );
@@ -64,7 +66,7 @@ public class TileNodeTransformer extends BasicTransformer
                             wrapper.visitMethodInsn(ins.getOpcode(), ins.owner, ins.name, ins.desc, ins.itf);
                             wrapper.visitInsn(IRETURN);
                             wrapper.visitEnd();
-                            node.methods.add(wrapper);
+                            wrapperNode.set(wrapper);
 
                             method.instructions.insertBefore(ins, new VarInsnNode(ALOAD, 0));
                             ins.setOpcode(INVOKESTATIC);
@@ -74,8 +76,30 @@ public class TileNodeTransformer extends BasicTransformer
                             ins.desc = wrapper.desc;
                             return true;
                         });
-                break;
+            }
+            else if(method.name.equals("handleHungryNodeFirst"))
+            {
+                String aabb = ModEnv.aabbClass.replace('.','/');
+                CollectionUtil.stream(method.instructions.iterator())
+                        .filter(ins-> ins.getOpcode() == INVOKEVIRTUAL).map(MethodInsnNode.class::cast)
+                        .filter(ins-> ins.owner.equals("net/minecraft/world/World"))
+                        .filter(ins-> ins.desc.equals("(Ljava/lang/Class;L"+aabb+";)Ljava/util/List;"))
+                        .anyMatch(ins-> {
+                            InsnList list = new InsnList();
+                            list.add(new VarInsnNode(ALOAD, 0));
+                            list.add(new MethodInsnNode(INVOKESTATIC,
+                                    "br.com.gamemods.minecity.forge.base.protection.thaumcraft.ThaumHooks".replace('.','/'),
+                                    "onTileDamageEntities",
+                                    "(Ljava/util/List;Lbr.com.gamemods.minecity.forge.base.accessors.block.ITileEntity;)Ljava/util/List;"
+                                        .replace('.','/'),
+                                    false
+                            ));
+                            method.instructions.insert(ins, list);
+                            return true;
+                        });
             }
         }
+
+        node.methods.add(Objects.requireNonNull(wrapperNode.get(), "mineCity$onNodeBreak was not generated"));
     }
 }

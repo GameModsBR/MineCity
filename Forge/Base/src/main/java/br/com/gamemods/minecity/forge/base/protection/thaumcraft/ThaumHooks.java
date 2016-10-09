@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.forge.base.protection.thaumcraft;
 
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.EntityPos;
@@ -241,6 +242,32 @@ public class ThaumHooks
     public static boolean onAiryApplyPotion(Entity mcEntity, World mcWorld, int x, int y, int z)
     {
         return onAiryDamage(mcEntity, DamageSource.magic, 1, mcWorld, x, y, z);
+    }
+
+    @Referenced(at = TileNodeTransformer.class)
+    public static List<IEntity> onTileDamageEntities(List<IEntity> entities, ITileEntity tile)
+    {
+        BlockPos pos = tile.getBlockPos(ModEnv.blockProtections.mod);
+        Identity<?> owner = ModEnv.blockProtections.mod.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).owner();
+        if(owner.getType() != Identity.Type.PLAYER)
+        {
+            entities.removeIf(entity->
+            {
+                BlockPos to = entity.getBlockPos(pos);
+                PermissionFlag flag = entity.getPlayerAttackType();
+                return flag != null && ModHooks.onBlockAccessOther(pos.world.getInstance(World.class),
+                        to.x, to.y, to.z,
+                        pos.x, pos.y, pos.z,
+                        flag
+                ).isPresent();
+            });
+
+            return entities;
+        }
+
+        IEntityPlayerMP player = ModEnv.entityProtections.mod.playerOrFake(owner, pos.toEntity());
+        entities.removeIf(entity-> entity.reactPlayerAttackDirect(player, null, false).can(ModEnv.blockProtections.mod.mineCity, player).isPresent());
+        return entities;
     }
 
     @Referenced(at = BlockAiryTransformer.class)
