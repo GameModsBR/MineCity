@@ -247,6 +247,9 @@ public class ThaumHooks
     @Referenced(at = TileNodeTransformer.class)
     public static List<IEntity> onTileDamageEntities(List<IEntity> entities, ITileEntity tile)
     {
+        if(entities.isEmpty() || entities.get(0).isRemote())
+            return entities;
+
         BlockPos pos = tile.getBlockPos(ModEnv.blockProtections.mod);
         Identity<?> owner = ModEnv.blockProtections.mod.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).owner();
         if(owner.getType() != Identity.Type.PLAYER)
@@ -337,6 +340,9 @@ public class ThaumHooks
     @Referenced(at = TileNodeTransformer.class)
     public static TileEntity onNodeDischarge(ITileEntity target, ITileEntity from)
     {
+        if(target == null)
+            return null;
+
         return ModHooks.onTileAccessOther(target, from, PermissionFlag.MODIFY).isPresent()? null : (TileEntity)target;
     }
 
