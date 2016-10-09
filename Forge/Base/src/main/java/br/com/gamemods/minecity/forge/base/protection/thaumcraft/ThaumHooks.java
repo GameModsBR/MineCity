@@ -22,6 +22,7 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft.*;
 import br.com.gamemods.minecity.forge.base.protection.ModHooks;
 import br.com.gamemods.minecity.forge.base.tile.ITileEntityData;
+import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -335,6 +336,20 @@ public class ThaumHooks
     {
         return !mcWorld.isRemote &&
                 ModHooks.onTileEntityChangeBiome((ITileEntity) mcTile, (IWorldServer) mcWorld, x, y).isPresent();
+    }
+
+    @Referenced(at = BlockTaintFibresTransformer.class)
+    public static boolean onBlockChangeBiome(World mcWorld, int x, int y, int bx, int by, int bz)
+    {
+        MineCityForge mod = ModEnv.blockProtections.mod;
+        BlockPos pos = new BlockPos(mod.world(mcWorld), bx, by, bz);
+        ClaimedChunk claim = mod.mineCity.provideChunk(pos.getChunk());
+        return !mcWorld.isRemote &&
+                ModHooks.onSomethingChangeBiome(
+                        claim.getFlagHolder(pos).owner(),
+                        (IWorldServer) mcWorld, x, y,
+                        claim
+                ).isPresent();
     }
 
     @Referenced(at = TileNodeTransformer.class)
