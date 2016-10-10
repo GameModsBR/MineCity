@@ -8,6 +8,10 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.tree.*;
 
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+
 import static org.objectweb.asm.Opcodes.*;
 import static org.objectweb.asm.Opcodes.RETURN;
 
@@ -57,6 +61,41 @@ public class BlockTaintFibresTransformer extends BasicTransformer
         setBiomeAt.visitInsn(RETURN);
         setBiomeAt.visitEnd();
 
+        MethodNode spreadFibres = new MethodNode(ACC_PUBLIC|ACC_STATIC, "mineCity$spreadFibres", "(Lnet/minecraft/world/World;IIIIII)Z", null, null);
+        spreadFibres.visitCode();
+        spreadFibres.visitVarInsn(ALOAD, 0);
+        spreadFibres.visitVarInsn(ILOAD, 1);
+        spreadFibres.visitVarInsn(ILOAD, 2);
+        spreadFibres.visitVarInsn(ILOAD, 3);
+        spreadFibres.visitVarInsn(ILOAD, 4);
+        spreadFibres.visitVarInsn(ILOAD, 5);
+        spreadFibres.visitVarInsn(ILOAD, 6);
+        spreadFibres.visitMethodInsn(INVOKESTATIC,
+                "br.com.gamemods.minecity.forge.base.protection.thaumcraft.ThaumHooks".replace('.','/'),
+                "onBlockChangeOther",
+                "(Lnet/minecraft/world/World;IIIIII)Z",
+                false
+        );
+        elseLabel = new Label();
+        spreadFibres.visitJumpInsn(IFEQ, elseLabel);
+        spreadFibres.visitInsn(ICONST_0);
+        spreadFibres.visitInsn(IRETURN);
+        spreadFibres.visitLabel(elseLabel);
+        spreadFibres.visitVarInsn(ALOAD, 0);
+        spreadFibres.visitVarInsn(ILOAD, 1);
+        spreadFibres.visitVarInsn(ILOAD, 2);
+        spreadFibres.visitVarInsn(ILOAD, 3);
+        spreadFibres.visitMethodInsn(INVOKESTATIC,
+                name.replace('.','/'),
+                "spreadFibres",
+                "(Lnet/minecraft/world/World;III)Z",
+                false
+        );
+        spreadFibres.visitInsn(IRETURN);
+        spreadFibres.visitEnd();
+
+        AtomicReference<MethodNode> setBlock = new AtomicReference<>();
+
         for(MethodNode method : node.methods)
         {
             switch(method.name)
@@ -81,9 +120,91 @@ public class BlockTaintFibresTransformer extends BasicTransformer
                                 return true;
                             });
                     break;
+                default:
+                    if(method.desc.equals("(Lnet/minecraft/world/World;IIILjava/util/Random;)V"))
+                    {
+                        /*
+                        CollectionUtil.stream(method.instructions.iterator())
+                                .filter(ins -> ins.getOpcode() == INVOKEVIRTUAL).map(MethodInsnNode.class::cast)
+                                .filter(ins -> ins.owner.equals("net/minecraft/world/World"))
+                                .filter(ins -> ins.desc.equals("(IIILnet/minecraft/block/Block;II)Z"))
+                                .map(ins-> method.instructions.indexOf(ins)).sorted(Comparator.reverseOrder())
+                                .map(i-> (MethodInsnNode) method.instructions.get(i))
+                                .forEachOrdered(ins -> {
+                                    MethodNode wrapper = setBlock.get();
+                                    if(wrapper == null)
+                                    {
+                                        setBlock.set(wrapper = new MethodNode(ACC_PUBLIC|ACC_STATIC,
+                                                "mineCity$setBlock",
+                                                "(Lnet/minecraft/world/World;IIILnet/minecraft/block/Block;IIIII)Z",
+                                                null, null
+                                        ));
+                                        wrapper.visitCode();
+                                        wrapper.visitVarInsn(ALOAD, 0);
+                                        wrapper.visitVarInsn(ILOAD, 1);
+                                        wrapper.visitVarInsn(ILOAD, 2);
+                                        wrapper.visitVarInsn(ILOAD, 3);
+                                        wrapper.visitVarInsn(ILOAD, 7);
+                                        wrapper.visitVarInsn(ILOAD, 8);
+                                        wrapper.visitVarInsn(ILOAD, 9);
+                                        wrapper.visitMethodInsn(INVOKESTATIC,
+                                                "br.com.gamemods.minecity.forge.base.protection.thaumcraft.ThaumHooks".replace('.','/'),
+                                                "onBlockChangeOther",
+                                                "(Lnet/minecraft/world/World;IIIIII)Z",
+                                                false
+                                        );
+                                        Label label = new Label();
+                                        wrapper.visitJumpInsn(IFEQ, label);
+                                        wrapper.visitInsn(ICONST_0);
+                                        wrapper.visitInsn(IRETURN);
+                                        wrapper.visitLabel(label);
+                                        wrapper.visitVarInsn(ALOAD, 0);
+                                        wrapper.visitVarInsn(ILOAD, 1);
+                                        wrapper.visitVarInsn(ILOAD, 2);
+                                        wrapper.visitVarInsn(ILOAD, 3);
+                                        wrapper.visitVarInsn(ALOAD, 4);
+                                        wrapper.visitVarInsn(ILOAD, 5);
+                                        wrapper.visitVarInsn(ILOAD, 6);
+                                        wrapper.visitMethodInsn(ins.getOpcode(), ins.owner, ins.name, ins.desc, ins.itf);
+                                        wrapper.visitInsn(IRETURN);
+                                        wrapper.visitEnd();
+                                    }
+
+                                    InsnList list = new InsnList();
+                                    list.add(new VarInsnNode(ILOAD, 2));
+                                    list.add(new VarInsnNode(ILOAD, 3));
+                                    list.add(new VarInsnNode(ILOAD, 4));
+                                    method.instructions.insertBefore(ins, list);
+                                    ins.setOpcode(INVOKESTATIC);
+                                    ins.itf = false;
+                                    ins.owner = name.replace('.','/');
+                                    ins.name = wrapper.name;
+                                    ins.desc = wrapper.desc;
+                                });
+                        */
+
+                        CollectionUtil.stream(method.instructions.iterator())
+                                .filter(ins -> ins.getOpcode() == INVOKESTATIC).map(MethodInsnNode.class::cast)
+                                .filter(ins -> ins.owner.equals("thaumcraft/common/blocks/BlockTaintFibres"))
+                                .filter(ins -> ins.desc.equals("(Lnet/minecraft/world/World;III)Z"))
+                                .filter(ins -> ins.name.equals("spreadFibres"))
+                                .anyMatch(ins ->
+                                {
+                                    InsnList list = new InsnList();
+                                    list.add(new VarInsnNode(ILOAD, 2));
+                                    list.add(new VarInsnNode(ILOAD, 3));
+                                    list.add(new VarInsnNode(ILOAD, 4));
+                                    method.instructions.insertBefore(ins, list);
+                                    ins.name = spreadFibres.name;
+                                    ins.desc = spreadFibres.desc;
+                                    return true;
+                                });
+                    }
             }
         }
 
         node.methods.add(setBiomeAt);
+        node.methods.add(spreadFibres);
+        //node.methods.add(Objects.requireNonNull(setBlock.get(), "mineCity$setBlock was not generated"));
     }
 }
