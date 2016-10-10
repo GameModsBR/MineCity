@@ -358,6 +358,13 @@ public class ThaumHooks
         return ModHooks.onBlockAccessOther(mcWorld, tx, ty, tz, fx, fy, fz, PermissionFlag.MODIFY).isPresent();
     }
 
+    @Referenced(at = BlockTaintTransformer.class)
+    public static boolean onTaintTryToFall(World mcWorld, int fx, int fy, int fz, int tx, int ty, int tz)
+    {
+        // TODO Implement a protection similar to sand
+        return false;
+    }
+
     @Referenced(at = TileNodeTransformer.class)
     public static TileEntity onNodeDischarge(ITileEntity target, ITileEntity from)
     {
