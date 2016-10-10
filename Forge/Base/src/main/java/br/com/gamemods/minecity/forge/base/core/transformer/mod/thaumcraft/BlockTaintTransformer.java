@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.mod.thaumcraft;
 
+import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.BasicTransformer;
@@ -46,6 +47,25 @@ public class BlockTaintTransformer extends BasicTransformer
                 list.add(labelNode);
                 method.instructions.insert(list);
                 break;
+            }
+            else if(method.desc.equals("(Lnet/minecraft/world/World;IIILjava/util/Random;)V"))
+            {
+                CollectionUtil.stream(method.instructions.iterator())
+                        .filter(ins -> ins.getOpcode() == INVOKESTATIC).map(MethodInsnNode.class::cast)
+                        .filter(ins -> ins.owner.equals("thaumcraft/common/blocks/BlockTaintFibres"))
+                        .filter(ins -> ins.desc.equals("(Lnet/minecraft/world/World;III)Z"))
+                        .filter(ins -> ins.name.equals("spreadFibres"))
+                        .anyMatch(ins ->
+                        {
+                            InsnList list = new InsnList();
+                            list.add(new VarInsnNode(ILOAD, 2));
+                            list.add(new VarInsnNode(ILOAD, 3));
+                            list.add(new VarInsnNode(ILOAD, 4));
+                            method.instructions.insertBefore(ins, list);
+                            ins.name = "mineCity$spreadFibres";
+                            ins.desc = "(Lnet/minecraft/world/World;IIIIII)Z";
+                            return true;
+                        });
             }
         }
     }
