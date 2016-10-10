@@ -5,7 +5,12 @@ import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.BasicTransformer;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.tree.*;
+
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -22,6 +27,8 @@ public class BlockTaintTransformer extends BasicTransformer
     @Override
     protected void patch(String name, ClassNode node, ClassReader reader)
     {
+        AtomicReference<MethodNode> setBlock = new AtomicReference<>();
+
         for(MethodNode method : node.methods)
         {
             if(method.name.equals("tryToFall"))
@@ -66,7 +73,67 @@ public class BlockTaintTransformer extends BasicTransformer
                             ins.desc = "(Lnet/minecraft/world/World;IIIIII)Z";
                             return true;
                         });
+
+                    CollectionUtil.stream(method.instructions.iterator())
+                            .filter(ins -> ins.getOpcode() == INVOKEVIRTUAL).map(MethodInsnNode.class::cast)
+                            .filter(ins -> ins.owner.equals("net/minecraft/world/World"))
+                            .filter(ins -> ins.desc.equals("(IIILnet/minecraft/block/Block;II)Z"))
+                            .map(ins-> method.instructions.indexOf(ins)).sorted(Comparator.reverseOrder())
+                            .map(i-> (MethodInsnNode) method.instructions.get(i))
+                            .forEachOrdered(ins -> {
+                                MethodNode wrapper = setBlock.get();
+                                if(wrapper == null)
+                                {
+                                    setBlock.set(wrapper = new MethodNode(ACC_PUBLIC|ACC_STATIC,
+                                            "mineCity$setBlock",
+                                            "(Lnet/minecraft/world/World;IIILnet/minecraft/block/Block;IIIII)Z",
+                                            null, null
+                                    ));
+                                    wrapper.visitCode();
+                                    wrapper.visitVarInsn(ALOAD, 0);
+                                    wrapper.visitVarInsn(ILOAD, 1);
+                                    wrapper.visitVarInsn(ILOAD, 2);
+                                    wrapper.visitVarInsn(ILOAD, 3);
+                                    wrapper.visitVarInsn(ILOAD, 7);
+                                    wrapper.visitVarInsn(ILOAD, 8);
+                                    wrapper.visitVarInsn(ILOAD, 9);
+                                    wrapper.visitMethodInsn(INVOKESTATIC,
+                                            "br.com.gamemods.minecity.forge.base.protection.thaumcraft.ThaumHooks".replace('.','/'),
+                                            "onBlockChangeOther",
+                                            "(Lnet/minecraft/world/World;IIIIII)Z",
+                                            false
+                                    );
+                                    Label label = new Label();
+                                    wrapper.visitJumpInsn(IFEQ, label);
+                                    wrapper.visitInsn(ICONST_0);
+                                    wrapper.visitInsn(IRETURN);
+                                    wrapper.visitLabel(label);
+                                    wrapper.visitVarInsn(ALOAD, 0);
+                                    wrapper.visitVarInsn(ILOAD, 1);
+                                    wrapper.visitVarInsn(ILOAD, 2);
+                                    wrapper.visitVarInsn(ILOAD, 3);
+                                    wrapper.visitVarInsn(ALOAD, 4);
+                                    wrapper.visitVarInsn(ILOAD, 5);
+                                    wrapper.visitVarInsn(ILOAD, 6);
+                                    wrapper.visitMethodInsn(ins.getOpcode(), ins.owner, ins.name, ins.desc, ins.itf);
+                                    wrapper.visitInsn(IRETURN);
+                                    wrapper.visitEnd();
+                                }
+
+                                InsnList list = new InsnList();
+                                list.add(new VarInsnNode(ILOAD, 2));
+                                list.add(new VarInsnNode(ILOAD, 3));
+                                list.add(new VarInsnNode(ILOAD, 4));
+                                method.instructions.insertBefore(ins, list);
+                                ins.setOpcode(INVOKESTATIC);
+                                ins.itf = false;
+                                ins.owner = name.replace('.','/');
+                                ins.name = wrapper.name;
+                                ins.desc = wrapper.desc;
+                            });
             }
         }
+
+        node.methods.add(Objects.requireNonNull(setBlock.get(), "mineCity$setBlock was not generated"));
     }
 }

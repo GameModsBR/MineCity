@@ -353,9 +353,10 @@ public class ThaumHooks
     }
 
     @Referenced(at = BlockTaintFibresTransformer.class)
+    @Referenced(at = BlockTaintTransformer.class)
     public static boolean onBlockChangeOther(World mcWorld, int tx, int ty, int tz, int fx, int fy, int fz)
     {
-        return ModHooks.onBlockAccessOther(mcWorld, tx, ty, tz, fx, fy, fz, PermissionFlag.MODIFY).isPresent();
+        return !(tx == fx && ty == fy && tz == fz) && ModHooks.onBlockAccessOther(mcWorld, tx, ty, tz, fx, fy, fz, PermissionFlag.MODIFY).isPresent();
     }
 
     @Referenced(at = BlockTaintTransformer.class)
