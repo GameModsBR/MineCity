@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-    shade project(':Forge:1.7.10')
+    compile project(':Forge:1.7.10')
     compile "com.github.GameModsBR:UniversalCoinsServer:e0aab5dbb6111b524a00933f5dfa2faddc4ef2e5"
     testCompile fileTree(dir: "run/mods", include: ["*.jar"], exclude:["*Assets*"])
     testCompile fileTree(dir: "run/mods/1.7.10", include: ["*.jar"])
