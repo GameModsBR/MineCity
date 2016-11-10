@@ -2,6 +2,9 @@ package br.com.gamemods.minecity.economy;
 
 import br.com.gamemods.minecity.api.Async;
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.command.CommandFunction;
+import br.com.gamemods.minecity.api.command.CommandSender;
+import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +50,7 @@ public interface EconomyProxy
      * @throws IllegalArgumentException If amount is negative
      */
     @Async
-    OperationResult credit(@NotNull PlayerID player, double amount, @Nullable BalanceResult balance, boolean simulation) throws IllegalArgumentException;
+    OperationResult give(@NotNull PlayerID player, double amount, @Nullable BalanceResult balance, boolean simulation) throws IllegalArgumentException;
 
     /**
      * Removes an amount of money from the player
@@ -71,5 +74,43 @@ public interface EconomyProxy
      * @throws IllegalArgumentException If amount is negative
      */
     @Async
-    OperationResult credit(@NotNull PlayerID player, double amount, @Nullable BalanceResult balance, @NotNull WorldDim world, boolean simulation) throws IllegalArgumentException;
+    OperationResult give(@NotNull PlayerID player, double amount, @Nullable BalanceResult balance, @NotNull WorldDim world, boolean simulation) throws IllegalArgumentException;
+
+    String format(double amount);
+
+    default boolean isVerbose()
+    {
+        return true;
+    }
+
+    default OperationResult refund(@NotNull PlayerID player, double amount, @Nullable BalanceResult balance, @NotNull WorldDim world, boolean verbose) throws IllegalArgumentException
+    {
+        //TODO Refund message when verbose==true
+        return give(player, amount, balance, world, false);
+    }
+
+    default OperationResult charge(@NotNull CommandSender player, double amount, @Nullable BalanceResult balance, @NotNull WorldDim world) throws IllegalArgumentException
+    {
+        PlayerID id = player.getPlayerId();
+        OperationResult took = take(id, amount, balance, world, false);
+        if(!took.success)
+            return took;
+
+        double change = took.amount;
+        if(change < 0)
+        {
+            OperationResult give = refund(id, -change, null, world, false);
+            change = -give.amount;
+        }
+
+        if(change > 0)
+        {
+            OperationResult give = take(id, change, null, world, false);
+            change = give.amount;
+        }
+
+        if(isVerbose())
+            player.send(CommandFunction.messageSuccess(new Message("economy.paid", "You've paid ${amount}", new Object[]{"amount",format(amount-change)})));
+        return new OperationResult(true, change);
+    }
 }

@@ -17,7 +17,6 @@ import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceExce
 import br.com.gamemods.minecity.datasource.sql.SQLSource;
 import br.com.gamemods.minecity.economy.EconomyLayer;
 import br.com.gamemods.minecity.economy.EconomyProxy;
-import br.com.gamemods.minecity.economy.VoidEconomy;
 import br.com.gamemods.minecity.structure.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,6 +48,7 @@ public class MineCity
     public SimpleFlagHolder defaultCityFlags = new SimpleFlagHolder();
     public SimpleFlagHolder defaultPlotFlags = new SimpleFlagHolder();
     public SimpleFlagHolder defaultReserveFlags = new SimpleFlagHolder();
+    public MineCityConfig.Costs costs;
     private Queue<ChunkPos> reloadQueue = new DistinctQueue<>();
     public boolean lazyReloads = true;
     public Locale locale;
@@ -66,6 +66,7 @@ public class MineCity
         defaultReserveFlags = config.defaultReserveFlags;
         locale = config.locale;
         useTitles = config.useTitle;
+        costs = config.costs;
 
         this.server = server;
         this.messageTransformer = messageTransformer;

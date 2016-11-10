@@ -407,6 +407,11 @@
                     <msg id="claimed">The chunk that you are is already claimed to ${city}</msg>
                     <msg id="reserved">The chunk that you are is reserved for ${city}</msg>
                 </chunk>
+                <economy>
+                    <msg id="insufficient-funds">Insufficient funds, you need ${money} to create a city</msg>
+                    <msg id="error-unknown">Oopss... An unknown error has occurred while processing your transaction.</msg>
+                    <msg id="error">The purchase has failed: ${error}</msg>
+                </economy>
                 <msg id="success">
                     The city ${name} was created successfully, if you get lost you can teleport back with /city spawn ${identity}
                 </msg>
@@ -1703,4 +1708,11 @@
     <msg id="task.player.load.groups.failed">
         Oops, an error occurred while loading your groups: ${error}
     </msg>
+    <economy>
+        <msg id="paid">You've paid ${amount}</msg>
+        <msg id="received">You've received ${amount}</msg>
+        <msg id="refunded">You've been refunded ${amount}</msg>
+        <msg id="deposited">${amount} have been deposited to your account ${name}</msg>
+        <msg id="deduced">${amount} have been deduced from your account ${name}</msg>
+    </economy>
 </minecity-messages>

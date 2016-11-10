@@ -14,9 +14,7 @@ public final class Message
     @SuppressWarnings("CheckTagEmptyBody")
     @Language(value = "XML", suffix = "</minecity-messages>")
     private static final String XML_PREFIX =
-            "<!DOCTYPE minecity-messages SYSTEM \"https://raw.githubusercontent.com/GameModsBR/MineCity/master/Core/src/main/resources/assets/minecity/messages-base.dtd\" " +
-                    "[<!ELEMENT msg (#PCDATA|%formatting;)*><!ELEMENT minecity-messages (#PCDATA|msg)>]>" +
-            "<minecity-messages>";
+            "<!DOCTYPE minecity-messages SYSTEM \"https://raw.githubusercontent.com/GameModsBR/MineCity/master/Core/src/main/resources/assets/minecity/messages-base.dtd\" [<!ELEMENT msg (#PCDATA|%formatting;)*><!ELEMENT minecity-messages (#PCDATA|msg)>]><minecity-messages>";
 
     @SuppressWarnings("CheckTagEmptyBody")
     @Language(value = "XML", prefix = XML_PREFIX)

@@ -17,6 +17,7 @@ public final class MineCityConfig implements Cloneable
     public boolean defaultNatureDisableCities;
     public boolean useTitle = true;
     public String economy = "none";
+    public Costs costs = new Costs();
 
     @Override
     public MineCityConfig clone()
@@ -31,5 +32,12 @@ public final class MineCityConfig implements Cloneable
         {
             throw new UnsupportedOperationException(e);
         }
+    }
+
+    public static class Costs
+    {
+        public double cityCreation = 1000;
+        public double islandCreation = 500;
+        public double claim = 25;
     }
 }

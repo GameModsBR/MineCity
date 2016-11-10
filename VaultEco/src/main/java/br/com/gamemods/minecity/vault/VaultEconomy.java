@@ -2,7 +2,10 @@ package br.com.gamemods.minecity.vault;
 
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.world.WorldDim;
-import br.com.gamemods.minecity.economy.*;
+import br.com.gamemods.minecity.economy.BalanceResult;
+import br.com.gamemods.minecity.economy.EconomyProvider;
+import br.com.gamemods.minecity.economy.EconomyProxy;
+import br.com.gamemods.minecity.economy.OperationResult;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
@@ -78,7 +81,7 @@ public class VaultEconomy implements EconomyProxy
     }
 
     @Override
-    public OperationResult credit(@NotNull PlayerID player, double amount, @Nullable BalanceResult balance, boolean simulation) throws IllegalArgumentException
+    public OperationResult give(@NotNull PlayerID player, double amount, @Nullable BalanceResult balance, boolean simulation) throws IllegalArgumentException
     {
         OfflinePlayer bukkitPlayer = player(player);
         if(simulation)
@@ -108,7 +111,7 @@ public class VaultEconomy implements EconomyProxy
     }
 
     @Override
-    public OperationResult credit(@NotNull PlayerID player, double amount, @Nullable BalanceResult balance, @NotNull WorldDim world, boolean simulation) throws IllegalArgumentException
+    public OperationResult give(@NotNull PlayerID player, double amount, @Nullable BalanceResult balance, @NotNull WorldDim world, boolean simulation) throws IllegalArgumentException
     {
         OfflinePlayer bukkitPlayer = player(player);
         if(simulation)
@@ -119,5 +122,11 @@ public class VaultEconomy implements EconomyProxy
 
         EconomyResponse response = eco.depositPlayer(bukkitPlayer, world.dir, amount);
         return new OperationResult(response.type == EconomyResponse.ResponseType.SUCCESS, response.amount, response.errorMessage);
+    }
+
+    @Override
+    public String format(double amount)
+    {
+        return eco.format(amount);
     }
 }

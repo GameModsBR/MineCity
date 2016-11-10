@@ -408,6 +408,11 @@
                     <msg id="claimed">O chunk em que você está já foi reinvindicado por ${city}</msg>
                     <msg id="reserved">O chunk em que você está foi reservado para ${city}</msg>
                 </chunk>
+                <economy>
+                    <msg id="insufficient-funds">Fundos insuficientes, você precisa de ${money} para criar uma cidade</msg>
+                    <msg id="error-unknown">Oopss... Ocorreu um erro desconhecido enquanto a sua transação era processada.</msg>
+                    <msg id="error">A compra falhou: ${error}</msg>
+                </economy>
                 <msg id="success">A cidade ${name} foi criada com sucesso, se você se perder você pode voltar com /cidade spawn ${identity}</msg>
             </create>
             <claim>
@@ -1696,4 +1701,11 @@
         <msg id="city">Esta cidade está inconsistente.</msg>
     </inconsistent>
     <msg id="task.player.load.groups.failed">Oops, ocorreu um erro ao carregar os seus grupos: ${error}</msg>
+    <economy>
+        <msg id="paid">Você pagou ${amount}</msg>
+        <msg id="received">Você recebeu ${amount}</msg>
+        <msg id="refunded">Você foi reembolsado ${amount}</msg>
+        <msg id="deposited">${amount} foram depositados na sua conta ${name}</msg>
+        <msg id="deduced">${amount} foram deduzidos da sua conta ${name}</msg>
+    </economy>
 </minecity-messages>

@@ -12,6 +12,8 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import br.com.gamemods.minecity.economy.BalanceResult;
+import br.com.gamemods.minecity.economy.OperationResult;
 import br.com.gamemods.minecity.structure.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -156,7 +158,48 @@ public class CityCommand
                     "The chunk that you are is reserved to ${city}", new Object[]{"city",reserved.getName()}
             ));
 
-        City city = new City(mineCity, name, cmd.sender.getPlayerId(), spawn);
+        PlayerID playerId = cmd.sender.getPlayerId();
+        double cost = mineCity.costs.cityCreation;
+        BalanceResult balance = mineCity.economy.has(playerId, cost, spawn.world);
+        if(!balance.result)
+            return new CommandResult<>(new Message("cmd.city.create.economy.insufficient-funds",
+                    "Insufficient funds, you need ${money} to create a city",
+                    new Object[]{"money", mineCity.economy.format(cost)}
+            ));
+
+        OperationResult result = mineCity.economy.charge(cmd.sender, cost, balance, spawn.world);
+        if(!result.success)
+        {
+            if(result.error == null)
+                return new CommandResult<>(new Message("cmd.city.create.economy.error-unknown",
+                        "Oopss... An unknown error has occurred while processing your transaction."
+                ));
+            else
+                return new CommandResult<>(new Message("cmd.city.create.economy.error",
+                        "The purchase has failed: ${error}",
+                        new Object[]{"error", result.error}
+                ));
+        }
+
+        City city;
+        try
+        {
+            city = new City(mineCity, name, playerId, spawn);
+        }
+        catch(Exception e)
+        {
+            try
+            {
+                mineCity.economy.refund(playerId, cost + result.amount, null, spawn.world, true);
+            }
+            catch(Exception e2)
+            {
+                e.addSuppressed(e2);
+            }
+
+            throw e;
+        }
+
         return new CommandResult<>(new Message("cmd.city.create.success",
                 "The city ${name} was created successfully, if you get lost you can teleport back with /city spawn ${identity}",
                 new Object[][]{{"name", city.getName()},{"identity",city.getIdentityName()}}
