@@ -4,13 +4,11 @@ import br.com.gamemods.minecity.api.MathUtil;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
-import br.com.gamemods.minecity.economy.VoidEconomy;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.command.RootCommand;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.mc_1_7_10.accessors.block.SevenBlockState;
 import br.com.gamemods.minecity.forge.mc_1_7_10.command.SevenTransformer;
-import br.com.gamemods.minecity.forge.mc_1_7_10.economy.UniversalCoinsServerEconomy;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.SevenSnapshotHandler;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.industrialcraft.SevenIndustrialCraftListener;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.opencomputers.SevenRobotProtections;
@@ -18,9 +16,7 @@ import br.com.gamemods.minecity.forge.mc_1_7_10.protection.protectmyplane.PlaneL
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenBlockProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.protection.vanilla.SevenEntityProtections;
 import br.com.gamemods.minecity.forge.mc_1_7_10.tileentity.SevenTileEntityData;
-import br.com.gamemods.universalcoinsserver.api.UniversalCoinsServerAPI;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.event.*;
@@ -59,31 +55,6 @@ public class MineCitySevenMod
         MathUtil.cos = MathHelper::cos;
 
         forge = new MineCityForge();
-        forge.economyLoader = (f, s) ->
-        {
-            switch(s)
-            {
-                case "none":
-                    return new VoidEconomy();
-
-                case "ucs":
-                {
-                    try
-                    {
-                        // If it's not loaded it will throw an exception, Loader.isLoaded() will not distinct normal UniversalCoins from UniversalCoinsServer
-                        UniversalCoinsServerAPI.random.nextBoolean();
-                        return new UniversalCoinsServerEconomy(forge);
-                    }
-                    catch(Exception e)
-                    {
-                        throw new UnsupportedOperationException("UniversalCoinsServer is not loaded", e);
-                    }
-                }
-
-                default:
-                    throw new UnsupportedOperationException("The economy "+s+" is not supported");
-            }
-        };
 
         forge.logger = event.getModLog();
         forge.selectionTool = Items.wooden_hoe;

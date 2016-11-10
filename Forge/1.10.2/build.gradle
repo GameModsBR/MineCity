@@ -74,7 +74,7 @@ jar {
 
     configurations.shade.each { dep ->
         from(project.zipTree(dep)){
-            include 'br/**', '*.yml', '*.info', 'assets/minecity/**', 'org/mcstats/**'
+            include 'br/**', '*.yml', 'deps.info', 'minecity_*.cfg', 'assets/minecity/**', 'org/mcstats/**'
         }
     }
 }

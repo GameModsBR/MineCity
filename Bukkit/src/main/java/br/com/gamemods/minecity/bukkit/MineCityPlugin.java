@@ -14,6 +14,7 @@ import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
+import br.com.gamemods.minecity.economy.EconomyLayer;
 import br.com.gamemods.minecity.vault.VaultEconomy;
 import net.md_5.bungee.api.ChatColor;
 import net.milkbowl.vault.economy.Economy;
@@ -70,23 +71,8 @@ public class MineCityPlugin extends JavaPlugin
             getLogger().log(Level.WARNING, "MCStats metrics failed to start", e);
         }
 
-        try
-        {
-            if(getServer().getPluginManager().isPluginEnabled("Vault"))
-            {
-                RegisteredServiceProvider<Economy> registration = getServer().getServicesManager().getRegistration(Economy.class);
-                if(registration != null)
-                {
-                    Economy economy = registration.getProvider();
-                    if(economy != null)
-                        MineCity.economy = new VaultEconomy(economy);
-                }
-            }
-        }
-        catch(Error | Exception e)
-        {
-            getLogger().severe("Failed to load economy support");
-        }
+        if(getServer().getPluginManager().isPluginEnabled("Vault"))
+            EconomyLayer.register("vault", VaultEconomy.PROVIDER);
 
         BukkitTransformer transformer;
         try

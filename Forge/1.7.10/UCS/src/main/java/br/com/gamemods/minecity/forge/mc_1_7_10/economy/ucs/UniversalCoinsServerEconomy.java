@@ -1,4 +1,4 @@
-package br.com.gamemods.minecity.forge.mc_1_7_10.economy;
+package br.com.gamemods.minecity.forge.mc_1_7_10.economy.ucs;
 
 import br.com.gamemods.minecity.api.Async;
 import br.com.gamemods.minecity.api.PlayerID;

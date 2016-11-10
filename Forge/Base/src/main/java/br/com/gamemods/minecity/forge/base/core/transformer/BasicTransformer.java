@@ -75,14 +75,17 @@ public abstract class BasicTransformer implements IClassTransformer
         reader.accept(node, 0);
 
         if(verbose)
-            System.out.println("Patching "+transformedName);
+        {
+            System.out.println("\n | Patcher " + getClass().getName()+" is patching " + transformedName);
+            System.out.println("Patching " + transformedName);
+        }
         abort = false;
         patch(transformedName, node, reader);
 
         if(abort)
         {
             if(verbose)
-                System.out.println("The patch to "+transformedName+" has been aborted");
+                System.out.println("\n | The patch to "+transformedName+" has been aborted");
             return basicClass;
         }
 

@@ -16,7 +16,7 @@ public final class MineCityConfig implements Cloneable
     public SimpleFlagHolder defaultReserveFlags = new SimpleFlagHolder();
     public boolean defaultNatureDisableCities;
     public boolean useTitle = true;
-    public String economy;
+    public String economy = "none";
 
     @Override
     public MineCityConfig clone()

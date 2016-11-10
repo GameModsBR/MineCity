@@ -15,6 +15,7 @@ import br.com.gamemods.minecity.datasource.api.unchecked.DBSupplier;
 import br.com.gamemods.minecity.datasource.api.unchecked.DisDBConsumer;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import br.com.gamemods.minecity.datasource.sql.SQLSource;
+import br.com.gamemods.minecity.economy.EconomyLayer;
 import br.com.gamemods.minecity.economy.EconomyProxy;
 import br.com.gamemods.minecity.economy.VoidEconomy;
 import br.com.gamemods.minecity.structure.*;
@@ -31,8 +32,6 @@ import java.util.stream.Stream;
 
 public class MineCity
 {
-    @NotNull
-    public static EconomyProxy economy = new VoidEconomy();
     public static final Random RANDOM = new Random();
     @NotNull
     public final IDataSource dataSource;
@@ -54,6 +53,8 @@ public class MineCity
     public boolean lazyReloads = true;
     public Locale locale;
     public boolean useTitles;
+    @NotNull
+    public EconomyProxy economy;
 
     @SuppressWarnings("LanguageMismatch")
     public MineCity(@NotNull Server server, @NotNull MineCityConfig config, @Nullable IDataSource dataSource,
@@ -103,6 +104,8 @@ public class MineCity
         commands.registerCommands(GeneralCommands.class);
         commands.registerCommands(PlotCommand.class);
         Inconsistency.setMineCity(this);
+
+        economy = EconomyLayer.load(this, config.economy);
     }
 
     public MineCity(Server server, MineCityConfig config)
