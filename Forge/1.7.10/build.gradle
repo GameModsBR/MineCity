@@ -47,6 +47,7 @@ dependencies {
     compile "mysql:mysql-connector-java:5.1.32"
     compile "li.cil.oc:OpenComputers:MC1.7.10-1.6.+:api"
     compile "net.industrial-craft:industrialcraft-2:2.2.825-experimental:dev"
+    compile "com.github.GameModsBR:UniversalCoinsServer:-SNAPSHOT"
     testCompile fileTree(dir: "run/mods", include: ["*.jar"], exclude:["*Assets*"])
     testCompile fileTree(dir: "run/mods/1.7.10", include: ["*.jar"])
 }

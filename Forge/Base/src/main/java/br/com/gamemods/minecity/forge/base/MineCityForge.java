@@ -13,6 +13,8 @@ import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import br.com.gamemods.minecity.economy.EconomyProxy;
+import br.com.gamemods.minecity.economy.VoidEconomy;
 import br.com.gamemods.minecity.forge.base.accessors.ICommander;
 import br.com.gamemods.minecity.forge.base.accessors.IMinecraftServer;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
@@ -58,6 +60,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToIntBiFunction;
@@ -65,6 +68,14 @@ import java.util.stream.Stream;
 
 public class MineCityForge implements Server, ChunkProvider, WorldProvider
 {
+    public BiFunction<MineCityForge, String, EconomyProxy> economyLoader = (f, s) ->
+    {
+        if(!"none".equals(s))
+            throw new UnsupportedOperationException("This version does not support economy");
+
+        return new VoidEconomy();
+    };
+
     public static SnapshotHandler snapshotHandler;
     private final ConcurrentLinkedQueue<Task> syncTasks = new ConcurrentLinkedQueue<>();
     public Logger logger;
@@ -223,6 +234,9 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
         this.config.dbPass = Optional.of(config.get("database", "pass", "").getString())
                 .filter(p->!p.isEmpty()).map(String::getBytes).orElse(null);
 
+        this.config.economy = config.getString("general", "economy", "none",
+                "Supported values values are: none (No economy), vault (Bukkit plugin on Cauldron servers), ucs (Universal Coins Server mod)");
+
         String defaultMsg = config.getString("default-message", "permissions.default.nature", "",
                 "The default message to be displayed when a permission is denied, leave blank for a translatable default message.");
 
@@ -292,6 +306,7 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
             config = config.clone();
 
         mineCity = new MineCity(this, config, transformer);
+        MineCity.economy = economyLoader.apply(this, config.economy);
         Inconsistency.getInconsistentCity(mineCity);
         mineCity.worldProvider = Optional.of(this);
         String lang = config.locale.toLanguageTag();

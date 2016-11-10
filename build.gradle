@@ -33,6 +33,13 @@ subprojects {
             name = 'Plugin Metrics'
             url = 'http://repo.mcstats.org/content/repositories/public'
         }
+        maven {
+            name = 'vault-repo'
+            url = 'http://nexus.hc.to/content/repositories/pub_releases'
+        }
+        maven {
+            url = 'https://jitpack.io'
+        }
     }
 
     dependencies {
@@ -47,6 +54,16 @@ subprojects {
     }
 }
 
+project(':VaultEco') {
+    dependencies {
+        compile project(':Core')
+        compile "net.milkbowl.vault:VaultAPI:1.6"
+        compile("org.bukkit:bukkit:1.8-R0.1-SNAPSHOT") {
+            //transitive = false
+        }
+    }
+}
+
 project(':Bukkit') {
     apply plugin: 'com.github.johnrengelman.shadow'
 
@@ -57,6 +74,7 @@ project(':Bukkit') {
 
     dependencies {
         shade project(':Core')
+        shade project(':VaultEco')
         //compile files("run/BuildTools/Spigot/Spigot-Server/target/original-spigot-1.10.2-R0.1-SNAPSHOT.jar")
         //compile files("run/BuildTools/spigot-1.10.2.jar")
         compile "org.spigotmc:spigot-api:1.10.2-R0.1-SNAPSHOT"

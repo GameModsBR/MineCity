@@ -14,7 +14,9 @@ import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
+import br.com.gamemods.minecity.vault.VaultEconomy;
 import net.md_5.bungee.api.ChatColor;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.*;
@@ -22,6 +24,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -65,6 +68,24 @@ public class MineCityPlugin extends JavaPlugin
         catch(Throwable e)
         {
             getLogger().log(Level.WARNING, "MCStats metrics failed to start", e);
+        }
+
+        try
+        {
+            if(getServer().getPluginManager().isPluginEnabled("Vault"))
+            {
+                RegisteredServiceProvider<Economy> registration = getServer().getServicesManager().getRegistration(Economy.class);
+                if(registration != null)
+                {
+                    Economy economy = registration.getProvider();
+                    if(economy != null)
+                        MineCity.economy = new VaultEconomy(economy);
+                }
+            }
+        }
+        catch(Error | Exception e)
+        {
+            getLogger().severe("Failed to load economy support");
         }
 
         BukkitTransformer transformer;

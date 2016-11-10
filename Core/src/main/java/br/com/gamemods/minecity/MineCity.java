@@ -15,6 +15,8 @@ import br.com.gamemods.minecity.datasource.api.unchecked.DBSupplier;
 import br.com.gamemods.minecity.datasource.api.unchecked.DisDBConsumer;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
 import br.com.gamemods.minecity.datasource.sql.SQLSource;
+import br.com.gamemods.minecity.economy.EconomyProxy;
+import br.com.gamemods.minecity.economy.VoidEconomy;
 import br.com.gamemods.minecity.structure.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,6 +31,8 @@ import java.util.stream.Stream;
 
 public class MineCity
 {
+    @NotNull
+    public static EconomyProxy economy = new VoidEconomy();
     public static final Random RANDOM = new Random();
     @NotNull
     public final IDataSource dataSource;

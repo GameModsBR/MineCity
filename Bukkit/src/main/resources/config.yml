@@ -4,6 +4,8 @@ database:
   user: minecity
   pass: password
 
+economy: vault
+
 permissions:
   default:
     nature:
