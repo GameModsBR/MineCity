@@ -61,7 +61,7 @@ public class MineCitySevenMod
         forge = new MineCityForge();
         forge.economyLoader = (f, s) ->
         {
-            switch("s")
+            switch(s)
             {
                 case "none":
                     return new VoidEconomy();

@@ -23,7 +23,7 @@ import java.util.concurrent.TimeoutException;
 
 public class UniversalCoinsServerEconomy implements EconomyProxy
 {
-    private PlayerOperator fakePlayer = new PlayerOperator(UUID.fromString("MineCity:Fake:UCS:PlayerOperator"));
+    private PlayerOperator fakePlayer = new PlayerOperator(UUID.nameUUIDFromBytes("MineCity:Fake:UCS:PlayerOperator".getBytes()));
 
     @NotNull
     private MineCityForge forge;
