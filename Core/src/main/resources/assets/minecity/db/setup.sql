@@ -27,6 +27,9 @@ CREATE TABLE `minecity_city` (
 `spawn_y`  int(11) NOT NULL ,
 `spawn_z`  int(11) NOT NULL ,
 `perm_denial_message`  varchar(255) NULL ,
+`tax_applied_flat`  double NOT NULL DEFAULT 0 ,
+`tax_applied_percent`  double NOT NULL DEFAULT 0 ,
+`investment`  double NOT NULL DEFAULT 0 ,
 PRIMARY KEY (`city_id`),
 CONSTRAINT `city_owner` FOREIGN KEY (`owner`) REFERENCES `minecity_players` (`player_id`) ON DELETE SET NULL ON UPDATE CASCADE,
 CONSTRAINT `city_world_spawn` FOREIGN KEY (`spawn_world`) REFERENCES `minecity_world` (`world_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -163,6 +166,11 @@ CREATE TABLE `minecity_plots` (
 `spawn_z`  int NOT NULL ,
 `shape`  blob NOT NULL ,
 `perm_denial_message`  varchar(255) NULL ,
+`tax_accepted_flat`  double NOT NULL DEFAULT 0 ,
+`tax_accepted_percent`  double NOT NULL DEFAULT 0 ,
+`tax_applied_flat`  double NOT NULL DEFAULT 0 ,
+`tax_applied_percent`  double NOT NULL DEFAULT 0 ,
+`investment`  double NOT NULL DEFAULT 0 ,
 PRIMARY KEY (`plot_id`),
 CONSTRAINT `plot_island` FOREIGN KEY (`island_id`) REFERENCES `minecity_islands` (`island_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `plot_owner` FOREIGN KEY (`owner`) REFERENCES `minecity_players` (`player_id`) ON DELETE SET NULL ON UPDATE CASCADE
@@ -225,8 +233,8 @@ CONSTRAINT `world_perm_world` FOREIGN KEY (`world_id`) REFERENCES `minecity_worl
 
 CREATE TABLE `minecity_setup` (
 `property`  enum('version') NOT NULL ,
-`value`  enum('3') NOT NULL DEFAULT '3' ,
+`value`  enum('5') NOT NULL DEFAULT '5' ,
 PRIMARY KEY (`property`)
 );
 
-INSERT INTO `minecity_setup` VALUES('version', '3');
+INSERT INTO `minecity_setup` VALUES('version', '5');

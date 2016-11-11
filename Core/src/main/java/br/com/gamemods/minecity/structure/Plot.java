@@ -113,10 +113,10 @@ public final class Plot extends ExceptStoredHolder
         this.spawn = spawn;
         this.shape = shape;
         this.identityName = identityName;
-        this.id = storage.createPlot(this);
         this.appliedTax = mineCity.costs.plotTaxApplied;
         this.acceptedTax = city.getAppliedTax();
         this.investment = 0;
+        this.id = storage.createPlot(this);
 
         try
         {

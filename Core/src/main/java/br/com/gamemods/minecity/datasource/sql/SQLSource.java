@@ -507,9 +507,9 @@ public class SQLSource implements IDataSource
                         pst.setInt(5, spawn.y);
                         pst.setInt(6, spawn.z);
                         pst.setString(7, city.getName());
-                        pst.setDouble(7, city.getAppliedTax().getFlat());
-                        pst.setDouble(8, city.getAppliedTax().getPercent());
-                        pst.setDouble(9, city.getInvestment());
+                        pst.setDouble(8, city.getAppliedTax().getFlat());
+                        pst.setDouble(9, city.getAppliedTax().getPercent());
+                        pst.setDouble(10, city.getInvestment());
                         pst.executeUpdate();
                         ResultSet keys = pst.getGeneratedKeys();
                         keys.next();
