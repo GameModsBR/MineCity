@@ -1801,7 +1801,11 @@
         <msg id="give.tool.inventory-full">You haven't received the tool because your inventory is full.</msg>
         <msg id="portal.create.failed">Unable to create a portal in the other dimension.</msg>
         <msg id="harvest-on-creative">You can't harvest plants on creative mode, that would just reset the growth state without any drop.</msg>
-        <msg id="enter.nature"><green>Nature</green></msg>
+        <enter>
+            <msg id="nature"><green>Nature</green></msg>
+            <msg id="city-in-sale"><click><suggest cmd='/city purchase'/><gold>The city ${name} is in sale! Type /city buy to purchase it by ${money}</gold></click></msg>
+            <msg id="plot-in-sale"><click><suggest cmd='/plot purchase'/><gold>The plot ${name} is in sale! Type /plot buy to purchase it by ${money}</gold></click></msg>
+        </enter>
     </action>
     <tool>
         <selection>

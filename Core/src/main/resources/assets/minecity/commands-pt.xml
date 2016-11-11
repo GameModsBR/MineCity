@@ -127,7 +127,7 @@
         <command id="city.sell" parent="city" cmd="vender">
             <desc>Coloca uma cidade a venda</desc>
         </command>
-        <command id="city.buy" parent="city" cmd="buy,purchase">
+        <command id="city.buy" parent="city" cmd="comprar">
             <desc>Compra uma cidade</desc>
         </command>
         <command id="city.cancel.sell" parent="city.cancel" cmd="venda">
@@ -188,7 +188,7 @@
         <command id="plot.sell" parent="plot" cmd="vender">
             <desc>Coloca um lote a venda</desc>
         </command>
-        <command id="plot.buy" parent="plot" cmd="buy,purchase">
+        <command id="plot.buy" parent="plot" cmd="comprar">
             <desc>Compra um lote</desc>
         </command>
         <command id="plot.cancel.sell" parent="plot.cancel" cmd="venda">

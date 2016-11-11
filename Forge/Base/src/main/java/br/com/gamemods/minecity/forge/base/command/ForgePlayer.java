@@ -228,6 +228,28 @@ public class ForgePlayer
                 sendNotification(Message.string(mov.lastCity.getName()), null);
             }
         }
+
+        if(mov.lastCity != null && mov.lastCity != lastCity && mov.lastCity.getPrice() >= 1)
+        {
+            send(new Message("action.enter.city-in-sale",
+                    "<msg><click><suggest cmd='/city purchase'/><gold>The city ${name} is in sale! Type /city buy to purchase it by ${money}</gold></click></msg>",
+                    new Object[][]{
+                            {"name", mov.lastCity.getName()},
+                            {"money", mov.lastCity.mineCity.economy.format(mov.lastCity.getPrice())}
+                    }
+            ));
+        }
+
+        if(mov.lastPlot != null && mov.lastPlot != lastPlot && mov.lastPlot.getPrice() >= 1)
+        {
+            send(new Message("action.enter.plot-in-sale",
+                    "<msg><click><suggest cmd='/plot purchase'/><gold>The plot ${name} is in sale! Type /plot buy to purchase it by ${money}</gold></click></msg>",
+                    new Object[][]{
+                            {"name", mov.lastPlot.getName()},
+                            {"money", mov.lastPlot.getCity().mineCity.economy.format(mov.lastPlot.getPrice())}
+                    }
+            ));
+        }
     }
 
     private void sendNotification(Message title, Message subtitle)
