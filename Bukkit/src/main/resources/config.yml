@@ -4,7 +4,22 @@ database:
   user: minecity
   pass: password
 
+# Only Vault or None are availabe on Bukkit
 economy: vault
+
+costs:
+  city:
+    creation: 1000.00
+  island:
+    creation: 500.00
+  chunk:
+    claim: 25.00
+
+# Negative values means unlimited
+limits:
+  cities: -1
+  claims: -1
+  islands: -1
 
 permissions:
   default:

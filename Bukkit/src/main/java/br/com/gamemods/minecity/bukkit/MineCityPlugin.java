@@ -17,7 +17,6 @@ import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
 import br.com.gamemods.minecity.economy.EconomyLayer;
 import br.com.gamemods.minecity.vault.VaultEconomy;
 import net.md_5.bungee.api.ChatColor;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.*;
@@ -25,7 +24,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -160,6 +158,14 @@ public class MineCityPlugin extends JavaPlugin
                 }
             }
             final String lang = str;
+
+            config.limits.cities = yaml.getInt("limits.cities", -1);
+            config.limits.claims = yaml.getInt("limits.claims", -1);
+            config.limits.islands = yaml.getInt("limits.islands", -1);
+
+            config.costs.cityCreation = yaml.getDouble("costs.city.creation", 1000);
+            config.costs.islandCreation = yaml.getDouble("costs.island.creation", 500);
+            config.costs.claim = yaml.getDouble("costs.chunk.claim", 25);
 
             instance = new MineCityBukkit(this, config, transformer);
             instance.mineCity.dataSource.initDB();
