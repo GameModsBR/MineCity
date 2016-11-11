@@ -358,6 +358,18 @@ public class CityCommand
                 ));
         }
 
+        boolean investmentRegistered = false;
+        double investment = cost - charge.amount;
+        try
+        {
+            city.invested(investment);
+            investmentRegistered = true;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
         Island claim;
         try
         {
@@ -365,7 +377,18 @@ public class CityCommand
         }
         catch(Throwable e)
         {
-            mineCity.economy.refund(playerId, cost, balance, chunk.world, e);
+            mineCity.economy.refund(playerId, investment, balance, chunk.world, e);
+            if(investmentRegistered)
+            {
+                try
+                {
+                    city.invested(-investment);
+                }
+                catch(Exception e2)
+                {
+                    e.addSuppressed(e2);
+                }
+            }
             throw e;
         }
 
@@ -482,6 +505,17 @@ public class CityCommand
                                     "The purchase has failed: ${error}",
                                     new Object[]{"error", result.error}
                             ));
+                    }
+                    catch(Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        city.invested(cost - result.amount);
                     }
                     catch(Exception e)
                     {
