@@ -327,13 +327,11 @@ public class CityCommand
                     new Object[]{"city", city.getName()}
             ));
 
-        boolean islandCreation = !cmd.args.isEmpty();
-        boolean attemptingWithoutIsland = false;
+        boolean islandCreation = !cmd.args.isEmpty() && !city.connectedIslands(chunk).findAny().isPresent();
         if(islandCreation && mineCity.limits.islands > 0 && city.islands().size() >= mineCity.limits.islands)
-        {
-            attemptingWithoutIsland = true;
-            islandCreation = false;
-        }
+            return new CommandResult<>(new Message("cmd.city.claim.limit.reached",
+                    "The city ${city} has reached the maximum number of islands that it can have, attempting to claim without"
+            ));
 
         double cost = islandCreation? Math.max(mineCity.costs.islandCreation, mineCity.costs.claim) : mineCity.costs.claim;
         BalanceResult balance = mineCity.economy.has(playerId, cost, chunk.world);
@@ -364,17 +362,6 @@ public class CityCommand
         try
         {
             claim = city.claim(chunk, islandCreation);
-        }
-        catch(IllegalArgumentException e)
-        {
-            mineCity.economy.refund(playerId, cost, balance, chunk.world, e);
-
-            if(attemptingWithoutIsland && String.valueOf(e.getMessage()).contains("not touching"))
-                return new CommandResult<>(new Message("cmd.city.claim.limit.reached",
-                        "The city ${city} has reached the maximum number of islands that it can have, attempting to claim without"
-                ));
-
-            throw e;
         }
         catch(Throwable e)
         {
