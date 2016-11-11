@@ -190,7 +190,7 @@ public class CityCommand
         City city;
         try
         {
-            city = new City(mineCity, name, playerId, spawn);
+            city = new City(mineCity, name, playerId, spawn, cost - result.amount);
         }
         catch(Exception e)
         {

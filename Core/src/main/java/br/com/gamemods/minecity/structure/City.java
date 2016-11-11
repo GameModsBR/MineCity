@@ -67,6 +67,8 @@ public final class City extends ExceptStoredHolder
     @NotNull
     private Tax appliedTax;
 
+    private double investment;
+
     /**
      * Create and save a city immediately
      * @param owner The city's owner
@@ -75,10 +77,11 @@ public final class City extends ExceptStoredHolder
      * @throws DataSourceException If a database error occurs
      */
     @Slow
-    public City(@NotNull MineCity mineCity, @NotNull String name, @Nullable PlayerID owner, @NotNull BlockPos spawn)
+    public City(@NotNull MineCity mineCity, @NotNull String name, @Nullable PlayerID owner, @NotNull BlockPos spawn, double investment)
             throws IllegalArgumentException, DataSourceException
     {
         this.mineCity = mineCity;
+        this.investment = investment;
         this.name = name;
         identityName = identity(name);
         appliedTax = mineCity.costs.cityTaxApplied;
@@ -131,11 +134,12 @@ public final class City extends ExceptStoredHolder
     public City(@NotNull MineCity mineCity, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
                 @NotNull BlockPos spawn, Collection<Island> islands, int id, @NotNull ICityStorage storage,
                 @NotNull IExceptPermissionStorage permissionStorage, @Nullable Message defaultDenialMessage,
-                @NotNull Tax appliedTax
+                @NotNull Tax appliedTax, double investment
     )
             throws DataSourceException
     {
         super(defaultDenialMessage);
+        this.investment = investment;
         this.appliedTax = appliedTax;
         this.mineCity = mineCity;
         this.name = name;
@@ -719,5 +723,18 @@ public final class City extends ExceptStoredHolder
     public Tax getAppliedTax()
     {
         return appliedTax;
+    }
+
+    public double getInvestment()
+    {
+        return investment;
+    }
+
+    public synchronized void invested(double value) throws DataSourceException
+    {
+        if(invalid)
+            throw new IllegalStateException("This instance is no longer valid");
+
+        investment = storage.invested(this, value);
     }
 }

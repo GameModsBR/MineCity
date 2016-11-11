@@ -25,7 +25,7 @@ public class MineCityTest
     {
         test = new TestData();
         spawn = new BlockPos(test.overWorld, 0,64,0);
-        city = new City(test.mineCity, "Test City", test.joserobjr, spawn);
+        city = new City(test.mineCity, "Test City", test.joserobjr, spawn, 0);
         test.mineCity.loadChunk(city.getSpawn().getChunk());
     }
 

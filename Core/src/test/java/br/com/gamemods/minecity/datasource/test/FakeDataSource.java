@@ -498,6 +498,18 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
         return Collections.emptySet();
     }
 
+    @Override
+    public double invested(City city, double value) throws DataSourceException
+    {
+        return city.getInvestment() + value;
+    }
+
+    @Override
+    public double invested(Plot plot, double value) throws DataSourceException
+    {
+        return plot.getInvestment() + value;
+    }
+
     @NotNull
     @Override
     public Map<PermissionFlag, Map<Identity<?>, Optional<Message>>> loadExceptPermissions(@NotNull ExceptFlagHolder holder)

@@ -69,13 +69,16 @@ public final class Plot extends ExceptStoredHolder
     @NotNull
     private Tax appliedTax;
 
+    private double investment;
+
     public Plot(@NotNull MineCity mineCity, @NotNull ICityStorage storage, @NotNull IExceptPermissionStorage permissionStorage, int id,
                 @NotNull Island island, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
                 @NotNull BlockPos spawn, @NotNull Shape shape, @Nullable Message defaultMessage,
-                @NotNull Tax acceptedTax, @NotNull Tax appliedTax)
+                @NotNull Tax acceptedTax, @NotNull Tax appliedTax, double investment)
             throws DataSourceException
     {
         super(defaultMessage);
+        this.investment = investment;
         this.permissionStorage = permissionStorage;
         this.storage = storage;
         this.island = island;
@@ -113,6 +116,7 @@ public final class Plot extends ExceptStoredHolder
         this.id = storage.createPlot(this);
         this.appliedTax = mineCity.costs.plotTaxApplied;
         this.acceptedTax = city.getAppliedTax();
+        this.investment = 0;
 
         try
         {
@@ -464,5 +468,18 @@ public final class Plot extends ExceptStoredHolder
     public Tax getAppliedTax()
     {
         return appliedTax;
+    }
+
+    public double getInvestment()
+    {
+        return investment;
+    }
+
+    public synchronized void invest(double value) throws DataSourceException
+    {
+        if(invalid)
+            throw new IllegalStateException("This plot instance is invalid");
+
+        investment = storage.invested(this, value);
     }
 }

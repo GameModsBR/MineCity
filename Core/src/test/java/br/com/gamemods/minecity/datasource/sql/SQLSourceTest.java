@@ -175,7 +175,7 @@ public class SQLSourceTest
     public void testSplitPlot() throws Exception
     {
         BlockPos spawnPos = new BlockPos(overworld, 44, 55, 32);
-        City city = new City(mineCity, "Split", joserobjr, spawnPos);
+        City city = new City(mineCity, "Split", joserobjr, spawnPos, 0);
         Island initialIsland = city.islands().iterator().next();
         ChunkPos initialChunk = spawnPos.getChunk();
         Map<Direction, Plot> plotMap = new HashMap<>(4);
@@ -222,7 +222,7 @@ public class SQLSourceTest
         ClaimedChunk claim = mineCity.loadChunk(spawn.getChunk());
         assertEquals(overNature, claim.owner);
 
-        new City(mineCity, "Test City", joserobjr, spawn);
+        new City(mineCity, "Test City", joserobjr, spawn, 0);
 
         reload();
         spawn = new BlockPos(overworld, spawn.x, spawn.y, spawn.z);
@@ -403,7 +403,7 @@ public class SQLSourceTest
     {
         ChunkPos spawnA = new ChunkPos(nether, 400,400);
         long start = System.currentTimeMillis();
-        City cityA = new City(mineCity, "First", joserobjr, spawnA.getMaxBlock());
+        City cityA = new City(mineCity, "First", joserobjr, spawnA.getMaxBlock(), 0);
         long end = System.currentTimeMillis();
         System.out.println("DEBUG: CityA creation: "+(end-start)+"ms");
 
@@ -455,7 +455,7 @@ public class SQLSourceTest
         assertFalse(mineCity.loadChunk(spawnB.add(Direction.EAST,2)).reserve);
 
 
-        City cityB = new City(mineCity, "Second", joserobjr, spawnB.getMaxBlock());
+        City cityB = new City(mineCity, "Second", joserobjr, spawnB.getMaxBlock(), 0);
         Island islandB = cityB.claim(spawnB.add(Direction.WEST), false);
         claim = mineCity.loadChunk(spawnB.add(Direction.EAST));
         assertTrue(claim.reserve);
@@ -511,7 +511,7 @@ public class SQLSourceTest
         MinecraftEntity playerRandom = mockPlayer(random);
 
         BlockPos spawn = new BlockPos(overworld, 4546487, 44, 47879784);
-        City city = new City(mineCity, "Perm", joserobjr, spawn);
+        City city = new City(mineCity, "Perm", joserobjr, spawn, 0);
 
         // Check defaults
         assertEquals(FlagHolder.DEFAULT_DENIAL_MESSAGE,
@@ -704,7 +704,7 @@ public class SQLSourceTest
 
         ChunkPos spawn = new ChunkPos(nether, 400,400);
         mineCity.loadChunk(spawn);
-        City city = new City(mineCity, "A City", joserobjr, spawn.getMaxBlock());
+        City city = new City(mineCity, "A City", joserobjr, spawn.getMaxBlock(), 0);
         Group group = city.createGroup("A Group");
         testPermissionFlags(city, allFlags, group);
 

@@ -437,6 +437,90 @@ public class SQLCityStorage implements ICityStorage
         }
     }
 
+    @Override
+    public double invested(City city, double value) throws DataSourceException
+    {
+        try(Connection transaction = connection.transaction())
+        {
+            try
+            {
+                try(PreparedStatement pst = transaction.prepareStatement(
+                        "UPDATE minecity_city SET `investment`=`investment`+? WHERE city_id=?"
+                ))
+                {
+                    pst.setDouble(1, value);
+                    pst.setInt(2, city.getId());
+                    source.executeUpdate(pst, 1);
+                }
+
+                double investment;
+                try(PreparedStatement pst = transaction.prepareStatement(
+                        "SELECT `investment` FROM `minecity_city` WHERE `city_id`=?"
+                ))
+                {
+                    pst.setInt(1, city.getId());
+                    ResultSet result = pst.executeQuery();
+                    result.next();
+                    investment = result.getDouble(1);
+                }
+
+                transaction.commit();
+                return investment;
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
+    public double invested(Plot plot, double value) throws DataSourceException
+    {
+        try(Connection transaction = connection.transaction())
+        {
+            try
+            {
+                try(PreparedStatement pst = transaction.prepareStatement(
+                        "UPDATE minecity_plots SET `investment`=`investment`+? WHERE plot_id=?"
+                ))
+                {
+                    pst.setDouble(1, value);
+                    pst.setInt(2, plot.id);
+                    source.executeUpdate(pst, 1);
+                }
+
+                double investment;
+                try(PreparedStatement pst = transaction.prepareStatement(
+                        "SELECT `investment` FROM `minecity_plots` WHERE `plot_id`=?"
+                ))
+                {
+                    pst.setInt(1, plot.id);
+                    ResultSet result = pst.executeQuery();
+                    result.next();
+                    investment = result.getDouble(1);
+                }
+
+                transaction.commit();
+                return investment;
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
     @Slow
     @Override
     public void setName(@NotNull City city, @NotNull String identity, @NotNull String name) throws DataSourceException
@@ -444,38 +528,28 @@ public class SQLCityStorage implements ICityStorage
         try(Connection transaction = connection.transaction())
         {
             String previous = city.getName();
-            if(identity.equals(city.getIdentityName()))
-                try(PreparedStatement pst = transaction.prepareStatement(
-                        "UPDATE minecity_city SET `display_name`=? WHERE city_id=?"
-                ))
-                {
-                    pst.setString(1, name);
-                    pst.setInt(2, city.getId());
-                    int changes = pst.executeUpdate();
-                    if(changes != 1)
-                    {
-                        transaction.rollback();
-                        throw new DataSourceException("Changes: "+changes+" Expected: 1");
-                    }
-                }
-            else
-                try(PreparedStatement pst = transaction.prepareStatement(
-                        "UPDATE minecity_city SET `name`=?, display_name=? WHERE city_id=?"
-                ))
-                {
-                    pst.setString(1, identity);
-                    pst.setString(2, name);
-                    pst.setInt(3, city.getId());
-                    int changes = pst.executeUpdate();
-                    if(changes != 1)
-                    {
-                        transaction.rollback();
-                        throw new DataSourceException("Changes: "+changes+" Expected: 1");
-                    }
-                }
-
             try
             {
+                if(identity.equals(city.getIdentityName()))
+                    try(PreparedStatement pst = transaction.prepareStatement(
+                            "UPDATE minecity_city SET `display_name`=? WHERE city_id=?"
+                    ))
+                    {
+                        pst.setString(1, name);
+                        pst.setInt(2, city.getId());
+                        source.executeUpdate(pst, 1);
+                    }
+                else
+                    try(PreparedStatement pst = transaction.prepareStatement(
+                            "UPDATE minecity_city SET `name`=?, display_name=? WHERE city_id=?"
+                    ))
+                    {
+                        pst.setString(1, identity);
+                        pst.setString(2, name);
+                        pst.setInt(3, city.getId());
+                        source.executeUpdate(pst, 1);
+                    }
+
                 transaction.commit();
             }
             catch(Exception e)
@@ -1007,8 +1081,8 @@ public class SQLCityStorage implements ICityStorage
             {
                 int plotId;
                 try(PreparedStatement pst = transaction.prepareStatement(
-                        "INSERT INTO minecity_plots(island_id,name,display_name,owner,spawn_x,spawn_y,spawn_z,shape,tax_accepted_flat,tax_accepted_percent,tax_applied_flat,tax_applied_percent) " +
-                        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
+                        "INSERT INTO minecity_plots(island_id,name,display_name,owner,spawn_x,spawn_y,spawn_z,shape,tax_accepted_flat,tax_accepted_percent,tax_applied_flat,tax_applied_percent,investment) " +
+                        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     Statement.RETURN_GENERATED_KEYS
                 ))
                 {
@@ -1025,6 +1099,7 @@ public class SQLCityStorage implements ICityStorage
                     pst.setDouble(10, plot.getAcceptedTax().getPercent());
                     pst.setDouble(11, plot.getAppliedTax().getFlat());
                     pst.setDouble(12, plot.getAppliedTax().getPercent());
+                    pst.setDouble(13, plot.getInvestment());
                     pst.executeUpdate();
 
                     ResultSet result = pst.getGeneratedKeys();
@@ -1221,7 +1296,7 @@ public class SQLCityStorage implements ICityStorage
         {
            try(PreparedStatement pst = connection.connect().prepareStatement(
                    "SELECT plot_id,`name`,display_name,spawn_x,spawn_y,spawn_z,shape, player_id,player_uuid,player_name,perm_denial_message, " +
-                           "tax_accepted_flat, tax_accepted_percent, tax_applied_flat, tax_applied_percent " +
+                           "tax_accepted_flat, tax_accepted_percent, tax_applied_flat, tax_applied_percent, investment " +
                    "FROM minecity_plots LEFT JOIN minecity_players ON player_id=owner " +
                    "WHERE island_id=?"
            ))
@@ -1260,7 +1335,8 @@ public class SQLCityStorage implements ICityStorage
                            new BlockPos(island.world, result.getInt(4), result.getInt(5), result.getInt(6)),
                            Shape.deserializeBytes(result.getBytes(7)), denial,
                            tax.apply(result.getDouble("tax_accepted_flat"), result.getDouble("tax_accepted_percent")),
-                           tax.apply(result.getDouble("tax_applied_flat"), result.getDouble("tax_applied_percent"))
+                           tax.apply(result.getDouble("tax_applied_flat"), result.getDouble("tax_applied_percent")),
+                           result.getDouble("investment")
                    ));
                } while(result.next());
 
