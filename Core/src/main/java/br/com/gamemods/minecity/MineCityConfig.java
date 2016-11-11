@@ -44,6 +44,10 @@ public final class MineCityConfig implements Cloneable
         public Tax cityTax = new Tax(100, 0.03);
         public Tax cityTaxApplied = new Tax(-1, 0.05);
         public Tax plotTaxApplied = new Tax(0, 0);
+        public double cityChangeSpawn = 50;
+        public double plotChangeSpawn = 50;
+        public double goToCity = 5;
+        public double goToPlot = 15;
     }
 
     public static class Limits

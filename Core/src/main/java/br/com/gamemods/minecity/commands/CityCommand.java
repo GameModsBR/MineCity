@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.economy.BalanceResult;
 import br.com.gamemods.minecity.economy.OperationResult;
@@ -564,11 +565,48 @@ public class CityCommand
                     new Object[]{"name",cityName})
             );
 
-        Future<Message> future = mineCity.server.callSyncMethod(()-> cmd.sender.teleport(city.getSpawn()));
-        Message error = future.get(10, TimeUnit.SECONDS);
-        if(error == null)
-            return CommandResult.success();
+        double cost = mineCity.costs.goToCity;
+        PlayerID playerId = cmd.sender.getPlayerId();
+        EntityPos position = cmd.position;
+        BalanceResult balance = mineCity.economy.has(playerId, cost, position.world);
+        if(!balance.result)
+            return new CommandResult<>(new Message("cmd.city.spawn.economy.insufficient-funds",
+                    "Insufficient funds, you need ${money} to go to the city ${city}",
+                    new Object[][]{
+                            {"money", mineCity.economy.format(cost)},
+                            {"city", city.getName()}
+                    }
+            ));
 
+        OperationResult change = mineCity.economy.charge(cmd.sender, cost, balance, position.world);
+        if(!change.success)
+        {
+            if(change.error == null)
+                return new CommandResult<>(new Message("cmd.city.spawn.economy.error-unknown",
+                        "Oopss... An unknown error has occurred while processing your transaction."
+                ));
+            else
+                return new CommandResult<>(new Message("cmd.city.spawn.economy.error",
+                        "The purchase has failed: ${error}",
+                        new Object[]{"error", change.error}
+                ));
+        }
+
+        Message error;
+        try
+        {
+            Future<Message> future = mineCity.server.callSyncMethod(() -> cmd.sender.teleport(city.getSpawn()));
+            error = future.get(10, TimeUnit.SECONDS);
+            if(error == null)
+                return CommandResult.success();
+        }
+        catch(Throwable e)
+        {
+            mineCity.economy.refund(playerId, cost - change.amount, balance, position.world, e);
+            throw e;
+        }
+
+        mineCity.economy.refund(playerId, cost - change.amount, balance, position.world, true);
         return new CommandResult<>(error);
     }
 
@@ -676,7 +714,8 @@ public class CityCommand
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.setspawn.not-claimed", "You are not inside a city"));
 
-        if(!cmd.sender.getPlayerId().equals(city.owner()))
+        PlayerID playerId = cmd.sender.getPlayerId();
+        if(!playerId.equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.setspawn.no-permission",
                     "You are not allowed to change the ${name}'s spawn",
                     new Object[]{"name",city.getName()}
@@ -685,7 +724,37 @@ public class CityCommand
         if(position.equals(city.getSpawn()))
             return new CommandResult<>(new Message("cmd.city.setspawn.already", "The spawn is already set to that position"));
 
-        city.setSpawn(position);
+        double cost = mineCity.costs.cityChangeSpawn;
+        BalanceResult balance = mineCity.economy.has(playerId, cost, position.world);
+        if(!balance.result)
+            return new CommandResult<>(new Message("cmd.city.setspawn.economy.insufficient-funds",
+                    "Insufficient funds, you need ${money} to set the city's spawn here",
+                    new Object[]{"money", mineCity.economy.format(cost)}
+            ));
+
+        OperationResult change = mineCity.economy.charge(cmd.sender, cost, balance, position.world);
+        if(!change.success)
+        {
+            if(change.error == null)
+                return new CommandResult<>(new Message("cmd.city.setspawn.economy.error-unknown",
+                        "Oopss... An unknown error has occurred while processing your transaction."
+                ));
+            else
+                return new CommandResult<>(new Message("cmd.city.setspawn.economy.error",
+                        "The purchase has failed: ${error}",
+                        new Object[]{"error", change.error}
+                ));
+        }
+
+        try
+        {
+            city.setSpawn(position);
+        }
+        catch(Throwable e)
+        {
+            mineCity.economy.refund(playerId, cost - change.amount, balance, position.world, e);
+            throw e;
+        }
 
         return new CommandResult<>(new Message("cmd.city.setspawn.success",
                 "The ${name}'s spawn was changed successfully",
