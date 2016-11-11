@@ -160,7 +160,7 @@ public class CityCommand
 
         PlayerID playerId = cmd.sender.getPlayerId();
         int cities = mineCity.dataSource.getCityCount(cmd.sender.getPlayerId());
-        if(cities >= mineCity.limits.cities)
+        if(cities >= mineCity.limits.cities && mineCity.limits.cities > 0)
             return new CommandResult<>(new Message("cmd.city.create.limit.reached",
                     "You've reached the maximum amount of cities that you can have."
             ));
@@ -409,7 +409,7 @@ public class CityCommand
             return new CommandResult<>(new Message("cmd.city.disclaim.spawn",
                     "Cannot disclaim the spawn chunk"));
 
-        boolean createIslands = city.islands().size() < mineCity.limits.islands;
+        boolean createIslands = mineCity.limits.islands <= 0 || city.islands().size() < mineCity.limits.islands;
         Collection<Island> newIslands;
         try
         {
@@ -423,7 +423,7 @@ public class CityCommand
                 throw e;
         }
 
-        if(newIslands != null && !newIslands.isEmpty() && city.islands().size() > mineCity.limits.islands)
+        if(newIslands != null && mineCity.limits.islands > 0 && !newIslands.isEmpty() && city.islands().size() > mineCity.limits.islands)
         {
             try
             {
