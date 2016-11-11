@@ -330,7 +330,7 @@ public class CityCommand
         boolean islandCreation = !cmd.args.isEmpty() && !city.connectedIslands(chunk).findAny().isPresent();
         if(islandCreation && mineCity.limits.islands > 0 && city.islands().size() >= mineCity.limits.islands)
             return new CommandResult<>(new Message("cmd.city.claim.limit.reached",
-                    "The city ${city} has reached the maximum number of islands that it can have, attempting to claim without"
+                    "The city ${city} has reached the maximum number of islands that it can have."
             ));
 
         double cost = islandCreation? Math.max(mineCity.costs.islandCreation, mineCity.costs.claim) : mineCity.costs.claim;
@@ -394,7 +394,8 @@ public class CityCommand
                     "Cannot disclaim this chunk because it contains plots."
             ));
 
-        if(!cmd.sender.getPlayerId().equals(city.owner()))
+        PlayerID playerId = cmd.sender.getPlayerId();
+        if(!playerId.equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.disclaim.no-permission",
                     "You are not allowed to disclaim a chunk owned by ${city}",
                     new Object[]{"city",city.getName()}
@@ -408,14 +409,94 @@ public class CityCommand
             return new CommandResult<>(new Message("cmd.city.disclaim.spawn",
                     "Cannot disclaim the spawn chunk"));
 
-        Collection<Island> newIslands = city.disclaim(chunk, true);
+        boolean createIslands = city.islands().size() < mineCity.limits.islands;
+        Collection<Island> newIslands;
+        try
+        {
+            newIslands = city.disclaim(chunk, createIslands);
+        }
+        catch(IllegalArgumentException e)
+        {
+            if(!createIslands && String.valueOf(e.getMessage()).contains("is required by other chunks"))
+                newIslands = null;
+            else
+                throw e;
+        }
 
-        if(newIslands.size() == 1)
+        if(newIslands != null && !newIslands.isEmpty() && city.islands().size() > mineCity.limits.islands)
+        {
+            try
+            {
+                city.disclaim(chunk, true);
+                newIslands = null;
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        if(newIslands == null)
+            return new CommandResult<>(new Message("cmd.city.disclaim.limits.required",
+                    "This chunk can't be disclaimed because it's required by other chunks and ${city}'s island limit would be exceeded.",
+                    new Object[]{"city", city.getName()}
+            ));
+
+        int count = newIslands.size();
+        if(count > 0)
+        {
+            double cost = mineCity.costs.islandCreation * count;
+            BalanceResult balance = mineCity.economy.has(playerId, cost, chunk.world);
+            if(!balance.result)
+            {
+                try
+                {
+                    city.claim(chunk, true);
+                    return new CommandResult<>(new Message("cmd.city.disclaim.economy.insufficient-funds",
+                            "Insufficient funds, you need ${money} to disclaim this chunk because it would create ${count} islands.",
+                            new Object[][]{
+                                    {"money", mineCity.economy.format(cost)},
+                                    {"count", count}
+                            }
+                    ));
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            else
+            {
+                OperationResult result = mineCity.economy.charge(cmd.sender, cost, balance, chunk.world);
+                if(!result.success)
+                {
+                    try
+                    {
+                        city.claim(chunk, true);
+                        if(result.error == null)
+                            return new CommandResult<>(new Message("cmd.city.disclaim.economy.error-unknown",
+                                    "Oopss... An unknown error has occurred while processing your transaction."
+                            ));
+                        else
+                            return new CommandResult<>(new Message("cmd.city.disclaim.economy.error",
+                                    "The purchase has failed: ${error}",
+                                    new Object[]{"error", result.error}
+                            ));
+                    }
+                    catch(Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        if(count == 1)
             return new CommandResult<>(new Message("cmd.city.disclaim.success",
                     "This chunk was disclaimed from ${city} successfully.",
                     new Object[]{"city",city.getName()}
             ), Collections.emptyList());
-        else if(newIslands.size() == 2)
+        else if(count == 2)
             return new CommandResult<>(new Message("cmd.city.disclaim.success.one-new-island",
                     "This chunk was disclaimed from ${city} successfully. One island was created as result of this disclaim.",
                     new Object[]{"city",city.getName()})
@@ -423,7 +504,7 @@ public class CityCommand
         else
             return new CommandResult<>(new Message("cmd.city.disclaim.success.n-new-islands",
                     "This chunk was disclaimed from ${city} successfully. ${count} islands were created as result of this disclaim.",
-                    new Object[][]{{"city",city.getName()}, {"count",newIslands.size()-1}})
+                    new Object[][]{{"city",city.getName()}, {"count", count -1}})
                     , newIslands);
     }
 

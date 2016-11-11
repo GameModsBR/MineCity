@@ -430,6 +430,14 @@
                 </msg>
                 <msg id="not-found">There's not city named $[name}, if you want to create a new city then type ${create}</msg>
                 <msg id="no-permission">You are not allowed to claim chunks in name of ${city}</msg>
+                <economy>
+                    <msg id="insufficient-funds">Insufficient funds, you need ${money} to claim this chunk to ${city}.</msg>
+                    <msg id="error-unknown">Oopss... An unknown error has occurred while processing your transaction.</msg>
+                    <msg id="error">The purchase has failed: ${error}</msg>
+                </economy>
+                <limits>
+                    <msg id="reached">The city ${city} has reached the maximum number of islands that it can have.</msg>
+                </limits>
                 <msg id="success">This chunk was claimed to ${city} successfully.</msg>
             </claim>
             <disclaim>
@@ -439,6 +447,14 @@
                 <msg id="spawn">Cannot disclaim the spawn chunk</msg>
                 <msg id="contains-plots">Cannot disclaim this chunk because it contains plots.</msg>
                 <msg id="success">This chunk was disclaimed from ${city} successfully.</msg>
+                <economy>
+                    <msg id="insufficient-funds">Insufficient funds, you need ${money} to disclaim this chunk because it would create ${count} islands.</msg>
+                    <msg id="error-unknown">Oopss... An unknown error has occurred while processing your transaction.</msg>
+                    <msg id="error">The purchase has failed: ${error}</msg>
+                </economy>
+                <limits>
+                    <msg id="reached">This chunk can't be disclaimed because it's required by other chunks and ${city}'s island limit would be exceeded.</msg>
+                </limits>
                 <success>
                     <msg id="one-new-island">
                         This chunk was disclaimed from ${city} successfully. One island was created as result of this disclaim.

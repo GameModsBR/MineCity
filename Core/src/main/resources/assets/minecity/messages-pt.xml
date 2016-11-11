@@ -431,6 +431,14 @@
                 </msg>
                 <msg id="not-found">Nenhuma cidade se chama $[name}, se você quiser criar uma nova cidade então digite /cidade criar</msg>
                 <msg id="no-permission">Você não tem permissão para reinvindicar chunks em nome de ${city}</msg>
+                <economy>
+                    <msg id="insufficient-funds">Fundos insuficientes, você precisa de ${money} para reinvindicar este chunk para ${city}.</msg>
+                    <msg id="error-unknown">Oopss... Ocorreu um erro desconhecido enquanto a sua transação era processada.</msg>
+                    <msg id="error">A compra falhou: ${error}</msg>
+                </economy>
+                <limits>
+                    <msg id="reached">A cidade ${city} atingiu o número máximo de ilhas que ela pode ter.</msg>
+                </limits>
                 <msg id="success">Este chunk foi reinvindicado por ${city} com sucesso.</msg>
             </claim>
             <disclaim>
@@ -440,6 +448,14 @@
                 <msg id="spawn">Não é possível renunciar o chunk do ponto de entrada da cidade</msg>
                 <msg id="contains-plots">Não é possível renunciar este chunk porque ele contém lotes.</msg>
                 <msg id="success">Este chunk foi renunciado de ${city} com sucesso.</msg>
+                <economy>
+                    <msg id="insufficient-funds">Fundos insuficientes, você precisa de ${money} para renunciar este chunk porque ele sua renúncia criaria ${count} ilhas.</msg>
+                    <msg id="error-unknown">Oopss... Ocorreu um erro desconhecido enquanto a sua transação era processada.</msg>
+                    <msg id="error">A compra falhou: ${error}</msg>
+                </economy>
+                <limits>
+                    <msg id="reached">Este chunk não pode ser renunciado porque ele é necessário por outros chunks e o limite de ${city} seria excedido.</msg>
+                </limits>
                 <success>
                     <msg id="one-new-island">Este chunk foi renunciado de ${city} com sucesso. Uma nova ilha foi formada como resultado desta renúncia.</msg>
                     <msg id="n-new-islands">Este chunk foi renunciado de ${city} com sucesso. ${count} novas ilhas foram formadas como resultado desta renúncia.</msg>
