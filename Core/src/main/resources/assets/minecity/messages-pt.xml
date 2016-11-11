@@ -112,6 +112,7 @@
                 <msg id="not-inside-city">Você não está dentro de uma cidade</msg>
                 <msg id="not-found">Não há nenhuma cidade chamada ${name}</msg>
                 <msg id="admin"><gray>Os administradores do servidor</gray></msg>
+                <msg id="not-selling">Não está a venda</msg>
                 <msg id="page"><darkgreen>---<yellow>-=[Cidade: ${name}]=-</yellow>------------</darkgreen><br/><br/>
                     <aqua>Prefeito: </aqua><white>${owner}</white><br/>
                     <aqua>Local principal: </aqua><white>${spawn-world} X:${spawn-x} Y:${spawn-y} Z:${spawn-z}</white><br/>
@@ -119,6 +120,7 @@
                     <aqua>Ilhas: </aqua><white>${island-count}</white><br/>
                     <aqua>Lotes: </aqua><white>${plot-count}</white><br/>
                     <aqua>Grupos: </aqua><white>${group-count}</white><br/>
+                    <aqua>Preço: </aqua><white>${price}</white><br/>
                     <br/><darkgreen>----------------------------------</darkgreen>
                 </msg>
             </info>
@@ -948,12 +950,14 @@
                 <msg id="not-inside-city">Você não está dentro de uma cidade</msg>
                 <msg id="mayor"><gray>Prefeito(a) de ${city}: ${mayor}</gray></msg>
                 <msg id="admin"><gray>Os administradores do servidor</gray></msg>
+                <msg id="not-selling">Não está a venda</msg>
                 <msg id="page"><darkgreen>---<yellow>-=[Lote: ${name}]=-</yellow>---------</darkgreen><br/><br/><white>
                     <aqua>Dono:</aqua> ${owner}<br/>
                     <aqua>Cidade:</aqua> ${city}<br/><br/>
                     <aqua>Local:</aqua> ${nature-name} <gray>X:</gray> ${spawn-x} <gray>Y:</gray> ${spawn-y} <gray>Z:</gray> ${spawn-z}<br/>
                     <aqua>Tamanho:</aqua> ${area-squared}m² <aqua>Tamanho:</aqua> ${size-x} <aqua>Profundidade:</aqua> ${size-z}<br/>
-                    <aqua>Área:</aqua> ${area-cube}m³ <aqua>Altura:</aqua> ${size-y}</white><br/>
+                    <aqua>Área:</aqua> ${area-cube}m³ <aqua>Altura:</aqua> ${size-y}<br/>
+                    <aqua>Preço:</aqua> ${preço}</white><br/>
                     <br/><darkgreen>----------------------------------</darkgreen>
                 </msg>
             </info>

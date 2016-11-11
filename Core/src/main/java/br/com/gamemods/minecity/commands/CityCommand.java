@@ -75,6 +75,7 @@ public class CityCommand
                 "<aqua>Islands: </aqua><white>${island-count}</white><br/>\n" +
                 "<aqua>Plots: </aqua><white>${plot-count}</white><br/>\n" +
                 "<aqua>Groups: </aqua><white>${group-count}</white><br/>\n" +
+                "<aqua>Price: </aqua><white>${price}</white><br/>\n"+
                 "<br/><darkgreen>----------------------------------</darkgreen></msg>",
                 new Object[][]{
                         {"name", city.getName()},
@@ -91,6 +92,7 @@ public class CityCommand
                         {"island-count", city.islands().size()},
                         {"plot-count", city.plots().count()},
                         {"group-count", city.getGroups().size()},
+                        {"price", city.getPrice() < 1? new Message("cmd.city.info.not-selling", "Not for sale") : cmd.mineCity.economy.format(city.getPrice())},
                         {"location", city.can(cmd.sender, PermissionFlag.ENTER).isPresent()?
                                 new Message("cmd.city.info.hidden-location", "<msg><gray>Hidden</gray></msg>") :
                                 new Message("cmd.city.info.location",
