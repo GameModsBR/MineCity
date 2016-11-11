@@ -327,7 +327,60 @@ public class CityCommand
                     new Object[]{"city", city.getName()}
             ));
 
-        Island claim = city.claim(chunk, !cmd.args.isEmpty());
+        boolean islandCreation = !cmd.args.isEmpty();
+        boolean attemptingWithoutIsland = false;
+        if(islandCreation && mineCity.limits.islands > 0 && city.islands().size() >= mineCity.limits.islands)
+        {
+            attemptingWithoutIsland = true;
+            islandCreation = false;
+        }
+
+        double cost = islandCreation? Math.max(mineCity.costs.islandCreation, mineCity.costs.claim) : mineCity.costs.claim;
+        BalanceResult balance = mineCity.economy.has(playerId, cost, chunk.world);
+        if(!balance.result)
+            return new CommandResult<>(new Message("cmd.city.claim.economy.insufficient-funds",
+                    "Insufficient funds, you need ${money} to claim this chunk to ${city}",
+                    new Object[][]{
+                            {"money", mineCity.economy.format(cost)},
+                            {"city", city.getName()}
+                    }
+            ));
+
+        OperationResult charge = mineCity.economy.charge(cmd.sender, cost, balance, chunk.world);
+        if(!charge.success)
+        {
+            if(charge.error == null)
+                return new CommandResult<>(new Message("cmd.city.claim.economy.error-unknown",
+                        "Oopss... An unknown error has occurred while processing your transaction."
+                ));
+            else
+                return new CommandResult<>(new Message("cmd.city.claim.economy.error",
+                        "The purchase has failed: ${error}",
+                        new Object[]{"error", charge.error}
+                ));
+        }
+
+        Island claim;
+        try
+        {
+            claim = city.claim(chunk, islandCreation);
+        }
+        catch(IllegalArgumentException e)
+        {
+            mineCity.economy.refund(playerId, cost, balance, chunk.world, e);
+
+            if(attemptingWithoutIsland && String.valueOf(e.getMessage()).contains("not touching"))
+                return new CommandResult<>(new Message("cmd.city.claim.limit.reached",
+                        "The city ${city} has reached the maximum number of islands that it can have, attempting to claim without"
+                ));
+
+            throw e;
+        }
+        catch(Throwable e)
+        {
+            mineCity.economy.refund(playerId, cost, balance, chunk.world, e);
+            throw e;
+        }
 
         return new CommandResult<>(new Message("cmd.city.claim.success",
                 "This chunk was claimed to ${city} successfully.",

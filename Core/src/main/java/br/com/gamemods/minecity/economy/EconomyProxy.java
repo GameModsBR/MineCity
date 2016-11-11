@@ -83,6 +83,18 @@ public interface EconomyProxy
         return true;
     }
 
+    default void refund(@NotNull PlayerID player, double amount, @Nullable BalanceResult balance, @NotNull WorldDim world, Throwable reason) throws IllegalArgumentException
+    {
+        try
+        {
+            refund(player, amount, balance, world, true);
+        }
+        catch(Throwable e)
+        {
+            reason.addSuppressed(e);
+        }
+    }
+
     default OperationResult refund(@NotNull PlayerID player, double amount, @Nullable BalanceResult balance, @NotNull WorldDim world, boolean verbose) throws IllegalArgumentException
     {
         //TODO Refund message when verbose==true
