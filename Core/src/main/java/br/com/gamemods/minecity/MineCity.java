@@ -49,6 +49,7 @@ public class MineCity
     public SimpleFlagHolder defaultPlotFlags = new SimpleFlagHolder();
     public SimpleFlagHolder defaultReserveFlags = new SimpleFlagHolder();
     public MineCityConfig.Costs costs;
+    public MineCityConfig.Limits limits;
     private Queue<ChunkPos> reloadQueue = new DistinctQueue<>();
     public boolean lazyReloads = true;
     public Locale locale;
@@ -67,6 +68,7 @@ public class MineCity
         locale = config.locale;
         useTitles = config.useTitle;
         costs = config.costs;
+        limits = config.limits;
 
         this.server = server;
         this.messageTransformer = messageTransformer;

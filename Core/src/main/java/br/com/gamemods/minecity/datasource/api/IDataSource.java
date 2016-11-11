@@ -63,4 +63,9 @@ public interface IDataSource
 
     @NotNull
     Nature getNature(@NotNull WorldDim world) throws DataSourceException;
+
+    /**
+     * The amount of cities that a player has (is mayor)
+     */
+    int getCityCount(PlayerID playerId) throws DataSourceException;
 }

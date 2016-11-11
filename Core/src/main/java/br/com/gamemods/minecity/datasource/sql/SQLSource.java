@@ -581,7 +581,7 @@ public class SQLSource implements IDataSource
                     System.out.println("[MineCity] The database was successfully upgraded");
                 }
 
-                result = stm.executeQuery("SELECT `display_name` FROM `minecity_city ");
+                result = stm.executeQuery("SELECT `display_name` FROM `minecity_city` ");
                 while(result.next())
                     cityNames.add(result.getString(1));
                 result.close();
@@ -841,6 +841,28 @@ public class SQLSource implements IDataSource
     public Map<String, Set<String>> getGroups()
     {
         return Collections.unmodifiableMap(groupNames);
+    }
+
+    @Override
+    public int getCityCount(PlayerID playerId) throws DataSourceException
+    {
+        try
+        {
+            Connection connection = this.connection.connect();
+            try(PreparedStatement pst = connection.prepareStatement(
+                    "SELECT count(*) FROM `minecity_city` WHERE `owner`=?"
+            ))
+            {
+                pst.setInt(1, playerId(connection, playerId));
+                ResultSet result = pst.executeQuery();
+                result.next();
+                return result.getInt(1);
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
     }
 
     @Slow

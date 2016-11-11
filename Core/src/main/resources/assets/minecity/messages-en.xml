@@ -412,6 +412,9 @@
                     <msg id="error-unknown">Oopss... An unknown error has occurred while processing your transaction.</msg>
                     <msg id="error">The purchase has failed: ${error}</msg>
                 </economy>
+                <limits>
+                    <msg id="reached">You've reached the maximum amount of cities that you can have.</msg>
+                </limits>
                 <msg id="success">
                     The city ${name} was created successfully, if you get lost you can teleport back with /city spawn ${identity}
                 </msg>

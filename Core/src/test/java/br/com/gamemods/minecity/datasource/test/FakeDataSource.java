@@ -533,6 +533,13 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
         // Nothing needs to be done
     }
 
+    @Override
+    public int getCityCount(PlayerID playerId)
+    {
+        //TODO Implement
+        return 0;
+    }
+
     private class FakeIsland extends Island
     {
         City city;

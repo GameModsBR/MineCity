@@ -18,6 +18,7 @@ public final class MineCityConfig implements Cloneable
     public boolean useTitle = true;
     public String economy = "none";
     public Costs costs = new Costs();
+    public Limits limits = new Limits();
 
     @Override
     public MineCityConfig clone()
@@ -39,5 +40,12 @@ public final class MineCityConfig implements Cloneable
         public double cityCreation = 1000;
         public double islandCreation = 500;
         public double claim = 25;
+    }
+
+    public static class Limits
+    {
+        public int cities = -1;
+        public int claims = -1;
+        public int islands = -1;
     }
 }

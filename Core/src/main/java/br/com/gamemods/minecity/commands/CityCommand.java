@@ -159,6 +159,12 @@ public class CityCommand
             ));
 
         PlayerID playerId = cmd.sender.getPlayerId();
+        int cities = mineCity.dataSource.getCityCount(cmd.sender.getPlayerId());
+        if(cities >= mineCity.limits.cities)
+            return new CommandResult<>(new Message("cmd.city.create.limit.reached",
+                    "You've reached the maximum amount of cities that you can have."
+            ));
+
         double cost = mineCity.costs.cityCreation;
         BalanceResult balance = mineCity.economy.has(playerId, cost, spawn.world);
         if(!balance.result)
