@@ -943,6 +943,184 @@ public class CityCommand
             ), code);
     }
 
+    @Slow
+    @Async
+    @Command(value = "city.buy", console = false)
+    public static CommandResult<?> buy(CommandEvent cmd) throws DataSourceException
+    {
+        City city = cmd.getChunk().getCity().orElse(null);
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.city.buy.not-claimed", "You are not inside a city"));
+
+        if(city.owner().equals(cmd.sender.getPlayerId()))
+            return new CommandResult<>(new Message("cmd.city.buy.own", "You can't buy your own city"));
+
+        double price = city.getPrice();
+        if(price < 1.0)
+            return new CommandResult<>(new Message("cmd.city.buy.not-selling", "The city ${name} is not for sale",
+                    new Object[]{"name", city.getName()}
+            ));
+
+        PlayerID playerId = cmd.sender.getPlayerId();
+        if(!cmd.mineCity.economy.has(playerId, price, cmd.position.world).result)
+            return new CommandResult<>(new Message("cmd.city.buy.economy.insufficient-funds",
+                    "Insufficient funds, you need ${money} to purchase ${city}",
+                    new Object[][]{
+                            {"money", cmd.mineCity.economy.format(price)},
+                            {"city", city.getName()}
+                    }
+            ));
+
+        String code = cmd.sender.confirm(sender->
+        {
+            BalanceResult balance = cmd.mineCity.economy.has(playerId, price, cmd.position.world);
+            if(!balance.result)
+                return new CommandResult<>(new Message("cmd.city.buy.economy.insufficient-funds",
+                        "Insufficient funds, you need ${money} to purchase ${city}",
+                        new Object[][]{
+                                {"money", cmd.mineCity.economy.format(price)},
+                                {"city", city.getName()}
+                        }
+                ));
+
+            OperationResult charge = cmd.mineCity.economy.charge(cmd.sender, price, balance, cmd.position.world);
+            if(!charge.success)
+            {
+                if(charge.error == null)
+                    return new CommandResult<>(new Message("cmd.city.buy.economy.charge.error-unknown",
+                            "Oopss... An unknown error has occurred while processing your transaction."
+                    ));
+                else
+                    return new CommandResult<>(new Message("cmd.city.buy.economy.charge.error",
+                            "The purchase has failed: ${error}",
+                            new Object[]{"error", charge.error}
+                    ));
+            }
+
+            double investment = price - charge.amount;
+
+            PlayerID old = city.owner().player();
+            try
+            {
+                city.setOwner(playerId);
+            }
+            catch(Throwable e)
+            {
+                cmd.mineCity.economy.refund(playerId, investment, balance, cmd.position.world, e);
+                throw e;
+            }
+
+            Message revert = null;
+            Throwable ex = null;
+            if(old != null)
+                try
+                {
+                    OperationResult give = cmd.mineCity.economy.give(old, investment, null, cmd.position.world, false);
+                    if(!give.success)
+                    {
+                        if(charge.error == null)
+                            revert = new Message("cmd.city.buy.economy.give.error-unknown",
+                                    "Oopss... An unknown error has occurred while transferring the money to the old owner."
+                            );
+                        else
+                            revert = new Message("cmd.city.buy.economy.give.error",
+                                    "The purchase has failed: ${error}",
+                                    new Object[]{"error", charge.error}
+                            );
+                    }
+                    else
+                    {
+                        if(give.amount < 0)
+                        {
+                            OperationResult adjust = cmd.mineCity.economy.charge(cmd.sender, -give.amount, null, cmd.position.world);
+                            if(adjust.success)
+                                investment -= give.amount + adjust.amount;
+                        }
+                    }
+                }
+                catch(Throwable e)
+                {
+                    e.printStackTrace();
+                    ex = e;
+                    revert = new Message("cmd.city.buy.economy.give.exception",
+                            "An exception has occurred while giving the money to the old owner"
+                    );
+                }
+
+            if(revert != null)
+            {
+                try
+                {
+                    if(ex != null)
+                        cmd.mineCity.economy.refund(playerId, investment, null, cmd.position.world, ex);
+                    else
+                        cmd.mineCity.economy.refund(playerId, investment, null, cmd.position.world, true);
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+                return new CommandResult<>(revert);
+            }
+
+
+            boolean errorOnReset = false;
+            for(PermissionFlag flag : PermissionFlag.values())
+            {
+                try
+                {
+                    city.resetAll(flag);
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                    errorOnReset = true;
+                }
+
+                try
+                {
+                    if(!flag.defaultCity)
+                        city.deny(flag);
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                    errorOnReset = true;
+                }
+            }
+
+            if(errorOnReset)
+                cmd.sender.send(CommandFunction.messageFailed(new Message(
+                        "cmd.city.buy.error-reset",
+                        "An error has occurred while resetting the city permissions, you might want to take a look at /plot check"
+                )));
+
+            try
+            {
+                city.invested(investment);
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            return new CommandResult<>(new Message("cmd.city.buy.success",
+                    "Congratulations! The city ${city} is now yours.",
+                    new Object[]{"city", city.getName()}
+            ), true);
+        });
+
+        return new CommandResult<>(new Message("cmd.city.buy.confirm",
+                "You are about to purchase the city ${city} by ${money}. If you are sure about it type /city confirm ${code}",
+                new Object[][]{
+                        {"city", city.getName()},
+                        {"money", cmd.mineCity.economy.format(price)},
+                        {"code", code}
+                }
+        ));
+    }
+
     @Command(value = "city.map", console = false, args = @Arg(name = "big", type = Arg.Type.PREDEFINED, options = "big", optional = true))
     public CommandResult<?> map(CommandEvent cmd)
     {

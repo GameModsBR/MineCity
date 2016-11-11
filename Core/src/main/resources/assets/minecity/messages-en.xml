@@ -151,6 +151,24 @@
                 <msg id="confirm-price-change">You are about to change the price of the city ${city} from ${from} to ${to}. If you are sure about it type /city confirm ${code}</msg>
                 <msg id="success">The city ${city} is now for sale by ${price}. Type /city abort sell if you change your mind.</msg>
             </sell>
+            <buy>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="own">You can't buy your own city</msg>
+                <msg id="not-selling">The city ${name} is not for sale</msg>
+                <msg id="insufficient-funds">Insufficient funds, you need ${money} to purchase ${city}</msg>
+                <charge>
+                    <msg id="error-unknown">Oopss... An unknown error has occurred while processing your transaction.</msg>
+                    <msg id="error">The purchase has failed: ${error}</msg>
+                </charge>
+                <give>
+                    <msg id="error-unknown">Oopss... An unknown error has occurred while transferring the money to the old owner.</msg>
+                    <msg id="error">The purchase has failed: ${error}</msg>
+                    <msg id="exception">An exception has occurred while giving the money to the old owner</msg>
+                </give>
+                <msg id="error-reset">An error has occurred while resetting the city permissions, you might want to take a look at /city check</msg>
+                <msg id="confirm">You are about to purchase the city ${city} by ${money}. If you are sure about it type /city confirm ${code}</msg>
+                <msg id="success">Congratulations! The city ${city} is now yours.</msg>
+            </buy>
             <perms>
                 <msg id="arg.city">city</msg>
                 <nobody>
@@ -1000,6 +1018,24 @@
                 <msg id="confirm-price-change">You are about to change the price of the plot ${plot} that is inside the city ${city} from ${from} to ${to}. If you are sure about it type /plot confirm ${code}</msg>
                 <msg id="success">The plot ${plot} is now for sale by ${price}. Type /plot abort sell if you change your mind.</msg>
             </sell>
+            <buy>
+                <msg id="not-claimed">You are not inside a plot</msg>
+                <msg id="own">You can't buy your own plot</msg>
+                <msg id="not-selling">The plot ${name} is not for sale</msg>
+                <msg id="insufficient-funds">Insufficient funds, you need ${money} to purchase ${plot}</msg>
+                <charge>
+                    <msg id="error-unknown">Oopss... An unknown error has occurred while processing your transaction.</msg>
+                    <msg id="error">The purchase has failed: ${error}</msg>
+                </charge>
+                <give>
+                    <msg id="error-unknown">Oopss... An unknown error has occurred while transferring the money to the old owner.</msg>
+                    <msg id="error">The purchase has failed: ${error}</msg>
+                    <msg id="exception">An exception has occurred while giving the money to the old owner</msg>
+                </give>
+                <msg id="error-reset">An error has occurred while resetting the plot permissions, you might want to take a look at /plot check</msg>
+                <msg id="confirm">You are about to purchase the plot ${plot} in ${city} by ${money}. If you are sure about it type /plot confirm ${code}</msg>
+                <msg id="success">Congratulations! The plot ${plot} is now yours.</msg>
+            </buy>
             <perms>
                 <msg id="arg.city-or-plot">city</msg>
                 <msg id="arg.city">city</msg>

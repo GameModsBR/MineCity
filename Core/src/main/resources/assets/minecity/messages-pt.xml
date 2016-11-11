@@ -144,6 +144,24 @@
                 <msg id="confirm-price-change">Você está prestes a mudar o preço da cidade ${city} de ${from} para ${to}. Se você estiver certo disso digite /cidade confirmar ${code}</msg>
                 <msg id="success">A cidade ${city} agora está a venda por ${price}. Digiter /cidade abortar venda se você mudar de ideia.</msg>
             </sell>
+            <buy>
+                <msg id="not-claimed">Você não está dentro de uma cidade</msg>
+                <msg id="own">Você não pode comprar a sua própria cidade</msg>
+                <msg id="not-selling">A cidade ${name} não está a venda</msg>
+                <msg id="insufficient-funds">Fundos insuficientes, você precisa de ${money} para comprar ${city}</msg>
+                <charge>
+                    <msg id="error-unknown">Oopss... Ocorreu um erro ao processar sua transação.</msg>
+                    <msg id="error">A compra falhou: ${error}</msg>
+                </charge>
+                <give>
+                    <msg id="error-unknown">Oopss... Ocorreu um erro ao transferir o dinheiro para o antigo dono.</msg>
+                    <msg id="error">A compra falhou: ${error}</msg>
+                    <msg id="exception">Ocorre uma exception ao dar o dinheiro para o antigo dono</msg>
+                </give>
+                <msg id="error-reset">Ocorreu um erro ao resetar as permissões da cidade, talvez você queira dar uma olhada em /cidade checar</msg>
+                <msg id="confirm">Você está prestes a comprar a cidade ${city} por ${money}. Se você tiver certeza disso digite /lote confirmar ${code}</msg>
+                <msg id="success">Parabéns! A cidade ${city} agora é sua.</msg>
+            </buy>
             <perms>
                 <msg id="arg.city">cidade</msg>
                 <msg id="enter.arg.city">cidade</msg>
@@ -981,6 +999,24 @@
                 <msg id="confirm-price-change">Você está prestes a mudar o preço do lote ${plot} que está dentro da cidade ${city} de ${from} para ${to}. Se você estiver certo disso digite /lote confirmar ${code}</msg>
                 <msg id="success">O lote ${plot} agora está a venda por ${price}. Digiter /lote abortar venda se você mudar de ideia.</msg>
             </sell>
+            <buy>
+                <msg id="not-claimed">Você não está dentro de um lote</msg>
+                <msg id="own">Você não pode comprar o seu próprio lote</msg>
+                <msg id="not-selling">O lote ${name} não está a venda</msg>
+                <msg id="insufficient-funds">Fundos insuficientes, você precisa de ${money} para comprar ${plot}</msg>
+                <charge>
+                    <msg id="error-unknown">Oopss... Ocorreu um erro ao processar sua transação.</msg>
+                    <msg id="error">A compra falhou: ${error}</msg>
+                </charge>
+                <give>
+                    <msg id="error-unknown">Oopss... Ocorreu um erro ao transferir o dinheiro para o antigo dono.</msg>
+                    <msg id="error">A compra falhou: ${error}</msg>
+                    <msg id="exception">Ocorre uma exception ao dar o dinheiro para o antigo dono</msg>
+                </give>
+                <msg id="error-reset">Ocorreu um erro ao resetar as permissões do lote, talvez você queira dar uma olhada em /lote checar</msg>
+                <msg id="confirm">Você está prestes a comprar o lote ${plot} em ${city} por ${money}. Se você tiver certeza disso digite /lote confirmar ${code}</msg>
+                <msg id="success">Parabéns! O lote ${plot} agora é seu.</msg>
+            </buy>
             <perms>
                 <msg id="arg.city-or-plot">cidade-ou-lote</msg>
                 <msg id="arg.plot">lote</msg>

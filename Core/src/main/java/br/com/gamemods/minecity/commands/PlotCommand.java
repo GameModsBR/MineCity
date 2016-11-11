@@ -12,6 +12,8 @@ import br.com.gamemods.minecity.api.shape.Shape;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import br.com.gamemods.minecity.economy.BalanceResult;
+import br.com.gamemods.minecity.economy.OperationResult;
 import br.com.gamemods.minecity.structure.*;
 
 import java.util.ArrayList;
@@ -792,5 +794,183 @@ public class PlotCommand
                             {"from", cmd.mineCity.economy.format(plot.getPrice())}
                     }
             ), code);
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.buy", console = false)
+    public static CommandResult<?> buy(CommandEvent cmd) throws DataSourceException
+    {
+        Plot plot = cmd.mineCity.getPlot(cmd.position.getBlock()).orElse(null);
+        if(plot == null)
+            return new CommandResult<>(new Message("cmd.plot.buy.not-claimed", "You are not inside a plot"));
+
+        if(plot.owner().equals(cmd.sender.getPlayerId()))
+            return new CommandResult<>(new Message("cmd.plot.buy.own", "You can't buy your own plot"));
+
+        double price = plot.getPrice();
+        if(price < 1.0)
+            return new CommandResult<>(new Message("cmd.plot.buy.not-selling", "The plot ${name} is not for sale",
+                    new Object[]{"name", plot.getName()}
+            ));
+
+        PlayerID playerId = cmd.sender.getPlayerId();
+        if(!cmd.mineCity.economy.has(playerId, price, cmd.position.world).result)
+            return new CommandResult<>(new Message("cmd.plot.buy.economy.insufficient-funds",
+                    "Insufficient funds, you need ${money} to purchase ${plot}",
+                    new Object[][]{
+                            {"money", cmd.mineCity.economy.format(price)},
+                            {"plot", plot.getName()}
+                    }
+            ));
+
+        String code = cmd.sender.confirm(sender->
+        {
+            BalanceResult balance = cmd.mineCity.economy.has(playerId, price, cmd.position.world);
+            if(!balance.result)
+                return new CommandResult<>(new Message("cmd.plot.buy.economy.insufficient-funds",
+                        "Insufficient funds, you need ${money} to purchase ${plot}",
+                        new Object[][]{
+                                {"money", cmd.mineCity.economy.format(price)},
+                                {"plot", plot.getName()}
+                        }
+                ));
+
+            OperationResult charge = cmd.mineCity.economy.charge(cmd.sender, price, balance, cmd.position.world);
+            if(!charge.success)
+            {
+                if(charge.error == null)
+                    return new CommandResult<>(new Message("cmd.plot.buy.economy.charge.error-unknown",
+                            "Oopss... An unknown error has occurred while processing your transaction."
+                    ));
+                else
+                    return new CommandResult<>(new Message("cmd.plot.buy.economy.charge.error",
+                            "The purchase has failed: ${error}",
+                            new Object[]{"error", charge.error}
+                    ));
+            }
+
+            double investment = price - charge.amount;
+
+            PlayerID old = plot.owner().player();
+            try
+            {
+                plot.setOwner(playerId);
+            }
+            catch(Throwable e)
+            {
+                cmd.mineCity.economy.refund(playerId, investment, balance, cmd.position.world, e);
+                throw e;
+            }
+
+            Message revert = null;
+            Throwable ex = null;
+            if(old != null)
+                try
+                {
+                    OperationResult give = cmd.mineCity.economy.give(old, investment, null, plot.getSpawn().world, false);
+                    if(!give.success)
+                    {
+                        if(charge.error == null)
+                            revert = new Message("cmd.plot.buy.economy.give.error-unknown",
+                                    "Oopss... An unknown error has occurred while transferring the money to the old owner."
+                            );
+                        else
+                            revert = new Message("cmd.plot.buy.economy.give.error",
+                                    "The purchase has failed: ${error}",
+                                    new Object[]{"error", charge.error}
+                            );
+                    } else
+                    {
+                        if(give.amount < 0)
+                        {
+                            OperationResult adjust = cmd.mineCity.economy.charge(cmd.sender, -give.amount, null, cmd.position.world);
+                            if(adjust.success)
+                                investment -= give.amount + adjust.amount;
+                        }
+                    }
+                }
+                catch(Throwable e)
+                {
+                    e.printStackTrace();
+                    ex = e;
+                    revert = new Message("cmd.plot.buy.economy.give.exception",
+                            "An exception has occurred while giving the money to the old owner"
+                    );
+                }
+
+            if(revert != null)
+            {
+                try
+                {
+                    if(ex != null)
+                        cmd.mineCity.economy.refund(playerId, investment, null, cmd.position.world, ex);
+                    else
+                        cmd.mineCity.economy.refund(playerId, investment, null, cmd.position.world, true);
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+                return new CommandResult<>(revert);
+            }
+
+
+            boolean errorOnReset = false;
+            for(PermissionFlag flag : PermissionFlag.values())
+            {
+                try
+                {
+                    plot.resetAll(flag);
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                    errorOnReset = true;
+                }
+
+                try
+                {
+                    if(!flag.defaultPlot)
+                        plot.deny(flag);
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                    errorOnReset = true;
+                }
+            }
+
+            if(errorOnReset)
+                cmd.sender.send(CommandFunction.messageFailed(new Message(
+                        "cmd.plot.buy.error-reset",
+                        "An error has occurred while resetting the plot permissions, you might want to take a look at /plot check"
+                )));
+
+            try
+            {
+                plot.invest(investment);
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            return new CommandResult<>(new Message("cmd.plot.buy.success",
+                    "Congratulations! The plot ${plot} is now yours.",
+                    new Object[]{"plot", plot.getName()}
+            ), true);
+        });
+
+        return new CommandResult<>(new Message("cmd.plot.buy.confirm",
+                "You are about to purchase the plot ${plot} in ${city} by ${money}. If you are sure about it type /plot confirm ${code}",
+                new Object[][]{
+                        {"plot", plot.getName()},
+                        {"city", plot.getCity().getName()},
+                        {"money", cmd.mineCity.economy.format(price)},
+                        {"code", code}
+                }
+        ));
     }
 }
