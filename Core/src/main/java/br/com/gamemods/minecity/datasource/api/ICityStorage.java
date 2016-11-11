@@ -117,7 +117,18 @@ public interface ICityStorage
     @NotNull
     Set<Plot> loadPlots(@NotNull Island island) throws DataSourceException;
 
-    double invested(City city, double value) throws DataSourceException;
+    @Slow
+    double invested(@NotNull City city, double value) throws DataSourceException;
 
-    double invested(Plot plot, double value) throws DataSourceException;
+    @Slow
+    double invested(@NotNull Plot plot, double value) throws DataSourceException;
+
+    @Slow
+    void setPrice(@NotNull Plot plot, double price) throws DataSourceException;
+
+    @Slow
+    void setPrice(@NotNull City city, double price) throws DataSourceException;
+
+    @Slow
+    void setInvestment(@NotNull Plot plot, double investment) throws DataSourceException;
 }

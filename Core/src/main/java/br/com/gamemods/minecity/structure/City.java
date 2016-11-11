@@ -69,6 +69,8 @@ public final class City extends ExceptStoredHolder
 
     private double investment;
 
+    private double price;
+
     /**
      * Create and save a city immediately
      * @param owner The city's owner
@@ -134,11 +136,12 @@ public final class City extends ExceptStoredHolder
     public City(@NotNull MineCity mineCity, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
                 @NotNull BlockPos spawn, Collection<Island> islands, int id, @NotNull ICityStorage storage,
                 @NotNull IExceptPermissionStorage permissionStorage, @Nullable Message defaultDenialMessage,
-                @NotNull Tax appliedTax, double investment
+                @NotNull Tax appliedTax, double investment, double price
     )
             throws DataSourceException
     {
         super(defaultDenialMessage);
+        this.price = price;
         this.investment = investment;
         this.appliedTax = appliedTax;
         this.mineCity = mineCity;
@@ -736,5 +739,19 @@ public final class City extends ExceptStoredHolder
             throw new IllegalStateException("This instance is no longer valid");
 
         investment = storage.invested(this, value);
+    }
+
+    public double getPrice()
+    {
+        return price;
+    }
+
+    public void setPrice(double price) throws DataSourceException
+    {
+        if(invalid)
+            throw new IllegalStateException("This instance is no longer valid");
+
+        storage.setPrice(this, price);
+        this.price = price;
     }
 }

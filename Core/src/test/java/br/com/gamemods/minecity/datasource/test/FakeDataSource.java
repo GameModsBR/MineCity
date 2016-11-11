@@ -499,15 +499,33 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
     }
 
     @Override
-    public double invested(City city, double value) throws DataSourceException
+    public double invested(@NotNull City city, double value) throws DataSourceException
     {
         return city.getInvestment() + value;
     }
 
     @Override
-    public double invested(Plot plot, double value) throws DataSourceException
+    public double invested(@NotNull Plot plot, double value) throws DataSourceException
     {
         return plot.getInvestment() + value;
+    }
+
+    @Override
+    public void setPrice(@NotNull City city, double price) throws DataSourceException
+    {
+        // Nothing needs to be done here
+    }
+
+    @Override
+    public void setPrice(@NotNull Plot plot, double price) throws DataSourceException
+    {
+        // Nothing needs to be done here
+    }
+
+    @Override
+    public void setInvestment(@NotNull Plot plot, double investment) throws DataSourceException
+    {
+        // Nothing needs to be done here
     }
 
     @NotNull

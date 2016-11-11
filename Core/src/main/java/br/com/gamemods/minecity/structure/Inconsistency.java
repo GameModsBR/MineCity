@@ -58,7 +58,7 @@ public class Inconsistency implements ChunkOwner
                 {
                     city = new City(mineCity, "#inconsistent", "#Inconsistency", null, new BlockPos(WORLD, 0, 0, 0),
                             Collections.singleton(island = new InconsistentIsland(voidStorage)), -1000, voidStorage,
-                            voidStorage, null, new Tax(0,0), 0
+                            voidStorage, null, new Tax(0,0), 0, 0
                     );
                 }
             }
@@ -411,13 +411,31 @@ public class Inconsistency implements ChunkOwner
         }
 
         @Override
-        public double invested(City city, double value) throws DataSourceException
+        public double invested(@NotNull City city, double value) throws DataSourceException
         {
             throw new DataSourceException("Inconsistent nature!");
         }
 
         @Override
-        public double invested(Plot plot, double value) throws DataSourceException
+        public double invested(@NotNull Plot plot, double value) throws DataSourceException
+        {
+            throw new DataSourceException("Inconsistent nature!");
+        }
+
+        @Override
+        public void setInvestment(@NotNull Plot plot, double investment) throws DataSourceException
+        {
+            throw new DataSourceException("Inconsistent nature!");
+        }
+
+        @Override
+        public void setPrice(@NotNull City city, double price) throws DataSourceException
+        {
+            throw new DataSourceException("Inconsistent nature!");
+        }
+
+        @Override
+        public void setPrice(@NotNull Plot plot, double price) throws DataSourceException
         {
             throw new DataSourceException("Inconsistent nature!");
         }

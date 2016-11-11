@@ -27,6 +27,7 @@ CREATE TABLE `minecity_city` (
 `spawn_y`  int(11) NOT NULL ,
 `spawn_z`  int(11) NOT NULL ,
 `perm_denial_message`  varchar(255) NULL ,
+`price`  double NULL DEFAULT NULL ,
 `tax_applied_flat`  double NOT NULL DEFAULT 0 ,
 `tax_applied_percent`  double NOT NULL DEFAULT 0 ,
 `investment`  double NOT NULL DEFAULT 0 ,
@@ -166,6 +167,7 @@ CREATE TABLE `minecity_plots` (
 `spawn_z`  int NOT NULL ,
 `shape`  blob NOT NULL ,
 `perm_denial_message`  varchar(255) NULL ,
+`price`  double NULL DEFAULT NULL ,
 `tax_accepted_flat`  double NOT NULL DEFAULT 0 ,
 `tax_accepted_percent`  double NOT NULL DEFAULT 0 ,
 `tax_applied_flat`  double NOT NULL DEFAULT 0 ,
@@ -233,8 +235,8 @@ CONSTRAINT `world_perm_world` FOREIGN KEY (`world_id`) REFERENCES `minecity_worl
 
 CREATE TABLE `minecity_setup` (
 `property`  enum('version') NOT NULL ,
-`value`  enum('5') NOT NULL DEFAULT '5' ,
+`value`  enum('6') NOT NULL DEFAULT '6' ,
 PRIMARY KEY (`property`)
 );
 
-INSERT INTO `minecity_setup` VALUES('version', '5');
+INSERT INTO `minecity_setup` VALUES('version', '6');

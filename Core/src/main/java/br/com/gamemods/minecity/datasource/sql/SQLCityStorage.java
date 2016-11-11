@@ -438,7 +438,7 @@ public class SQLCityStorage implements ICityStorage
     }
 
     @Override
-    public double invested(City city, double value) throws DataSourceException
+    public double invested(@NotNull City city, double value) throws DataSourceException
     {
         try(Connection transaction = connection.transaction())
         {
@@ -480,7 +480,7 @@ public class SQLCityStorage implements ICityStorage
     }
 
     @Override
-    public double invested(Plot plot, double value) throws DataSourceException
+    public double invested(@NotNull Plot plot, double value) throws DataSourceException
     {
         try(Connection transaction = connection.transaction())
         {
@@ -508,6 +508,96 @@ public class SQLCityStorage implements ICityStorage
 
                 transaction.commit();
                 return investment;
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
+    public void setInvestment(@NotNull Plot plot, double investment) throws DataSourceException
+    {
+        try(Connection transaction = connection.transaction())
+        {
+            try
+            {
+                try(PreparedStatement pst = transaction.prepareStatement(
+                        "UPDATE minecity_plots SET `investment`=? WHERE plot_id=?"
+                ))
+                {
+                    pst.setDouble(1, investment);
+                    pst.setInt(2, plot.id);
+                    source.executeUpdate(pst, 1);
+                }
+
+                transaction.commit();
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
+    public void setPrice(@NotNull Plot plot, double price) throws DataSourceException
+    {
+        try(Connection transaction = connection.transaction())
+        {
+            try
+            {
+                try(PreparedStatement pst = transaction.prepareStatement(
+                        "UPDATE minecity_plots SET `price`=? WHERE plot_id=?"
+                ))
+                {
+                    pst.setDouble(1, price);
+                    pst.setInt(2, plot.id);
+                    source.executeUpdate(pst, 1);
+                }
+
+                transaction.commit();
+            }
+            catch(Exception e)
+            {
+                transaction.rollback();
+                throw e;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
+    public void setPrice(@NotNull City city, double price) throws DataSourceException
+    {
+        try(Connection transaction = connection.transaction())
+        {
+            try
+            {
+                try(PreparedStatement pst = transaction.prepareStatement(
+                        "UPDATE minecity_city SET `price`=? WHERE plot_id=?"
+                ))
+                {
+                    pst.setDouble(1, price);
+                    pst.setInt(2, city.getId());
+                    source.executeUpdate(pst, 1);
+                }
+
+                transaction.commit();
             }
             catch(Exception e)
             {
@@ -1296,7 +1386,7 @@ public class SQLCityStorage implements ICityStorage
         {
            try(PreparedStatement pst = connection.connect().prepareStatement(
                    "SELECT plot_id,`name`,display_name,spawn_x,spawn_y,spawn_z,shape, player_id,player_uuid,player_name,perm_denial_message, " +
-                           "tax_accepted_flat, tax_accepted_percent, tax_applied_flat, tax_applied_percent, investment " +
+                           "tax_accepted_flat, tax_accepted_percent, tax_applied_flat, tax_applied_percent, investment, price " +
                    "FROM minecity_plots LEFT JOIN minecity_players ON player_id=owner " +
                    "WHERE island_id=?"
            ))
@@ -1336,7 +1426,7 @@ public class SQLCityStorage implements ICityStorage
                            Shape.deserializeBytes(result.getBytes(7)), denial,
                            tax.apply(result.getDouble("tax_accepted_flat"), result.getDouble("tax_accepted_percent")),
                            tax.apply(result.getDouble("tax_applied_flat"), result.getDouble("tax_applied_percent")),
-                           result.getDouble("investment")
+                           result.getDouble("investment"), result.getDouble("price")
                    ));
                } while(result.next());
 
