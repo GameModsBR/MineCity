@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity;
 
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
+import br.com.gamemods.minecity.economy.Tax;
 
 import java.util.Locale;
 
@@ -40,6 +41,9 @@ public final class MineCityConfig implements Cloneable
         public double cityCreation = 1000;
         public double islandCreation = 500;
         public double claim = 25;
+        public Tax cityTax = new Tax(100, 0.03);
+        public Tax cityTaxApplied = new Tax(-1, 0.05);
+        public Tax plotTaxApplied = new Tax(0, 0);
     }
 
     public static class Limits

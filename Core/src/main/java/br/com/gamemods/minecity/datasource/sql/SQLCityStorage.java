@@ -15,6 +15,7 @@ import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.ICityStorage;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
+import br.com.gamemods.minecity.economy.Tax;
 import br.com.gamemods.minecity.structure.City;
 import br.com.gamemods.minecity.structure.Island;
 import br.com.gamemods.minecity.structure.IslandArea;
@@ -24,6 +25,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.sql.*;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SQLCityStorage implements ICityStorage
@@ -1004,8 +1007,8 @@ public class SQLCityStorage implements ICityStorage
             {
                 int plotId;
                 try(PreparedStatement pst = transaction.prepareStatement(
-                        "INSERT INTO minecity_plots(island_id,name,display_name,owner,spawn_x,spawn_y,spawn_z,shape) " +
-                        "VALUES(?,?,?,?,?,?,?,?)",
+                        "INSERT INTO minecity_plots(island_id,name,display_name,owner,spawn_x,spawn_y,spawn_z,shape,tax_accepted_flat,tax_accepted_percent,tax_applied_flat,tax_applied_percent) " +
+                        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
                     Statement.RETURN_GENERATED_KEYS
                 ))
                 {
@@ -1018,6 +1021,10 @@ public class SQLCityStorage implements ICityStorage
                     pst.setInt(6, spawn.y);
                     pst.setInt(7, spawn.z);
                     pst.setBytes(8, plot.getShape().serializeBytes());
+                    pst.setDouble(9, plot.getAcceptedTax().getFlat());
+                    pst.setDouble(10, plot.getAcceptedTax().getPercent());
+                    pst.setDouble(11, plot.getAppliedTax().getFlat());
+                    pst.setDouble(12, plot.getAppliedTax().getPercent());
                     pst.executeUpdate();
 
                     ResultSet result = pst.getGeneratedKeys();
@@ -1213,7 +1220,8 @@ public class SQLCityStorage implements ICityStorage
         try
         {
            try(PreparedStatement pst = connection.connect().prepareStatement(
-                   "SELECT plot_id,`name`,display_name,spawn_x,spawn_y,spawn_z,shape, player_id,player_uuid,player_name,perm_denial_message " +
+                   "SELECT plot_id,`name`,display_name,spawn_x,spawn_y,spawn_z,shape, player_id,player_uuid,player_name,perm_denial_message, " +
+                           "tax_accepted_flat, tax_accepted_percent, tax_applied_flat, tax_applied_percent " +
                    "FROM minecity_plots LEFT JOIN minecity_players ON player_id=owner " +
                    "WHERE island_id=?"
            ))
@@ -1222,6 +1230,14 @@ public class SQLCityStorage implements ICityStorage
                ResultSet result = pst.executeQuery();
                if(!result.next())
                    return Collections.emptySet();
+
+               // Memory optimization, caching common Tax instances
+               HashMap<Tax, Tax> taxCache = new HashMap<>(6);
+               Tax t = island.getCity().getAppliedTax();
+               taxCache.put(t, t);
+               t = island.getCity().mineCity.costs.plotTaxApplied;
+               taxCache.put(t, t);
+               BiFunction<Double, Double, Tax> tax = (flat, percent)-> taxCache.computeIfAbsent(new Tax(flat, percent), Function.identity());
 
                HashSet<Plot> plots = new HashSet<>(3);
                do
@@ -1242,7 +1258,9 @@ public class SQLCityStorage implements ICityStorage
 
                    plots.add(new Plot(source.mineCity, this, permStorage, result.getInt(1), island, result.getString(2), result.getString(3), owner,
                            new BlockPos(island.world, result.getInt(4), result.getInt(5), result.getInt(6)),
-                           Shape.deserializeBytes(result.getBytes(7)), denial
+                           Shape.deserializeBytes(result.getBytes(7)), denial,
+                           tax.apply(result.getDouble("tax_accepted_flat"), result.getDouble("tax_accepted_percent")),
+                           tax.apply(result.getDouble("tax_applied_flat"), result.getDouble("tax_applied_percent"))
                    ));
                } while(result.next());
 

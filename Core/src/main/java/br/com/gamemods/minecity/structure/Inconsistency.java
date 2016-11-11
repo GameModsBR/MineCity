@@ -13,6 +13,7 @@ import br.com.gamemods.minecity.datasource.api.ICityStorage;
 import br.com.gamemods.minecity.datasource.api.IExceptPermissionStorage;
 import br.com.gamemods.minecity.datasource.api.INatureStorage;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
+import br.com.gamemods.minecity.economy.Tax;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,7 +58,7 @@ public class Inconsistency implements ChunkOwner
                 {
                     city = new City(mineCity, "#inconsistent", "#Inconsistency", null, new BlockPos(WORLD, 0, 0, 0),
                             Collections.singleton(island = new InconsistentIsland(voidStorage)), -1000, voidStorage,
-                            voidStorage, null
+                            voidStorage, null, new Tax(0,0)
                     );
                 }
             }

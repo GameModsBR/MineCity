@@ -17,6 +17,7 @@ import br.com.gamemods.minecity.datasource.api.ExceptStoredHolder;
 import br.com.gamemods.minecity.datasource.api.ICityStorage;
 import br.com.gamemods.minecity.datasource.api.IExceptPermissionStorage;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
+import br.com.gamemods.minecity.economy.Tax;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,9 +63,16 @@ public final class Plot extends ExceptStoredHolder
 
     private byte ownerNameLife;
 
+    @NotNull
+    private Tax acceptedTax;
+
+    @NotNull
+    private Tax appliedTax;
+
     public Plot(@NotNull MineCity mineCity, @NotNull ICityStorage storage, @NotNull IExceptPermissionStorage permissionStorage, int id,
                 @NotNull Island island, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
-                @NotNull BlockPos spawn, @NotNull Shape shape, @Nullable Message defaultMessage)
+                @NotNull BlockPos spawn, @NotNull Shape shape, @Nullable Message defaultMessage,
+                @NotNull Tax acceptedTax, @NotNull Tax appliedTax)
             throws DataSourceException
     {
         super(defaultMessage);
@@ -77,6 +85,8 @@ public final class Plot extends ExceptStoredHolder
         this.spawn = spawn;
         this.shape = shape;
         this.id = id;
+        this.acceptedTax = acceptedTax;
+        this.appliedTax = appliedTax;
 
         defaultMessages = mineCity.defaultPlotFlags.getDefaultMessages();
         loadSimplePermissions();
@@ -89,6 +99,9 @@ public final class Plot extends ExceptStoredHolder
                 @NotNull BlockPos spawn, @NotNull Shape shape)
             throws DataSourceException
     {
+
+        City city = island.getCity();
+        MineCity mineCity = city.mineCity;
         this.permissionStorage = permissionStorage;
         this.storage = storage;
         this.island = island;
@@ -98,8 +111,8 @@ public final class Plot extends ExceptStoredHolder
         this.shape = shape;
         this.identityName = identityName;
         this.id = storage.createPlot(this);
-
-        MineCity mineCity = island.getCity().mineCity;
+        this.appliedTax = mineCity.costs.plotTaxApplied;
+        this.acceptedTax = city.getAppliedTax();
 
         try
         {
@@ -439,5 +452,17 @@ public final class Plot extends ExceptStoredHolder
     public void updateCityName()
     {
         ownerNameCache = null;
+    }
+
+    @NotNull
+    public Tax getAcceptedTax()
+    {
+        return acceptedTax;
+    }
+
+    @NotNull
+    public Tax getAppliedTax()
+    {
+        return appliedTax;
     }
 }

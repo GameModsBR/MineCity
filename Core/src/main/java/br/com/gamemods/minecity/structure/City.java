@@ -14,6 +14,7 @@ import br.com.gamemods.minecity.datasource.api.*;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBFunction;
 import br.com.gamemods.minecity.datasource.api.unchecked.DisDBConsumer;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
+import br.com.gamemods.minecity.economy.Tax;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,6 +64,9 @@ public final class City extends ExceptStoredHolder
     private Message ownerNameCache;
     private byte ownerNameLife = Byte.MAX_VALUE;
 
+    @NotNull
+    private Tax appliedTax;
+
     /**
      * Create and save a city immediately
      * @param owner The city's owner
@@ -77,6 +81,7 @@ public final class City extends ExceptStoredHolder
         this.mineCity = mineCity;
         this.name = name;
         identityName = identity(name);
+        appliedTax = mineCity.costs.cityTaxApplied;
         this.owner = owner == null? new AdminCity(this) : owner;
         this.spawn = spawn;
         if(identityName.length() < 3)
@@ -125,10 +130,13 @@ public final class City extends ExceptStoredHolder
     @Slow
     public City(@NotNull MineCity mineCity, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
                 @NotNull BlockPos spawn, Collection<Island> islands, int id, @NotNull ICityStorage storage,
-                @NotNull IExceptPermissionStorage permissionStorage, @Nullable Message defaultDenialMessage)
+                @NotNull IExceptPermissionStorage permissionStorage, @Nullable Message defaultDenialMessage,
+                @NotNull Tax appliedTax
+    )
             throws DataSourceException
     {
         super(defaultDenialMessage);
+        this.appliedTax = appliedTax;
         this.mineCity = mineCity;
         this.name = name;
         this.identityName = identityName;
@@ -705,5 +713,11 @@ public final class City extends ExceptStoredHolder
         }
 
         return this.ownerNameCache = msg;
+    }
+
+    @NotNull
+    public Tax getAppliedTax()
+    {
+        return appliedTax;
     }
 }

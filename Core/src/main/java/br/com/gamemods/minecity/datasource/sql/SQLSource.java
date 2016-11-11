@@ -14,6 +14,7 @@ import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.IDataSource;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBSupplier;
 import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceException;
+import br.com.gamemods.minecity.economy.Tax;
 import br.com.gamemods.minecity.structure.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +33,7 @@ import static br.com.gamemods.minecity.api.StringUtil.identity;
 
 public class SQLSource implements IDataSource
 {
-    private static final int VERSION = 3;
+    private static final int VERSION = 4;
 
     @NotNull
     public final MineCity mineCity;
@@ -113,7 +114,8 @@ public class SQLSource implements IDataSource
         {
             try(PreparedStatement pst = connection.prepareStatement(
                     "SELECT `c`.`name`, `owner`, `o`.`player_uuid`, `o`.`player_name`, `spawn_world`, `spawn_x`, `spawn_y`, `spawn_z`, " +
-                        "`w`.`dim`, `w`.`world`, `w`.`name`, `display_name`, c.`perm_denial_message`, `city_id` " +
+                        "`w`.`dim`, `w`.`world`, `w`.`name`, `display_name`, c.`perm_denial_message`, `city_id`," +
+                        "`tax_applied_flat`, `tax_applied_percent` " +
                     "FROM `minecity_city` AS `c` " +
                         "LEFT JOIN `minecity_players` AS `o` ON `owner` = `o`.`player_id` "+
                         "LEFT JOIN `minecity_world` AS `w` ON `spawn_world` = `w`.`world_id` "+
@@ -144,10 +146,13 @@ public class SQLSource implements IDataSource
                 String str = result.getString("perm_denial_message");
                 Message message = str == null? null : new Message("", "${msg}", new Object[]{"msg",str});
                 id = result.getInt("city_id");
+                Tax tax = new Tax(result.getDouble("tax_applied_flat"), result.getDouble("tax_applied_percent"));
+                if(tax.equals(mineCity.costs.cityTaxApplied))
+                    tax = mineCity.costs.cityTaxApplied;
                 pst.close();
 
                 Collection<Island> islands = loadIslands(connection, id);
-                City city = new City(mineCity, name, displayName, owner, spawn, islands, id, cityStorage, permStorage, message);
+                City city = new City(mineCity, name, displayName, owner, spawn, islands, id, cityStorage, permStorage, message, tax);
                 islands.forEach(i-> ((SQLIsland)i).city = city);
                 cityMap.put(id, city);
                 return Optional.of(city);
@@ -488,8 +493,8 @@ public class SQLSource implements IDataSource
                     int worldId = worldId(connection, spawn.world);
                     int cityId;
                     try(PreparedStatement pst = connection.prepareStatement(
-                        "INSERT INTO `minecity_city`(name, owner, spawn_world, spawn_x, spawn_y, spawn_z, display_name) " +
-                                            "VALUES (  ? ,   ?  ,      ?     ,    ?   ,    ?    ,   ?   ,     ?       )",
+                        "INSERT INTO `minecity_city`(name, owner, spawn_world, spawn_x, spawn_y, spawn_z, display_name, tax_applied_flat, tax_applied_percent) " +
+                                            "VALUES (  ? ,   ?  ,      ?     ,    ?   ,    ?    ,   ?   ,     ?       ,       ?         ,          ?         )",
                             Statement.RETURN_GENERATED_KEYS
                     ))
                     {
@@ -501,6 +506,8 @@ public class SQLSource implements IDataSource
                         pst.setInt(5, spawn.y);
                         pst.setInt(6, spawn.z);
                         pst.setString(7, city.getName());
+                        pst.setDouble(7, city.getAppliedTax().getFlat());
+                        pst.setDouble(8, city.getAppliedTax().getPercent());
                         pst.executeUpdate();
                         ResultSet keys = pst.getGeneratedKeys();
                         keys.next();
