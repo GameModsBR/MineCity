@@ -129,6 +129,26 @@
                     <br/><darkgreen>----------------------------------</darkgreen>
                 </msg>
             </info>
+            <abort>
+                <sell>
+                    <msg id="not-claimed">You are not inside a city</msg>
+                    <msg id="no-permission">You don't have permission abort the sale of ${city}, only ${owner} can do that</msg>
+                    <msg id="not-selling">The city ${city} is not for sale</msg>
+                    <msg id="success">The city ${city} is no longer for sale</msg>
+                </sell>
+            </abort>
+            <sell>
+                <msg id="arg.price">price</msg>
+                <msg id="not-claimed">You are not inside a city</msg>
+                <msg id="no-permission">You don't have permission to sell the city ${city}, only ${owner} can do that</msg>
+                <msg id="perms">You can't sell ${city} because you need to allow players to get inside and click on things.</msg>
+                <msg id="no-args">You need to type the price...</msg>
+                <msg id="not-number">The price needs to be a number, it can be fractional but can't have thousands separators.</msg>
+                <msg id="free">The price can't be less then ${minimum}</msg>
+                <msg id="confirm-new-sell">You are about to sell the city ${city} by ${price}. If you are sure about it type /city confirm ${code}</msg>
+                <msg id="confirm-price-change">You are about to change the price of the city ${city} from ${from} to ${to}. If you are sure about it type /city confirm ${code}</msg>
+                <msg id="success">The city ${city} is now for sale by ${price}. Type /city abort sell if you change your mind.</msg>
+            </sell>
             <perms>
                 <msg id="arg.city">city</msg>
                 <nobody>
@@ -956,6 +976,26 @@
                     <br/><darkgreen>----------------------------------</darkgreen>
                 </msg>
             </info>
+            <abort>
+                <sell>
+                    <msg id="not-claimed">You are not inside a plot</msg>
+                    <msg id="no-permission">You don't have permission abort the sale of ${plot}, only ${owner} can do that</msg>
+                    <msg id="not-selling">The plot ${plot} is not for sale</msg>
+                    <msg id="success">The plot ${plot} is no longer for sale</msg>
+                </sell>
+            </abort>
+            <sell>
+                <msg id="arg.price">price</msg>
+                <msg id="not-claimed">You are not inside a plot</msg>
+                <msg id="no-permission">You don't have permission to sell the plot ${plot}, only ${owner} can do that</msg>
+                <msg id="perms">You can't sell ${plot} because you need to allow players to get inside and click on things.</msg>
+                <msg id="no-args">You need to type the price...</msg>
+                <msg id="not-number">The price needs to be a number, it can be fractional but can't have thousands separators.</msg>
+                <msg id="free">The price can't be less then ${minimum}</msg>
+                <msg id="confirm-new-sell">You are about to sell the plot ${plot} that is not being sold and is inside the city ${city} by ${price}. If you are sure about it type /plot confirm ${code}</msg>
+                <msg id="confirm-price-change">You are about to change the price of the plot ${plot} that is inside the city ${city} from ${from} to ${to}. If you are sure about it type /plot confirm ${code}</msg>
+                <msg id="success">The plot ${plot} is now for sale by ${price}. Type /plot abort sell if you change your mind.</msg>
+            </sell>
             <perms>
                 <msg id="arg.city-or-plot">city</msg>
                 <msg id="arg.city">city</msg>

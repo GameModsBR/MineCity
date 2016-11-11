@@ -122,6 +122,26 @@
                     <br/><darkgreen>----------------------------------</darkgreen>
                 </msg>
             </info>
+            <abort>
+                <sell>
+                    <msg id="not-claimed">Você não está dentro de uma cidade</msg>
+                    <msg id="no-permission">Você não tem permissão para abortar a venda de ${city}, apenas ${owner} pode fazer isso</msg>
+                    <msg id="not-selling">A cidade ${city} não está a venda</msg>
+                    <msg id="success">A cidade ${city} não está mais a venda</msg>
+                </sell>
+            </abort>
+            <sell>
+                <msg id="arg.price">preço</msg>
+                <msg id="not-claimed">Você não está dentro de uma cidade</msg>
+                <msg id="no-permission">Você não tem permissão para vender a cidade ${city}, apenas ${owner} pode fazer isso</msg>
+                <msg id="perms">Você não pode vender ${city} porque você precisa permitir que os jogadores entrem e cliquem nas coisas.</msg>
+                <msg id="no-args">Você precisa digitar um preço...</msg>
+                <msg id="not-number">O preço precisa ser um número, ele pode ser fracionário mas não pode ter separadores de milhares.</msg>
+                <msg id="free">O preço não pode ser menor que ${minimum}</msg>
+                <msg id="confirm-new-sell">Você está prestes a vender a cidade ${city} por ${price}. Se você estiver certo disso digite /cidade confirmar ${code}</msg>
+                <msg id="confirm-price-change">Você está prestes a mudar o preço da cidade ${city} de ${from} para ${to}. Se você estiver certo disso digite /cidade confirmar ${code}</msg>
+                <msg id="success">A cidade ${city} agora está a venda por ${price}. Digiter /cidade abortar venda se você mudar de ideia.</msg>
+            </sell>
             <perms>
                 <msg id="arg.city">cidade</msg>
                 <msg id="enter.arg.city">cidade</msg>
@@ -937,6 +957,26 @@
                     <br/><darkgreen>----------------------------------</darkgreen>
                 </msg>
             </info>
+            <abort>
+                <sell>
+                    <msg id="not-claimed">Você não está dentro de um lote</msg>
+                    <msg id="no-permission">Você não tem permissão para abortar a venda de ${plot}, apenas ${owner} pode fazer isso</msg>
+                    <msg id="not-selling">O lote ${plot} não está a venda</msg>
+                    <msg id="success">O lote ${plot} não está mais a venda</msg>
+                </sell>
+            </abort>
+            <sell>
+                <msg id="arg.price">preço</msg>
+                <msg id="not-claimed">Você não está dentro de um lote</msg>
+                <msg id="no-permission">Você não tem permissão para vender o lote ${plot}, apenas ${owner} pode fazer isso</msg>
+                <msg id="perms">Você não pode vender ${plot} porque você precisa permitir que os jogadores entrem e cliquem nas coisas.</msg>
+                <msg id="no-args">Você precisa digitar um preço...</msg>
+                <msg id="not-number">O preço precisa ser um número, ele pode ser fracionário mas não pode ter separadores de milhares.</msg>
+                <msg id="free">O preço não pode ser menor que ${minimum}</msg>
+                <msg id="confirm-new-sell">Você está prestes a vender o lote ${plot} que não está a vend e está dentro da cidade ${city} por ${price}. Se você estiver certo disso digite /lote confirmar ${code}</msg>
+                <msg id="confirm-price-change">Você está prestes a mudar o preço do lote ${plot} que está dentro da cidade ${city} de ${from} para ${to}. Se você estiver certo disso digite /lote confirmar ${code}</msg>
+                <msg id="success">O lote ${plot} agora está a venda por ${price}. Digiter /lote abortar venda se você mudar de ideia.</msg>
+            </sell>
             <perms>
                 <msg id="arg.city-or-plot">cidade-ou-lote</msg>
                 <msg id="arg.plot">lote</msg>
