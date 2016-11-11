@@ -42,6 +42,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
@@ -58,7 +59,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToIntBiFunction;
@@ -248,6 +248,24 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
             adjustDefaultFlag(config, "permissions.default.plot.", flag, flag.defaultPlot, this.config.defaultPlotFlags);
             adjustDefaultFlag(config, "permissions.default.reserve.", flag, flag.defaultReserve, this.config.defaultReserveFlags);
         }
+
+        Property prop = config.get("costs", "city-creation", 1000.0);
+        this.config.costs.cityCreation = prop.getDouble();
+
+        prop = config.get("costs", "island-creation", 500.0);
+        this.config.costs.islandCreation = prop.getDouble();
+
+        prop = config.get("costs", "chunk-claim", 25.0);
+        this.config.costs.claim = prop.getDouble();
+
+        prop = config.get("limits", "cities", -1);
+        this.config.limits.cities = prop.getInt();
+
+        prop = config.get("limits", "claims", -1);
+        this.config.limits.claims = prop.getInt();
+
+        prop = config.get("limits", "islands", -1);
+        this.config.limits.islands = prop.getInt();
 
         config.save();
 
