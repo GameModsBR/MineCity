@@ -733,6 +733,7 @@ public final class City extends ExceptStoredHolder
         return investment;
     }
 
+    @Slow
     public synchronized void invested(double value) throws DataSourceException
     {
         if(invalid)
@@ -746,6 +747,7 @@ public final class City extends ExceptStoredHolder
         return price;
     }
 
+    @Slow
     public void setPrice(double price) throws DataSourceException
     {
         if(invalid)

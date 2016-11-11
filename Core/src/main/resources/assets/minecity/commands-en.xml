@@ -50,6 +50,9 @@
         <group id="city.check" parent="city" cmd="check">
             <desc>Shows details about permissions</desc>
         </group>
+        <group id="city.cancel" parent="city" cmd="cancel">
+            <desc>Cancels an action related to the city</desc>
+        </group>
         <group id="plot.allow" parent="plot" cmd="allow">
             <desc>Gives permission</desc>
         </group>
@@ -70,6 +73,9 @@
         </group>
         <group id="plot.check" parent="plot" cmd="check">
             <desc>Shows details about permissions</desc>
+        </group>
+        <group id="plot.cancel" parent="plot" cmd="cancel">
+            <desc>Cancels an action related to the plot</desc>
         </group>
     </groups>
     <commands>
@@ -117,6 +123,12 @@
         </command>
         <command id="city.list" parent="city" cmd="list">
             <desc>Lists all cities</desc>
+        </command>
+        <command id="city.sell" parent="city" cmd="sell">
+            <desc>Put a city on sale</desc>
+        </command>
+        <command id="city.cancel.sell" parent="city.cancel" cmd="sell">
+            <desc>Cancels a city sale</desc>
         </command>
 
         <!-- Groups -->
@@ -169,6 +181,12 @@
         </command>
         <command id="plot.list" parent="plot" cmd="list">
             <desc>Lists all plots from a city</desc>
+        </command>
+        <command id="plot.sell" parent="plot" cmd="sell">
+            <desc>Put a plot on sale</desc>
+        </command>
+        <command id="plot.cancel.sell" parent="plot.cancel" cmd="sell">
+            <desc>Cancels a plot sale</desc>
         </command>
 
         <!-- ========= Nature Permissions ========= -->

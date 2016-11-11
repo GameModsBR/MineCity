@@ -478,6 +478,7 @@ public final class Plot extends ExceptStoredHolder
         return investment;
     }
 
+    @Slow
     public synchronized void invest(double value) throws DataSourceException
     {
         if(invalid)
@@ -491,6 +492,7 @@ public final class Plot extends ExceptStoredHolder
         return price;
     }
 
+    @Slow
     public void setPrice(double price) throws DataSourceException
     {
         if(invalid)
@@ -500,6 +502,7 @@ public final class Plot extends ExceptStoredHolder
         this.price = price;
     }
 
+    @Slow
     public void setInvestment(double investment) throws DataSourceException
     {
         if(invalid)

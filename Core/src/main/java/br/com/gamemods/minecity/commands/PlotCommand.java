@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.api.StringUtil;
 import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.OptionalPlayer;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.Shape;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
@@ -58,7 +59,8 @@ public class PlotCommand
                 "<aqua>City: </aqua><white>${city}</white><br/>\n" +
                 "<aqua>Location: </aqua><white>${nature-name} X:${spawn-x} Y:${spawn-y} Z:${spawn-z}</white><br/>\n" +
                 "<aqua>Owner: </aqua><white>${owner}</white><br/>\n" +
-                "<aqua>Size: </aqua><white>${area-squared}m², ${area-cube}m³, X:${size-x}, Y:${size-y}, Z:${size-z}</white>" +
+                "<aqua>Size: </aqua><white>${area-squared}m², ${area-cube}m³, X:${size-x}, Y:${size-y}, Z:${size-z}</white><br/>\n" +
+                "<aqua>Price: </aqua><white>${price}</white>"+
                 "<br/><darkgreen>----------------------------------</darkgreen></msg>",
                 new Object[][]{
                         {"name", plot.getName()},
@@ -86,7 +88,8 @@ public class PlotCommand
                         {"area-cube", shape.area()},
                         {"size-x", shape.sizeX()},
                         {"size-y", shape.sizeY()},
-                        {"size-z", shape.sizeZ()}
+                        {"size-z", shape.sizeZ()},
+                        {"price", plot.getPrice() < 1? new Message("cmd.plot.info.not-selling", "Not for sale") : cmd.mineCity.economy.format(plot.getPrice())}
                 }
         ));
 
@@ -678,5 +681,116 @@ public class PlotCommand
                         {"code", code}
                 }), true
         );
+    }
+
+    @Slow
+    @Async
+    @Command(value = "plot.abort.sell", console = false)
+    public static CommandResult<?> abortSell(CommandEvent cmd) throws DataSourceException
+    {
+        Plot plot = cmd.mineCity.getPlot(cmd.position.getBlock()).orElse(null);
+        if(plot == null)
+            return new CommandResult<>(new Message("cmd.plot.abort.sell.not-claimed", "You are not inside a plot"));
+
+        PlayerID playerId = cmd.sender.getPlayerId();
+        if(!plot.owner().equals(playerId))
+            return new CommandResult<>(new Message("cmd.plot.abort.sell.no-permission",
+                    "You don't have permission abort the sale of ${plot}, only ${owner} can do that",
+                    new Object[][]{
+                            {"plot", plot.getName()},
+                            {"owner", plot.owner().getName()}
+                    }
+            ));
+
+        if(plot.getPrice() < 1.0)
+            return new CommandResult<>(new Message("cmd.plot.abort.sell.not-selling",
+                    "The plot ${plot} is not for sale",
+                    new Object[]{"plot", plot.getName()}
+            ));
+
+        plot.setPrice(0);
+        return new CommandResult<>(new Message("cmd.plot.abort.sell.success",
+                "The plot ${plot} is no longer for sale",
+                new Object[]{"plot", plot.getName()}
+        ));
+    }
+
+    @Command(value = "plot.sell", console = false, args = @Arg(name = "price", type = Arg.Type.NUMBER))
+    public static CommandResult<String> sell(CommandEvent cmd)
+    {
+        Plot plot = cmd.mineCity.getPlot(cmd.position.getBlock()).orElse(null);
+        if(plot == null)
+            return new CommandResult<>(new Message("cmd.plot.sell.not-claimed", "You are not inside a plot"));
+
+        PlayerID playerId = cmd.sender.getPlayerId();
+        if(!plot.owner().equals(playerId))
+            return new CommandResult<>(new Message("cmd.plot.sell.no-permission",
+                    "You don't have permission to sell the plot ${plot}, only ${owner} can do that",
+                    new Object[][]{
+                            {"plot", plot.getName()},
+                            {"owner", plot.owner().getName()}
+                    }
+            ));
+
+        if(plot.can(PermissionFlag.ENTER).isPresent() || plot.can(PermissionFlag.CLICK).isPresent())
+            return new CommandResult<>(new Message("cmd.plot.sell.perms",
+                    "You can't sell ${plot} because you need to allow players to get inside and click on things.",
+                    new Object[]{"plot", plot.getName()}
+            ));
+
+        if(cmd.args.size() != 1)
+            return new CommandResult<>(new Message("cmd.plot.sell.no-args",
+                    "You need to type the price..."
+            ));
+
+        double price;
+        try
+        {
+            price = Double.parseDouble(cmd.args.get(0).replace(',','.'));
+        }
+        catch(NumberFormatException e)
+        {
+            return new CommandResult<>(new Message("cmd.plot.sell.not-number", "The price needs to be a number, it can be fractional but can't have thousands separators."));
+        }
+
+        if(price < 1.0)
+            return new CommandResult<>(new Message("cmd.plot.sell.free",
+                    "The price can't be less then ${minimum}",
+                    new Object[]{"minimum", cmd.mineCity.economy.format(1.0)}
+            ));
+
+        String code = cmd.sender.confirm((sender)-> {
+            plot.setPrice(price);
+            return new CommandResult<>(new Message("cmd.plot.sell.success",
+                    "The plot ${plot} is now for sale by ${price}. Type /plot abort sell if you change your mind.",
+                    new Object[][]{
+                            {"plot", plot.getName()},
+                            {"price", cmd.mineCity.economy.format(price)}
+                    }
+            ), true);
+        });
+
+        double from = plot.getPrice();
+        if(from < 1)
+            return new CommandResult<>(new Message("cmd.plot.sell.confirm-new-sell",
+                    "You are about to sell the plot ${plot} that is not being sold and is inside the city ${city} by ${price}. If you are sure about it type /plot confirm ${code}",
+                    new Object[][]{
+                            {"plot", plot.getName()},
+                            {"city", plot.getCity().getName()},
+                            {"code", code},
+                            {"price", cmd.mineCity.economy.format(price)}
+                    }
+            ), code);
+        else
+            return new CommandResult<>(new Message("cmd.plot.sell.confirm-price-change",
+                    "You are about to change the price of the plot ${plot} that is inside the city ${city} from ${from} to ${to}. If you are sure about it type /plot confirm ${code}",
+                    new Object[][]{
+                            {"plot", plot.getName()},
+                            {"city", plot.getCity().getName()},
+                            {"code", code},
+                            {"to", cmd.mineCity.economy.format(price)},
+                            {"from", cmd.mineCity.economy.format(plot.getPrice())}
+                    }
+            ), code);
     }
 }

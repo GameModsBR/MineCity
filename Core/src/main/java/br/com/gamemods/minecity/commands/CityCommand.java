@@ -832,6 +832,115 @@ public class CityCommand
         cmd.sender.send(lines);
     }
 
+    @Slow
+    @Async
+    @Command(value = "city.abort.sell", console = false)
+    public static CommandResult<?> abortSell(CommandEvent cmd) throws DataSourceException
+    {
+        City city = cmd.getChunk().getCity().orElse(null);
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.city.abort.sell.not-claimed", "You are not inside a city"));
+
+        PlayerID playerId = cmd.sender.getPlayerId();
+        if(!city.owner().equals(playerId))
+            return new CommandResult<>(new Message("cmd.city.abort.sell.no-permission",
+                    "You don't have permission abort the sale of ${city}, only ${owner} can do that",
+                    new Object[][]{
+                            {"city", city.getName()},
+                            {"owner", city.ownerName()}
+                    }
+            ));
+
+        if(city.getPrice() < 1.0)
+            return new CommandResult<>(new Message("cmd.city.abort.sell.not-selling",
+                    "The city ${city} is not for sale",
+                    new Object[]{"city", city.getName()}
+            ));
+
+        city.setPrice(0);
+        return new CommandResult<>(new Message("cmd.city.abort.sell.success",
+                "The city ${city} is no longer for sale",
+                new Object[]{"city", city.getName()}
+        ));
+    }
+
+    @Command(value = "city.sell", console = false, args = @Arg(name = "price", type = Arg.Type.NUMBER))
+    public static CommandResult<String> sell(CommandEvent cmd)
+    {
+        City city = cmd.getChunk().getCity().orElse(null);
+        if(city == null)
+            return new CommandResult<>(new Message("cmd.city.sell.not-claimed", "You are not inside a city"));
+
+        PlayerID playerId = cmd.sender.getPlayerId();
+        if(!city.owner().equals(playerId))
+            return new CommandResult<>(new Message("cmd.city.sell.no-permission",
+                    "You don't have permission to sell the city ${city}, only ${owner} can do that",
+                    new Object[][]{
+                            {"city", city.getName()},
+                            {"owner", city.ownerName()}
+                    }
+            ));
+
+        if(city.can(PermissionFlag.ENTER).isPresent() || city.can(PermissionFlag.CLICK).isPresent())
+            return new CommandResult<>(new Message("cmd.city.sell.perms",
+                    "You can't sell ${city} because you need to allow players to get inside and click on things.",
+                    new Object[]{"city", city.getName()}
+            ));
+
+        if(cmd.args.size() != 1)
+            return new CommandResult<>(new Message("cmd.city.sell.no-args",
+                    "You need to type the price..."
+            ));
+
+        double price;
+        try
+        {
+            price = Double.parseDouble(cmd.args.get(0).replace(',','.'));
+        }
+        catch(NumberFormatException e)
+        {
+            return new CommandResult<>(new Message("cmd.city.sell.not-number", "The price needs to be a number, it can be fractional but can't have thousands separators."));
+        }
+
+        if(price < 1.0)
+            return new CommandResult<>(new Message("cmd.city.sell.free",
+                    "The price can't be less then ${minimum}",
+                    new Object[]{"minimum", cmd.mineCity.economy.format(1.0)}
+            ));
+
+        String code = cmd.sender.confirm((sender)-> {
+            city.setPrice(price);
+            return new CommandResult<>(new Message("cmd.city.sell.success",
+                    "The city ${city} is now for sale by ${price}. Type /city abort sell if you change your mind.",
+                    new Object[][]{
+                            {"city", city.getName()},
+                            {"price", cmd.mineCity.economy.format(price)}
+                    }
+            ), true);
+        });
+
+        double from = city.getPrice();
+        if(from < 1)
+            return new CommandResult<>(new Message("cmd.city.sell.confirm-new-sell",
+                    "You are about to sell the city ${city} by ${price}. If you are sure about it type /city confirm ${code}",
+                    new Object[][]{
+                            {"city", city.getName()},
+                            {"code", code},
+                            {"price", cmd.mineCity.economy.format(price)}
+                    }
+            ), code);
+        else
+            return new CommandResult<>(new Message("cmd.city.sell.confirm-price-change",
+                    "You are about to change the price of the city ${city} from ${from} to ${to}. If you are sure about it type /city confirm ${code}",
+                    new Object[][]{
+                            {"city", city.getName()},
+                            {"code", code},
+                            {"to", cmd.mineCity.economy.format(price)},
+                            {"from", cmd.mineCity.economy.format(city.getPrice())}
+                    }
+            ), code);
+    }
+
     @Command(value = "city.map", console = false, args = @Arg(name = "big", type = Arg.Type.PREDEFINED, options = "big", optional = true))
     public CommandResult<?> map(CommandEvent cmd)
     {
