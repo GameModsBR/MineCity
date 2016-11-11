@@ -465,6 +465,11 @@
                 <msg id="arg.city">cidade</msg>
                 <msg id="invalid-name">Por favor digite um nome válido</msg>
                 <msg id="not-found">A cidade ${name} não foi encontrada</msg>
+                <economy>
+                    <msg id="insufficient-funds">Fundos insuficientes, você precisa de ${money} para ir para a cidade ${city}</msg>
+                    <msg id="error-unknown">Oopss... Ocorreu um erro desconhecido enquanto a sua transação era processada.</msg>
+                    <msg id="error">A compra falhou: ${error}</msg>
+                </economy>
             </spawn>
             <rename>
                 <msg id="arg.new-name">novo-nome</msg>
@@ -493,6 +498,11 @@
                 <msg id="no-permission">Você não possui permissão para alterar o ponto de entrada de ${name}</msg>
                 <msg id="already">Esta posição já é o ponto de entrada da cidade</msg>
                 <msg id="success">O ponto de entrada de ${name} foi alterado com sucess</msg>
+                <economy>
+                    <msg id="insufficient-funds">Fundos insuficientes, você precisa de ${money} para definir aqui como o ponto de entrada da cidade</msg>
+                    <msg id="error-unknown">Oopss... Ocorreu um erro desconhecido enquanto a sua transação era processada.</msg>
+                    <msg id="error">A compra falhou: ${error}</msg>
+                </economy>
             </setspawn>
             <map>
                 <arg>

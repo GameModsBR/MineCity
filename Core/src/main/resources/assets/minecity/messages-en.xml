@@ -468,6 +468,11 @@
                 <msg id="arg.city">city</msg>
                 <msg id="invalid-name">Please type a valid name</msg>
                 <msg id="not-found">There're no city named ${name}</msg>
+                <economy>
+                    <msg id="insufficient-funds">Insufficient funds, you need ${money} to go to the city ${city}</msg>
+                    <msg id="error-unknown">Oopss... An unknown error has occurred while processing your transaction.</msg>
+                    <msg id="error">The purchase has failed: ${error}</msg>
+                </economy>
             </spawn>
             <rename>
                 <msg id="arg.new-name">new-name</msg>
@@ -500,6 +505,11 @@
                 <msg id="no-permission">You are not allowed to change the ${name}'s spawn</msg>
                 <msg id="already">The spawn is already set to that position</msg>
                 <msg id="success">The ${name}'s spawn was changed successfully</msg>
+                <economy>
+                    <msg id="insufficient-funds">Insufficient funds, you need ${money} to set the city's spawn here</msg>
+                    <msg id="error-unknown">Oopss... An unknown error has occurred while processing your transaction.</msg>
+                    <msg id="error">The purchase has failed: ${error}</msg>
+                </economy>
             </setspawn>
             <map>
                 <arg>
