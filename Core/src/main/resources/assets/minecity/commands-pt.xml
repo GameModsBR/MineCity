@@ -195,6 +195,11 @@
             <desc>Cancela a venda de um lote</desc>
         </command>
 
+        <!-- Nature -->
+        <command id="nature.rename" parent="nature" cmd="renomear">
+            <desc>Muda o nome da natureza</desc>
+        </command>
+
         <!-- ========== Permissões de naturezas ========== -->
         <!-- Listar permissões -->
         <command id="nature.perms.enter" parent="nature.check" cmd="entrar">

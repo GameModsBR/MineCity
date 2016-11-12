@@ -11,6 +11,10 @@
         </result>
         <msg id="exception">Oops.. Ocorreu um erro ao executar este comando: ${error}</msg>
         <nature>
+            <rename>
+                <msg id="empty">Por favor digite um nome</msg>
+                <msg id="success">A natureza DIM:${dim} PASTA:${dir} foi renomeada de "${old}" para "${new}"</msg>
+            </rename>
             <perms>
                 <nobody>
                     <msg id="enter.no-exception"><red><b>Ninguém</b></red> pode entrar em ${name}, isto será mostrado quando alguém tentar:<br/><red>${msg}</red></msg>

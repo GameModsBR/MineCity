@@ -19,6 +19,10 @@
             -->
         </msg>
         <nature>
+            <rename>
+                <msg id="empty">Please type a name</msg>
+                <msg id="success">The nature DIM:${dim} DIR:${dir} was renamed from "${old}" to "${new}"</msg>
+            </rename>
             <perms>
                 <nobody>
                     <msg id="enter.no-exception"><red><b>Nobody</b></red> can enter on ${name}, that will be shown when that happens:<br/><red>${msg}</red></msg>

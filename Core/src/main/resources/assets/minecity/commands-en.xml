@@ -194,6 +194,11 @@
         <command id="plot.cancel.sell" parent="plot.cancel" cmd="sell">
             <desc>Cancels a plot sale</desc>
         </command>
+        
+        <!-- Nature -->
+        <command id="nature.rename" parent="nature" cmd="rename">
+            <desc>Changes the nature's name</desc>
+        </command>
 
         <!-- ========= Nature Permissions ========= -->
         <!-- List permissions -->

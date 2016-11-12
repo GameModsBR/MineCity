@@ -14,7 +14,7 @@
         cmd CDATA #REQUIRED
         parent CDATA #IMPLIED>
 
-<!ENTITY % NatureManageCommands "asd">
+<!ENTITY % NatureManageCommands "nature.rename">
 <!ENTITY % NatureDenyCommands "nature.deny.enter|nature.deny.click|nature.deny.pickup|nature.deny.harvest|nature.deny.open|nature.deny.pvp|nature.deny.pvc|nature.deny.modify|nature.deny.vehicle|nature.deny.ride">
 <!ENTITY % NatureAllowCommands "nature.allow.enter|nature.allow.click|nature.allow.pickup|nature.allow.harvest|nature.allow.open|nature.allow.pvp|nature.allow.pvc|nature.allow.modify|nature.allow.vehicle|nature.allow.ride">
 <!ENTITY % NaturePermListCommands "nature.perms.enter|nature.perms.click|nature.perms.pickup|nature.perms.harvest|nature.perms.open|nature.perms.pvp|nature.perms.pvc|nature.perms.modify|nature.perms.vehicle|nature.perms.ride|nature.perms">

@@ -2,7 +2,10 @@ package br.com.gamemods.minecity.commands;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.Async;
+import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.*;
+import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import br.com.gamemods.minecity.structure.Nature;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -32,5 +35,27 @@ public class GeneralCommands
         String lang = cmd.mineCity.locale.toLanguageTag();
         cmd.mineCity.messageTransformer.parseXML(MineCity.class.getResourceAsStream("/assets/minecity/messages-"+lang+".xml"));
         return CommandResult.success();
+    }
+
+    @Async
+    @Slow
+    @Command(value = "nature.rename", console = false, args = @Arg(name = "new-name", sticky = true))
+    public static CommandResult<?> changeNatureName(CommandEvent cmd) throws DataSourceException
+    {
+        if(cmd.args.isEmpty())
+            return new CommandResult<>(new Message("cmd.nature.rename.empty", "Please type a name"));
+
+        Nature nature = cmd.mineCity.nature(cmd.position.world);
+        Message old = nature.ownerName();
+        nature.setName(String.join(" ", cmd.args));
+        return new CommandResult<>(new Message("cmd.nature.rename.success",
+                "The nature DIM:${dim} DIR:${dir} was renamed from \"${old}\" to \"${new}\"",
+                new Object[][]{
+                        {"dim", nature.world.dim},
+                        {"dir", nature.world.dir},
+                        {"old", old},
+                        {"new", nature.ownerName()}
+                }
+        ));
     }
 }
