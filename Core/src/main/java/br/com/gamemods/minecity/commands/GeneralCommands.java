@@ -56,6 +56,6 @@ public class GeneralCommands
                         {"old", old},
                         {"new", nature.ownerName()}
                 }
-        ));
+        ), true);
     }
 }
