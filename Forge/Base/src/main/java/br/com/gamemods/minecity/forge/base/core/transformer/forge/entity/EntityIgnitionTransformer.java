@@ -70,7 +70,7 @@ public class EntityIgnitionTransformer implements IClassTransformer
     @Override
     public byte[] transform(String s, String srg, byte[] bytes)
     {
-        if(srg.startsWith("br.com.gamemods.minecity"))
+        if(srg.startsWith("br.com.gamemods.minecity") || srg.equals("net.minecraft.entity.player.EntityPlayer"))
             return bytes;
 
         ClassNode node = new ClassNode();
