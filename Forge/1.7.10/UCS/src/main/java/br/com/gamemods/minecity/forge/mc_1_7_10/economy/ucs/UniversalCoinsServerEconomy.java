@@ -32,7 +32,7 @@ import java.util.concurrent.TimeoutException;
 
 public class UniversalCoinsServerEconomy implements EconomyProxy
 {
-    private PlayerOperator fakePlayer = new PlayerOperator(UUID.nameUUIDFromBytes("MineCity:Fake:UCS:PlayerOperator".getBytes()));
+    private PlayerOperator fakePlayer = new PlayerOperator(UUID.nameUUIDFromBytes("Offline:MineCity:Fake:UCS:PlayerOperator".getBytes()));
 
     @NotNull
     private MineCityForge forge;
@@ -42,7 +42,7 @@ public class UniversalCoinsServerEconomy implements EconomyProxy
         this.forge = forge;
         try
         {
-            UniversalCoinsServer.cardDb.updatePlayerName(fakePlayer.getPlayerId(), "§cMineCityUCFakePlayer");
+            UniversalCoinsServer.cardDb.updatePlayerName(fakePlayer.getPlayerId(), "§cMineCityUCFake");
         }
         catch(Exception e)
         {
