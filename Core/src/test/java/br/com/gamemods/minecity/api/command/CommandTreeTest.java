@@ -80,7 +80,7 @@ public class CommandTreeTest
         assertEquals("Spacing City", cityResult.result.getName());
     }
 
-    @Command("city.create")
+    @Command(value = "city.create", console = true)
     public Message testCreateA(CommandEvent cmd)
     {
         return new Message("test", "Path: ${path} Args: ${args}", new Object[][]{

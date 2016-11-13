@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class PlotCommand
 {
-    @Command(value = "plot.info", console = false, args = @Arg(name = "plot name", sticky = true, optional = true, type = Arg.Type.PLOT))
+    @Command(value = "plot.info", args = @Arg(name = "plot name", sticky = true, optional = true, type = Arg.Type.PLOT))
     public static Message info(CommandEvent cmd)
     {
         Plot plot;
@@ -100,7 +100,7 @@ public class PlotCommand
 
     @Slow
     @Async
-    @Command(value = "plot.create", console = false, args = @Arg(name = "plot name", sticky = true))
+    @Command(value = "plot.create", args = @Arg(name = "plot name", sticky = true))
     public static CommandResult<?> create(CommandEvent cmd) throws DataSourceException
     {
         Selection selection = cmd.sender.getSelection(cmd.position.world);
@@ -191,7 +191,7 @@ public class PlotCommand
         ), plot);
     }
 
-    @Command(value = "plot.readjust", console = false, args = @Arg(name = "plot-name", optional = true, sticky = true, type = Arg.Type.PLOT))
+    @Command(value = "plot.readjust", args = @Arg(name = "plot-name", optional = true, sticky = true, type = Arg.Type.PLOT))
     public static CommandResult<?> readjust(CommandEvent cmd)
     {
         Selection selection = cmd.sender.getSelection(cmd.position.world);
@@ -344,7 +344,7 @@ public class PlotCommand
 
     @Slow
     @Async
-    @Command(value = "plot.rename", console = false, args = @Arg(name = "new name", sticky = true))
+    @Command(value = "plot.rename", args = @Arg(name = "new name", sticky = true))
     public static CommandResult<?> rename(CommandEvent cmd) throws DataSourceException
     {
         Plot plot = cmd.mineCity.getPlot(cmd.position.getBlock()).orElse(null);
@@ -387,7 +387,7 @@ public class PlotCommand
         ), true);
     }
 
-    @Command(value = "plot.return", console = false)
+    @Command("plot.return")
     public static CommandResult<?> returnPlot(CommandEvent cmd)
     {
         Plot plot = cmd.mineCity.getPlot(cmd.position.getBlock()).orElse(null);
@@ -431,7 +431,7 @@ public class PlotCommand
 
     @Slow
     @Async
-    @Command(value = "plot.list", console = false, args = {
+    @Command(value = "plot.list", args = {
             @Arg(name = "city", optional = true, sticky = true, type = Arg.Type.CITY),
             @Arg(name = "page", type = Arg.Type.NUMBER, optional = true)
     })
@@ -546,7 +546,7 @@ public class PlotCommand
 
     @Slow
     @Async
-    @Command(value = "plot.transfer", console = false, args = @Arg(name = "player name", type = Arg.Type.PLAYER))
+    @Command(value = "plot.transfer", args = @Arg(name = "player name", type = Arg.Type.PLAYER))
     public static CommandResult<?> transfer(CommandEvent cmd) throws DataSourceException
     {
         Plot plot = cmd.mineCity.getPlot(cmd.position.getBlock()).orElse(null);
@@ -643,7 +643,7 @@ public class PlotCommand
         }
     }
 
-    @Command(value = "plot.delete", console = false)
+    @Command("plot.delete")
     public static CommandResult<?> delete(CommandEvent cmd)
     {
         Plot plot = cmd.mineCity.getPlot(cmd.position.getBlock()).orElse(null);
@@ -687,7 +687,7 @@ public class PlotCommand
 
     @Slow
     @Async
-    @Command(value = "plot.abort.sell", console = false)
+    @Command("plot.abort.sell")
     public static CommandResult<?> abortSell(CommandEvent cmd) throws DataSourceException
     {
         Plot plot = cmd.mineCity.getPlot(cmd.position.getBlock()).orElse(null);
@@ -717,7 +717,7 @@ public class PlotCommand
         ));
     }
 
-    @Command(value = "plot.sell", console = false, args = @Arg(name = "price", type = Arg.Type.NUMBER))
+    @Command(value = "plot.sell", args = @Arg(name = "price", type = Arg.Type.NUMBER))
     public static CommandResult<String> sell(CommandEvent cmd)
     {
         Plot plot = cmd.mineCity.getPlot(cmd.position.getBlock()).orElse(null);
@@ -798,7 +798,7 @@ public class PlotCommand
 
     @Slow
     @Async
-    @Command(value = "plot.buy", console = false)
+    @Command("plot.buy")
     public static CommandResult<?> buy(CommandEvent cmd) throws DataSourceException
     {
         Plot plot = cmd.mineCity.getPlot(cmd.position.getBlock()).orElse(null);

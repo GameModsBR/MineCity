@@ -13,7 +13,7 @@ import java.io.IOException;
 public class GeneralCommands
 {
     @Async
-    @Command(value = "confirm", args = @Arg(name = "confirmation code", type = Arg.Type.PREDEFINED))
+    @Command(value = "confirm", console = true, args = @Arg(name = "confirmation code", type = Arg.Type.PREDEFINED))
     public static CommandResult<?> confirm(CommandEvent cmd) throws Exception
     {
         if(!cmd.sender.isConfirmPending())
@@ -29,7 +29,7 @@ public class GeneralCommands
         return confirm.result;
     }
 
-    @Command(value = "reload", console = false)
+    @Command("reload")
     public static CommandResult<?> reload(CommandEvent cmd) throws IOException, SAXException
     {
         String lang = cmd.mineCity.locale.toLanguageTag();
@@ -39,7 +39,7 @@ public class GeneralCommands
 
     @Async
     @Slow
-    @Command(value = "nature.rename", console = false, args = @Arg(name = "new-name", sticky = true))
+    @Command(value = "nature.rename", args = @Arg(name = "new-name", sticky = true))
     public static CommandResult<?> changeNatureName(CommandEvent cmd) throws DataSourceException
     {
         if(cmd.args.isEmpty())

@@ -42,7 +42,7 @@ public class CityCommand
 
     @Slow
     @Async
-    @Command(value = "city.info", console = false, args = @Arg(name = "name", sticky = true, optional = true, type = Arg.Type.CITY))
+    @Command(value = "city.info", args = @Arg(name = "name", sticky = true, optional = true, type = Arg.Type.CITY))
     public static Message info(CommandEvent cmd) throws DataSourceException
     {
         City city;
@@ -113,7 +113,7 @@ public class CityCommand
 
     @Slow
     @Async
-    @Command(value = "city.create", console = false, args = @Arg(name = "name", sticky = true))
+    @Command(value = "city.create", args = @Arg(name = "name", sticky = true))
     public CommandResult<City> create(CommandEvent cmd) throws DataSourceException
     {
         if(cmd.mineCity.nature(cmd.position.world).isCityCreationDenied() && !cmd.sender.hasPermission("minecity.bypass.nature.city-creation"))
@@ -215,7 +215,7 @@ public class CityCommand
         ), city);
     }
 
-    @Command(value = "city.delete", console = false)
+    @Command("city.delete")
     public CommandResult<?> delete(CommandEvent cmd)
     {
         City city = mineCity.getCity(cmd.position.getChunk()).orElse(null);
@@ -250,7 +250,7 @@ public class CityCommand
                 }), true);
     }
 
-    @Command(value = "city.claim.auto", console = false)
+    @Command("city.claim.auto")
     public CommandResult<Boolean> autoClaim(CommandEvent cmd)
     {
         cmd.sender.toggleAutoClaim();
@@ -262,7 +262,7 @@ public class CityCommand
 
     @Slow
     @Async
-    @Command(value = "city.claim", console = false, args = @Arg(name = "city", type = Arg.Type.CITY, optional = true, sticky = true))
+    @Command(value = "city.claim", args = @Arg(name = "city", type = Arg.Type.CITY, optional = true, sticky = true))
     public CommandResult<Island> claim(CommandEvent cmd) throws DataSourceException
     {
         PlayerID playerId = cmd.sender.getPlayerId();
@@ -413,7 +413,7 @@ public class CityCommand
 
     @Slow
     @Async
-    @Command(value = "city.disclaim", console = false)
+    @Command("city.disclaim")
     public CommandResult<Collection<Island>> disclaim(CommandEvent cmd)
             throws DataSourceException
     {
@@ -557,7 +557,7 @@ public class CityCommand
 
     @Slow
     @Async
-    @Command(value = "city.spawn", console = false, args = @Arg(name = "city", type = Arg.Type.CITY, sticky = true))
+    @Command(value = "city.spawn", args = @Arg(name = "city", type = Arg.Type.CITY, sticky = true))
     public CommandResult<Void> spawn(CommandEvent cmd)
             throws DataSourceException, InterruptedException, ExecutionException, TimeoutException
     {
@@ -624,7 +624,7 @@ public class CityCommand
 
     @Slow
     @Async
-    @Command(value = "city.rename", console = false, args = @Arg(name = "new-name", sticky = true))
+    @Command(value = "city.rename", args = @Arg(name = "new-name", sticky = true))
     public CommandResult<City> rename(CommandEvent cmd) throws DataSourceException
     {
         String cityName = String.join(" ", cmd.args).trim();
@@ -664,7 +664,7 @@ public class CityCommand
 
     @Slow
     @Async
-    @Command(value = "city.transfer", console = false, args = @Arg(name = "player", type = Arg.Type.PLAYER))
+    @Command(value = "city.transfer", args = @Arg(name = "player", type = Arg.Type.PLAYER))
     public CommandResult<City> transfer(CommandEvent cmd)
             throws DataSourceException
     {
@@ -717,7 +717,7 @@ public class CityCommand
 
     @Slow
     @Async
-    @Command(value = "city.setspawn", console = false)
+    @Command("city.setspawn")
     public CommandResult<City> setSpawn(CommandEvent cmd)
             throws DataSourceException
     {
@@ -774,7 +774,7 @@ public class CityCommand
         ), city);
     }
 
-    @Command(value = "city.list", args = @Arg(name = "page", type = Arg.Type.NUMBER, optional = true))
+    @Command(value = "city.list", console = true, args = @Arg(name = "page", type = Arg.Type.NUMBER, optional = true))
     public void list(CommandEvent cmd)
     {
         int page = 1;
@@ -846,7 +846,7 @@ public class CityCommand
 
     @Slow
     @Async
-    @Command(value = "city.abort.sell", console = false)
+    @Command("city.abort.sell")
     public static CommandResult<?> abortSell(CommandEvent cmd) throws DataSourceException
     {
         City city = cmd.getChunk().getCity().orElse(null);
@@ -876,7 +876,7 @@ public class CityCommand
         ));
     }
 
-    @Command(value = "city.sell", console = false, args = @Arg(name = "price", type = Arg.Type.NUMBER))
+    @Command(value = "city.sell", args = @Arg(name = "price", type = Arg.Type.NUMBER))
     public static CommandResult<String> sell(CommandEvent cmd)
     {
         City city = cmd.getChunk().getCity().orElse(null);
@@ -955,7 +955,7 @@ public class CityCommand
 
     @Slow
     @Async
-    @Command(value = "city.buy", console = false)
+    @Command("city.buy")
     public static CommandResult<?> buy(CommandEvent cmd) throws DataSourceException
     {
         City city = cmd.getChunk().getCity().orElse(null);
@@ -1131,7 +1131,7 @@ public class CityCommand
         ));
     }
 
-    @Command(value = "city.map", console = false, args = @Arg(name = "big", type = Arg.Type.PREDEFINED, options = "big", optional = true))
+    @Command(value = "city.map", args = @Arg(name = "big", type = Arg.Type.PREDEFINED, options = "big", optional = true))
     public CommandResult<?> map(CommandEvent cmd)
     {
         boolean big = !cmd.args.isEmpty();

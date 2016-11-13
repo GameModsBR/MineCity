@@ -339,7 +339,7 @@ public final class CommandTree
                 });
     }
 
-    @Command(value = "help", args = {@Arg(name = "command", sticky = true, optional = true, type = Arg.Type.HELP), @Arg(name = "page", optional = true, type = Arg.Type.HELP)})
+    @Command(value = "help", console = true, args = {@Arg(name = "command", sticky = true, optional = true, type = Arg.Type.HELP), @Arg(name = "page", optional = true, type = Arg.Type.HELP)})
     public CommandResult<?> help(CommandEvent cmd)
     {
         int page = 1;

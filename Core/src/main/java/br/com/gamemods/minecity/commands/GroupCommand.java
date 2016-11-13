@@ -29,7 +29,7 @@ public class GroupCommand
 
     @Slow
     @Async
-    @Command(value = "group.delete", console = false, args = {
+    @Command(value = "group.delete", args = {
             @Arg(name = "city", optional = true, type = Arg.Type.GROUP_OR_CITY),
             @Arg(name = "group name", type = Arg.Type.GROUP, sticky = true, relative = "city")
     })
@@ -97,7 +97,7 @@ public class GroupCommand
 
     @Slow
     @Async
-    @Command(value = "group.info", args = {
+    @Command(value = "group.info", console = true, args = {
             @Arg(name = "city", optional = true, type = Arg.Type.GROUP_OR_CITY),
             @Arg(name = "group name", type = Arg.Type.GROUP, sticky = true, relative = "city")
     })
@@ -194,7 +194,7 @@ public class GroupCommand
 
     @Slow
     @Async
-    @Command(value = "group.list", args = @Arg(name = "city name", type = Arg.Type.CITY, optional = true, sticky = true))
+    @Command(value = "group.list", console = true, args = @Arg(name = "city name", type = Arg.Type.CITY, optional = true, sticky = true))
     public CommandResult<Void> list(CommandEvent cmd) throws DataSourceException
     {
         City city;
@@ -240,7 +240,7 @@ public class GroupCommand
 
     @Slow
     @Async
-    @Command(value = "group.create", console = false, args = @Arg(name = "group name", sticky = true))
+    @Command(value = "group.create", args = @Arg(name = "group name", sticky = true))
     public CommandResult<Group> create(CommandEvent cmd) throws DataSourceException
     {
         String groupName = String.join(" ", cmd.args).trim();
@@ -280,7 +280,7 @@ public class GroupCommand
 
     @Slow
     @Async
-    @Command(value = "group.add.manager", console = false,
+    @Command(value = "group.add.manager",
             args = {@Arg(name = "player", type = Arg.Type.PLAYER), @Arg(name = "group", type = Arg.Type.GROUP, sticky = true)})
     public CommandResult<?> addManager(CommandEvent cmd) throws DataSourceException
     {
@@ -333,7 +333,7 @@ public class GroupCommand
 
     @Slow
     @Async
-    @Command(value = "group.remove.manager", console = false,
+    @Command(value = "group.remove.manager",
             args = {@Arg(name = "player", type = Arg.Type.PLAYER), @Arg(name = "group", type = Arg.Type.GROUP, sticky = true)})
     public CommandResult<?> removeManager(CommandEvent cmd) throws DataSourceException
     {
@@ -386,7 +386,7 @@ public class GroupCommand
 
     @Slow
     @Async
-    @Command(value = "group.add", console = false,
+    @Command(value = "group.add",
             args = {@Arg(name = "player", type = Arg.Type.PLAYER), @Arg(name = "group", type = Arg.Type.GROUP, sticky = true)})
     public CommandResult<?> add(CommandEvent cmd) throws DataSourceException
     {
@@ -439,7 +439,7 @@ public class GroupCommand
 
     @Slow
     @Async
-    @Command(value = "group.remove", console = false,
+    @Command(value = "group.remove",
             args = {@Arg(name = "player", type = Arg.Type.PLAYER), @Arg(name = "group", type = Arg.Type.GROUP, sticky = true)})
     public CommandResult<?> remove(CommandEvent cmd) throws DataSourceException
     {

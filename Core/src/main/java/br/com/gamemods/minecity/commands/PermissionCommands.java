@@ -272,7 +272,7 @@ public class PermissionCommands
         return lines;
     }
 
-    @Command(value = "#model:nature.perms", console = false)
+    @Command(value = "#model:nature.perms")
     private CommandResult<?> listNature(CommandEvent cmd, PermissionFlag flag)
     {
         Nature nature = cmd.mineCity.nature(cmd.position.world);
@@ -281,7 +281,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:city.perms", args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
+    @Command(value = "#model:city.perms", console = true, args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
     private CommandResult<?> list(CommandEvent cmd, PermissionFlag flag) throws DataSourceException
     {
         City city;
@@ -308,7 +308,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:plot.perms", args = {
+    @Command(value = "#model:plot.perms", console = true, args = {
             @Arg(name = "city-or-plot", optional = true, type = Arg.Type.PLOT_OR_CITY),
             @Arg(name = "plot", sticky = true, optional = true, type = Arg.Type.PLOT)
     })
@@ -352,7 +352,7 @@ public class PermissionCommands
         return new CommandResult<>(list(plot, flag, "cmd.plot.perms", plot.getName()), true);
     }
 
-    @Command(value = "nature.perms", console = false)
+    @Command(value = "nature.perms")
     public CommandResult<?> listNature(CommandEvent cmd)
     {
         Nature nature = cmd.mineCity.nature(cmd.position.world);
@@ -362,7 +362,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "city.perms", args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
+    @Command(value = "city.perms", console = true, args = @Arg(name = "city", sticky = true, optional = true, type = Arg.Type.CITY))
     public CommandResult<?> list(CommandEvent cmd) throws DataSourceException
     {
         City city;
@@ -390,7 +390,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "plot.perms", args = {
+    @Command(value = "plot.perms", console = true, args = {
         @Arg(name = "city-or-plot", optional = true, type = Arg.Type.PLOT_OR_CITY),
         @Arg(name = "plot", sticky = true, optional = true, type = Arg.Type.PLOT)
     })
@@ -437,7 +437,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:nature.deny", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
+    @Command(value = "#model:nature.deny", args = @Arg(name = "reason", sticky = true, optional = true))
     private CommandResult<Boolean> denyNature(CommandEvent cmd, PermissionFlag flag)
     {
         Nature nature = cmd.mineCity.nature(cmd.position.world);
@@ -463,7 +463,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:city.deny", console = false,
+    @Command(value = "#model:city.deny",
             args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
                     @Arg(name = "reason", sticky = true, optional = true)
@@ -569,7 +569,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:nature.allow", console = false)
+    @Command(value = "#model:nature.allow")
     private CommandResult<?> allowNature(CommandEvent cmd, PermissionFlag flag)
     {
         Nature nature = cmd.mineCity.nature(cmd.position.world);
@@ -583,7 +583,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:city.allow", console = false,
+    @Command(value = "#model:city.allow",
             args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
@@ -670,7 +670,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:city.clear", console = false,
+    @Command(value = "#model:city.clear",
             args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
@@ -753,7 +753,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:city.deny.all", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
+    @Command(value = "#model:city.deny.all", args = @Arg(name = "reason", sticky = true, optional = true))
     private CommandResult<?> denyAll(CommandEvent cmd, PermissionFlag flag)
     {
         assert cmd.position != null && cmd.sender.getPlayerId() != null;
@@ -781,7 +781,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:city.allow.all", console = false)
+    @Command(value = "#model:city.allow.all")
     private CommandResult<?> allowAll(CommandEvent cmd, PermissionFlag flag)
     {
         assert cmd.position != null && cmd.sender.getPlayerId() != null;
@@ -808,7 +808,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:city.reset.all", console = false)
+    @Command(value = "#model:city.reset.all")
     private CommandResult<?> resetAll(CommandEvent cmd, PermissionFlag flag)
     {
         City city = cmd.getChunk().getCity().orElse(null);
@@ -834,7 +834,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:plot.deny", console = false,
+    @Command(value = "#model:plot.deny",
             args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true),
                     @Arg(name = "reason", sticky = true, optional = true)
@@ -940,7 +940,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:plot.allow", console = false,
+    @Command(value = "#model:plot.allow",
             args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
@@ -1027,7 +1027,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:plot.reset", console = false,
+    @Command(value = "#model:plot.reset",
             args = {@Arg(name = "player or city", type = Arg.Type.PLAYER_OR_CITY, optional = true),
                     @Arg(name = "group name", type = Arg.Type.GROUP, relative = "player or city", optional = true)
             })
@@ -1109,7 +1109,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:plot.deny.all", console = false, args = @Arg(name = "reason", sticky = true, optional = true))
+    @Command(value = "#model:plot.deny.all", args = @Arg(name = "reason", sticky = true, optional = true))
     private CommandResult<?> denyAllPlot(CommandEvent cmd, PermissionFlag flag)
     {
         assert cmd.position != null && cmd.sender.getPlayerId() != null;
@@ -1137,7 +1137,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:plot.allow.all", console = false)
+    @Command(value = "#model:plot.allow.all")
     private CommandResult<?> allowAllPlot(CommandEvent cmd, PermissionFlag flag)
     {
         assert cmd.position != null && cmd.sender.getPlayerId() != null;
@@ -1164,7 +1164,7 @@ public class PermissionCommands
 
     @Slow
     @Async
-    @Command(value = "#model:plot.reset.all", console = false)
+    @Command(value = "#model:plot.reset.all")
     private CommandResult<?> resetAllPlot(CommandEvent cmd, PermissionFlag flag)
     {
         Plot plot = mineCity.getPlot(cmd.position.getBlock()).orElse(null);

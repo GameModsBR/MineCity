@@ -8,6 +8,6 @@ import java.lang.annotation.*;
 public @interface Command
 {
     String value();
-    boolean console() default true;
+    boolean console() default false;
     Arg[] args() default {};
 }
