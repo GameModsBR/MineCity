@@ -48,9 +48,11 @@ permissions:
     children:
       minecity.user: true
       minecity.bypass.*: true
+      minecity.cmd.admin: true
       minecity.cmd.reload: true
       minecity.cmd.nature.deny.*: true
       minecity.cmd.nature.allow.*: true
+      minecity.cmd.city.claim.auto: true
 
   minecity.user:
     description: Grants basic permissions for normal players
@@ -81,6 +83,8 @@ permissions:
   minecity.cmd.city.*:
     description: Grants all permissions necessary to completely use the /city command as a normal player
     children:
+      minecity:cmd.city.buy: true
+      minecity:cmd.city.sell: true
       minecity.cmd.city.create: true
       minecity.cmd.city.claim: true
       minecity.cmd.city.disclaim: true
@@ -101,6 +105,8 @@ permissions:
   minecity.cmd.plot.*:
     description: Grants all permissions necessary to completely use the /plot command as a normal player
     children:
+      minecity:cmd.plot.buy: true
+      minecity:cmd.plot.sell: true
       minecity.cmd.plot.create: true
       minecity.cmd.plot.rename: true
       minecity.cmd.plot.return: true
@@ -356,6 +362,8 @@ permissions:
       minecity.cmd.nature.perms.ride: true
 
   # Command Functions
+  minecity.cmd.admin:
+    default: op
   minecity.cmd.nature.deny.enter:
     default: op
   minecity.cmd.nature.deny.click:
@@ -722,6 +730,12 @@ permissions:
     default: op
   minecity.cmd.city.perms:
     default: op
+  minecity.cmd.city.sell:
+    default: op
+  minecity.cmd.city.buy:
+    default: op
+  minecity.cmd.city.claim.auto:
+    default: op
   minecity.cmd.group.create:
     default: op
   minecity.cmd.group.add:
@@ -762,3 +776,7 @@ permissions:
     default: op
   minecity.cmd.plot.list:
     default: op
+  minecity.cmd.plot.sell:
+    default: op
+  minecity.cmd.plot.buy:
+      default: op
