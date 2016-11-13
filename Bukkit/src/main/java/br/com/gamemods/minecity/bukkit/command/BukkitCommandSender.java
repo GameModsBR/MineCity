@@ -21,9 +21,15 @@ public class BukkitCommandSender<S extends CommandSender> implements br.com.game
     }
 
     @Override
-    public boolean hasPermission(String perm)
+    public S getHandler()
     {
-        return sender.hasPermission(perm);
+        return sender;
+    }
+
+    @Override
+    public boolean isOp()
+    {
+        return sender.isOp();
     }
 
     @Override

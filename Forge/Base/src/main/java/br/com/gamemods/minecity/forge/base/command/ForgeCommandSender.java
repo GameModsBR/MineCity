@@ -21,6 +21,18 @@ public class ForgeCommandSender<S extends ICommander, F extends MineCityForge> i
         this.sender = sender;
     }
 
+    @Override
+    public S getHandler()
+    {
+        return sender;
+    }
+
+    @Override
+    public boolean isOp()
+    {
+        return sender.getMinecraftServer() == sender;
+    }
+
     @NotNull
     @Override
     public Server getServer()
@@ -44,12 +56,6 @@ public class ForgeCommandSender<S extends ICommander, F extends MineCityForge> i
     public PlayerID getPlayerId()
     {
         return null;
-    }
-
-    @Override
-    public boolean hasPermission(String perm)
-    {
-        return true;
     }
 
     @Override

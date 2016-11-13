@@ -13,6 +13,7 @@ import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
+import br.com.gamemods.minecity.economy.EconomyLayer;
 import br.com.gamemods.minecity.forge.base.accessors.ICommander;
 import br.com.gamemods.minecity.forge.base.accessors.IMinecraftServer;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
@@ -23,13 +24,12 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IChunk;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
-import br.com.gamemods.minecity.forge.base.command.ForgeCommandSender;
-import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
-import br.com.gamemods.minecity.forge.base.command.ForgePlayerSender;
-import br.com.gamemods.minecity.forge.base.command.ForgeTransformer;
+import br.com.gamemods.minecity.forge.base.command.*;
 import br.com.gamemods.minecity.forge.base.protection.SnapshotHandler;
+import br.com.gamemods.minecity.permission.PermissionLayer;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Inconsistency;
+import br.com.gamemods.minecity.vault.VaultDelayedProviders;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
@@ -225,7 +225,10 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
                 .filter(p->!p.isEmpty()).map(String::getBytes).orElse(null);
 
         this.config.economy = config.getString("general", "economy", "none",
-                "Supported values values are: none (No economy), vault (Bukkit plugin on Cauldron servers), ucs (Universal Coins Server mod)");
+                "Supported values: none (No economy), vault (Bukkit plugin on Cauldron servers), ucs (Universal Coins Server mod)");
+
+        this.config.permission = config.getString("general", "permissions", "none",
+                "Supported values: none (Simple OP based system), bukkit (When Bukkit API is available), vault (a Bukkit plugin)");
 
         String defaultMsg = config.getString("default-message", "permissions.default.nature", "",
                 "The default message to be displayed when a permission is denied, leave blank for a translatable default message.");
@@ -312,6 +315,19 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
         MineCityConfig config = this.config;
         if(client)
             config = config.clone();
+
+        try
+        {
+            Class.forName("org.bukkit.Bukkit");
+            logger.info("Bukkit API found, enabling Vault and Bukkit support");
+            EconomyLayer.register("vault", VaultDelayedProviders.ECONOMY);
+            PermissionLayer.register("vault", VaultDelayedProviders.PERMISSION);
+            PermissionLayer.register("bukkit", CauldronPermission.PROVIDER);
+        }
+        catch(ClassNotFoundException ignored)
+        {
+            logger.info("Bukkit API not found, disabling Vault and Bukkit support");
+        }
 
         mineCity = new MineCity(this, config, transformer);
         Inconsistency.getInconsistentCity(mineCity);

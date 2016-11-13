@@ -18,6 +18,7 @@ public final class MineCityConfig implements Cloneable
     public boolean defaultNatureDisableCities;
     public boolean useTitle = true;
     public String economy = "none";
+    public String permission = "none";
     public Costs costs = new Costs();
     public Limits limits = new Limits();
 

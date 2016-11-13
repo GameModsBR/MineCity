@@ -51,7 +51,12 @@ public interface CommandSender extends Permissible
     @NotNull
     Server getServer();
 
-    boolean hasPermission(String perm);
+    Object getHandler();
+
+    default boolean hasPermission(String perm)
+    {
+        return getServer().getMineCity().permission.hasPermission(this, perm);
+    }
 
     /**
      * Checks if this sender has any confirmation pending
@@ -134,6 +139,8 @@ public interface CommandSender extends Permissible
     {
         return null;
     }
+
+    boolean isOp();
 
     /**
      * If this is a player, returns the player id, if this is an entity, returns the entity id otherwise returns the server admins id

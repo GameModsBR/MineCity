@@ -105,17 +105,10 @@ public class ForgePlayerSender<P extends IEntityPlayerMP, F extends MineCityForg
         return id;
     }
 
+    @Override
     public boolean isOp()
     {
         return mod.server.getIPlayerList().isOp(sender.getGameProfile());
-    }
-
-    @Override
-    public boolean hasPermission(String perm)
-    {
-        //TODO Mini permission system for forge and attempt to integrate to Cauldron or ForgeEssentials
-        return isOp() || !perm.contains("reload") && !perm.contains("nature.deny") && !perm.contains("nature.allow") && !perm.contains("bypass") &&
-                !perm.contains("nature.rename");
     }
 
     @Override

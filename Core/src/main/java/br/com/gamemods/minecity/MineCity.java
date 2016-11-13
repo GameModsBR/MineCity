@@ -17,6 +17,8 @@ import br.com.gamemods.minecity.datasource.api.unchecked.UncheckedDataSourceExce
 import br.com.gamemods.minecity.datasource.sql.SQLSource;
 import br.com.gamemods.minecity.economy.EconomyLayer;
 import br.com.gamemods.minecity.economy.EconomyProxy;
+import br.com.gamemods.minecity.permission.PermissionLayer;
+import br.com.gamemods.minecity.permission.PermissionProxy;
 import br.com.gamemods.minecity.structure.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,6 +58,8 @@ public class MineCity
     public boolean useTitles;
     @NotNull
     public EconomyProxy economy;
+    @NotNull
+    public PermissionProxy permission;
 
     @SuppressWarnings("LanguageMismatch")
     public MineCity(@NotNull Server server, @NotNull MineCityConfig config, @Nullable IDataSource dataSource,
@@ -109,6 +113,7 @@ public class MineCity
         Inconsistency.setMineCity(this);
 
         economy = EconomyLayer.load(this, config.economy);
+        permission = PermissionLayer.load(this, config.permission);
     }
 
     public MineCity(Server server, MineCityConfig config)

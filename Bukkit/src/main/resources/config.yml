@@ -4,8 +4,11 @@ database:
   user: minecity
   pass: password
 
-# Only Vault or None are availabe on Bukkit
+# Possible values: Vault, None
 economy: vault
+
+# Possible values: Bukkit, Vault, None
+permissions: vault
 
 costs:
   city:

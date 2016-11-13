@@ -29,11 +29,23 @@ public class TestPlayer implements CommandSender
         return true;
     }
 
+    @Override
+    public Object getHandler()
+    {
+        return playerId;
+    }
+
     @NotNull
     @Override
     public Server getServer()
     {
         return server;
+    }
+
+    @Override
+    public boolean isOp()
+    {
+        return true;
     }
 
     @Override

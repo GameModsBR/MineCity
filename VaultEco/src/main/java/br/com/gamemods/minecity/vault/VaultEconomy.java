@@ -3,42 +3,17 @@ package br.com.gamemods.minecity.vault;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.economy.BalanceResult;
-import br.com.gamemods.minecity.economy.EconomyProvider;
 import br.com.gamemods.minecity.economy.EconomyProxy;
 import br.com.gamemods.minecity.economy.OperationResult;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class VaultEconomy implements EconomyProxy
 {
-    public static final EconomyProvider PROVIDER = mineCity->
-    {
-        try
-        {
-            if(Bukkit.getPluginManager().isPluginEnabled("Vault"))
-            {
-                RegisteredServiceProvider<Economy> registration = Bukkit.getServicesManager().getRegistration(Economy.class);
-                if(registration != null)
-                {
-                    Economy economy = registration.getProvider();
-                    if(economy != null)
-                        return new VaultEconomy(economy);
-                }
-            }
-        }
-        catch(Exception e)
-        {
-            throw new UnsupportedOperationException("An error has occurred while enabling Vault economy integration", e);
-        }
-
-        throw new UnsupportedOperationException("Vault is not installed or is unable to provide economy support in this server");
-    };
-
     @NotNull
     private Economy eco;
 

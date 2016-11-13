@@ -11,11 +11,13 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.bukkit.command.BukkitPermission;
 import br.com.gamemods.minecity.bukkit.command.BukkitPlayer;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
 import br.com.gamemods.minecity.economy.EconomyLayer;
-import br.com.gamemods.minecity.vault.VaultEconomy;
+import br.com.gamemods.minecity.permission.PermissionLayer;
+import br.com.gamemods.minecity.vault.VaultProviders;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -69,8 +71,13 @@ public class MineCityPlugin extends JavaPlugin
             getLogger().log(Level.WARNING, "MCStats metrics failed to start", e);
         }
 
+        PermissionLayer.register("bukkit", BukkitPermission.PROVIDER);
+
         if(getServer().getPluginManager().isPluginEnabled("Vault"))
-            EconomyLayer.register("vault", VaultEconomy.PROVIDER);
+        {
+            EconomyLayer.register("vault", VaultProviders.ECONOMY);
+            PermissionLayer.register("vault", VaultProviders.PERMISSION);
+        }
 
         BukkitTransformer transformer;
         try
@@ -119,6 +126,8 @@ public class MineCityPlugin extends JavaPlugin
             config.locale = Locale.forLanguageTag(Optional.ofNullable(yaml.getString("language")).filter(l->!l.isEmpty()).orElse("en"));
             config.useTitle = yaml.getBoolean("use-titles", true);
             config.defaultNatureDisableCities = !yaml.getBoolean("permissions.default.nature.enable-city-creation", true);
+            config.economy = yaml.getString("economy", "none");
+            config.permission = yaml.getString("permissions", "bukkit");
 
             for(PermissionFlag flag: PermissionFlag.values())
             {

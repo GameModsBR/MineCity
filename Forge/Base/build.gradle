@@ -42,4 +42,7 @@ minecraft {
 
 dependencies {
     compile project(':Core')
+    compile(project(':VaultEco')) {
+        transitive = false
+    }
 }
