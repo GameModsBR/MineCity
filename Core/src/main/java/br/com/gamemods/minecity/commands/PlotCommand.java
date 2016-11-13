@@ -124,7 +124,7 @@ public class PlotCommand
         if(island == null)
             return new CommandResult<>(new Message("cmd.plot.create.not-claimed", "You are not inside a city"));
 
-        if(!cmd.sender.getPlayerId().equals(island.getCity().owner()))
+        if(!cmd.sender.isAdminMode() && !cmd.sender.getPlayerId().equals(island.getCity().owner()))
             return new CommandResult<>(new Message("cmd.plot.create.no-permission",
                     "You don't have permission to create plots inside ${city}",
                     new Object[]{"city", island.getCity().getName()}
@@ -234,13 +234,13 @@ public class PlotCommand
         }
 
         Shape shape = selection.toShape();
-        if(!cmd.sender.getPlayerId().equals(city.owner()))
+        if(!cmd.sender.isAdminMode() && !cmd.sender.getPlayerId().equals(city.owner()))
             return new CommandResult<>(new Message("cmd.plot.readjust.no-city-permission",
                     "You don't have permission to readjust plots in ${city}",
                     new Object[]{"city", city.getName()}
             ));
 
-        if(!cmd.sender.getPlayerId().equals(plot.owner()))
+        if(!cmd.sender.isAdminMode() && !cmd.sender.getPlayerId().equals(plot.owner()))
             return new CommandResult<>(new Message("cmd.plot.readjust.no-plot-permission",
                     "Plots can only be readjusted when they are owned by the city's mayor, ${plot} is owned by ${owner}",
                     new Object[][]{
@@ -351,7 +351,7 @@ public class PlotCommand
         if(plot == null)
             return new CommandResult<>(new Message("cmd.plot.rename.not-claimed", "You are not inside a plot"));
 
-        if(!cmd.sender.getPlayerId().equals(plot.owner()))
+        if(!cmd.sender.isAdminMode() && !cmd.sender.getPlayerId().equals(plot.owner()))
             return new CommandResult<>(new Message("cmd.plot.rename.no-permission",
                     "You don't have permission to rename the plot ${plot}",
                     new Object[]{"plot", plot.getName()}
@@ -400,7 +400,7 @@ public class PlotCommand
                             {"plot", plot.getName()}, {"city", plot.getCity().getName()}
                     }));
 
-        if(!cmd.sender.getPlayerId().equals(plot.owner()))
+        if(!cmd.sender.isAdminMode() && !cmd.sender.getPlayerId().equals(plot.owner()))
             return new CommandResult<>(new Message("cmd.plot.return.no-permission",
                     "You don't have permission to return the ownership of ${plot} to the city ${city}",
                     new Object[][]{
@@ -554,7 +554,7 @@ public class PlotCommand
             return new CommandResult<>(new Message("cmd.plot.transfer.not-claimed", "You are not inside a plot"));
 
         PlayerID senderId = cmd.sender.getPlayerId();
-        if(!senderId.equals(plot.owner()))
+        if(!cmd.sender.isAdminMode() && !senderId.equals(plot.owner()))
             return new CommandResult<>(new Message("cmd.plot.transfer.no-permission",
                     "You don't have permission to transfer the plot ${plot}",
                     new Object[]{"plot", plot.getName()}
@@ -658,7 +658,7 @@ public class PlotCommand
             ));
 
         Optional<PlayerID> plotOwner = plot.getOwner();
-        if(plotOwner.isPresent() && !plotOwner.get().equals(senderId))
+        if(!cmd.sender.isAdminMode() && plotOwner.isPresent() && !plotOwner.get().equals(senderId))
             return new CommandResult<>(new Message("cmd.plot.delete.no-permission",
                     "You don't have permission to delete the plot ${plot} because it's owned by ${owner}",
                     new Object[][]{
@@ -695,7 +695,7 @@ public class PlotCommand
             return new CommandResult<>(new Message("cmd.plot.abort.sell.not-claimed", "You are not inside a plot"));
 
         PlayerID playerId = cmd.sender.getPlayerId();
-        if(!plot.owner().equals(playerId))
+        if(!cmd.sender.isAdminMode() && !plot.owner().equals(playerId))
             return new CommandResult<>(new Message("cmd.plot.abort.sell.no-permission",
                     "You don't have permission abort the sale of ${plot}, only ${owner} can do that",
                     new Object[][]{
@@ -725,7 +725,7 @@ public class PlotCommand
             return new CommandResult<>(new Message("cmd.plot.sell.not-claimed", "You are not inside a plot"));
 
         PlayerID playerId = cmd.sender.getPlayerId();
-        if(!plot.owner().equals(playerId))
+        if(!cmd.sender.isAdminMode() && !plot.owner().equals(playerId))
             return new CommandResult<>(new Message("cmd.plot.sell.no-permission",
                     "You don't have permission to sell the plot ${plot}, only ${owner} can do that",
                     new Object[][]{
@@ -815,7 +815,7 @@ public class PlotCommand
             ));
 
         PlayerID playerId = cmd.sender.getPlayerId();
-        if(!cmd.mineCity.economy.has(playerId, price, cmd.position.world).result)
+        if(!cmd.sender.isAdminMode() && !cmd.mineCity.economy.has(playerId, price, cmd.position.world).result)
             return new CommandResult<>(new Message("cmd.plot.buy.economy.insufficient-funds",
                     "Insufficient funds, you need ${money} to purchase ${plot}",
                     new Object[][]{
@@ -826,28 +826,38 @@ public class PlotCommand
 
         String code = cmd.sender.confirm(sender->
         {
-            BalanceResult balance = cmd.mineCity.economy.has(playerId, price, cmd.position.world);
-            if(!balance.result)
-                return new CommandResult<>(new Message("cmd.plot.buy.economy.insufficient-funds",
-                        "Insufficient funds, you need ${money} to purchase ${plot}",
-                        new Object[][]{
-                                {"money", cmd.mineCity.economy.format(price)},
-                                {"plot", plot.getName()}
-                        }
-                ));
-
-            OperationResult charge = cmd.mineCity.economy.charge(cmd.sender, price, balance, cmd.position.world);
-            if(!charge.success)
+            OperationResult charge;
+            BalanceResult balance;
+            if(cmd.sender.isAdminMode())
             {
-                if(charge.error == null)
-                    return new CommandResult<>(new Message("cmd.plot.buy.economy.charge.error-unknown",
-                            "Oopss... An unknown error has occurred while processing your transaction."
+                balance = null;
+                charge = new OperationResult(true, 0);
+            }
+            else
+            {
+                balance = cmd.mineCity.economy.has(playerId, price, cmd.position.world);
+                if(!balance.result)
+                    return new CommandResult<>(new Message("cmd.plot.buy.economy.insufficient-funds",
+                            "Insufficient funds, you need ${money} to purchase ${plot}",
+                            new Object[][]{
+                                    {"money", cmd.mineCity.economy.format(price)},
+                                    {"plot", plot.getName()}
+                            }
                     ));
-                else
-                    return new CommandResult<>(new Message("cmd.plot.buy.economy.charge.error",
-                            "The purchase has failed: ${error}",
-                            new Object[]{"error", charge.error}
-                    ));
+
+                charge = cmd.mineCity.economy.charge(cmd.sender, price, balance, cmd.position.world);
+                if(!charge.success)
+                {
+                    if(charge.error == null)
+                        return new CommandResult<>(new Message("cmd.plot.buy.economy.charge.error-unknown",
+                                "Oopss... An unknown error has occurred while processing your transaction."
+                        ));
+                    else
+                        return new CommandResult<>(new Message("cmd.plot.buy.economy.charge.error",
+                                "The purchase has failed: ${error}",
+                                new Object[]{"error", charge.error}
+                        ));
+                }
             }
 
             double investment = price - charge.amount;
@@ -859,7 +869,8 @@ public class PlotCommand
             }
             catch(Throwable e)
             {
-                cmd.mineCity.economy.refund(playerId, investment, balance, cmd.position.world, e);
+                if(!cmd.sender.isAdminMode())
+                    cmd.mineCity.economy.refund(playerId, investment, balance, cmd.position.world, e);
                 throw e;
             }
 
@@ -901,16 +912,19 @@ public class PlotCommand
 
             if(revert != null)
             {
-                try
+                if(!cmd.sender.isAdminMode())
                 {
-                    if(ex != null)
-                        cmd.mineCity.economy.refund(playerId, investment, null, cmd.position.world, ex);
-                    else
-                        cmd.mineCity.economy.refund(playerId, investment, null, cmd.position.world, true);
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
+                    try
+                    {
+                        if(ex != null)
+                            cmd.mineCity.economy.refund(playerId, investment, null, cmd.position.world, ex);
+                        else
+                            cmd.mineCity.economy.refund(playerId, investment, null, cmd.position.world, true);
+                    }
+                    catch(Exception e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
 
                 return new CommandResult<>(revert);

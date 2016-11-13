@@ -52,6 +52,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     public byte skipTick;
     public Set<LivingEntity> leashedEntities = new HashSet<>(1);
     private boolean autoClaim;
+    private boolean adminMode;
 
     public BukkitPlayer(MineCityBukkit plugin, Player player)
     {
@@ -657,5 +658,23 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     public boolean getAutoClaim()
     {
         return autoClaim;
+    }
+
+    @Override
+    public void toggleAdminMode()
+    {
+        adminMode = !adminMode;
+    }
+
+    @Override
+    public boolean isAdminMode()
+    {
+        if(adminMode)
+        {
+            send(new Message("mode.adm.notification", "The Admin Mode is enabled and has affected a check result"));
+            return true;
+        }
+
+        return false;
     }
 }

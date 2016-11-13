@@ -89,6 +89,9 @@
         <command id="reload" parent="root" cmd="recarregar,reload">
             <desc>Recarrega as mensagens do disco</desc>
         </command>
+        <command id="admin" parent="root" cmd="admin,adm">
+            <desc>Alterna o seu modo de administrador</desc>
+        </command>
 
         <!-- Gerência -->
         <command id="city.info" parent="city" cmd="info">

@@ -75,16 +75,4 @@ public class ForgeCommandSender<S extends ICommander, F extends MineCityForge> i
     {
         mod.transformer.send(messages, sender);
     }
-
-    @Override
-    public void toggleAutoClaim()
-    {
-
-    }
-
-    @Override
-    public boolean getAutoClaim()
-    {
-        return false;
-    }
 }

@@ -55,7 +55,7 @@ public interface CommandSender extends Permissible
 
     default boolean hasPermission(String perm)
     {
-        return getServer().getMineCity().permission.hasPermission(this, perm);
+        return isAdminMode() || getServer().getMineCity().permission.hasPermission(this, perm);
     }
 
     /**
@@ -160,7 +160,23 @@ public interface CommandSender extends Permissible
         return ServerAdmins.INSTANCE;
     }
 
-    void toggleAutoClaim();
+    default void toggleAutoClaim()
+    {
+        // Do nothing by default
+    }
 
-    boolean getAutoClaim();
+    default boolean getAutoClaim()
+    {
+        return false;
+    }
+
+    default void toggleAdminMode()
+    {
+        // Do nothing by default
+    }
+
+    default boolean isAdminMode()
+    {
+        return false;
+    }
 }

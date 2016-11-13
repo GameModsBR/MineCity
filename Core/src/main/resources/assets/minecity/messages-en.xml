@@ -1836,4 +1836,11 @@
         <msg id="deposited">${amount} have been deposited to your account ${name}</msg>
         <msg id="deduced">${amount} have been deduced from your account ${name}</msg>
     </economy>
+    <mode>
+        <adm>
+            <msg id="enabled">Admin Mode is now enabled, everything will be free, unrestricted and unlimited</msg>
+            <msg id="disabled">Admin Mode is now disabled, prices, restrictions and limits will be applied</msg>
+            <msg id="notification">The Admin Mode is enabled and has affected a check result</msg>
+        </adm>
+    </mode>
 </minecity-messages>

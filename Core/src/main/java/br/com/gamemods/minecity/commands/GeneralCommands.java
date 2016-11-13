@@ -58,4 +58,14 @@ public class GeneralCommands
                 }
         ), true);
     }
+
+    @Command("admin")
+    public CommandResult<Boolean> autoClaim(CommandEvent cmd)
+    {
+        cmd.sender.toggleAdminMode();
+        if(cmd.sender.isAdminMode())
+            return new CommandResult<>(new Message("cmd.mode.adm.enabled","Admin Mode is now enabled, everything will be free, unrestricted and unlimited"), Boolean.TRUE);
+        else
+            return new CommandResult<>(new Message("cmd.mode.adm.disabled","Admin Mode is now disabled, prices, restrictions and limits will be applied"), Boolean.FALSE);
+    }
 }

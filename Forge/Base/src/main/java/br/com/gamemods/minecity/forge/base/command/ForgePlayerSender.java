@@ -33,6 +33,7 @@ public class ForgePlayerSender<P extends IEntityPlayerMP, F extends MineCityForg
     private short hideSelectionTimer = 0;
     private short clearSelectionTimer = 0;
     private boolean autoClaim;
+    private boolean adminMode;
 
     public ForgePlayerSender(F mod, P sender)
     {
@@ -252,5 +253,23 @@ public class ForgePlayerSender<P extends IEntityPlayerMP, F extends MineCityForg
     public boolean getAutoClaim()
     {
         return autoClaim;
+    }
+
+    @Override
+    public void toggleAdminMode()
+    {
+        adminMode = !adminMode;
+    }
+
+    @Override
+    public boolean isAdminMode()
+    {
+        if(adminMode)
+        {
+            send(new Message("mode.adm.notification", "The Admin Mode is enabled and has affected a check result"));
+            return true;
+        }
+
+        return false;
     }
 }

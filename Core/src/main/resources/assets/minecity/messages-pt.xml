@@ -1829,4 +1829,11 @@
         <msg id="deposited">${amount} foram depositados na sua conta ${name}</msg>
         <msg id="deduced">${amount} foram deduzidos da sua conta ${name}</msg>
     </economy>
+    <mode>
+        <adm>
+            <msg id="enabled">O Modo Administrador foi ativado, tudo será gratúito, sem limites e restrições</msg>
+            <msg id="disabled">O Modo Administrador foi desativado, restrições limites e preços serão aplicados</msg>
+            <msg id="notification">O Modo Administrador está ativado e interferiu no resultado de verificação</msg>
+        </adm>
+    </mode>
 </minecity-messages>

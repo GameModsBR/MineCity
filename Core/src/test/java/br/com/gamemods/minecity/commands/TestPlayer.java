@@ -83,16 +83,4 @@ public class TestPlayer implements CommandSender
     {
         return Direction.NORTH;
     }
-
-    @Override
-    public boolean getAutoClaim()
-    {
-        return false;
-    }
-
-    @Override
-    public void toggleAutoClaim()
-    {
-
-    }
 }

@@ -93,7 +93,7 @@ public class CityCommand
                         {"plot-count", city.plots().count()},
                         {"group-count", city.getGroups().size()},
                         {"price", city.getPrice() < 1? new Message("cmd.city.info.not-selling", "Not for sale") : cmd.mineCity.economy.format(city.getPrice())},
-                        {"location", city.can(cmd.sender, PermissionFlag.ENTER).isPresent()?
+                        {"location", !cmd.sender.isAdminMode()? false : city.can(cmd.sender, PermissionFlag.ENTER).isPresent()?
                                 new Message("cmd.city.info.hidden-location", "<msg><gray>Hidden</gray></msg>") :
                                 new Message("cmd.city.info.location",
                                         "<msg>${spawn-world} <aqua>X:</aqua>${spawn-x} <aqua>Y:</aqua>${spawn-y} <aqua>Z:</aqua>${spawn-z}</msg>",
@@ -163,12 +163,12 @@ public class CityCommand
 
         PlayerID playerId = cmd.sender.getPlayerId();
         int cities = mineCity.dataSource.getCityCount(cmd.sender.getPlayerId());
-        if(cities >= mineCity.limits.cities && mineCity.limits.cities > 0)
+        if(!cmd.sender.isAdminMode() && cities >= mineCity.limits.cities && mineCity.limits.cities > 0)
             return new CommandResult<>(new Message("cmd.city.create.limit.reached",
                     "You've reached the maximum amount of cities that you can have."
             ));
 
-        double cost = mineCity.costs.cityCreation;
+        double cost = cmd.sender.isAdminMode()? 0 : mineCity.costs.cityCreation;
         BalanceResult balance = mineCity.economy.has(playerId, cost, spawn.world);
         if(!balance.result)
             return new CommandResult<>(new Message("cmd.city.create.economy.insufficient-funds",
@@ -193,7 +193,7 @@ public class CityCommand
         City city;
         try
         {
-            city = new City(mineCity, name, playerId, spawn, cost - result.amount);
+            city = new City(mineCity, name, cmd.sender.isAdminMode()? null : playerId, spawn, cost - result.amount);
         }
         catch(Exception e)
         {
@@ -222,7 +222,7 @@ public class CityCommand
         if(city == null)
             return new CommandResult<>(new Message("cmd.city.delete.not-claimed", "You are not inside a city"));
 
-        if(!cmd.sender.getPlayerId().equals(city.owner()))
+        if(!cmd.sender.isAdminMode() && !cmd.sender.getPlayerId().equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.delete.no-permission",
                     "You don't have permission to delete the city ${city}",
                     new Object[]{"city", city.getName()}
@@ -255,9 +255,9 @@ public class CityCommand
     {
         cmd.sender.toggleAutoClaim();
         if(cmd.sender.getAutoClaim())
-            return new CommandResult<>(new Message("city.claim.auto.enabled","Auto claiming is now enabled"), Boolean.TRUE);
+            return new CommandResult<>(new Message("cmd.city.claim.auto.enabled","Auto claiming is now enabled"), Boolean.TRUE);
         else
-            return new CommandResult<>(new Message("city.claim.auto.disabled","Auto claiming is now disabled"), Boolean.FALSE);
+            return new CommandResult<>(new Message("cmd.city.claim.auto.disabled","Auto claiming is now disabled"), Boolean.FALSE);
     }
 
     @Slow
@@ -268,7 +268,7 @@ public class CityCommand
         PlayerID playerId = cmd.sender.getPlayerId();
         ChunkPos chunk = cmd.position.getChunk();
 
-        if(cmd.mineCity.nature(chunk.world).isCityCreationDenied() && !cmd.sender.hasPermission("minecity.bypass.nature.city-creation"))
+        if(!cmd.sender.isAdminMode() && cmd.mineCity.nature(chunk.world).isCityCreationDenied() && !cmd.sender.hasPermission("minecity.bypass.nature.city-creation"))
             return new CommandResult<>(new Message("cmd.city.claim.disabled", "You can't claim chunks from ${nature}",
                     new Object[][]{
                             {"nature", cmd.position.world.name()}
@@ -334,19 +334,19 @@ public class CityCommand
                     new Object[]{"name",claimOpt.get().getCity().get().getName()}
             ));
 
-        if(!playerId.equals(city.owner()))
+        if(!cmd.sender.isAdminMode() && !playerId.equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.claim.no-permission",
                     "You are not allowed to claim chunks in name of ${city}",
                     new Object[]{"city", city.getName()}
             ));
 
         boolean islandCreation = !cmd.args.isEmpty() && !city.connectedIslands(chunk).findAny().isPresent();
-        if(islandCreation && mineCity.limits.islands > 0 && city.islands().size() >= mineCity.limits.islands)
+        if(!cmd.sender.isAdminMode() && islandCreation && mineCity.limits.islands > 0 && city.islands().size() >= mineCity.limits.islands)
             return new CommandResult<>(new Message("cmd.city.claim.limit.reached",
                     "The city ${city} has reached the maximum number of islands that it can have."
             ));
 
-        double cost = islandCreation? Math.max(mineCity.costs.islandCreation, mineCity.costs.claim) : mineCity.costs.claim;
+        double cost = cmd.sender.isAdminMode()? 0 : islandCreation? Math.max(mineCity.costs.islandCreation, mineCity.costs.claim) : mineCity.costs.claim;
         BalanceResult balance = mineCity.economy.has(playerId, cost, chunk.world);
         if(!balance.result)
             return new CommandResult<>(new Message("cmd.city.claim.economy.insufficient-funds",
@@ -431,7 +431,7 @@ public class CityCommand
             ));
 
         PlayerID playerId = cmd.sender.getPlayerId();
-        if(!playerId.equals(city.owner()))
+        if(!cmd.sender.isAdminMode() && !playerId.equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.disclaim.no-permission",
                     "You are not allowed to disclaim a chunk owned by ${city}",
                     new Object[]{"city",city.getName()}
@@ -445,7 +445,7 @@ public class CityCommand
             return new CommandResult<>(new Message("cmd.city.disclaim.spawn",
                     "Cannot disclaim the spawn chunk"));
 
-        boolean createIslands = mineCity.limits.islands <= 0 || city.islands().size() < mineCity.limits.islands;
+        boolean createIslands = cmd.sender.isAdminMode() || mineCity.limits.islands <= 0 || city.islands().size() < mineCity.limits.islands;
         Collection<Island> newIslands;
         try
         {
@@ -459,7 +459,7 @@ public class CityCommand
                 throw e;
         }
 
-        if(newIslands != null && mineCity.limits.islands > 0 && !newIslands.isEmpty() && city.islands().size() > mineCity.limits.islands)
+        if(newIslands != null && !cmd.sender.isAdminMode() && mineCity.limits.islands > 0 && !newIslands.isEmpty() && city.islands().size() > mineCity.limits.islands)
         {
             try
             {
@@ -481,7 +481,7 @@ public class CityCommand
         int count = newIslands.size();
         if(count > 0)
         {
-            double cost = mineCity.costs.islandCreation * count;
+            double cost = cmd.sender.isAdminMode()? 0 : mineCity.costs.islandCreation * count;
             BalanceResult balance = mineCity.economy.has(playerId, cost, chunk.world);
             if(!balance.result)
             {
@@ -577,7 +577,7 @@ public class CityCommand
                     new Object[]{"name",cityName})
             );
 
-        double cost = mineCity.costs.goToCity;
+        double cost = cmd.sender.isAdminMode()? 0 : mineCity.costs.goToCity;
         PlayerID playerId = cmd.sender.getPlayerId();
         EntityPos position = cmd.position;
         BalanceResult balance = mineCity.economy.has(playerId, cost, position.world);
@@ -643,7 +643,7 @@ public class CityCommand
             return new CommandResult<>(new Message("cmd.city.rename.not-claimed", "You are not inside a city"));
 
         String old = city.getName();
-        if(!cmd.sender.getPlayerId().equals(city.owner()))
+        if(!cmd.sender.isAdminMode() && !cmd.sender.getPlayerId().equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.rename.no-permission",
                     "You don't have permission to rename the city ${name}",
                     new Object[]{"name", old}
@@ -695,17 +695,20 @@ public class CityCommand
                     new Object[][]{{"name",city.getName()},{"owner", target.getName()}}
             ));
 
-        if(cityOwner == null)
-            return new CommandResult<>(new Message("cmd.city.transfer.adm-permission",
-                    "Only the server admins con transfer the city ${name}",
-                    new Object[]{"name",city.getName()}
-            ));
+        if(!cmd.sender.isAdminMode())
+        {
+            if(cityOwner == null)
+                return new CommandResult<>(new Message("cmd.city.transfer.adm-permission",
+                        "Only the server admins con transfer the city ${name}",
+                        new Object[]{"name", city.getName()}
+                ));
 
-        if(!cmd.sender.getPlayerId().equals(cityOwner))
-            return new CommandResult<>(new Message("cmd.city.transfer.no-permission",
-                    "Only ${owner} can transfer the city ${name}",
-                    new Object[][]{{"owner", cityOwner.getName()}, {"name",city.getName()}}
-            ));
+            if(!cmd.sender.getPlayerId().equals(cityOwner))
+                return new CommandResult<>(new Message("cmd.city.transfer.no-permission",
+                        "Only ${owner} can transfer the city ${name}",
+                        new Object[][]{{"owner", cityOwner.getName()}, {"name", city.getName()}}
+                ));
+        }
 
         city.setOwner(target);
 
@@ -727,7 +730,7 @@ public class CityCommand
             return new CommandResult<>(new Message("cmd.city.setspawn.not-claimed", "You are not inside a city"));
 
         PlayerID playerId = cmd.sender.getPlayerId();
-        if(!playerId.equals(city.owner()))
+        if(!cmd.sender.isAdminMode() && !playerId.equals(city.owner()))
             return new CommandResult<>(new Message("cmd.city.setspawn.no-permission",
                     "You are not allowed to change the ${name}'s spawn",
                     new Object[]{"name",city.getName()}
@@ -736,7 +739,7 @@ public class CityCommand
         if(position.equals(city.getSpawn()))
             return new CommandResult<>(new Message("cmd.city.setspawn.already", "The spawn is already set to that position"));
 
-        double cost = mineCity.costs.cityChangeSpawn;
+        double cost = cmd.sender.isAdminMode()? 0 : mineCity.costs.cityChangeSpawn;
         BalanceResult balance = mineCity.economy.has(playerId, cost, position.world);
         if(!balance.result)
             return new CommandResult<>(new Message("cmd.city.setspawn.economy.insufficient-funds",
@@ -854,7 +857,7 @@ public class CityCommand
             return new CommandResult<>(new Message("cmd.city.abort.sell.not-claimed", "You are not inside a city"));
 
         PlayerID playerId = cmd.sender.getPlayerId();
-        if(!city.owner().equals(playerId))
+        if(!cmd.sender.isAdminMode() && !city.owner().equals(playerId))
             return new CommandResult<>(new Message("cmd.city.abort.sell.no-permission",
                     "You don't have permission abort the sale of ${city}, only ${owner} can do that",
                     new Object[][]{
@@ -884,7 +887,7 @@ public class CityCommand
             return new CommandResult<>(new Message("cmd.city.sell.not-claimed", "You are not inside a city"));
 
         PlayerID playerId = cmd.sender.getPlayerId();
-        if(!city.owner().equals(playerId))
+        if(!cmd.sender.isAdminMode() && !city.owner().equals(playerId))
             return new CommandResult<>(new Message("cmd.city.sell.no-permission",
                     "You don't have permission to sell the city ${city}, only ${owner} can do that",
                     new Object[][]{
@@ -972,7 +975,7 @@ public class CityCommand
             ));
 
         PlayerID playerId = cmd.sender.getPlayerId();
-        if(!cmd.mineCity.economy.has(playerId, price, cmd.position.world).result)
+        if(!cmd.sender.isAdminMode() && !cmd.mineCity.economy.has(playerId, price, cmd.position.world).result)
             return new CommandResult<>(new Message("cmd.city.buy.economy.insufficient-funds",
                     "Insufficient funds, you need ${money} to purchase ${city}",
                     new Object[][]{
@@ -983,28 +986,38 @@ public class CityCommand
 
         String code = cmd.sender.confirm(sender->
         {
-            BalanceResult balance = cmd.mineCity.economy.has(playerId, price, cmd.position.world);
-            if(!balance.result)
-                return new CommandResult<>(new Message("cmd.city.buy.economy.insufficient-funds",
-                        "Insufficient funds, you need ${money} to purchase ${city}",
-                        new Object[][]{
-                                {"money", cmd.mineCity.economy.format(price)},
-                                {"city", city.getName()}
-                        }
-                ));
-
-            OperationResult charge = cmd.mineCity.economy.charge(cmd.sender, price, balance, cmd.position.world);
-            if(!charge.success)
+            BalanceResult balance;
+            OperationResult charge;
+            if(cmd.sender.isAdminMode())
             {
-                if(charge.error == null)
-                    return new CommandResult<>(new Message("cmd.city.buy.economy.charge.error-unknown",
-                            "Oopss... An unknown error has occurred while processing your transaction."
+                balance = null;
+                charge = new OperationResult(true, 0);
+            }
+            else
+            {
+                balance = cmd.mineCity.economy.has(playerId, price, cmd.position.world);
+                if(!balance.result)
+                    return new CommandResult<>(new Message("cmd.city.buy.economy.insufficient-funds",
+                            "Insufficient funds, you need ${money} to purchase ${city}",
+                            new Object[][]{
+                                    {"money", cmd.mineCity.economy.format(price)},
+                                    {"city", city.getName()}
+                            }
                     ));
-                else
-                    return new CommandResult<>(new Message("cmd.city.buy.economy.charge.error",
-                            "The purchase has failed: ${error}",
-                            new Object[]{"error", charge.error}
-                    ));
+
+                charge = cmd.mineCity.economy.charge(cmd.sender, price, balance, cmd.position.world);
+                if(!charge.success)
+                {
+                    if(charge.error == null)
+                        return new CommandResult<>(new Message("cmd.city.buy.economy.charge.error-unknown",
+                                "Oopss... An unknown error has occurred while processing your transaction."
+                        ));
+                    else
+                        return new CommandResult<>(new Message("cmd.city.buy.economy.charge.error",
+                                "The purchase has failed: ${error}",
+                                new Object[]{"error", charge.error}
+                        ));
+                }
             }
 
             double investment = price - charge.amount;
@@ -1016,7 +1029,8 @@ public class CityCommand
             }
             catch(Throwable e)
             {
-                cmd.mineCity.economy.refund(playerId, investment, balance, cmd.position.world, e);
+                if(!cmd.sender.isAdminMode())
+                    cmd.mineCity.economy.refund(playerId, investment, balance, cmd.position.world, e);
                 throw e;
             }
 
@@ -1059,16 +1073,19 @@ public class CityCommand
 
             if(revert != null)
             {
-                try
+                if(!cmd.sender.isAdminMode())
                 {
-                    if(ex != null)
-                        cmd.mineCity.economy.refund(playerId, investment, null, cmd.position.world, ex);
-                    else
-                        cmd.mineCity.economy.refund(playerId, investment, null, cmd.position.world, true);
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
+                    try
+                    {
+                        if(ex != null)
+                            cmd.mineCity.economy.refund(playerId, investment, null, cmd.position.world, ex);
+                        else
+                            cmd.mineCity.economy.refund(playerId, investment, null, cmd.position.world, true);
+                    }
+                    catch(Exception e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
 
                 return new CommandResult<>(revert);
