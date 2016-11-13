@@ -51,6 +51,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
     public byte lureDelay;
     public byte skipTick;
     public Set<LivingEntity> leashedEntities = new HashSet<>(1);
+    private boolean autoClaim;
 
     public BukkitPlayer(MineCityBukkit plugin, Player player)
     {
@@ -327,6 +328,14 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
             {
                 title = new Message("action.enter.nature", LegacyFormat.GREEN+"Nature");
                 subtitle = Message.string(mov.lastClaim.chunk.world.name());
+                if(autoClaim)
+                {
+                    List<String> path = plugin.mineCity.commands.find("city.claim");
+                    if(path == null)
+                        plugin.logger.warning("Auto Claim has failed because city.claim command was not found");
+                    else
+                        plugin.mineCity.commands.invoke(this, path);
+                }
             }
             sendNotification(title, subtitle);
         }
@@ -636,5 +645,17 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
                 }
             });
         }
+    }
+
+    @Override
+    public void toggleAutoClaim()
+    {
+        autoClaim = !autoClaim;
+    }
+
+    @Override
+    public boolean getAutoClaim()
+    {
+        return autoClaim;
     }
 }

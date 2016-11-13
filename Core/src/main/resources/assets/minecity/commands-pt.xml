@@ -100,6 +100,9 @@
         <command id="city.claim" parent="city" cmd="expandir,reivindicar">
             <desc>Reinvindica um chunk para a cidade</desc>
         </command>
+        <command id="city.claim.auto" parent="city" cmd="auto-claim">
+            <desc>Tenta reinvindicar o chunk automaticamente quando você ultrapassa as bordas dos chunks</desc>
+        </command>
         <command id="city.disclaim" parent="city" cmd="reduzir,renunciar,desreivindicar">
             <desc>Renuncia um chunk da cidade</desc>
         </command>

@@ -214,6 +214,14 @@ public class ForgePlayer
             {
                 title = new Message("action.enter.nature", LegacyFormat.GREEN+"Nature");
                 subtitle = Message.string(mov.lastClaim.chunk.world.name());
+                if(cmd.getAutoClaim())
+                {
+                    List<String> path = mod.mineCity.commands.find("city.claim");
+                    if(path == null)
+                        mod.logger.warn("Auto Claim has failed because city.claim command was not found");
+                    else
+                        mod.mineCity.commands.invoke(cmd, path);
+                }
             }
             sendNotification(title, subtitle);
         }

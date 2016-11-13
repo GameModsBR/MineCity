@@ -77,4 +77,16 @@ public class BukkitCommandSender<S extends CommandSender> implements br.com.game
     {
         sender.sendMessage(plugin.mineCity.messageTransformer.toSimpleText(message));
     }
+
+    @Override
+    public boolean getAutoClaim()
+    {
+        return false;
+    }
+
+    @Override
+    public void toggleAutoClaim()
+    {
+
+    }
 }

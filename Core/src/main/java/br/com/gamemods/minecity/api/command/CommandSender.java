@@ -159,4 +159,8 @@ public interface CommandSender extends Permissible
 
         return ServerAdmins.INSTANCE;
     }
+
+    void toggleAutoClaim();
+
+    boolean getAutoClaim();
 }

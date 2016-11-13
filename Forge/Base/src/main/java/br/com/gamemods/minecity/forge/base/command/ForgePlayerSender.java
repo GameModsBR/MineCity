@@ -32,6 +32,7 @@ public class ForgePlayerSender<P extends IEntityPlayerMP, F extends MineCityForg
     private ForgeSelection<?> selection;
     private short hideSelectionTimer = 0;
     private short clearSelectionTimer = 0;
+    private boolean autoClaim;
 
     public ForgePlayerSender(F mod, P sender)
     {
@@ -239,5 +240,17 @@ public class ForgePlayerSender<P extends IEntityPlayerMP, F extends MineCityForg
                 }
             });
         }
+    }
+
+    @Override
+    public void toggleAutoClaim()
+    {
+        autoClaim = !autoClaim;
+    }
+
+    @Override
+    public boolean getAutoClaim()
+    {
+        return autoClaim;
     }
 }

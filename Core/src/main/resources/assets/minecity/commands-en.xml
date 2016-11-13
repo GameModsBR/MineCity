@@ -100,6 +100,9 @@
         <command id="city.claim" parent="city" cmd="claim,expand">
             <desc>Claims a chunk to a city</desc>
         </command>
+        <command id="city.claim.auto" parent="city" cmd="auto-claim">
+            <desc>Automatically attempts to claim a chunk when you cross the chunk boundaries</desc>
+        </command>
         <command id="city.disclaim" parent="city" cmd="disclaim,unclaim">
             <desc>Disclaims a chunk from a city</desc>
         </command>

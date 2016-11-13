@@ -483,6 +483,10 @@
                     <msg id="reached">The city ${city} has reached the maximum number of islands that it can have.</msg>
                 </limits>
                 <msg id="success">This chunk was claimed to ${city} successfully.</msg>
+                <auto>
+                    <msg id="enabled">Auto claiming is now enabled</msg>
+                    <msg id="disabled">Auto claiming is now disabled</msg>
+                </auto>
             </claim>
             <disclaim>
                 <msg id="not-claimed">This chunk is not claimed by any city</msg>

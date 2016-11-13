@@ -889,6 +889,37 @@ public final class CommandTree
         return stream.sorted().collect(Collectors.toList());
     }
 
+    @Nullable
+    public List<String> find(@NotNull String id)
+    {
+        return find(id, Collections.emptyList(), root);
+    }
+
+    @Nullable
+    private List<String> find(@NotNull String id, @NotNull List<String> path, @NotNull CommandGroup current)
+    {
+        for(Map.Entry<String, CommandEntry> entry : current.subTree.entrySet())
+        {
+            CommandEntry value = entry.getValue();
+            Map<String, CommandEntry> subTree = value.getSubTree();
+            if(subTree != null)
+            {
+                List<String> subPath = new ArrayList<>(path);
+                subPath.add(entry.getKey());
+                List<String> found = find(id, subPath, (CommandGroup) value);
+                if(found != null)
+                    return found;
+            }
+            else if(id.equals(value.getInfo().commandId))
+            {
+                path.add(entry.getKey());
+                return path;
+            }
+        }
+
+        return null;
+    }
+
     static class CommandDefinition
     {
         CommandFunction<?> function;

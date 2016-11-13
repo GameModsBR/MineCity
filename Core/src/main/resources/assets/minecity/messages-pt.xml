@@ -484,6 +484,10 @@
                     <msg id="reached">A cidade ${city} atingiu o número máximo de ilhas que ela pode ter.</msg>
                 </limits>
                 <msg id="success">Este chunk foi reinvindicado por ${city} com sucesso.</msg>
+                <auto>
+                    <msg id="enabled">A reinvidicação automática foi ativada</msg>
+                    <msg id="disabled">A reinvidicação automática foi desativada</msg>
+                </auto>
             </claim>
             <disclaim>
                 <msg id="not-claimed">Este chunk não foi reinvindicado por nenhuma cidade</msg>
