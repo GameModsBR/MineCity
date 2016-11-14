@@ -6,6 +6,7 @@ import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Slow;
 import br.com.gamemods.minecity.api.command.*;
+import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.OptionalPlayer;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
@@ -576,6 +577,14 @@ public class CityCommand
                     "There're no city named ${name}",
                     new Object[]{"name",cityName})
             );
+
+        BlockPos spawn = city.getSpawn();
+        Optional<Message> denial = mineCity.provideChunk(spawn.getChunk()).getFlagHolder(spawn).can(cmd.sender, PermissionFlag.ENTER);
+        if(denial.isPresent())
+        {
+            cmd.sender.send(FlagHolder.wrapDeny(denial.get()));
+            return CommandResult.failed();
+        }
 
         double cost = cmd.sender.isAdminMode()? 0 : mineCity.costs.goToCity;
         PlayerID playerId = cmd.sender.getPlayerId();
