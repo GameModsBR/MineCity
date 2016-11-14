@@ -1807,7 +1807,7 @@
         <msg id="portal.create.failed">Não foi possível criar um portal na outra dimensão.</msg>
         <msg id="harvest-on-creative">Você não pode colher plantas no modo criativo, isso apenas reiniciar o estado de crescimento da planta sem dar nenhum produto.</msg>
         <enter>
-            <msg id="enter.nature"><green>Natureza</green></msg>
+            <msg id="nature"><green>Natureza</green></msg>
             <msg id="city-in-sale"><click><suggest cmd='/cidade comprar'/><gold>A cidade ${name} está a venda! Digite /cidade comprar para comprar por ${money}</gold></click></msg>
             <msg id="plot-in-sale"><click><suggest cmd='/lote comprar'/><gold>O lote ${name} está a venda! Digite /lote comprar para comprar por ${money}</gold></click></msg>
         </enter>
