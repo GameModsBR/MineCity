@@ -60,34 +60,6 @@ public class SQLSource implements IDataSource
         cityStorage = new SQLCityStorage(this, connection, permStorage);
     }
 
-    @Slow
-    private Collection<Island> loadIslands(Connection connection, int cityId) throws SQLException, DataSourceException
-    {
-        try(PreparedStatement pst = connection.prepareStatement(
-                "SELECT c.island_id, MIN(x), MAX(x), MIN(z), MAX(z), COUNT(*), i.world_id, w.dim, w.world, w.`name` " +
-                "FROM minecity_chunks c " +
-                "INNER JOIN minecity_islands AS i ON c.island_id=i.island_id " +
-                "INNER JOIN minecity_world AS w ON i.world_id=w.world_id " +
-                "WHERE i.city_id = ? AND c.reserve=0 " +
-                "GROUP BY c.island_id"
-        ))
-        {
-            pst.setInt(1, cityId);
-            ArrayList<Island> islands = new ArrayList<>(3);
-            ResultSet result = pst.executeQuery();
-            while(result.next())
-            {
-                WorldDim world = world(result.getInt(7), ()->result.getInt(8), ()->result.getString(9), ()->result.getString(10));
-                islands.add(new SQLIsland(cityStorage, permStorage,
-                        result.getInt(1), result.getInt(2), result.getInt(3),
-                        result.getInt(4), result.getInt(5), result.getInt(6), world
-                ));
-            }
-            islands.trimToSize();
-            return islands;
-        }
-    }
-
     protected WorldDim world(int id, DBSupplier<Integer> dim, DBSupplier<String> dir, DBSupplier<String> name)
     {
         WorldDim world = worldDimMap.get(id);
@@ -153,9 +125,7 @@ public class SQLSource implements IDataSource
                 double price = result.getDouble("price");
                 pst.close();
 
-                Collection<Island> islands = loadIslands(connection, id);
-                City city = new City(mineCity, name, displayName, owner, spawn, islands, id, cityStorage, permStorage, message, tax, investment, price);
-                islands.forEach(i-> ((SQLIsland)i).city = city);
+                City city = new City(mineCity, name, displayName, owner, spawn, id, cityStorage, permStorage, message, tax, investment, price);
                 cityMap.put(id, city);
                 return Optional.of(city);
             }

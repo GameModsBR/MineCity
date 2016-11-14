@@ -28,10 +28,13 @@ public abstract class Island implements ChunkOwner
     public final int id;
     public final WorldDim world;
     protected Map<String, Plot> plots;
+    @NotNull
+    protected City city;
 
-    public Island(@NotNull ICityStorage storage, @NotNull IExceptPermissionStorage permissionStorage,
+    public Island(@NotNull City city, @NotNull ICityStorage storage, @NotNull IExceptPermissionStorage permissionStorage,
                   int id, WorldDim world, Set<Plot> plots)
     {
+        this.city = city;
         this.storage = storage;
         this.permissionStorage = permissionStorage;
         this.id = id;
@@ -40,10 +43,11 @@ public abstract class Island implements ChunkOwner
         plots.forEach(plot -> this.plots.put(plot.getIdentityName(), plot));
     }
 
-    public Island(@NotNull ICityStorage storage, @NotNull IExceptPermissionStorage permissionStorage,
+    public Island(@NotNull City city, @NotNull ICityStorage storage, @NotNull IExceptPermissionStorage permissionStorage,
                   int id, WorldDim world)
             throws DataSourceException
     {
+        this.city = city;
         this.storage = storage;
         this.permissionStorage = permissionStorage;
         this.id = id;
@@ -126,7 +130,16 @@ public abstract class Island implements ChunkOwner
     }
 
     @NotNull
-    public abstract City getCity();
+    public City getCity()
+    {
+        return city;
+    }
+
+    protected void setCity(@NotNull City city)
+    {
+        this.city = city;
+    }
+
     public abstract int getSizeX();
     public abstract int getSizeZ();
     public abstract int getChunkCount();

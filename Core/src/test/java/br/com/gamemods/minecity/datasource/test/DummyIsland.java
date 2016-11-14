@@ -11,22 +11,19 @@ import java.util.Collections;
 
 public class DummyIsland extends Island
 {
-    public City city;
     public int sizeX;
     public int sizeZ;
     public int chunkCount;
 
     public DummyIsland(ICityStorage storage, IExceptPermissionStorage permissionStorage, WorldDim world, City city)
     {
-        super(storage, permissionStorage, 0, world, Collections.emptySet());
-        this.city = city;
+        super(city, storage, permissionStorage, 0, world, Collections.emptySet());
     }
 
-    @NotNull
     @Override
-    public City getCity()
+    protected void setCity(@NotNull City city)
     {
-        return city;
+        super.setCity(city);
     }
 
     @Override

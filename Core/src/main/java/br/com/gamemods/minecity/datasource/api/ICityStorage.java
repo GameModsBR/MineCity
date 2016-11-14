@@ -90,6 +90,10 @@ public interface ICityStorage
 
     @Slow
     @NotNull
+    Collection<Island> loadIslands(City city) throws DataSourceException;
+
+    @Slow
+    @NotNull
     Group createGroup(@NotNull City city, @NotNull String id, @NotNull String name) throws DataSourceException;
 
     @Slow

@@ -247,7 +247,7 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
         {
             Iterator<ChunkPos> iter = group.iterator();
             ChunkPos first = iter.next();
-            FakeIsland groupIsland = new FakeIsland(fakeIsland.world, fakeIsland.city, first);
+            FakeIsland groupIsland = new FakeIsland(fakeIsland.world, fakeIsland.getCity(), first);
             this.claims.put(first, groupIsland);
 
             while(iter.hasNext())
@@ -375,6 +375,13 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
     public void close() throws DataSourceException
     {
         // Nothing needs to be done here
+    }
+
+    @NotNull
+    @Override
+    public Collection<Island> loadIslands(City city) throws DataSourceException
+    {
+        return city.islands();
     }
 
     @NotNull
@@ -572,12 +579,11 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
 
     private class FakeIsland extends Island
     {
-        City city;
         int minX, maxX, minZ, maxZ, chunkCount = 1;
 
         public FakeIsland(WorldDim world, City city, ChunkPos chunk)
         {
-            super(FakeDataSource.this, FakeDataSource.this, nextIslandId.getAndIncrement(), world, Collections.emptySet());
+            super(city, FakeDataSource.this, FakeDataSource.this, nextIslandId.getAndIncrement(), world, Collections.emptySet());
             this.city = city;
             minX = maxX = chunk.x;
             minZ = maxZ = chunk.z;
@@ -590,13 +596,6 @@ public class FakeDataSource implements IDataSource, ICityStorage, IExceptPermiss
             minZ = Math.min(minZ, chunk.z);
             maxZ = Math.max(maxZ, chunk.z);
             chunkCount++;
-        }
-
-        @NotNull
-        @Override
-        public City getCity()
-        {
-            return city;
         }
 
         @Override

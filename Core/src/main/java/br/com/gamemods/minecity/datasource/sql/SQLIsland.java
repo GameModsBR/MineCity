@@ -25,10 +25,10 @@ final class SQLIsland extends Island
     @NotNull
     City city;
 
-    SQLIsland(ICityStorage storage, IExceptPermissionStorage permissionStorage, int id,
+    SQLIsland(City city, ICityStorage storage, IExceptPermissionStorage permissionStorage, int id,
               int minX, int maxX, int minZ, int maxZ, int chunkCount, @NotNull WorldDim world, Set<Plot> plots)
     {
-        super(storage, permissionStorage, id, world, plots);
+        super(city, storage, permissionStorage, id, world, plots);
         this.minX = minX;
         this.maxX = maxX;
         this.minZ = minZ;
@@ -38,21 +38,21 @@ final class SQLIsland extends Island
     }
 
     SQLIsland(ICityStorage storage, IExceptPermissionStorage permissionStorage, int id,
-              int minX, int maxX, int minZ, int maxZ, int chunkCount, @NotNull WorldDim world)
+              int minX, int maxX, int minZ, int maxZ, int chunkCount, @NotNull WorldDim world, @NotNull City city)
             throws DataSourceException
     {
-        super(storage, permissionStorage, id, world);
+        super(city, storage, permissionStorage, id, world);
         this.minX = minX;
         this.maxX = maxX;
         this.minZ = minZ;
         this.maxZ = maxZ;
         this.chunkCount = chunkCount;
-        this.city = Inconsistency.getInconsistentCity();
+        this.city = city;
     }
 
     SQLIsland(ICityStorage storage, IExceptPermissionStorage permissionStorage, int id, ChunkPos chunk, @NotNull City city)
     {
-        super(storage, permissionStorage, id, chunk.world, Collections.emptySet());
+        super(city, storage, permissionStorage, id, chunk.world, Collections.emptySet());
         minX = maxX = chunk.x;
         minZ = maxZ = chunk.z;
         chunkCount = 1;
@@ -74,13 +74,6 @@ final class SQLIsland extends Island
         plots.remove(id, plot);
         to.plots.put(id, plot);
         plot.relocate(to);
-    }
-
-    @NotNull
-    @Override
-    public City getCity()
-    {
-        return city;
     }
 
     @Override

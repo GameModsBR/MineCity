@@ -57,8 +57,7 @@ public class Inconsistency implements ChunkOwner
                 synchronized(WORLD)
                 {
                     city = new City(mineCity, "#inconsistent", "#Inconsistency", null, new BlockPos(WORLD, 0, 0, 0),
-                            Collections.singleton(island = new InconsistentIsland(voidStorage)), -1000, voidStorage,
-                            voidStorage, null, new Tax(0,0), 0, 0
+                            -1000, voidStorage, voidStorage, null, new Tax(0,0), 0, 0
                     );
                 }
             }
@@ -106,14 +105,14 @@ public class Inconsistency implements ChunkOwner
     {
         public InconsistentIsland(VoidStorage storage)
         {
-            super(storage, storage, -1, WORLD, Collections.emptySet());
+            super(Inconsistency.city, storage, storage, -1, WORLD, Collections.emptySet());
         }
 
         @NotNull
         @Override
         public City getCity()
         {
-            City c = city;
+            City c = Inconsistency.city;
             if(c == null)
                 synchronized(WORLD)
                 {
@@ -144,6 +143,15 @@ public class Inconsistency implements ChunkOwner
 
     private static class VoidStorage implements ICityStorage, IExceptPermissionStorage, INatureStorage
     {
+        @NotNull
+        @Override
+        public Collection<Island> loadIslands(City city) throws DataSourceException
+        {
+            if(Inconsistency.city == null)
+                Inconsistency.city = city;
+            return Collections.singleton(island = new InconsistentIsland(this));
+        }
+
         @Override
         public void setOwner(@NotNull City city, @NotNull OptionalPlayer owner)
                 throws DataSourceException, IllegalStateException

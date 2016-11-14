@@ -356,8 +356,7 @@ public class SQLCityStorage implements ICityStorage
                                   "WHERE world_id="+worldId+" AND island_id="+sqlIsland.id+" AND reserve=0 AND ("+sb+");"
                     );
 
-                    SQLIsland newIsland = new SQLIsland(this, permStorage, islandId, minX, maxX, minZ, maxZ, group.size(), sqlIsland.world, Collections.emptySet());
-                    newIsland.city = sqlIsland.city;
+                    SQLIsland newIsland = new SQLIsland(sqlIsland.city, this, permStorage, islandId, minX, maxX, minZ, maxZ, group.size(), sqlIsland.world, Collections.emptySet());
                     expected[i++] = newIsland.chunkCount;
                     islands.add(newIsland);
                 }
@@ -908,6 +907,45 @@ public class SQLCityStorage implements ICityStorage
         catch(ClassCastException e)
         {
             throw new UnsupportedOperationException(e);
+        }
+    }
+
+    @Slow
+    @NotNull
+    @Override
+    public Collection<Island> loadIslands(City city) throws DataSourceException
+    {
+        try
+        {
+            Connection connection = this.connection.connect();
+            int cityId = city.getId();
+            try(PreparedStatement pst = connection.prepareStatement(
+                    "SELECT c.island_id, MIN(x), MAX(x), MIN(z), MAX(z), COUNT(*), i.world_id, w.dim, w.world, w.`name` " +
+                            "FROM minecity_chunks c " +
+                            "INNER JOIN minecity_islands AS i ON c.island_id=i.island_id " +
+                            "INNER JOIN minecity_world AS w ON i.world_id=w.world_id " +
+                            "WHERE i.city_id = ? AND c.reserve=0 " +
+                            "GROUP BY c.island_id"
+            ))
+            {
+                pst.setInt(1, cityId);
+                ArrayList<Island> islands = new ArrayList<>(3);
+                ResultSet result = pst.executeQuery();
+                while(result.next())
+                {
+                    WorldDim world = source.world(result.getInt(7), ()->result.getInt(8), ()->result.getString(9), ()->result.getString(10));
+                    islands.add(new SQLIsland(this, permStorage,
+                            result.getInt(1), result.getInt(2), result.getInt(3),
+                            result.getInt(4), result.getInt(5), result.getInt(6), world, city
+                    ));
+                }
+                islands.trimToSize();
+                return islands;
+            }
+        }
+        catch(SQLException e)
+        {
+            throw new DataSourceException(e);
         }
     }
 

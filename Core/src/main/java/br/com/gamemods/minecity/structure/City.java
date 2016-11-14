@@ -134,7 +134,7 @@ public final class City extends ExceptStoredHolder
      */
     @Slow
     public City(@NotNull MineCity mineCity, @NotNull String identityName, @NotNull String name, @Nullable PlayerID owner,
-                @NotNull BlockPos spawn, Collection<Island> islands, int id, @NotNull ICityStorage storage,
+                @NotNull BlockPos spawn, int id, @NotNull ICityStorage storage,
                 @NotNull IExceptPermissionStorage permissionStorage, @Nullable Message defaultDenialMessage,
                 @NotNull Tax appliedTax, double investment, double price
     )
@@ -152,8 +152,11 @@ public final class City extends ExceptStoredHolder
         setId(id);
         this.storage = storage;
         this.permissionStorage = permissionStorage;
-        this.islands = new HashMap<>(islands.size());
-        islands.forEach(island -> this.islands.put(island.getId(), island));
+
+        Collection<Island> loadedIslands = storage.loadIslands(this);
+        this.islands = new HashMap<>();
+        loadedIslands.forEach(i-> islands.put(i.getId(), i));
+
         Collection<Group> loadedGroups = storage.loadGroups(this);
         groups = new HashMap<>(loadedGroups.size());
         loadedGroups.forEach(g -> groups.put(g.getIdentityName(), g));
