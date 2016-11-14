@@ -24,7 +24,7 @@ import static br.com.gamemods.minecity.api.command.LegacyFormat.*;
 public class MessageTransformer
 {
     private final Map<String, Component> messages = new HashMap<>();
-    private DocumentBuilder documentBuilder;
+    private final DocumentBuilder documentBuilder;
     {
         try
         {
@@ -42,7 +42,11 @@ public class MessageTransformer
     public void parseXML(InputStream in) throws IOException, SAXException
     {
         Element root;
-        Document doc = documentBuilder.parse(in);
+        Document doc;
+        synchronized(documentBuilder)
+        {
+            doc = documentBuilder.parse(in);
+        }
         root = doc.getDocumentElement();
         if(!"minecity-messages".equals(root.getTagName()))
             throw new SAXException("This is not a minecity-messages XML! Root:"+root.getTagName());
@@ -134,7 +138,11 @@ public class MessageTransformer
         if(message.startsWith("<msg>"))
             try
             {
-                Document doc = documentBuilder.parse(new InputSource(new StringReader(message)));
+                Document doc;
+                synchronized(documentBuilder)
+                {
+                    doc = documentBuilder.parse(new InputSource(new StringReader(message)));
+                }
                 return parse(doc.getDocumentElement());
             }
             catch(IOException e)
