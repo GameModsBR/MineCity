@@ -594,6 +594,14 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
         return chunk.getMineCityClaim();
     }
 
+    private void setClaim(@NotNull IChunk chunk, @NotNull ClaimedChunk claim)
+    {
+        ClaimedChunk old = chunk.getMineCityClaim();
+        chunk.setMineCityClaim(claim);
+        if(old != null && old != claim)
+            old.invalidate();
+    }
+
     public boolean setClaim(@NotNull ClaimedChunk claim)
     {
         ChunkPos pos = claim.chunk;
@@ -602,10 +610,7 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
             IChunk chunk = (IChunk) pos.instance;
             if(chunk.isMineCityChunkValid())
             {
-                ClaimedChunk old = chunk.getMineCityClaim();
-                chunk.setMineCityClaim(claim);
-                if(old != null && old != claim)
-                    old.invalidate();
+                setClaim(chunk, claim);
                 return true;
             }
         }
@@ -619,7 +624,7 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
             return false;
 
         pos.instance = forgeChunk;
-        forgeChunk.setMineCityClaim(claim);
+        setClaim(forgeChunk, claim);
         return true;
     }
 
