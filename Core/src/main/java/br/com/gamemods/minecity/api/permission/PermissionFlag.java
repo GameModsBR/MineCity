@@ -97,6 +97,6 @@ public enum PermissionFlag
         String name = name();
         if(name.length() != 3)
             name = name.charAt(0) + name.substring(1).toLowerCase();
-        return new Message("action.denied.perms."+name.toLowerCase(), name);
+        return new Message("action.denied.perm."+name.toLowerCase(), name);
     }
 }
