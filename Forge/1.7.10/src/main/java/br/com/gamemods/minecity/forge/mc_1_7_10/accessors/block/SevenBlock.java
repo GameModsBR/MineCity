@@ -17,12 +17,6 @@ import java.util.Random;
 @Referenced(at = SevenInterfaceTransformer.class)
 public interface SevenBlock extends IBlock
 {
-    @Override
-    default Block getForgeBlock()
-    {
-        return (Block) this;
-    }
-
     default SevenBlockState getDefaultIState()
     {
         return new SevenBlockState(this, 0);

@@ -9,17 +9,10 @@ import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
 import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
 import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
-import net.minecraft.block.BlockDragonEgg;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
 public interface IBlockDragonEgg extends IBlock
 {
-    @Override
-    default BlockDragonEgg getForgeBlock()
-    {
-        return (BlockDragonEgg) this;
-    }
-
     @Override
     default Reaction reactRightClick(BlockPos pos, IState state, IEntityPlayerMP player, IItemStack stack,
                                      boolean offHand, Direction face)
