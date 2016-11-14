@@ -971,6 +971,19 @@ public class PlotCommand
                 e.printStackTrace();
             }
 
+            try
+            {
+                plot.setPrice(0);
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+                cmd.sender.send(CommandFunction.messageFailed(new Message(
+                        "cmd.plot.buy.error-reset-sell",
+                        "An error has occurred while resetting the plot's sell state, please type /plot cancel sale"
+                )));
+            }
+
             return new CommandResult<>(new Message("cmd.plot.buy.success",
                     "Congratulations! The plot ${plot} is now yours.",
                     new Object[]{"plot", plot.getName()}

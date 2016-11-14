@@ -1132,6 +1132,19 @@ public class CityCommand
                 e.printStackTrace();
             }
 
+            try
+            {
+                city.setPrice(0);
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+                cmd.sender.send(CommandFunction.messageFailed(new Message(
+                        "cmd.city.buy.error-reset-sell",
+                        "An error has occurred while resetting the city's sell state, please type /city cancel sale"
+                )));
+            }
+
             return new CommandResult<>(new Message("cmd.city.buy.success",
                     "Congratulations! The city ${city} is now yours.",
                     new Object[]{"city", city.getName()}

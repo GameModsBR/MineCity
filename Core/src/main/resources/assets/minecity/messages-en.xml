@@ -170,6 +170,7 @@
                     <msg id="exception">An exception has occurred while giving the money to the old owner</msg>
                 </give>
                 <msg id="error-reset">An error has occurred while resetting the city permissions, you might want to take a look at /city check</msg>
+                <msg id="error-reset-sell">An error has occurred while resetting the city's sell state, please type /city cancel sale</msg>
                 <msg id="confirm">You are about to purchase the city ${city} by ${money}. If you are sure about it type /city confirm ${code}</msg>
                 <msg id="success">Congratulations! The city ${city} is now yours.</msg>
             </buy>
@@ -1041,6 +1042,7 @@
                     <msg id="exception">An exception has occurred while giving the money to the old owner</msg>
                 </give>
                 <msg id="error-reset">An error has occurred while resetting the plot permissions, you might want to take a look at /plot check</msg>
+                <msg id="error-reset-sell">An error has occurred while resetting the plot's sell state, please type /plot cancel sale</msg>
                 <msg id="confirm">You are about to purchase the plot ${plot} in ${city} by ${money}. If you are sure about it type /plot confirm ${code}</msg>
                 <msg id="success">Congratulations! The plot ${plot} is now yours.</msg>
             </buy>

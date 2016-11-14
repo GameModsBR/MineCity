@@ -164,6 +164,7 @@
                 </give>
                 <msg id="error-reset">Ocorreu um erro ao resetar as permissões da cidade, talvez você queira dar uma olhada em /cidade checar</msg>
                 <msg id="confirm">Você está prestes a comprar a cidade ${city} por ${money}. Se você tiver certeza disso digite /lote confirmar ${code}</msg>
+                <msg id="error-reset-sell">Ocorreu um erro ao resetar o estado de venda da cidade, por favor execute /cidade cancelar venda</msg>
                 <msg id="success">Parabéns! A cidade ${city} agora é sua.</msg>
             </buy>
             <perms>
@@ -1023,6 +1024,7 @@
                 </give>
                 <msg id="error-reset">Ocorreu um erro ao resetar as permissões do lote, talvez você queira dar uma olhada em /lote checar</msg>
                 <msg id="confirm">Você está prestes a comprar o lote ${plot} em ${city} por ${money}. Se você tiver certeza disso digite /lote confirmar ${code}</msg>
+                <msg id="error-reset-sell">Ocorreu um erro ao resetar o estado de venda do lote, por favor execute /lote cancelar venda</msg>
                 <msg id="success">Parabéns! O lote ${plot} agora é seu.</msg>
             </buy>
             <perms>
