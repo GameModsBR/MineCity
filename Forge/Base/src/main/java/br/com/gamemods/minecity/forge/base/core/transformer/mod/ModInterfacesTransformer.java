@@ -222,6 +222,9 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
         r.put("ic2.core.item.tool.ItemToolWrench",
                 "br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyFirstReactor");
 
+        r.put("ic2.core.block.BlockMultiID",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenReactor");
+
         r.put("mcheli.wrapper.W_EntityContainer",
                 "br.com.gamemods.minecity.forge.base.protection.mcheli.W_EntityContainer");
 
