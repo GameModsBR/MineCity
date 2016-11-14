@@ -60,7 +60,7 @@ public class GeneralCommands
     }
 
     @Command("admin")
-    public CommandResult<Boolean> autoClaim(CommandEvent cmd)
+    public static CommandResult<Boolean> adminMode(CommandEvent cmd)
     {
         cmd.sender.toggleAdminMode();
         if(cmd.sender.isAdminMode())
