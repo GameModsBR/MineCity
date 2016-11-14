@@ -226,7 +226,10 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
                 "br.com.gamemods.minecity.forge.base.accessors.item.IItemModifyFirstReactor");
 
         r.put("ic2.core.block.BlockMultiID",
-                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenReactor");
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IBlockMultiID");
+
+        r.put("ic2.core.block.wiring.BlockCable",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IBlockCable");
 
         r.put("mcheli.wrapper.W_EntityContainer",
                 "br.com.gamemods.minecity.forge.base.protection.mcheli.W_EntityContainer");
