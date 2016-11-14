@@ -7,7 +7,7 @@ CREATE TABLE `minecity_world` (
 `perm_denial_message`  varchar(255) NULL DEFAULT NULL ,
 PRIMARY KEY (`world_id`),
 UNIQUE INDEX `world_dir` (`dim`, `world`) USING BTREE
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE `minecity_players` (
 `player_id`  int NOT NULL AUTO_INCREMENT ,
@@ -15,7 +15,7 @@ CREATE TABLE `minecity_players` (
 `player_name`  varchar(16) NOT NULL ,
 PRIMARY KEY (`player_id`),
 UNIQUE INDEX `player_uuid` (`player_uuid`)
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE `minecity_city` (
 `city_id`  int(11) NOT NULL AUTO_INCREMENT ,
@@ -35,7 +35,7 @@ PRIMARY KEY (`city_id`),
 CONSTRAINT `city_owner` FOREIGN KEY (`owner`) REFERENCES `minecity_players` (`player_id`) ON DELETE SET NULL ON UPDATE CASCADE,
 CONSTRAINT `city_world_spawn` FOREIGN KEY (`spawn_world`) REFERENCES `minecity_world` (`world_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
 UNIQUE INDEX `city_name` (`name`)
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE `minecity_islands` (
 `island_id`  int NOT NULL AUTO_INCREMENT ,
@@ -44,7 +44,7 @@ CREATE TABLE `minecity_islands` (
 PRIMARY KEY (`island_id`),
 CONSTRAINT `island_world` FOREIGN KEY (`world_id`) REFERENCES `minecity_world` (`world_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `island_city` FOREIGN KEY (`city_id`) REFERENCES `minecity_city` (`city_id`) ON DELETE CASCADE ON UPDATE CASCADE
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE `minecity_chunks` (
 `world_id`  int NOT NULL ,
@@ -55,7 +55,7 @@ CREATE TABLE `minecity_chunks` (
 PRIMARY KEY (`world_id`, `x`, `z`),
 CONSTRAINT `chunk_world` FOREIGN KEY (`world_id`) REFERENCES `minecity_world` (`world_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `chunk_island` FOREIGN KEY (`island_id`) REFERENCES `minecity_islands` (`island_id`) ON DELETE CASCADE ON UPDATE CASCADE
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE `minecity_entities` (
 `entity_id`  int NOT NULL AUTO_INCREMENT ,
@@ -70,7 +70,7 @@ CREATE TABLE `minecity_entities` (
 PRIMARY KEY (`entity_id`),
 CONSTRAINT `entity_world` FOREIGN KEY (`last_world`) REFERENCES `minecity_world` (`world_id`) ON DELETE SET NULL ON UPDATE CASCADE,
 UNIQUE INDEX `entity_uuid` (`entity_uuid`)
-)
+) ENGINE=InnoDB
 ;
 
 CREATE TABLE `minecity_groups` (
@@ -81,7 +81,7 @@ CREATE TABLE `minecity_groups` (
 PRIMARY KEY (`group_id`),
 CONSTRAINT `group_city` FOREIGN KEY (`city_id`) REFERENCES `minecity_city` (`city_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 UNIQUE INDEX `group_name` (`city_id`, `name`)
-)
+) ENGINE=InnoDB
 ;
 
 CREATE TABLE `minecity_group_players` (
@@ -90,7 +90,7 @@ CREATE TABLE `minecity_group_players` (
 PRIMARY KEY (`group_id`, `player_id`),
 CONSTRAINT `group_players_group` FOREIGN KEY (`group_id`) REFERENCES `minecity_groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `group_players_player` FOREIGN KEY (`player_id`) REFERENCES `minecity_players` (`player_id`) ON DELETE CASCADE ON UPDATE CASCADE
-)
+) ENGINE=InnoDB
 ;
 
 CREATE TABLE `minecity_group_entities` (
@@ -99,7 +99,7 @@ CREATE TABLE `minecity_group_entities` (
 PRIMARY KEY (`group_id`, `entity_id`),
 CONSTRAINT `group_entities_group` FOREIGN KEY (`group_id`) REFERENCES `minecity_groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `group_entities_entity` FOREIGN KEY (`entity_id`) REFERENCES `minecity_entities` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE
-)
+) ENGINE=InnoDB
 ;
 
 CREATE TABLE `minecity_city_perm_defaults` (
@@ -108,7 +108,7 @@ CREATE TABLE `minecity_city_perm_defaults` (
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`city_id`, `perm`),
 CONSTRAINT `city_perm_defaults` FOREIGN KEY (`city_id`) REFERENCES `minecity_city` (`city_id`) ON DELETE CASCADE ON UPDATE CASCADE
-)
+) ENGINE=InnoDB
 ;
 
 CREATE TABLE `minecity_city_perm_player` (
@@ -120,7 +120,7 @@ CREATE TABLE `minecity_city_perm_player` (
 PRIMARY KEY (`city_id`, `player_id`, `perm`),
 CONSTRAINT `city_perm_player_city` FOREIGN KEY (`city_id`) REFERENCES `minecity_city` (`city_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `city_perm_player_player` FOREIGN KEY (`player_id`) REFERENCES `minecity_players` (`player_id`) ON DELETE CASCADE ON UPDATE CASCADE
-)
+) ENGINE=InnoDB
 ;
 
 CREATE TABLE `minecity_city_perm_entity` (
@@ -132,7 +132,7 @@ CREATE TABLE `minecity_city_perm_entity` (
 PRIMARY KEY (`city_id`, `entity_id`, `perm`),
 CONSTRAINT `city_perm_entity_city` FOREIGN KEY (`city_id`) REFERENCES `minecity_city` (`city_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `city_perm_entity_entity` FOREIGN KEY (`entity_id`) REFERENCES `minecity_entities` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE
-)
+) ENGINE=InnoDB
 ;
 
 CREATE TABLE `minecity_city_perm_group` (
@@ -144,7 +144,7 @@ CREATE TABLE `minecity_city_perm_group` (
 PRIMARY KEY (`city_id`, `group_id`, `perm`),
 CONSTRAINT `city_perm_group_city` FOREIGN KEY (`city_id`) REFERENCES `minecity_city` (`city_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `city_perm_group_group` FOREIGN KEY (`group_id`) REFERENCES `minecity_groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE
-)
+) ENGINE=InnoDB
 ;
 
 CREATE TABLE `minecity_group_managers` (
@@ -153,7 +153,7 @@ CREATE TABLE `minecity_group_managers` (
 PRIMARY KEY (`group_id`, `player_id`),
 CONSTRAINT `group_managers_group` FOREIGN KEY (`group_id`) REFERENCES `minecity_groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `group_managers_player` FOREIGN KEY (`player_id`) REFERENCES `minecity_players` (`player_id`) ON DELETE CASCADE ON UPDATE CASCADE
-)
+) ENGINE=InnoDB
 ;
 
 CREATE TABLE `minecity_plots` (
@@ -176,7 +176,7 @@ CREATE TABLE `minecity_plots` (
 PRIMARY KEY (`plot_id`),
 CONSTRAINT `plot_island` FOREIGN KEY (`island_id`) REFERENCES `minecity_islands` (`island_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `plot_owner` FOREIGN KEY (`owner`) REFERENCES `minecity_players` (`player_id`) ON DELETE SET NULL ON UPDATE CASCADE
-)
+) ENGINE=InnoDB
 ;
 
 CREATE TABLE `minecity_plot_perm_defaults` (
@@ -185,7 +185,7 @@ CREATE TABLE `minecity_plot_perm_defaults` (
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`plot_id`, `perm`),
 CONSTRAINT `plot_perm_plot` FOREIGN KEY (`plot_id`) REFERENCES `minecity_plots` (`plot_id`) ON DELETE CASCADE ON UPDATE CASCADE
-)
+) ENGINE=InnoDB
 ;
 
 CREATE TABLE `minecity_plot_perm_player` (
@@ -197,7 +197,7 @@ CREATE TABLE `minecity_plot_perm_player` (
 PRIMARY KEY (`plot_id`, `player_id`, `perm`),
 CONSTRAINT `plot_perm_player_plot` FOREIGN KEY (`plot_id`) REFERENCES `minecity_plots` (`plot_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `plot_perm_player_player` FOREIGN KEY (`player_id`) REFERENCES `minecity_players` (`player_id`) ON DELETE CASCADE ON UPDATE CASCADE
-)
+) ENGINE=InnoDB
 ;
 
 CREATE TABLE `minecity_plot_perm_entity` (
@@ -209,7 +209,7 @@ CREATE TABLE `minecity_plot_perm_entity` (
 PRIMARY KEY (`plot_id`, `entity_id`, `perm`),
 CONSTRAINT `plot_perm_entity_plot` FOREIGN KEY (`plot_id`) REFERENCES `minecity_plots` (`plot_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `plot_perm_entity_entity` FOREIGN KEY (`entity_id`) REFERENCES `minecity_entities` (`entity_id`) ON DELETE CASCADE ON UPDATE CASCADE
-)
+) ENGINE=InnoDB
 ;
 
 CREATE TABLE `minecity_plot_perm_group` (
@@ -221,7 +221,7 @@ CREATE TABLE `minecity_plot_perm_group` (
 PRIMARY KEY (`plot_id`, `group_id`, `perm`),
 CONSTRAINT `plot_perm_group_plot` FOREIGN KEY (`plot_id`) REFERENCES `minecity_plots` (`plot_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `plot_perm_group_entity` FOREIGN KEY (`group_id`) REFERENCES `minecity_groups` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE
-)
+) ENGINE=InnoDB
 ;
 
 CREATE TABLE `minecity_world_perm_defaults` (
@@ -230,13 +230,13 @@ CREATE TABLE `minecity_world_perm_defaults` (
 `message`  varchar(100) NULL ,
 PRIMARY KEY (`world_id`, `perm`),
 CONSTRAINT `world_perm_world` FOREIGN KEY (`world_id`) REFERENCES `minecity_world` (`world_id`) ON DELETE CASCADE ON UPDATE CASCADE
-)
+) ENGINE=InnoDB
 ;
 
 CREATE TABLE `minecity_setup` (
 `property`  enum('version') NOT NULL ,
-`value`  enum('6') NOT NULL DEFAULT '6' ,
+`value`  enum('7') NOT NULL DEFAULT '7' ,
 PRIMARY KEY (`property`)
-);
+) ENGINE=MyISAM;
 
-INSERT INTO `minecity_setup` VALUES('version', '6');
+INSERT INTO `minecity_setup` VALUES('version', '7');

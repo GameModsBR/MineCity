@@ -33,7 +33,7 @@ import static br.com.gamemods.minecity.api.StringUtil.identity;
 
 public class SQLSource implements IDataSource
 {
-    private static final int VERSION = 6;
+    private static final int VERSION = 7;
 
     @NotNull
     public final MineCity mineCity;
