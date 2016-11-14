@@ -1410,7 +1410,7 @@ public class SQLCityStorage implements ICityStorage
                    PlayerID owner;
                    int ownerId = result.getInt(8);
                    if(ownerId > 0)
-                       owner = new PlayerID(source.uuid(result.getBytes(9)), result.getString(10));
+                       owner = PlayerID.get(source.uuid(result.getBytes(9)), result.getString(10));
                    else
                        owner = null;
 
