@@ -155,7 +155,7 @@ public class CityCommand
                     new Object[]{"city",island.getCity().getName()}
             ));
 
-        City reserved = claim.getCity().orElse(null);
+        City reserved = claim.getCityAcceptingReserve().orElse(null);
         if(reserved != null)
             return new CommandResult<>(new Message("cmd.city.create.chunk.reserved",
                     "The chunk that you are is reserved to ${city}", new Object[]{"city",reserved.getName()}
