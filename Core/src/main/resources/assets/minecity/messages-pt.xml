@@ -64,10 +64,10 @@
                         <msg id="name">PEGAR</msg>
                         <msg id="info">Pegar itens soltos</msg>
                     </pickup>
-                    <enter>
+                    <harvest>
                         <msg id="name">COLHER</msg>
                         <msg id="info">Colher plantações, lãs e leite das vacas</msg>
-                    </enter>
+                    </harvest>
                     <msg id="open.name">ABRIR</msg>
                     <msg id="open.info">Abrir contêiners como baús, molduras e fornalhas</msg>
                     <pvp>
@@ -371,10 +371,10 @@
                         <msg id="name">PEGAR</msg>
                         <msg id="info">Pegar itens soltos</msg>
                     </pickup>
-                    <enter>
+                    <harvest>
                         <msg id="name">COLHER</msg>
                         <msg id="info">Colher plantações, lãs e leite das vacas</msg>
-                    </enter>
+                    </harvest>
                     <msg id="open.name">ABRIR</msg>
                     <msg id="open.info">Abrir contêiners como baús, molduras e fornalhas</msg>
                     <pvp>
