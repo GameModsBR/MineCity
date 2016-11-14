@@ -141,6 +141,9 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
         r.put("appeng.block.AEBaseTileBlock",
                 "br.com.gamemods.minecity.forge.base.protection.appeng.IAEBaseTileBlock");
 
+        r.put("ic2.core.item.tool.ItemToolCutter",
+                "br.com.gamemods.minecity.forge.base.protection.industrialcraft.IItemToolCutter");
+
         r.put("ic2.core.item.ItemRadioactive",
                 "br.com.gamemods.minecity.forge.base.protection.industrialcraft.RadioactiveItem");
 
