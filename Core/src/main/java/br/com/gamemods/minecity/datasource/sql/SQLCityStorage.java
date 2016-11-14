@@ -589,7 +589,7 @@ public class SQLCityStorage implements ICityStorage
             try
             {
                 try(PreparedStatement pst = transaction.prepareStatement(
-                        "UPDATE minecity_city SET `price`=? WHERE plot_id=?"
+                        "UPDATE minecity_city SET `price`=? WHERE city_id=?"
                 ))
                 {
                     pst.setDouble(1, price);
