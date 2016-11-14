@@ -331,7 +331,7 @@ public class CityCommand
         if(claimOpt.get().reserve && claimOpt.get().getCityAcceptingReserve().get() != city)
             return new CommandResult<>(new Message("cmd.city.claim.reserved",
                     "This chunk is reserved to ${name}",
-                    new Object[]{"name",claimOpt.get().getCity().get().getName()}
+                    new Object[]{"name",claimOpt.get().getCityAcceptingReserve().get().getName()}
             ));
 
         if(!cmd.sender.isAdminMode() && !playerId.equals(city.owner()))
