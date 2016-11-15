@@ -50,7 +50,7 @@
         <group id="city.check" parent="city" cmd="ver,checar">
             <desc>Mostra detalhes sobre as permissões</desc>
         </group>
-        <group id="city.cancel" parent="city" cmd="cancel">
+        <group id="city.cancel" parent="city" cmd="cancelar,abortar">
             <desc>Cancela uma ação relacionada a cidade</desc>
         </group>
         <group id="plot.allow" parent="plot" cmd="permitir">
@@ -74,7 +74,7 @@
         <group id="plot.check" parent="plot" cmd="ver,checar">
             <desc>Mostra detalhes sobre as permissões</desc>
         </group>
-        <group id="plot.cancel" parent="plot" cmd="cancelar">
+        <group id="plot.cancel" parent="plot" cmd="cancelar,abortar">
             <desc>Cancela uma ação relacionada ao lote</desc>
         </group>
     </groups>
