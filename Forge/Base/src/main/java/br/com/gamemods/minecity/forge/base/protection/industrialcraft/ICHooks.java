@@ -181,10 +181,10 @@ public class ICHooks
     }
 
     @Referenced(at = TileEntityMinerTransformer.class)
-    public static boolean onMinerModify(ITileEntity tile, int x, int y, int z)
+    public static boolean onMinerModify(ITileEntity tile, Point p)
     {
         return !ModHooks.onBlockAccessOther
-                ((World) tile.getIWorld(), x, y, z,
+                ((World) tile.getIWorld(), p.x, p.y, p.z,
                 tile.getPosX(), tile.getPosY(), tile.getPosZ(),
                 PermissionFlag.MODIFY
         ).isPresent();

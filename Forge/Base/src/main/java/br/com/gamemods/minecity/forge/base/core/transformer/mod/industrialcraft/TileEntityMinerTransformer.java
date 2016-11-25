@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft;
 
 import br.com.gamemods.minecity.forge.base.core.MethodPatcher;
+import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.BasicTransformer;
 import org.objectweb.asm.ClassReader;
@@ -27,9 +28,10 @@ public class TileEntityMinerTransformer extends BasicTransformer
     @Override
     protected void patch(String name, ClassNode node, ClassReader reader)
     {
-        String icHookds = "br.com.gamemods.minecity.forge.base.protection.industrialcraft.ICHooks".replace('.','/');
+        String hooks = ModEnv.hookClass.replace('.','/');
+        String icHooks = "br.com.gamemods.minecity.forge.base.protection.industrialcraft.ICHooks".replace('.','/');
         String tile = "br.com.gamemods.minecity.forge.base.accessors.block.ITileEntity".replace('.','/');
-        String icPos = "ic2.core.util.Ic2BlockPos".replace('.','/');
+        String point = "br.com.gamemods.minecity.api.shape.Point".replace('.','/');
 
         for(MethodNode method : node.methods)
         {
@@ -43,20 +45,17 @@ public class TileEntityMinerTransformer extends BasicTransformer
                     list.add(new VarInsnNode(ILOAD, 1));
                     list.add(new VarInsnNode(ILOAD, 2));
                     list.add(new VarInsnNode(ILOAD, 3));
+                    list.add(new MethodInsnNode(INVOKESTATIC, hooks, "toPoint", "(III)L"+point+";", false));
                 }
                 // 1.10.2
                 else
                 {
                     list.add(new VarInsnNode(ALOAD, 0));
                     list.add(new VarInsnNode(ALOAD, 1));
-                    list.add(new MethodInsnNode(INVOKEVIRTUAL, icPos, "getX", "()I", false));
-                    list.add(new VarInsnNode(ALOAD, 1));
-                    list.add(new MethodInsnNode(INVOKEVIRTUAL, icPos, "getY", "()I", false));
-                    list.add(new VarInsnNode(ALOAD, 1));
-                    list.add(new MethodInsnNode(INVOKEVIRTUAL, icPos, "getZ", "()I", false));
+                    list.add(new MethodInsnNode(INVOKESTATIC, hooks, "toPoint", "(Ljava/lang/Object;)L"+point+";", false));
                 }
                 list.add(new MethodInsnNode(INVOKESTATIC,
-                        icHookds, "onMinerModify", "(L"+tile+";III)Z", false
+                        icHooks, "onMinerModify", "(L"+tile+";L"+point+";)Z", false
                 ));
                 LabelNode labelNode = new LabelNode();
                 list.add(new JumpInsnNode(IFEQ, labelNode));
