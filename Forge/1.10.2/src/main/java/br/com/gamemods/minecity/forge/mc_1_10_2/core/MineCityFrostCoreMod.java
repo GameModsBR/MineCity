@@ -59,7 +59,6 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.appeng.EntityTinyTNTPrimedTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityTeleporterTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityTerraTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityTerraTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityMinerTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityCropmatronTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.TileEntityTeslaTransformer",
