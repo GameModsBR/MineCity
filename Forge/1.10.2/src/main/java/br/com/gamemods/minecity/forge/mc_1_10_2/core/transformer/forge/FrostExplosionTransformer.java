@@ -20,7 +20,7 @@ public class FrostExplosionTransformer extends ExplosionTransformer
     {
         super.patch(name, node, reader);
 
-        FieldNode exploder = node.fields.stream().filter(f-> f.desc.equals("net/minecraft/entity/Entity"))
+        FieldNode exploder = node.fields.stream().filter(f-> f.desc.equals("Lnet/minecraft/entity/Entity;"))
                 .findFirst().orElseThrow(()-> new NoSuchElementException("Failed to find the exploder field"));
         MethodNode method = new MethodNode(ACC_PUBLIC, "getExploder", "()Lbr.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;".replace('.','/'), null, null);
 
