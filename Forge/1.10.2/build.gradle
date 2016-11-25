@@ -28,7 +28,7 @@ project(':Forge:1.10.2') {
 }
 
 minecraft {
-    version = "1.10.2-12.18.1.2011"
+    version = "1.10.2-12.18.2.2151"
     runDir = "run"
 
     clientJvmArgs += "-Dfml.coreMods.load=br.com.gamemods.minecity.forge.mc_1_10_2.core.MineCityFrostCoreMod"
