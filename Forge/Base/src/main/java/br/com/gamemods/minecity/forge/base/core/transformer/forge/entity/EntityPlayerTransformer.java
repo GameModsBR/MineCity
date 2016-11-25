@@ -56,6 +56,7 @@ public class EntityPlayerTransformer extends BasicTransformer
                 list.add(new VarInsnNode(ALOAD, 0));
                 list.add(new VarInsnNode(ALOAD, 1));
                 list.add(new VarInsnNode(ALOAD, 2));
+                list.add(new VarInsnNode(ALOAD, 3));
                 list.add(new MethodInsnNode(INVOKESTATIC,
                         ModEnv.hookClass.replace('.','/'),
                         "canPlayerEdit",
