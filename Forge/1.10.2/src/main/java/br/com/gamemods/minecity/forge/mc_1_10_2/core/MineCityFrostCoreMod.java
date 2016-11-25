@@ -117,11 +117,11 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityEggTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockStemTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockSaplingTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer",
+                //"br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockDragonEggTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityXPOrbTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityArrowTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityIgnitionTransformer",
+                //"br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityIgnitionTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityEnderCrystalTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityArmorStandTransformer",
@@ -141,7 +141,7 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockNoReactExtendsOpenTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemModifyFaceReactorTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.ProjectileTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.AddPotionEffectObserverTransformer"
+                //"br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.AddPotionEffectObserverTransformer"
         };
     }
 
