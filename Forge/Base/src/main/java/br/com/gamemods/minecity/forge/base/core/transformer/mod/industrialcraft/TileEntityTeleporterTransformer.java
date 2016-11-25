@@ -82,7 +82,7 @@ public class TileEntityTeleporterTransformer extends BasicTransformer
         MethodNode method = new MethodNode(ACC_PUBLIC, methodName, "()I", null, null);
         method.visitCode();
         method.visitVarInsn(ALOAD, 0);
-        method.visitFieldInsn(GETFIELD, owner, "target", "Lnet/minecraft/util/math/BlockPos");
+        method.visitFieldInsn(GETFIELD, owner, "target", "Lnet/minecraft/util/math/BlockPos;");
         method.visitInsn(DUP);
         Label label = new Label();
         method.visitJumpInsn(IFNULL, label);
