@@ -113,14 +113,17 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.NodeProcessorTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.PathFinderTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.world.ChunkCacheTransformer",
-                "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.OnImpactTransformer",
+                // TODO Compatibility with Sponge
+                //"br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.OnImpactTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityEggTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockStemTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockSaplingTransformer",
+                // TODO Fix Pure Forge issue
                 //"br.com.gamemods.minecity.forge.base.core.transformer.forge.block.GrowMonitorTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockDragonEggTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityXPOrbTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityArrowTransformer",
+                // TODO Fix Pure Forge issue
                 //"br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityIgnitionTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityEnderCrystalTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockTNTTransformer",
@@ -128,7 +131,8 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityFishingHookTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityAreaEffectCloudTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostInterfaceTransformer",
-                "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPotionTransformer",
+                // TODO Compatibility with Sponge
+                //"br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostEntityPotionTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityBoatTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.EntityMinecartTransformer",
                 "br.com.gamemods.minecity.forge.mc_1_10_2.core.transformer.forge.FrostWorldServerTransformer",
@@ -141,6 +145,7 @@ public class MineCityFrostCoreMod implements IFMLLoadingPlugin, IFMLCallHook
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.block.BlockNoReactExtendsOpenTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemModifyFaceReactorTransformer",
                 "br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.ProjectileTransformer",
+                // TODO Fix Pure Forge issue
                 //"br.com.gamemods.minecity.forge.base.core.transformer.forge.entity.AddPotionEffectObserverTransformer"
         };
     }
