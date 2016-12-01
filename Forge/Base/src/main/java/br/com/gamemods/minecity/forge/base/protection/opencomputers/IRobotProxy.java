@@ -30,7 +30,7 @@ public interface IRobotProxy extends ISimpleBlock
         if(tile instanceof IAgent)
         {
             IAgent agent = (IAgent) tile;
-            if(player.getUniqueId().equals(agent.ownerUUID()))
+            if(player.getEntityUUID().equals(agent.ownerUUID()))
             {
                 IItem drop = getItemDropped(state, MineCity.RANDOM, 0);
                 ApproveReaction reaction = new ApproveReaction(pos, PermissionFlag.MODIFY);
@@ -55,7 +55,7 @@ public interface IRobotProxy extends ISimpleBlock
         if(tile instanceof IAgent)
         {
             IAgent agent = (IAgent) tile;
-            if(player.getUniqueId().equals(agent.ownerUUID()))
+            if(player.getEntityUUID().equals(agent.ownerUUID()))
                 return NoReaction.INSTANCE;
         }
 

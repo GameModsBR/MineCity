@@ -20,7 +20,7 @@ public interface IItemEnderStorage extends IItemBlock
     {
         IEntityItem entityItem = (IEntityItem) drop;
         String owner = getOwner(entityItem.getStack().getStack());
-        if(!owner.equals("global") && entity.getName().equals(owner))
+        if(!owner.equals("global") && entity.getEntityName().equals(owner))
             return NoReaction.INSTANCE;
 
         return IItemBlock.super.onPlayerPickup(entity, drop);

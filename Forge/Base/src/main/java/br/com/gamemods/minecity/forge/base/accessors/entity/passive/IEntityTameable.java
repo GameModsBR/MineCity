@@ -63,7 +63,7 @@ public interface IEntityTameable extends IEntityAnimal
     @Override
     default Reaction reactPlayerInteractLiving(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
     {
-        if(isTamed() && !isSitting() && player.getUniqueId().equals(getEntityOwnerId()))
+        if(isTamed() && !isSitting() && player.getEntityUUID().equals(getEntityOwnerId()))
             return new SingleBlockReaction(getBlockPos(player.getServer()), PermissionFlag.MODIFY);
 
 

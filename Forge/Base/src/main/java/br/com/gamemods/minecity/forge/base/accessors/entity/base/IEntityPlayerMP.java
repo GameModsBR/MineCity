@@ -49,7 +49,7 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
         if(player != null)
             return player.identity();
 
-        return new PlayerID(getUniqueID(), getName());
+        return new PlayerID(getUniqueID(), getEntityName());
     }
 
     @NotNull
@@ -113,13 +113,6 @@ public interface IEntityPlayerMP extends IEntityLivingBase, ICommander
     }
 
     void sendTitle(MineCityForge mod, Message title, Message subTitle);
-
-    @NotNull
-    @Override
-    default String getName()
-    {
-        return IEntityLivingBase.super.getName();
-    }
 
     void sendBlock(int x, int y, int z);
 

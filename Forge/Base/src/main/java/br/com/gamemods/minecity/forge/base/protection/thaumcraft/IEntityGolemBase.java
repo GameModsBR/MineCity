@@ -83,7 +83,7 @@ public interface IEntityGolemBase extends IEntityCreature
             IEntityLivingBase owner = getEntityOwner();
             UUID uuid;
             if(owner != null)
-                uuid = owner.getUniqueId();
+                uuid = owner.getEntityUUID();
             else
             {
                 PlayerID id = getIWorld().getServer().getPlayerId(getOwnerName());

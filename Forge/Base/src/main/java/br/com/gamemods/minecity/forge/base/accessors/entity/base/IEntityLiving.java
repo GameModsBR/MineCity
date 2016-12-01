@@ -74,7 +74,7 @@ public interface IEntityLiving extends IEntityLivingBase
         }
         else if(stack != null && stack.getIItem() instanceof IItemLead && canBeLeashedTo(player.cmd.sender))
         {
-            if(player.getUniqueId().equals(owner))
+            if(player.getEntityUUID().equals(owner))
                 return NoReaction.INSTANCE;
 
             return new SingleBlockReaction(getBlockPos(mod), PermissionFlag.MODIFY)

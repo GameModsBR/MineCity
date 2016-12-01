@@ -753,8 +753,8 @@ public class SQLSourceTest
     {
         MinecraftEntity entity = mock(MinecraftEntity.class);
         when(entity.getIdentity()).thenReturn(player);
-        when(entity.getName()).thenReturn(player.getName());
-        when(entity.getUniqueId()).thenReturn(player.getUniqueId());
+        when(entity.getEntityName()).thenReturn(player.getName());
+        when(entity.getEntityUUID()).thenReturn(player.getUniqueId());
         when(entity.getType()).thenReturn(MinecraftEntity.Type.PLAYER);
         when(entity.isGroupLoaded()).thenReturn(true);
         when(entity.getGroupIds()).thenReturn(Collections.emptySet());

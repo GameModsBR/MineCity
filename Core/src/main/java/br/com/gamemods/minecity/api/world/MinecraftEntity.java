@@ -15,8 +15,9 @@ import java.util.UUID;
 public interface MinecraftEntity extends Identifiable<UUID>, Permissible
 {
     @NotNull
-    @Override
-    UUID getUniqueId();
+    UUID getEntityUUID();
+
+    String getEntityName();
 
     @NotNull
     Type getType();
@@ -30,9 +31,9 @@ public interface MinecraftEntity extends Identifiable<UUID>, Permissible
     {
         Type type = getType();
         if(type == Type.PLAYER)
-            return new PlayerID(getUniqueId(), getName());
+            return new PlayerID(getEntityUUID(), getEntityName());
 
-        return new EntityID(type, getUniqueId(), getName());
+        return new EntityID(type, getEntityUUID(), getEntityName());
     }
 
     /**

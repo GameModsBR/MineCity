@@ -33,7 +33,7 @@ public interface IEntityItem extends Pickable, EntityProjectile
         if(player == null)
         {
             player = mod.server.getIPlayerList().getIPlayers().stream().filter(
-                    p -> p.getName().equals(thrower)).findFirst().orElse(null);
+                    p -> p.getEntityName().equals(thrower)).findFirst().orElse(null);
             if(player == null)
             {
                 setShooter(new ProjectileShooter(getEntityPos(mod)));

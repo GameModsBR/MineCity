@@ -69,7 +69,7 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
             }
             catch(Exception e)
             {
-                plugin.logger.log(Level.SEVERE, "An error occurred while loading the "+getName()+"'s groups!", e);
+                plugin.logger.log(Level.SEVERE, "An error occurred while loading the "+ getEntityName()+"'s groups!", e);
                 plugin.callSyncMethod(()-> kick(new Message("task.player.load.groups.failed",
                         "Oops, an error occurred while loading your groups: ${error}",
                         Message.errorArgs(e)
@@ -506,14 +506,14 @@ public class BukkitPlayer extends BukkitLocatableSender<Player> implements Minec
 
     @NotNull
     @Override
-    public String getName()
+    public String getEntityName()
     {
         return sender.getName();
     }
 
     @NotNull
     @Override
-    public UUID getUniqueId()
+    public UUID getEntityUUID()
     {
         return playerId.uniqueId;
     }

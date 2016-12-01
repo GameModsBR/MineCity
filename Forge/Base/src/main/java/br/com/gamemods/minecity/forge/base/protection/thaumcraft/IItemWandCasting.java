@@ -56,13 +56,13 @@ public interface IItemWandCasting extends IItem
 
         int md = state.getIntValueOrMeta("metadata");
         if( ( (block instanceof IBlockWoodenDevice || block instanceof IBlockCosmeticOpaque) && md == 2)
-            && (!ThaumHooks.getConfigWardedStone() || tile != null && tile instanceof ITileOwned && player.getName().equals(((ITileOwned)tile).getOwnerName()))
+            && (!ThaumHooks.getConfigWardedStone() || tile != null && tile instanceof ITileOwned && player.getEntityName().equals(((ITileOwned)tile).getOwnerName()))
         )
         {
             return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
         }
 
-        if(block instanceof IBlockArcaneDoor && (!ThaumHooks.getConfigWardedStone() || tile != null && tile instanceof ITileOwned && player.getName().equals(((ITileOwned)tile).getOwnerName())))
+        if(block instanceof IBlockArcaneDoor && (!ThaumHooks.getConfigWardedStone() || tile != null && tile instanceof ITileOwned && player.getEntityName().equals(((ITileOwned)tile).getOwnerName())))
         {
             return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
         }

@@ -21,7 +21,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-import org.jetbrains.annotations.NotNull;
 
 @Referenced(at = FrostEntityPlayerMPTransformer.class)
 public interface FrostEntityPlayerMP extends IEntityPlayerMP, FrostEntity
@@ -74,13 +73,6 @@ public interface FrostEntityPlayerMP extends IEntityPlayerMP, FrostEntity
                     mod.transformer.toJson(subtitle)
             )));
         }
-    }
-
-    @NotNull
-    @Override
-    default String getName()
-    {
-        return IEntityPlayerMP.super.getName();
     }
 
     @Override

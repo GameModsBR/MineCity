@@ -422,7 +422,7 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
     {
         for(IEntityPlayerMP player : server.getIPlayerList().getIPlayers())
         {
-            String playerName = player.getName();
+            String playerName = player.getEntityName();
             if(name.equals(playerName))
                 return Optional.of(player.getIdentity());
         }
@@ -441,7 +441,7 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
     @SuppressWarnings("unchecked")
     public Stream<String> getOnlinePlayerNames()
     {
-        return server.getIPlayerList().getIPlayers().stream().map(IEntity::getName);
+        return server.getIPlayerList().getIPlayers().stream().map(IEntity::getEntityName);
     }
 
     public WorldDim world(World world)

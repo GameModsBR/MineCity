@@ -107,7 +107,7 @@ public interface SevenEntityOwnable extends EntityOwnable
     {
         IEntity owner = EntityOwnable.super.getOwner();
         if(owner != null)
-            setOwnableOwner(owner.getUniqueID().toString(), owner.getName());
+            setOwnableOwner(owner.getUniqueID().toString(), owner.getEntityName());
 
         return owner;
     }

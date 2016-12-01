@@ -12,7 +12,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S13PacketDestroyEntities;
 import net.minecraft.network.play.server.S1CPacketEntityMetadata;
 import net.minecraft.world.WorldServer;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -53,13 +52,6 @@ public interface SevenEntity extends IEntity
     {
         ((Entity) this).mountEntity((Entity) entity);
         return true;
-    }
-
-    @NotNull
-    @Override
-    default String getName()
-    {
-        return ((Entity) this).getCommandSenderName();
     }
 
     @Override

@@ -33,7 +33,7 @@ public interface IRobotAfterimage extends IRobotProxy
     default Reaction reactBlockBreak(ForgePlayer<?, ?, ?> player, IState state, BlockPos pos)
     {
         Optional<IRobotTile> tile = findMovingRobot(pos);
-        if(tile.isPresent() && player.getUniqueId().equals(tile.get().ownerUUID()))
+        if(tile.isPresent() && player.getEntityUUID().equals(tile.get().ownerUUID()))
         {
             IRobotTile robot = tile.get();
             BlockPos robotPos = new BlockPos(pos, (int)robot.xPosition(), (int)robot.yPosition(), (int)robot.zPosition());

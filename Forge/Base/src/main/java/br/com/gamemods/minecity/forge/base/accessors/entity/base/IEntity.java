@@ -66,7 +66,7 @@ public interface IEntity extends MinecraftEntity, Positioned
     }
 
     @NotNull
-    default String getName()
+    default String getEntityName()
     {
         return getForgeEntity().getName();
     }
@@ -148,7 +148,7 @@ public interface IEntity extends MinecraftEntity, Positioned
 
     default Reaction reactPlayerInteraction(ForgePlayer<?,?,?> player, IItemStack stack, boolean offHand)
     {
-        if(player.getUniqueId().equals(getEntityOwnerId()))
+        if(player.getEntityUUID().equals(getEntityOwnerId()))
             return NoReaction.INSTANCE;
 
         switch(getType())
@@ -341,7 +341,7 @@ public interface IEntity extends MinecraftEntity, Positioned
 
     @NotNull
     @Override
-    default UUID getUniqueId()
+    default UUID getEntityUUID()
     {
         return getUniqueID();
     }
@@ -357,7 +357,7 @@ public interface IEntity extends MinecraftEntity, Positioned
     @Override
     default Identity<UUID> getIdentity()
     {
-        return new EntityID(getType(), getUniqueId(), getName());
+        return new EntityID(getType(), getEntityUUID(), getEntityName());
     }
 
     @Override

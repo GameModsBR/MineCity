@@ -60,7 +60,7 @@ public interface IVehicularEntity extends IEntityAnimal, IVehicle
     default Reaction reactPlayerInteractLiving(ForgePlayer<?, ?, ?> player, IItemStack stack, boolean offHand)
     {
         UUID owner = getEntityOwnerId();
-        if(owner != null && owner.equals(player.getUniqueId()))
+        if(owner != null && owner.equals(player.getEntityUUID()))
             return NoReaction.INSTANCE;
 
         BlockPos pos = getBlockPos(player.getServer());

@@ -38,7 +38,7 @@ public class ForgePlayerSender<P extends IEntityPlayerMP, F extends MineCityForg
     public ForgePlayerSender(F mod, P sender)
     {
         super(mod, sender);
-        this.id = new PlayerID(sender.getUniqueID(), sender.getName());
+        this.id = new PlayerID(sender.getUniqueID(), sender.getEntityName());
     }
 
     public void tick()

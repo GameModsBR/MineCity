@@ -23,7 +23,7 @@ public interface IBlockOwned extends IBlockNoReactionExtendsOpen
         if(tile instanceof IPlayerOwned)
         {
             UUID owner = ((IPlayerOwned) tile).getOwnerId();
-            if(player.getUniqueId().equals(owner))
+            if(player.getEntityUUID().equals(owner))
                 return NoReaction.INSTANCE;
         }
 

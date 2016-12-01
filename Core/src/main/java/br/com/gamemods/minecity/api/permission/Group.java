@@ -202,13 +202,11 @@ public final class Group implements Identifiable<Integer>
     }
 
     @NotNull
-    @Override
     public Integer getUniqueId()
     {
         return id;
     }
 
-    @Override
     @NotNull
     public String getName()
     {

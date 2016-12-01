@@ -10,7 +10,7 @@ public interface ICommander
         return (ICommandSender) this;
     }
 
-    default String getName()
+    default String getCommandSenderName()
     {
         return getForgeSender().getName();
     }

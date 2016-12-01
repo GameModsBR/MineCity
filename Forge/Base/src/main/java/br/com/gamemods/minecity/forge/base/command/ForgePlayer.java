@@ -66,7 +66,7 @@ public class ForgePlayer
             }
             catch(Exception e)
             {
-                mod.logger.error("An error occurred while loading the "+getName()+"'s groups!", e);
+                mod.logger.error("An error occurred while loading the "+ getEntityName()+"'s groups!", e);
                 mod.callSyncMethod(()-> kick(new Message("task.player.load.groups.failed",
                         "Oops, an error occurred while loading your groups: ${error}",
                         Message.errorArgs(e)
@@ -436,14 +436,14 @@ public class ForgePlayer
 
     @NotNull
     @Override
-    public UUID getUniqueId()
+    public UUID getEntityUUID()
     {
         return cmd.id.uniqueId;
     }
 
     @NotNull
     @Override
-    public String getName()
+    public String getEntityName()
     {
         return cmd.id.getName();
     }

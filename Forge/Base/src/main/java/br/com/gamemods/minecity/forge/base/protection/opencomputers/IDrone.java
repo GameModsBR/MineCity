@@ -48,7 +48,7 @@ public interface IDrone extends IEntity, IAgent, IEnvironmentHost, IRotatable
         if(player.cmd.sender.isSneaking() && stack != null && OCHooks.isWrench(stack))
         {
             TriggeredReaction reaction;
-            if(player.getUniqueId().equals(ownerUUID()))
+            if(player.getEntityUUID().equals(ownerUUID()))
                 reaction = new ApproveReaction(pos, PermissionFlag.MODIFY);
             else
                 reaction = new SingleBlockReaction(pos, PermissionFlag.MODIFY).addDenialListener((reaction1, permissible, flag, pos1, message) ->
@@ -61,7 +61,7 @@ public interface IDrone extends IEntity, IAgent, IEnvironmentHost, IRotatable
                     )
             );
         }
-        else if(player.getUniqueId().equals(ownerUUID()))
+        else if(player.getEntityUUID().equals(ownerUUID()))
         {
             return NoReaction.INSTANCE;
         }

@@ -61,7 +61,7 @@ public interface IEntityFireBat extends IEntityMob
         IEntityMob.super.onEnterWorld(pos, spawner);
 
         IEntityLivingBase owner = getEntityOwner();
-        UUID uuid = owner != null? owner.getUniqueId() : ThaumHooks.fireBatSpawner;
+        UUID uuid = owner != null? owner.getEntityUUID() : ThaumHooks.fireBatSpawner;
         ThaumHooks.fireBatSpawner = null;
         if(uuid != null)
             ((Entity) this).getEntityData().setString("mineCity$fbSpawner", uuid.toString());

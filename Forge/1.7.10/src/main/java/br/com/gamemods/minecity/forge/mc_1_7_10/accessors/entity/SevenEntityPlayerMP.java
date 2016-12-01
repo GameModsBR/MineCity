@@ -21,7 +21,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.*;
 import net.minecraft.tileentity.TileEntity;
-import org.jetbrains.annotations.NotNull;
 
 @Referenced(at = SevenEntityPlayerMPTransformer.class)
 public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingBase
@@ -78,13 +77,6 @@ public interface SevenEntityPlayerMP extends IEntityPlayerMP, SevenEntityLivingB
     default void sendTitle(MineCityForge mod, Message title, Message subTitle)
     {
         // Not supported
-    }
-
-    @NotNull
-    @Override
-    default String getName()
-    {
-        return SevenEntityLivingBase.super.getName();
     }
 
     @Override

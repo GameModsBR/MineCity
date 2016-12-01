@@ -10,18 +10,10 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketDestroyEntities;
 import net.minecraft.network.play.server.SPacketEntityMetadata;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
-import org.jetbrains.annotations.NotNull;
 
 @Referenced(at = FrostInterfaceTransformer.class)
 public interface FrostEntity extends IEntity, ICommander
 {
-    @NotNull
-    @Override
-    default String getName()
-    {
-        return IEntity.super.getName();
-    }
-
     @Override
     default boolean sendSpawnPackets(IEntityPlayerMP player)
     {
