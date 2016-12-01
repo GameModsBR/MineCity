@@ -17,6 +17,7 @@ import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.datasource.api.unchecked.DBConsumer;
 import br.com.gamemods.minecity.economy.EconomyLayer;
 import br.com.gamemods.minecity.permission.PermissionLayer;
+import br.com.gamemods.minecity.sponge.SpongeProviders;
 import br.com.gamemods.minecity.vault.VaultProviders;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -77,6 +78,16 @@ public class MineCityPlugin extends JavaPlugin
         {
             EconomyLayer.register("vault", VaultProviders.ECONOMY);
             PermissionLayer.register("vault", VaultProviders.PERMISSION);
+        }
+
+        try
+        {
+            Class.forName("org.spongepowered.api.Sponge");
+            EconomyLayer.register("sponge", SpongeProviders.ECONOMY);
+        }
+        catch(ClassNotFoundException ignored)
+        {
+            getLogger().info("Sponge API not found, disabling Sponge support");
         }
 
         BukkitTransformer transformer;

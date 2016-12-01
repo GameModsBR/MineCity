@@ -7,7 +7,7 @@ database:
 # Possible values: Vault, None
 economy: vault
 
-# Possible values: Bukkit, Vault, None
+# Possible values: Bukkit, Vault, Sponge, None
 permissions: vault
 
 costs:

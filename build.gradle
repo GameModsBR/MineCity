@@ -33,6 +33,11 @@ subprojects {
             name = 'Plugin Metrics'
             url = 'http://repo.mcstats.org/content/repositories/public'
         }
+
+        maven {
+            name = 'sponge'
+            url = 'http://repo.spongepowered.org/maven'
+        }
         maven {
             name = 'vault-repo'
             url = 'http://nexus.hc.to/content/repositories/pub_releases'
@@ -58,9 +63,14 @@ project(':VaultEco') {
     dependencies {
         compile project(':Core')
         compile "net.milkbowl.vault:VaultAPI:1.6"
-        compile("org.bukkit:bukkit:1.8-R0.1-SNAPSHOT") {
-            //transitive = false
-        }
+        compile "org.bukkit:bukkit:1.8-R0.1-SNAPSHOT"
+    }
+}
+
+project(':SpongeEco') {
+    dependencies {
+        compile project(':Core')
+        compile 'org.spongepowered:spongeapi:5.0.0'
     }
 }
 
@@ -75,6 +85,9 @@ project(':Bukkit') {
     dependencies {
         shade project(':Core')
         shade project(':VaultEco')
+        shade(project(':SpongeEco')) {
+            transitive = false
+        }
         //compile files("run/BuildTools/Spigot/Spigot-Server/target/original-spigot-1.10.2-R0.1-SNAPSHOT.jar")
         //compile files("run/BuildTools/spigot-1.10.2.jar")
         compile "org.spigotmc:spigot-api:1.10.2-R0.1-SNAPSHOT"

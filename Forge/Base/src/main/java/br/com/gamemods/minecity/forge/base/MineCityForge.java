@@ -27,6 +27,7 @@ import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.*;
 import br.com.gamemods.minecity.forge.base.protection.SnapshotHandler;
 import br.com.gamemods.minecity.permission.PermissionLayer;
+import br.com.gamemods.minecity.sponge.SpongeProviders;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import br.com.gamemods.minecity.structure.Inconsistency;
 import br.com.gamemods.minecity.vault.VaultDelayedProviders;
@@ -225,7 +226,7 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
                 .filter(p->!p.isEmpty()).map(String::getBytes).orElse(null);
 
         this.config.economy = config.getString("general", "economy", "none",
-                "Supported values: none (No economy), vault (Bukkit plugin on Cauldron servers), ucs (Universal Coins Server mod)");
+                "Supported values: none (No economy), vault (Bukkit plugin on Cauldron servers), sponge (a plugin on SpongeForge), ucs (Universal Coins Server mod)");
 
         this.config.permission = config.getString("general", "permissions", "none",
                 "Supported values: none (Simple OP based system), bukkit (When Bukkit API is available), vault (a Bukkit plugin)");
@@ -327,6 +328,16 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
         catch(ClassNotFoundException ignored)
         {
             logger.info("Bukkit API not found, disabling Vault and Bukkit support");
+        }
+
+        try
+        {
+            Class.forName("org.spongepowered.api.Sponge");
+            EconomyLayer.register("sponge", SpongeProviders.ECONOMY);
+        }
+        catch(ClassNotFoundException ignored)
+        {
+            logger.info("Sponge API not found, disabling Sponge support");
         }
 
         mineCity = new MineCity(this, config, transformer);

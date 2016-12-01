@@ -45,7 +45,7 @@ public interface EconomyProxy
      * to credit the bank then the implementation is allowed to give the money to the player in any way.
      * @param amount must be positive
      * @param simulation if true nothing must be changed, the returned value must be only a simulation
-     * @return requested amount - taken amount. Negative values = gave too much, positive values = gave too few,
+     * @return requested amount - given amount. Negative values = gave too much, positive values = gave too few,
      *      if the it returns the same value as "amount" so nothing was given
      * @throws IllegalArgumentException If amount is negative
      */
