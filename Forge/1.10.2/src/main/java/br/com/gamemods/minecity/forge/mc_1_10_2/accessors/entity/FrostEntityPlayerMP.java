@@ -55,7 +55,9 @@ public interface FrostEntityPlayerMP extends IEntityPlayerMP, FrostEntity
     @Override
     default void sendTitle(MineCityForge mod, Message title, Message subtitle)
     {
-        sendPacket(new SPacketTitle(SPacketTitle.Type.CLEAR, new TextComponentString("")));
+        TextComponentString empty = new TextComponentString("");
+        sendPacket(new SPacketTitle(SPacketTitle.Type.RESET, empty));
+        sendPacket(new SPacketTitle(SPacketTitle.Type.TIMES, empty, 10, 70, 20));
         if(title != null)
         {
             sendPacket(new SPacketTitle(SPacketTitle.Type.TITLE, ITextComponent.Serializer.jsonToComponent(
@@ -64,7 +66,7 @@ public interface FrostEntityPlayerMP extends IEntityPlayerMP, FrostEntity
         }
         else
         {
-            sendPacket(new SPacketTitle(SPacketTitle.Type.TITLE, new TextComponentString("")));
+            sendPacket(new SPacketTitle(SPacketTitle.Type.TITLE, empty));
         }
 
         if(subtitle != null)
