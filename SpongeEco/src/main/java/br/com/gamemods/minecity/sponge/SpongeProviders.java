@@ -7,7 +7,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 public class SpongeProviders
 {
     public static final EconomyProvider ECONOMY = mineCity -> Sponge.getPluginManager().getPlugin("minecityecosponge")
-            .map(PluginContainer::getInstance).map(SpongeEconomy.class::cast)
+            .flatMap(PluginContainer::getInstance).map(SpongeEconomy.class::cast)
             .orElseThrow(() -> new IllegalStateException("MineCity Eco Sponge is not loaded!"));
 
     private SpongeProviders(){}
