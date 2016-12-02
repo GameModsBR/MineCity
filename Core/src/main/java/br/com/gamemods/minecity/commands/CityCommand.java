@@ -117,7 +117,7 @@ public class CityCommand
     @Command(value = "city.create", args = @Arg(name = "name", sticky = true))
     public CommandResult<City> create(CommandEvent cmd) throws DataSourceException
     {
-        if(cmd.mineCity.nature(cmd.position.world).isCityCreationDenied() && !cmd.sender.hasPermission("minecity.bypass.nature.city-creation"))
+        if(!cmd.sender.isAdminMode() && cmd.mineCity.nature(cmd.position.world).isCityCreationDenied() && !cmd.sender.hasPermission("minecity.bypass.nature.city-creation"))
             return new CommandResult<>(new Message("cmd.city.create.disabled", "City creations are disabled in ${nature}",
                     new Object[][]{
                             {"nature", cmd.position.world.name()}
