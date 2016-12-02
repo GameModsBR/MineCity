@@ -13,7 +13,7 @@ public class DelayedPermission extends DelayedProxy<PermissionProxy> implements 
     }
 
     @Override
-    public boolean hasPermission(CommandSender sender, String perm)
+    public boolean hasPermission(CommandSender sender, Permission perm)
     {
         return provide().hasPermission(sender, perm);
     }

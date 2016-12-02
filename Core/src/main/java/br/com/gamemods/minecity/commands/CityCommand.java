@@ -16,6 +16,7 @@ import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.economy.BalanceResult;
 import br.com.gamemods.minecity.economy.OperationResult;
+import br.com.gamemods.minecity.permission.Permissions;
 import br.com.gamemods.minecity.structure.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -117,7 +118,8 @@ public class CityCommand
     @Command(value = "city.create", args = @Arg(name = "name", sticky = true))
     public CommandResult<City> create(CommandEvent cmd) throws DataSourceException
     {
-        if(!cmd.sender.isAdminMode() && cmd.mineCity.nature(cmd.position.world).isCityCreationDenied() && !cmd.sender.hasPermission("minecity.bypass.nature.city-creation"))
+        if(!cmd.sender.isAdminMode() && cmd.mineCity.nature(cmd.position.world).isCityCreationDenied()
+                && !cmd.sender.hasPermission(Permissions.BYPASS_NATURE_RESTRICTION_CITY_CREATE))
             return new CommandResult<>(new Message("cmd.city.create.disabled", "City creations are disabled in ${nature}",
                     new Object[][]{
                             {"nature", cmd.position.world.name()}
@@ -269,7 +271,8 @@ public class CityCommand
         PlayerID playerId = cmd.sender.getPlayerId();
         ChunkPos chunk = cmd.position.getChunk();
 
-        if(!cmd.sender.isAdminMode() && cmd.mineCity.nature(chunk.world).isCityCreationDenied() && !cmd.sender.hasPermission("minecity.bypass.nature.city-creation"))
+        if(!cmd.sender.isAdminMode() && cmd.mineCity.nature(chunk.world).isCityCreationDenied()
+                && !cmd.sender.hasPermission(Permissions.BYPASS_NATURE_RESTRICTION_CITY_CREATE))
             return new CommandResult<>(new Message("cmd.city.claim.disabled", "You can't claim chunks from ${nature}",
                     new Object[][]{
                             {"nature", cmd.position.world.name()}

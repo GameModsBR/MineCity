@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.economy.BalanceResult;
 import br.com.gamemods.minecity.economy.EconomyProxy;
 import br.com.gamemods.minecity.economy.OperationResult;
+import br.com.gamemods.minecity.permission.Permission;
 import br.com.gamemods.minecity.permission.PermissionProxy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,11 +57,11 @@ public class SpongeProxy implements EconomyProxy, PermissionProxy
     }
 
     @Override
-    public boolean hasPermission(CommandSender sender, String perm)
+    public boolean hasPermission(CommandSender sender, Permission perm)
     {
         Object handler = sender.getHandler();
         if(handler instanceof Subject)
-            return ((Subject) handler).hasPermission(perm);
+            return ((Subject) handler).hasPermission(perm.getKey());
 
         if(!sender.isPlayer())
             return sender.isOp();
@@ -71,7 +72,7 @@ public class SpongeProxy implements EconomyProxy, PermissionProxy
                     .orElseThrow(() -> new IllegalStateException("No user storage service was found!"));
 
         Optional<User> result = storage.get(sender.getPlayerId().getUniqueId());
-        return result.isPresent() && result.get().hasPermission(perm);
+        return result.isPresent() && result.get().hasPermission(perm.getKey());
     }
 
     @NotNull

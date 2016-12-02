@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.api.command;
 import br.com.gamemods.minecity.api.Async;
 import br.com.gamemods.minecity.api.StringUtil;
 import br.com.gamemods.minecity.datasource.api.IDataSource;
+import br.com.gamemods.minecity.permission.Permissions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.*;
@@ -60,7 +61,7 @@ public final class CommandTree
 
         Result result = resultOpt.get();
 
-        if(result.command.commandId != null && !sender.hasPermission("minecity.cmd."+result.command.commandId))
+        if(result.command.commandId != null && !sender.hasPermission(Permissions.command("minecity.cmd."+result.command.commandId)))
         {
             CommandResult fail = CommandResult.noPermission();
             sender.send(CommandFunction.messageFailed(fail.message));

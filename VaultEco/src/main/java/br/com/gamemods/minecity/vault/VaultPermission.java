@@ -18,14 +18,14 @@ public class VaultPermission implements PermissionProxy
     }
 
     @Override
-    public boolean hasPermission(CommandSender sender, String perm)
+    public boolean hasPermission(CommandSender sender, br.com.gamemods.minecity.permission.Permission perm)
     {
         Object handler = sender.getHandler();
         if(handler instanceof Player)
-            return vault.has((Player) handler, perm);
+            return vault.has((Player) handler, perm.getKey());
         else if(handler instanceof CommandSender)
-            return vault.has((org.bukkit.command.CommandSender) handler, perm);
+            return vault.has((org.bukkit.command.CommandSender) handler, perm.getKey());
 
-        return sender.isPlayer() && vault.has((World) null, sender.getPlayerId().getName(), perm);
+        return sender.isPlayer() && vault.has((World) null, sender.getPlayerId().getName(), perm.getKey());
     }
 }

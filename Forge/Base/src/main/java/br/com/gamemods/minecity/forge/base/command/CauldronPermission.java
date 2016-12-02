@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.forge.base.command;
 
 import br.com.gamemods.minecity.api.command.CommandSender;
+import br.com.gamemods.minecity.permission.Permission;
 import br.com.gamemods.minecity.permission.PermissionProvider;
 import br.com.gamemods.minecity.permission.PermissionProxy;
 import net.minecraft.entity.Entity;
@@ -33,7 +34,7 @@ public class CauldronPermission implements PermissionProxy
     }
 
     @Override
-    public boolean hasPermission(CommandSender sender, String perm)
+    public boolean hasPermission(CommandSender sender, Permission perm)
     {
         Object handler = sender.getHandler();
         try
@@ -42,7 +43,7 @@ public class CauldronPermission implements PermissionProxy
             {
                 Object bukkitEntity = getBukkitEntity.invoke(handler);
                 if(Permissible.isInstance(bukkitEntity))
-                    return (boolean) hasPermission.invoke(bukkitEntity, perm);
+                    return (boolean) hasPermission.invoke(bukkitEntity, perm.getKey());
             }
         }
         catch(ReflectiveOperationException e)

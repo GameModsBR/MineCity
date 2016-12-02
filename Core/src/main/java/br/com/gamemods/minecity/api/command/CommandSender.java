@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.ServerAdmins;
 import br.com.gamemods.minecity.api.unchecked.UFunction;
 import br.com.gamemods.minecity.api.world.*;
+import br.com.gamemods.minecity.permission.Permission;
 import br.com.gamemods.minecity.structure.Selection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,7 +54,7 @@ public interface CommandSender extends Permissible
 
     Object getHandler();
 
-    default boolean hasPermission(String perm)
+    default boolean hasPermission(Permission perm)
     {
         return isAdminMode() || getServer().getMineCity().permission.hasPermission(this, perm);
     }

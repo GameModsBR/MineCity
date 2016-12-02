@@ -73,7 +73,7 @@ permissions:
   minecity.bypass.*:
     description: Allows to bypass all bypassable restrictions
     children:
-      minecity.bypass.nature.city-creation: true
+      minecity.bypass.nature.restriction.city.create: true
 
   minecity.bypass.nature.city-creation:
     description: Allows the player to create cities in worlds where city creations are disabled
