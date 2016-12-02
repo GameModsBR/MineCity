@@ -282,6 +282,8 @@ public class ForgePlayer
     public Optional<Message> onCityChange(@NotNull City city, Plot plot)
     {
         removeUnleashedEntities();
+        if(cmd.isAdminMode())
+            return Optional.empty();
 
         FlagHolder destiny = plot != null? plot : city;
 
@@ -322,6 +324,8 @@ public class ForgePlayer
     public Optional<Message> onPlotEnter(@NotNull Plot plot)
     {
         removeUnleashedEntities();
+        if(cmd.isAdminMode())
+            return Optional.empty();
 
         // Check if can enter the plot and leave the previous plot
         Stream<Message> stream = optionalStream(
@@ -359,6 +363,9 @@ public class ForgePlayer
     public Optional<Message> onPlotLeave(@NotNull City city)
     {
         removeUnleashedEntities();
+        if(cmd.isAdminMode())
+            return Optional.empty();
+
         // Check if can enter the city and leave the plot
         Stream<Message> stream = optionalStream(
                 can(this, ENTER, city),
@@ -395,6 +402,8 @@ public class ForgePlayer
     public Optional<Message> onCityLeave(@NotNull Nature nature)
     {
         removeUnleashedEntities();
+        if(cmd.isAdminMode())
+            return Optional.empty();
 
         boolean modifying = !leashedEntities.isEmpty();
         if(!modifying)
@@ -421,6 +430,9 @@ public class ForgePlayer
     @Override
     public Optional<Message> onNatureChange(@NotNull Nature nature)
     {
+        if(cmd.isAdminMode())
+            return Optional.empty();
+
         return optionalStream(
                 can(this, ENTER, nature),
                 can(this, LEAVE, mov.lastHolder())
