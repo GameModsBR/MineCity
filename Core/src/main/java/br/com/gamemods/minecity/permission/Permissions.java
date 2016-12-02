@@ -13,7 +13,7 @@ public enum Permissions implements Permission
 
     public static Permission command(String commandId)
     {
-        return commands.computeIfAbsent(commandId, key-> new PermissionKey("minecity.cmd."+key));
+        return commands.computeIfAbsent(commandId, key-> new PermissionKey("minecity.cmd."+key+".exec"));
     }
 
     @NotNull

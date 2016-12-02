@@ -280,52 +280,52 @@ public class GroupCommand
 
     @Slow
     @Async
-    @Command(value = "group.add.manager",
+    @Command(value = "group.manager.add",
             args = {@Arg(name = "player", type = Arg.Type.PLAYER), @Arg(name = "group", type = Arg.Type.GROUP, sticky = true)})
     public CommandResult<?> addManager(CommandEvent cmd) throws DataSourceException
     {
         if(cmd.args.isEmpty())
-            return new CommandResult<>(new Message("cmd.group.add.manager.empty.player", "Type a player name"));
+            return new CommandResult<>(new Message("cmd.group.manager.add.empty.player", "Type a player name"));
 
         if(cmd.args.size() == 1)
-            return new CommandResult<>(new Message("cmd.group.add.manager.empty.group", "Type a group name"));
+            return new CommandResult<>(new Message("cmd.group.manager.add.empty.group", "Type a group name"));
 
         String playerName = cmd.args.get(0);
         String groupName = String.join(" ", cmd.args.subList(1, cmd.args.size()));
 
         City city = mineCity.getChunk(cmd.position.getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
         if(city == null)
-            return new CommandResult<>(new Message("cmd.group.add.manager.not-claimed", "You are not inside a city"));
+            return new CommandResult<>(new Message("cmd.group.manager.add.not-claimed", "You are not inside a city"));
 
         Group group = city.getGroup(groupName);
         if(group == null)
-            return new CommandResult<>(new Message("cmd.group.add.manager.group-not-found",
+            return new CommandResult<>(new Message("cmd.group.manager.add.group-not-found",
                     "The group ${group} was not found in ${city}", new Object[][]{
                     {"group", groupName}, {"city", city.getName()}
             }));
 
         PlayerID player = cmd.sender.getPlayerId();
         if(!player.equals(city.owner()))
-            return new CommandResult<>(new Message("cmd.group.add.manager.no-permission",
+            return new CommandResult<>(new Message("cmd.group.manager.add.no-permission",
                     "You don't have permission to add managers to groups from ${city}",
                     new Object[]{"city", city.getName()}
             ));
 
         player = mineCity.dataSource.getPlayer(playerName).orElse(null);
         if(player == null)
-            return new CommandResult<>(new Message("cmd.group.add.manager.player-not-found",
+            return new CommandResult<>(new Message("cmd.group.manager.add.player-not-found",
                     "No player was found with name ${name}",
                     new Object[]{"name",playerName}
             ));
 
         if(group.isManager(player))
-            return new CommandResult<>(new Message("cmd.group.add.manager.already-manager",
+            return new CommandResult<>(new Message("cmd.group.manager.add.already-manager",
                     "The player ${name} is already a manager of the group ${group}", new Object[][]{
                     {"name",player.getName()}, {"group",group.getName()}
             }));
 
         group.addManager(player);
-        return new CommandResult<>(new Message("cmd.group.add.manager.success",
+        return new CommandResult<>(new Message("cmd.group.manager.add.success",
                 "The player ${player} is now a manager of the group ${group}", new Object[][]{
                 {"player", player.getName()}, {"group", group.getName()}
         }), group);
@@ -333,52 +333,52 @@ public class GroupCommand
 
     @Slow
     @Async
-    @Command(value = "group.remove.manager",
+    @Command(value = "group.manager.remove",
             args = {@Arg(name = "player", type = Arg.Type.PLAYER), @Arg(name = "group", type = Arg.Type.GROUP, sticky = true)})
     public CommandResult<?> removeManager(CommandEvent cmd) throws DataSourceException
     {
         if(cmd.args.isEmpty())
-            return new CommandResult<>(new Message("cmd.group.remove.manager.empty.player", "Type a player name"));
+            return new CommandResult<>(new Message("cmd.group.manager.remove.empty.player", "Type a player name"));
 
         if(cmd.args.size() == 1)
-            return new CommandResult<>(new Message("cmd.group.remove.manager.empty.group", "Type a group name"));
+            return new CommandResult<>(new Message("cmd.group.manager.remove.empty.group", "Type a group name"));
 
         String playerName = cmd.args.get(0);
         String groupName = String.join(" ", cmd.args.subList(1, cmd.args.size()));
 
         City city = mineCity.getChunk(cmd.position.getChunk()).flatMap(ClaimedChunk::getCity).orElse(null);
         if(city == null)
-            return new CommandResult<>(new Message("cmd.group.remove.manager.not-claimed", "You are not inside a city"));
+            return new CommandResult<>(new Message("cmd.group.manager.remove.not-claimed", "You are not inside a city"));
 
         Group group = city.getGroup(groupName);
         if(group == null)
-            return new CommandResult<>(new Message("cmd.group.remove.manager.group-not-found",
+            return new CommandResult<>(new Message("cmd.group.manager.remove.group-not-found",
                     "The group ${group} was not found in ${city}", new Object[][]{
                     {"group", groupName}, {"city", city.getName()}
             }));
 
         PlayerID player = cmd.sender.getPlayerId();
         if(!player.equals(city.owner()))
-            return new CommandResult<>(new Message("cmd.group.remove.manager.no-permission",
+            return new CommandResult<>(new Message("cmd.group.manager.remove.no-permission",
                     "You don't have permission to demote players from groups from ${city}",
                     new Object[]{"city", city.getName()}
             ));
 
         player = mineCity.dataSource.getPlayer(playerName).orElse(null);
         if(player == null)
-            return new CommandResult<>(new Message("cmd.group.remove.manager.player-not-found",
+            return new CommandResult<>(new Message("cmd.group.manager.remove.player-not-found",
                     "No player was found with name ${name}",
                     new Object[]{"name",playerName}
             ));
 
         if(!group.isManager(player))
-            return new CommandResult<>(new Message("cmd.group.remove.manager.not-manager",
+            return new CommandResult<>(new Message("cmd.group.manager.remove.not-manager",
                     "The player ${name} is not a manager of the group ${group}", new Object[][]{
                     {"name",player.getName()}, {"group",group.getName()}
             }));
 
         group.removeManager(player);
-        return new CommandResult<>(new Message("cmd.group.remove.manager.success",
+        return new CommandResult<>(new Message("cmd.group.manager.remove.success",
                 "The player ${player} is no longer a manager of the group ${group}", new Object[][]{
                 {"player", player.getName()}, {"group", group.getName()}
         }), group);

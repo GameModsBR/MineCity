@@ -103,7 +103,7 @@
         <command id="city.claim" parent="city" cmd="expandir,reivindicar">
             <desc>Reinvindica um chunk para a cidade</desc>
         </command>
-        <command id="city.claim.auto" parent="city" cmd="auto-claim">
+        <command id="auto.claim" parent="city" cmd="auto-claim">
             <desc>Tenta reinvindicar o chunk automaticamente quando você ultrapassa as bordas dos chunks</desc>
         </command>
         <command id="city.disclaim" parent="city" cmd="reduzir,renunciar,desreivindicar">
@@ -159,10 +159,10 @@
         <command id="group.delete" parent="group" cmd="excluir,deletar">
             <desc>Apaga um grupo de uma cidade completamente</desc>
         </command>
-        <command id="group.add.manager" parent="group.manager" cmd="adicionar">
+        <command id="group.manager.add" parent="group.manager" cmd="adicionar">
             <desc>Adiciona um jogador como gerente de grupo</desc>
         </command>
-        <command id="group.remove.manager" parent="group.manager" cmd="remover">
+        <command id="group.manager.remove" parent="group.manager" cmd="remover">
             <desc>Demite um jogador do cargo de gerente de grupo</desc>
         </command>
 

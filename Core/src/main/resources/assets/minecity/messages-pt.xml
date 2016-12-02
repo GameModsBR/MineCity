@@ -485,10 +485,6 @@
                     <msg id="reached">A cidade ${city} atingiu o número máximo de ilhas que ela pode ter.</msg>
                 </limits>
                 <msg id="success">Este chunk foi reinvindicado por ${city} com sucesso.</msg>
-                <auto>
-                    <msg id="enabled">A reinvidicação automática foi ativada</msg>
-                    <msg id="disabled">A reinvidicação automática foi desativada</msg>
-                </auto>
             </claim>
             <disclaim>
                 <msg id="not-claimed">Este chunk não foi reinvindicado por nenhuma cidade</msg>
@@ -801,8 +797,44 @@
                     <msg id="ride.arg.reason">motivo</msg>
                 </all>
             </clear>
+            <auto>
+                <claim>
+                    <msg id="enabled">A reinvidicação automática foi ativada</msg>
+                    <msg id="disabled">A reinvidicação automática foi desativada</msg>
+                </claim>
+            </auto>
         </city>
         <group>
+            <manager>
+                <add>
+                    <arg>
+                        <msg id="player">jogador</msg>
+                        <msg id="group">grupo</msg>
+                    </arg>
+                    <msg id="empty.player">Digite o nome do jogador</msg>
+                    <msg id="empty.group">Digite o nome do grupo</msg>
+                    <msg id="not-claimed">Você não está dentro de uma cidade</msg>
+                    <msg id="group-not-found">O grupo ${group} não foi encontrado na cidade ${city}</msg>
+                    <msg id="no-permission">Você não tem permissão para adicionar gerentes em grupos de ${city}</msg>
+                    <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
+                    <msg id="already-manager">O jogador ${name} já é um gerente do grupo ${group}</msg>
+                    <msg id="success">O jogador ${player} agora é um gerente do grupo ${group}</msg>
+                </add>
+                <remove>
+                    <arg>
+                        <msg id="player">jogador</msg>
+                        <msg id="group">grupo</msg>
+                    </arg>
+                    <msg id="empty.player">Digite um nome de jogador</msg>
+                    <msg id="empty.group">Digite um nome de grupo</msg>
+                    <msg id="not-claimed">Você não está dentro de uma cidade</msg>
+                    <msg id="group-not-found">O grupo ${group} não foi encontrado em ${city}</msg>
+                    <msg id="no-permission">Você não tem permissão para rebaixar jogadores em grupos de ${city}</msg>
+                    <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
+                    <msg id="not-manager">O jogador ${name} não é um gerente do grupo ${group}</msg>
+                    <msg id="success">O jogador ${player} não é mais um gerente do grupo ${group}</msg>
+                </remove>
+            </manager>
             <create>
                 <msg id="arg.group-name">grupo</msg>
                 <msg id="empty">Você precisa digitar um nome</msg>
@@ -825,20 +857,6 @@
                 <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
                 <msg id="already-member">O jogador ${name} já faz parte do grupo ${group}</msg>
                 <msg id="success">O jogador ${player} agora faz parte do grupo ${group}</msg>
-                <manager>
-                    <arg>
-                        <msg id="player">jogador</msg>
-                        <msg id="group">grupo</msg>
-                    </arg>
-                    <msg id="empty.player">Digite o nome do jogador</msg>
-                    <msg id="empty.group">Digite o nome do grupo</msg>
-                    <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                    <msg id="group-not-found">O grupo ${group} não foi encontrado na cidade ${city}</msg>
-                    <msg id="no-permission">Você não tem permissão para adicionar gerentes em grupos de ${city}</msg>
-                    <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
-                    <msg id="already-manager">O jogador ${name} já é um gerente do grupo ${group}</msg>
-                    <msg id="success">O jogador ${player} agora é um gerente do grupo ${group}</msg>
-                </manager>
             </add>
             <remove>
                 <arg>
@@ -853,20 +871,6 @@
                 <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
                 <msg id="not-member">O jogador ${name} não é um membro do grupo ${group}</msg>
                 <msg id="success">O jogador ${player} não faz mais parte do grupo ${group}</msg>
-                <manager>
-                    <arg>
-                        <msg id="player">jogador</msg>
-                        <msg id="group">grupo</msg>
-                    </arg>
-                    <msg id="empty.player">Digite um nome de jogador</msg>
-                    <msg id="empty.group">Digite um nome de grupo</msg>
-                    <msg id="not-claimed">Você não está dentro de uma cidade</msg>
-                    <msg id="group-not-found">O grupo ${group} não foi encontrado em ${city}</msg>
-                    <msg id="no-permission">Você não tem permissão para rebaixar jogadores em grupos de ${city}</msg>
-                    <msg id="player-not-found">Nenhum jogador foi encontrado com o nome ${name}</msg>
-                    <msg id="not-manager">O jogador ${name} não é um gerente do grupo ${group}</msg>
-                    <msg id="success">O jogador ${player} não é mais um gerente do grupo ${group}</msg>
-                </manager>
             </remove>
             <list>
                 <msg id="arg.city-name">cidade</msg>

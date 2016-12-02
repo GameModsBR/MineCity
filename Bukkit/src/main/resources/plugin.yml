@@ -8,37 +8,37 @@ commands:
   minecity:
     description: All MineCity commands
     aliases: [mc]
-    permission: minecity.cmd
+    permission: minecity.cmd.exec
   city:
     description: All city related commands
     aliases: [town,c,t]
-    permission: minecity.cmd.city
+    permission: minecity.cmd.city.exec
   group:
     description: All group related commands
-    permission: minecity.cmd.group
+    permission: minecity.cmd.group.exec
   plot:
     description: All plot related commands
-    permission: minecity.cmd.plot
+    permission: minecity.cmd.plot.exec
   nature:
     description: All nature related commands
-    permission: minecity.cmd.nature
+    permission: minecity.cmd.nature.exec
     aliases: [world]
 
 permissions:
   # Root commands
-  minecity.cmd:
+  minecity.cmd.exec:
     description: Gives access to the /minecity command
     default: true
-  minecity.cmd.city:
+  minecity.cmd.city.exec:
     description: Gives access to the /city command
     default: true
-  minecity.cmd.group:
+  minecity.cmd.group.exec:
     description: Gives access to the /group command
     default: true
-  minecity.cmd.plot:
+  minecity.cmd.plot.exec:
     description: Gives access to the /plot command
     default: true
-  minecity.cmd.nature:
+  minecity.cmd.nature.exec:
     description: Gives access to the /nature command
     default: true
 
@@ -47,736 +47,740 @@ permissions:
     description: Grants all permissions, including permissions to execute administrative commands and all bypasses
     children:
       minecity.user: true
-      minecity.bypass.*: true
-      minecity.cmd.admin: true
-      minecity.cmd.reload: true
-      minecity.cmd.nature.deny.*: true
-      minecity.cmd.nature.allow.*: true
-      minecity.cmd.city.claim.auto: true
+      minecity.bypass: true
+      minecity.cmd.admin.exec: true
+      minecity.cmd.reload.exec: true
+      minecity.cmd.nature.deny: true
+      minecity.cmd.nature.allow: true
+      minecity.cmd.auto.claim.exec: true
 
   minecity.user:
     description: Grants basic permissions for normal players
     default: true
     children:
-      minecity.cmd.confirm: true
-      minecity.cmd.help: true
+      minecity.cmd.confirm.exec: true
+      minecity.cmd.help.exec: true
       minecity.cmd.city: true
-      minecity.cmd.city.*: true
       minecity.cmd.group: true
-      minecity.cmd.group.*: true
       minecity.cmd.plot: true
-      minecity.cmd.plot.*: true
       minecity.cmd.nature.perms: true
-      minecity.cmd.nature.perms.*: true
 
   # Bypasses
-  minecity.bypass.*:
+  minecity.bypass:
     description: Allows to bypass all bypassable restrictions
     children:
       minecity.bypass.nature.restriction.city.create: true
 
-  minecity.bypass.nature.city-creation:
+  minecity.bypass.nature.restriction.city.create:
     description: Allows the player to create cities in worlds where city creations are disabled
     default: op
 
   # Grouped permissions
-  minecity.cmd.city.*:
+  minecity.cmd.city:
     description: Grants all permissions necessary to completely use the /city command as a normal player
     children:
-      minecity:cmd.city.buy: true
-      minecity:cmd.city.sell: true
-      minecity.cmd.city.create: true
-      minecity.cmd.city.claim: true
-      minecity.cmd.city.disclaim: true
-      minecity.cmd.city.spawn: true
-      minecity.cmd.city.rename: true
-      minecity.cmd.city.transfer: true
-      minecity.cmd.city.setspawn: true
-      minecity.cmd.city.map: true
-      minecity.cmd.city.delete: true
-      minecity.cmd.city.info: true
-      minecity.cmd.city.list: true
+      minecity.cmd.city.exec: true
+      minecity.cmd.city.buy: true
+      minecity.cmd.city.sell: true
+      minecity.cmd.city.create.exec: true
+      minecity.cmd.city.claim.exec: true
+      minecity.cmd.city.disclaim.exec: true
+      minecity.cmd.city.spawn.exec: true
+      minecity.cmd.city.rename.exec: true
+      minecity.cmd.city.transfer.exec: true
+      minecity.cmd.city.setspawn.exec: true
+      minecity.cmd.city.map.exec: true
+      minecity.cmd.city.delete.exec: true
+      minecity.cmd.city.info.exec: true
+      minecity.cmd.city.list.exec: true
+      minecity.cmd.city.perms.exec: true
       minecity.cmd.city.perms: true
-      minecity.cmd.city.perms.*: true
-      minecity.cmd.city.deny.*: true
-      minecity.cmd.city.allow.*: true
-      minecity.cmd.city.clear.*: true
+      minecity.cmd.city.deny: true
+      minecity.cmd.city.allow: true
+      minecity.cmd.city.clear: true
 
-  minecity.cmd.plot.*:
+  minecity.cmd.plot:
     description: Grants all permissions necessary to completely use the /plot command as a normal player
     children:
-      minecity:cmd.plot.buy: true
-      minecity:cmd.plot.sell: true
-      minecity.cmd.plot.create: true
-      minecity.cmd.plot.rename: true
-      minecity.cmd.plot.return: true
-      minecity.cmd.plot.transfer: true
-      minecity.cmd.plot.delete: true
-      minecity.cmd.plot.info: true
-      minecity.cmd.plot.readjust: true
-      minecity.cmd.plot.list: true
+      minecity.cmd.plot.exec: true
+      minecity.cmd.plot.buy: true
+      minecity.cmd.plot.sell: true
+      minecity.cmd.plot.create.exec: true
+      minecity.cmd.plot.rename.exec: true
+      minecity.cmd.plot.return.exec: true
+      minecity.cmd.plot.transfer.exec: true
+      minecity.cmd.plot.delete.exec: true
+      minecity.cmd.plot.info.exec: true
+      minecity.cmd.plot.readjust.exec: true
+      minecity.cmd.plot.list.exec: true
+      minecity.cmd.plot.perms.exec: true
       minecity.cmd.plot.perms: true
-      minecity.cmd.plot.perms.*: true
-      minecity.cmd.plot.deny.*: true
-      minecity.cmd.plot.allow.*: true
-      minecity.cmd.plot.clear.*: true
+      minecity.cmd.plot.deny: true
+      minecity.cmd.plot.allow: true
+      minecity.cmd.plot.clear: true
 
-  minecity.cmd.group.*:
+  minecity.cmd.group:
     description: Grants all permissions necessary to completely use the /group command as a normal player
     children:
-      minecity.cmd.group.create: true
-      minecity.cmd.group.add: true
-      minecity.cmd.group.remove: true
-      minecity.cmd.group.list: true
-      minecity.cmd.group.info: true
-      minecity.cmd.group.delete: true
-      minecity.cmd.group.add.manager: true
-      minecity.cmd.group.remove.manager: true
+      minecity.cmd.group.exec: true
+      minecity.cmd.group.create.exec: true
+      minecity.cmd.group.add.exec: true
+      minecity.cmd.group.remove.exec: true
+      minecity.cmd.group.list.exec: true
+      minecity.cmd.group.info.exec: true
+      minecity.cmd.group.delete.exec: true
+      minecity.cmd.group.manager: true
 
-
-  minecity.cmd.city.deny.*:
+  minecity.cmd.group.manager:
     children:
-      minecity.cmd.city.deny.enter: true
-      minecity.cmd.city.deny.click: true
-      minecity.cmd.city.deny.pickup: true
-      minecity.cmd.city.deny.harvest: true
-      minecity.cmd.city.deny.open: true
-      minecity.cmd.city.deny.pvp: true
-      minecity.cmd.city.deny.pvc: true
-      minecity.cmd.city.deny.modify: true
-      minecity.cmd.city.deny.vehicle: true
-      minecity.cmd.city.deny.ride: true
-      minecity.cmd.city.deny.all.*: true
+      minecity.cmd.group.manager.add.exec: true
+      minecity.cmd.group.manager.remove.exec: true
 
-  minecity.cmd.city.allow.*:
-    children:
-      minecity.cmd.city.allow.enter: true
-      minecity.cmd.city.allow.click: true
-      minecity.cmd.city.allow.pickup: true
-      minecity.cmd.city.allow.harvest: true
-      minecity.cmd.city.allow.open: true
-      minecity.cmd.city.allow.pvp: true
-      minecity.cmd.city.allow.pvc: true
-      minecity.cmd.city.allow.modify: true
-      minecity.cmd.city.allow.vehicle: true
-      minecity.cmd.city.allow.ride: true
-      minecity.cmd.city.allow.all.*: true
 
-  minecity.cmd.city.clear.*:
+  minecity.cmd.city.deny:
     children:
-      minecity.cmd.city.clear.enter: true
-      minecity.cmd.city.clear.click: true
-      minecity.cmd.city.clear.pickup: true
-      minecity.cmd.city.clear.harvest: true
-      minecity.cmd.city.clear.open: true
-      minecity.cmd.city.clear.pvp: true
-      minecity.cmd.city.clear.pvc: true
-      minecity.cmd.city.clear.modify: true
-      minecity.cmd.city.clear.vehicle: true
-      minecity.cmd.city.clear.ride: true
-      minecity.cmd.city.clear.all.*: true
+      minecity.cmd.city.deny.enter.exec: true
+      minecity.cmd.city.deny.click.exec: true
+      minecity.cmd.city.deny.pickup.exec: true
+      minecity.cmd.city.deny.harvest.exec: true
+      minecity.cmd.city.deny.open.exec: true
+      minecity.cmd.city.deny.pvp.exec: true
+      minecity.cmd.city.deny.pvc.exec: true
+      minecity.cmd.city.deny.modify.exec: true
+      minecity.cmd.city.deny.vehicle.exec: true
+      minecity.cmd.city.deny.ride.exec: true
+      minecity.cmd.city.deny.all: true
 
-  minecity.cmd.city.deny.all.*:
+  minecity.cmd.city.allow:
     children:
-      minecity.cmd.city.deny.all.enter: true
-      minecity.cmd.city.deny.all.click: true
-      minecity.cmd.city.deny.all.pickup: true
-      minecity.cmd.city.deny.all.harvest: true
-      minecity.cmd.city.deny.all.open: true
-      minecity.cmd.city.deny.all.pvp: true
-      minecity.cmd.city.deny.all.pvc: true
-      minecity.cmd.city.deny.all.modify: true
-      minecity.cmd.city.deny.all.vehicle: true
-      minecity.cmd.city.deny.all.ride: true
+      minecity.cmd.city.allow.enter.exec: true
+      minecity.cmd.city.allow.click.exec: true
+      minecity.cmd.city.allow.pickup.exec: true
+      minecity.cmd.city.allow.harvest.exec: true
+      minecity.cmd.city.allow.open.exec: true
+      minecity.cmd.city.allow.pvp.exec: true
+      minecity.cmd.city.allow.pvc.exec: true
+      minecity.cmd.city.allow.modify.exec: true
+      minecity.cmd.city.allow.vehicle.exec: true
+      minecity.cmd.city.allow.ride.exec: true
+      minecity.cmd.city.allow.all: true
 
-  minecity.cmd.city.allow.all.*:
+  minecity.cmd.city.clear:
     children:
-      minecity.cmd.city.allow.all.enter: true
-      minecity.cmd.city.allow.all.click: true
-      minecity.cmd.city.allow.all.pickup: true
-      minecity.cmd.city.allow.all.harvest: true
-      minecity.cmd.city.allow.all.open: true
-      minecity.cmd.city.allow.all.pvp: true
-      minecity.cmd.city.allow.all.pvc: true
-      minecity.cmd.city.allow.all.modify: true
-      minecity.cmd.city.allow.all.vehicle: true
-      minecity.cmd.city.allow.all.ride: true
+      minecity.cmd.city.clear.enter.exec: true
+      minecity.cmd.city.clear.click.exec: true
+      minecity.cmd.city.clear.pickup.exec: true
+      minecity.cmd.city.clear.harvest.exec: true
+      minecity.cmd.city.clear.open.exec: true
+      minecity.cmd.city.clear.pvp.exec: true
+      minecity.cmd.city.clear.pvc.exec: true
+      minecity.cmd.city.clear.modify.exec: true
+      minecity.cmd.city.clear.vehicle.exec: true
+      minecity.cmd.city.clear.ride.exec: true
+      minecity.cmd.city.clear.all: true
 
-  minecity.cmd.city.clear.all.*:
+  minecity.cmd.city.deny.all:
     children:
-      minecity.cmd.city.clear.all.enter: true
-      minecity.cmd.city.clear.all.click: true
-      minecity.cmd.city.clear.all.pickup: true
-      minecity.cmd.city.clear.all.harvest: true
-      minecity.cmd.city.clear.all.open: true
-      minecity.cmd.city.clear.all.pvp: true
-      minecity.cmd.city.clear.all.pvc: true
-      minecity.cmd.city.clear.all.modify: true
-      minecity.cmd.city.clear.all.vehicle: true
-      minecity.cmd.city.clear.all.ride: true
+      minecity.cmd.city.deny.all.enter.exec: true
+      minecity.cmd.city.deny.all.click.exec: true
+      minecity.cmd.city.deny.all.pickup.exec: true
+      minecity.cmd.city.deny.all.harvest.exec: true
+      minecity.cmd.city.deny.all.open.exec: true
+      minecity.cmd.city.deny.all.pvp.exec: true
+      minecity.cmd.city.deny.all.pvc.exec: true
+      minecity.cmd.city.deny.all.modify.exec: true
+      minecity.cmd.city.deny.all.vehicle.exec: true
+      minecity.cmd.city.deny.all.ride.exec: true
 
-  minecity.cmd.city.perms.*:
+  minecity.cmd.city.allow.all:
     children:
-      minecity.cmd.city.perms.enter: true
-      minecity.cmd.city.perms.click: true
-      minecity.cmd.city.perms.pickup: true
-      minecity.cmd.city.perms.harvest: true
-      minecity.cmd.city.perms.open: true
-      minecity.cmd.city.perms.pvp: true
-      minecity.cmd.city.perms.pvc: true
-      minecity.cmd.city.perms.modify: true
-      minecity.cmd.city.perms.vehicle: true
-      minecity.cmd.city.perms.ride: true
+      minecity.cmd.city.allow.all.enter.exec: true
+      minecity.cmd.city.allow.all.click.exec: true
+      minecity.cmd.city.allow.all.pickup.exec: true
+      minecity.cmd.city.allow.all.harvest.exec: true
+      minecity.cmd.city.allow.all.open.exec: true
+      minecity.cmd.city.allow.all.pvp.exec: true
+      minecity.cmd.city.allow.all.pvc.exec: true
+      minecity.cmd.city.allow.all.modify.exec: true
+      minecity.cmd.city.allow.all.vehicle.exec: true
+      minecity.cmd.city.allow.all.ride.exec: true
 
-  minecity.cmd.plot.deny.*:
+  minecity.cmd.city.clear.all:
     children:
-      minecity.cmd.plot.deny.enter: true
-      minecity.cmd.plot.deny.click: true
-      minecity.cmd.plot.deny.pickup: true
-      minecity.cmd.plot.deny.harvest: true
-      minecity.cmd.plot.deny.open: true
-      minecity.cmd.plot.deny.pvp: true
-      minecity.cmd.plot.deny.pvc: true
-      minecity.cmd.plot.deny.modify: true
-      minecity.cmd.plot.deny.vehicle: true
-      minecity.cmd.plot.deny.ride: true
-      minecity.cmd.plot.deny.all.*: true
+      minecity.cmd.city.clear.all.enter.exec: true
+      minecity.cmd.city.clear.all.click.exec: true
+      minecity.cmd.city.clear.all.pickup.exec: true
+      minecity.cmd.city.clear.all.harvest.exec: true
+      minecity.cmd.city.clear.all.open.exec: true
+      minecity.cmd.city.clear.all.pvp.exec: true
+      minecity.cmd.city.clear.all.pvc.exec: true
+      minecity.cmd.city.clear.all.modify.exec: true
+      minecity.cmd.city.clear.all.vehicle.exec: true
+      minecity.cmd.city.clear.all.ride.exec: true
 
-  minecity.cmd.plot.allow.*:
+  minecity.cmd.city.perms:
     children:
-      minecity.cmd.plot.allow.enter: true
-      minecity.cmd.plot.allow.click: true
-      minecity.cmd.plot.allow.pickup: true
-      minecity.cmd.plot.allow.harvest: true
-      minecity.cmd.plot.allow.open: true
-      minecity.cmd.plot.allow.pvp: true
-      minecity.cmd.plot.allow.pvc: true
-      minecity.cmd.plot.allow.modify: true
-      minecity.cmd.plot.allow.vehicle: true
-      minecity.cmd.plot.allow.ride: true
-      minecity.cmd.plot.allow.all.*: true
+      minecity.cmd.city.perms.enter.exec: true
+      minecity.cmd.city.perms.click.exec: true
+      minecity.cmd.city.perms.pickup.exec: true
+      minecity.cmd.city.perms.harvest.exec: true
+      minecity.cmd.city.perms.open.exec: true
+      minecity.cmd.city.perms.pvp.exec: true
+      minecity.cmd.city.perms.pvc.exec: true
+      minecity.cmd.city.perms.modify.exec: true
+      minecity.cmd.city.perms.vehicle.exec: true
+      minecity.cmd.city.perms.ride.exec: true
 
-  minecity.cmd.plot.clear.*:
+  minecity.cmd.plot.deny:
     children:
-      minecity.cmd.plot.clear.enter: true
-      minecity.cmd.plot.clear.click: true
-      minecity.cmd.plot.clear.pickup: true
-      minecity.cmd.plot.clear.harvest: true
-      minecity.cmd.plot.clear.open: true
-      minecity.cmd.plot.clear.pvp: true
-      minecity.cmd.plot.clear.pvc: true
-      minecity.cmd.plot.clear.modify: true
-      minecity.cmd.plot.clear.vehicle: true
-      minecity.cmd.plot.clear.ride: true
-      minecity.cmd.plot.clear.all.*: true
+      minecity.cmd.plot.deny.enter.exec: true
+      minecity.cmd.plot.deny.click.exec: true
+      minecity.cmd.plot.deny.pickup.exec: true
+      minecity.cmd.plot.deny.harvest.exec: true
+      minecity.cmd.plot.deny.open.exec: true
+      minecity.cmd.plot.deny.pvp.exec: true
+      minecity.cmd.plot.deny.pvc.exec: true
+      minecity.cmd.plot.deny.modify.exec: true
+      minecity.cmd.plot.deny.vehicle.exec: true
+      minecity.cmd.plot.deny.ride.exec: true
+      minecity.cmd.plot.deny.all: true
 
-  minecity.cmd.plot.deny.all.*:
+  minecity.cmd.plot.allow:
     children:
-      minecity.cmd.plot.deny.all.enter: true
-      minecity.cmd.plot.deny.all.click: true
-      minecity.cmd.plot.deny.all.pickup: true
-      minecity.cmd.plot.deny.all.harvest: true
-      minecity.cmd.plot.deny.all.open: true
-      minecity.cmd.plot.deny.all.pvp: true
-      minecity.cmd.plot.deny.all.pvc: true
-      minecity.cmd.plot.deny.all.modify: true
-      minecity.cmd.plot.deny.all.vehicle: true
-      minecity.cmd.plot.deny.all.ride: true
+      minecity.cmd.plot.allow.enter.exec: true
+      minecity.cmd.plot.allow.click.exec: true
+      minecity.cmd.plot.allow.pickup.exec: true
+      minecity.cmd.plot.allow.harvest.exec: true
+      minecity.cmd.plot.allow.open.exec: true
+      minecity.cmd.plot.allow.pvp.exec: true
+      minecity.cmd.plot.allow.pvc.exec: true
+      minecity.cmd.plot.allow.modify.exec: true
+      minecity.cmd.plot.allow.vehicle.exec: true
+      minecity.cmd.plot.allow.ride.exec: true
+      minecity.cmd.plot.allow.all: true
 
-  minecity.cmd.plot.allow.all.*:
+  minecity.cmd.plot.clear:
     children:
-      minecity.cmd.plot.allow.all.enter: true
-      minecity.cmd.plot.allow.all.click: true
-      minecity.cmd.plot.allow.all.pickup: true
-      minecity.cmd.plot.allow.all.harvest: true
-      minecity.cmd.plot.allow.all.open: true
-      minecity.cmd.plot.allow.all.pvp: true
-      minecity.cmd.plot.allow.all.pvc: true
-      minecity.cmd.plot.allow.all.modify: true
-      minecity.cmd.plot.allow.all.vehicle: true
-      minecity.cmd.plot.allow.all.ride: true
+      minecity.cmd.plot.clear.enter.exec: true
+      minecity.cmd.plot.clear.click.exec: true
+      minecity.cmd.plot.clear.pickup.exec: true
+      minecity.cmd.plot.clear.harvest.exec: true
+      minecity.cmd.plot.clear.open.exec: true
+      minecity.cmd.plot.clear.pvp.exec: true
+      minecity.cmd.plot.clear.pvc.exec: true
+      minecity.cmd.plot.clear.modify.exec: true
+      minecity.cmd.plot.clear.vehicle.exec: true
+      minecity.cmd.plot.clear.ride.exec: true
+      minecity.cmd.plot.clear.all: true
 
-  minecity.cmd.plot.clear.all.*:
+  minecity.cmd.plot.deny.all:
     children:
-      minecity.cmd.plot.clear.all.enter: true
-      minecity.cmd.plot.clear.all.click: true
-      minecity.cmd.plot.clear.all.pickup: true
-      minecity.cmd.plot.clear.all.harvest: true
-      minecity.cmd.plot.clear.all.open: true
-      minecity.cmd.plot.clear.all.pvp: true
-      minecity.cmd.plot.clear.all.pvc: true
-      minecity.cmd.plot.clear.all.modify: true
-      minecity.cmd.plot.clear.all.vehicle: true
-      minecity.cmd.plot.clear.all.ride: true
+      minecity.cmd.plot.deny.all.enter.exec: true
+      minecity.cmd.plot.deny.all.click.exec: true
+      minecity.cmd.plot.deny.all.pickup.exec: true
+      minecity.cmd.plot.deny.all.harvest.exec: true
+      minecity.cmd.plot.deny.all.open.exec: true
+      minecity.cmd.plot.deny.all.pvp.exec: true
+      minecity.cmd.plot.deny.all.pvc.exec: true
+      minecity.cmd.plot.deny.all.modify.exec: true
+      minecity.cmd.plot.deny.all.vehicle.exec: true
+      minecity.cmd.plot.deny.all.ride.exec: true
 
-  minecity.cmd.plot.perms.*:
+  minecity.cmd.plot.allow.all:
     children:
-      minecity.cmd.plot.perms.enter: true
-      minecity.cmd.plot.perms.click: true
-      minecity.cmd.plot.perms.pickup: true
-      minecity.cmd.plot.perms.harvest: true
-      minecity.cmd.plot.perms.open: true
-      minecity.cmd.plot.perms.pvp: true
-      minecity.cmd.plot.perms.pvc: true
-      minecity.cmd.plot.perms.modify: true
-      minecity.cmd.plot.perms.vehicle: true
-      minecity.cmd.plot.perms.ride: true
+      minecity.cmd.plot.allow.all.enter.exec: true
+      minecity.cmd.plot.allow.all.click.exec: true
+      minecity.cmd.plot.allow.all.pickup.exec: true
+      minecity.cmd.plot.allow.all.harvest.exec: true
+      minecity.cmd.plot.allow.all.open.exec: true
+      minecity.cmd.plot.allow.all.pvp.exec: true
+      minecity.cmd.plot.allow.all.pvc.exec: true
+      minecity.cmd.plot.allow.all.modify.exec: true
+      minecity.cmd.plot.allow.all.vehicle.exec: true
+      minecity.cmd.plot.allow.all.ride.exec: true
 
-  minecity.cmd.nature.deny.*:
+  minecity.cmd.plot.clear.all:
     children:
-      minecity.cmd.nature.deny.enter: true
-      minecity.cmd.nature.deny.click: true
-      minecity.cmd.nature.deny.pickup: true
-      minecity.cmd.nature.deny.harvest: true
-      minecity.cmd.nature.deny.open: true
-      minecity.cmd.nature.deny.pvp: true
-      minecity.cmd.nature.deny.pvc: true
-      minecity.cmd.nature.deny.modify: true
-      minecity.cmd.nature.deny.vehicle: true
-      minecity.cmd.nature.deny.ride: true
+      minecity.cmd.plot.clear.all.enter.exec: true
+      minecity.cmd.plot.clear.all.click.exec: true
+      minecity.cmd.plot.clear.all.pickup.exec: true
+      minecity.cmd.plot.clear.all.harvest.exec: true
+      minecity.cmd.plot.clear.all.open.exec: true
+      minecity.cmd.plot.clear.all.pvp.exec: true
+      minecity.cmd.plot.clear.all.pvc.exec: true
+      minecity.cmd.plot.clear.all.modify.exec: true
+      minecity.cmd.plot.clear.all.vehicle.exec: true
+      minecity.cmd.plot.clear.all.ride.exec: true
 
-  minecity.cmd.nature.allow.*:
+  minecity.cmd.plot.perms:
     children:
-      minecity.cmd.nature.allow.enter: true
-      minecity.cmd.nature.allow.click: true
-      minecity.cmd.nature.allow.pickup: true
-      minecity.cmd.nature.allow.harvest: true
-      minecity.cmd.nature.allow.open: true
-      minecity.cmd.nature.allow.pvp: true
-      minecity.cmd.nature.allow.pvc: true
-      minecity.cmd.nature.allow.modify: true
-      minecity.cmd.nature.allow.vehicle: true
-      minecity.cmd.nature.allow.ride: true
+      minecity.cmd.plot.perms.enter.exec: true
+      minecity.cmd.plot.perms.click.exec: true
+      minecity.cmd.plot.perms.pickup.exec: true
+      minecity.cmd.plot.perms.harvest.exec: true
+      minecity.cmd.plot.perms.open.exec: true
+      minecity.cmd.plot.perms.pvp.exec: true
+      minecity.cmd.plot.perms.pvc.exec: true
+      minecity.cmd.plot.perms.modify.exec: true
+      minecity.cmd.plot.perms.vehicle.exec: true
+      minecity.cmd.plot.perms.ride.exec: true
 
-  minecity.cmd.nature.perms.*:
+  minecity.cmd.nature.deny:
     children:
-      minecity.cmd.nature.perms.enter: true
-      minecity.cmd.nature.perms.click: true
-      minecity.cmd.nature.perms.pickup: true
-      minecity.cmd.nature.perms.harvest: true
-      minecity.cmd.nature.perms.open: true
-      minecity.cmd.nature.perms.pvp: true
-      minecity.cmd.nature.perms.pvc: true
-      minecity.cmd.nature.perms.modify: true
-      minecity.cmd.nature.perms.vehicle: true
-      minecity.cmd.nature.perms.ride: true
+      minecity.cmd.nature.deny.enter.exec: true
+      minecity.cmd.nature.deny.click.exec: true
+      minecity.cmd.nature.deny.pickup.exec: true
+      minecity.cmd.nature.deny.harvest.exec: true
+      minecity.cmd.nature.deny.open.exec: true
+      minecity.cmd.nature.deny.pvp.exec: true
+      minecity.cmd.nature.deny.pvc.exec: true
+      minecity.cmd.nature.deny.modify.exec: true
+      minecity.cmd.nature.deny.vehicle.exec: true
+      minecity.cmd.nature.deny.ride.exec: true
+
+  minecity.cmd.nature.allow:
+    children:
+      minecity.cmd.nature.allow.enter.exec: true
+      minecity.cmd.nature.allow.click.exec: true
+      minecity.cmd.nature.allow.pickup.exec: true
+      minecity.cmd.nature.allow.harvest.exec: true
+      minecity.cmd.nature.allow.open.exec: true
+      minecity.cmd.nature.allow.pvp.exec: true
+      minecity.cmd.nature.allow.pvc.exec: true
+      minecity.cmd.nature.allow.modify.exec: true
+      minecity.cmd.nature.allow.vehicle.exec: true
+      minecity.cmd.nature.allow.ride.exec: true
+
+  minecity.cmd.nature.perms:
+    children:
+      minecity.cmd.nature.perms.exec: true
+      minecity.cmd.nature.perms.enter.exec: true
+      minecity.cmd.nature.perms.click.exec: true
+      minecity.cmd.nature.perms.pickup.exec: true
+      minecity.cmd.nature.perms.harvest.exec: true
+      minecity.cmd.nature.perms.open.exec: true
+      minecity.cmd.nature.perms.pvp.exec: true
+      minecity.cmd.nature.perms.pvc.exec: true
+      minecity.cmd.nature.perms.modify.exec: true
+      minecity.cmd.nature.perms.vehicle.exec: true
+      minecity.cmd.nature.perms.ride.exec: true
 
   # Command Functions
-  minecity.cmd.admin:
+  minecity.cmd.admin.exec:
     default: op
-  minecity.cmd.nature.deny.enter:
+  minecity.cmd.nature.deny.enter.exec:
     default: op
-  minecity.cmd.nature.deny.click:
+  minecity.cmd.nature.deny.click.exec:
     default: op
-  minecity.cmd.nature.deny.pickup:
+  minecity.cmd.nature.deny.pickup.exec:
     default: op
-  minecity.cmd.nature.deny.harvest:
+  minecity.cmd.nature.deny.harvest.exec:
     default: op
-  minecity.cmd.nature.deny.open:
+  minecity.cmd.nature.deny.open.exec:
     default: op
-  minecity.cmd.nature.deny.pvp:
+  minecity.cmd.nature.deny.pvp.exec:
     default: op
-  minecity.cmd.nature.deny.pvc:
+  minecity.cmd.nature.deny.pvc.exec:
     default: op
-  minecity.cmd.nature.deny.modify:
+  minecity.cmd.nature.deny.modify.exec:
     default: op
-  minecity.cmd.nature.deny.vehicle:
+  minecity.cmd.nature.deny.vehicle.exec:
     default: op
-  minecity.cmd.nature.deny.ride:
+  minecity.cmd.nature.deny.ride.exec:
     default: op
-  minecity.cmd.nature.allow.enter:
+  minecity.cmd.nature.allow.enter.exec:
     default: op
-  minecity.cmd.nature.allow.click:
+  minecity.cmd.nature.allow.click.exec:
     default: op
-  minecity.cmd.nature.allow.pickup:
+  minecity.cmd.nature.allow.pickup.exec:
     default: op
-  minecity.cmd.nature.allow.harvest:
+  minecity.cmd.nature.allow.harvest.exec:
     default: op
-  minecity.cmd.nature.allow.open:
+  minecity.cmd.nature.allow.open.exec:
     default: op
-  minecity.cmd.nature.allow.pvp:
+  minecity.cmd.nature.allow.pvp.exec:
     default: op
-  minecity.cmd.nature.allow.pvc:
+  minecity.cmd.nature.allow.pvc.exec:
     default: op
-  minecity.cmd.nature.allow.modify:
+  minecity.cmd.nature.allow.modify.exec:
     default: op
-  minecity.cmd.nature.allow.vehicle:
+  minecity.cmd.nature.allow.vehicle.exec:
     default: op
-  minecity.cmd.nature.allow.ride:
+  minecity.cmd.nature.allow.ride.exec:
     default: op
-  minecity.cmd.nature.perms.enter:
+  minecity.cmd.nature.perms.enter.exec:
     default: op
-  minecity.cmd.nature.perms.click:
+  minecity.cmd.nature.perms.click.exec:
     default: op
-  minecity.cmd.nature.perms.pickup:
+  minecity.cmd.nature.perms.pickup.exec:
     default: op
-  minecity.cmd.nature.perms.harvest:
+  minecity.cmd.nature.perms.harvest.exec:
     default: op
-  minecity.cmd.nature.perms.open:
+  minecity.cmd.nature.perms.open.exec:
     default: op
-  minecity.cmd.nature.perms.pvp:
+  minecity.cmd.nature.perms.pvp.exec:
     default: op
-  minecity.cmd.nature.perms.pvc:
+  minecity.cmd.nature.perms.pvc.exec:
     default: op
-  minecity.cmd.nature.perms.modify:
+  minecity.cmd.nature.perms.modify.exec:
     default: op
-  minecity.cmd.nature.perms.vehicle:
+  minecity.cmd.nature.perms.vehicle.exec:
     default: op
-  minecity.cmd.nature.perms.ride:
+  minecity.cmd.nature.perms.ride.exec:
     default: op
-  minecity.cmd.nature.perms:
+  minecity.cmd.nature.perms.exec:
     default: op
-  minecity.cmd.city.create:
+  minecity.cmd.city.create.exec:
     default: op
-  minecity.cmd.city.claim:
+  minecity.cmd.city.claim.exec:
     default: op
-  minecity.cmd.city.disclaim:
+  minecity.cmd.city.disclaim.exec:
     default: op
-  minecity.cmd.city.spawn:
+  minecity.cmd.city.spawn.exec:
     default: op
-  minecity.cmd.city.rename:
+  minecity.cmd.city.rename.exec:
     default: op
-  minecity.cmd.city.transfer:
+  minecity.cmd.city.transfer.exec:
     default: op
-  minecity.cmd.city.setspawn:
+  minecity.cmd.city.setspawn.exec:
     default: op
-  minecity.cmd.city.map:
+  minecity.cmd.city.map.exec:
     default: op
-  minecity.cmd.city.delete:
+  minecity.cmd.city.delete.exec:
     default: op
-  minecity.cmd.city.info:
+  minecity.cmd.city.info.exec:
     default: op
-  minecity.cmd.city.deny.enter:
+  minecity.cmd.city.deny.enter.exec:
     default: op
-  minecity.cmd.city.deny.click:
+  minecity.cmd.city.deny.click.exec:
     default: op
-  minecity.cmd.city.deny.pickup:
+  minecity.cmd.city.deny.pickup.exec:
     default: op
-  minecity.cmd.city.deny.harvest:
+  minecity.cmd.city.deny.harvest.exec:
     default: op
-  minecity.cmd.city.deny.open:
+  minecity.cmd.city.deny.open.exec:
     default: op
-  minecity.cmd.city.deny.pvp:
+  minecity.cmd.city.deny.pvp.exec:
     default: op
-  minecity.cmd.city.deny.pvc:
+  minecity.cmd.city.deny.pvc.exec:
     default: op
-  minecity.cmd.city.deny.modify:
+  minecity.cmd.city.deny.modify.exec:
     default: op
-  minecity.cmd.city.deny.vehicle:
+  minecity.cmd.city.deny.vehicle.exec:
     default: op
-  minecity.cmd.city.deny.ride:
+  minecity.cmd.city.deny.ride.exec:
     default: op
-  minecity.cmd.city.allow.enter:
+  minecity.cmd.city.allow.enter.exec:
     default: op
-  minecity.cmd.city.allow.click:
+  minecity.cmd.city.allow.click.exec:
     default: op
-  minecity.cmd.city.allow.pickup:
+  minecity.cmd.city.allow.pickup.exec:
     default: op
-  minecity.cmd.city.allow.harvest:
+  minecity.cmd.city.allow.harvest.exec:
     default: op
-  minecity.cmd.city.allow.open:
+  minecity.cmd.city.allow.open.exec:
     default: op
-  minecity.cmd.city.allow.pvp:
+  minecity.cmd.city.allow.pvp.exec:
     default: op
-  minecity.cmd.city.allow.pvc:
+  minecity.cmd.city.allow.pvc.exec:
     default: op
-  minecity.cmd.city.allow.modify:
+  minecity.cmd.city.allow.modify.exec:
     default: op
-  minecity.cmd.city.allow.vehicle:
+  minecity.cmd.city.allow.vehicle.exec:
     default: op
-  minecity.cmd.city.allow.ride:
+  minecity.cmd.city.allow.ride.exec:
     default: op
-  minecity.cmd.city.clear.enter:
+  minecity.cmd.city.clear.enter.exec:
     default: op
-  minecity.cmd.city.clear.click:
+  minecity.cmd.city.clear.click.exec:
     default: op
-  minecity.cmd.city.clear.pickup:
+  minecity.cmd.city.clear.pickup.exec:
     default: op
-  minecity.cmd.city.clear.harvest:
+  minecity.cmd.city.clear.harvest.exec:
     default: op
-  minecity.cmd.city.clear.open:
+  minecity.cmd.city.clear.open.exec:
     default: op
-  minecity.cmd.city.clear.pvp:
+  minecity.cmd.city.clear.pvp.exec:
     default: op
-  minecity.cmd.city.clear.pvc:
+  minecity.cmd.city.clear.pvc.exec:
     default: op
-  minecity.cmd.city.clear.modify:
+  minecity.cmd.city.clear.modify.exec:
     default: op
-  minecity.cmd.city.clear.vehicle:
+  minecity.cmd.city.clear.vehicle.exec:
     default: op
-  minecity.cmd.city.clear.ride:
+  minecity.cmd.city.clear.ride.exec:
     default: op
-  minecity.cmd.city.deny.all.enter:
+  minecity.cmd.city.deny.all.enter.exec:
     default: op
-  minecity.cmd.city.deny.all.click:
+  minecity.cmd.city.deny.all.click.exec:
     default: op
-  minecity.cmd.city.deny.all.pickup:
+  minecity.cmd.city.deny.all.pickup.exec:
     default: op
-  minecity.cmd.city.deny.all.harvest:
+  minecity.cmd.city.deny.all.harvest.exec:
     default: op
-  minecity.cmd.city.deny.all.open:
+  minecity.cmd.city.deny.all.open.exec:
     default: op
-  minecity.cmd.city.deny.all.pvp:
+  minecity.cmd.city.deny.all.pvp.exec:
     default: op
-  minecity.cmd.city.deny.all.pvc:
+  minecity.cmd.city.deny.all.pvc.exec:
     default: op
-  minecity.cmd.city.deny.all.modify:
+  minecity.cmd.city.deny.all.modify.exec:
     default: op
-  minecity.cmd.city.deny.all.vehicle:
+  minecity.cmd.city.deny.all.vehicle.exec:
     default: op
-  minecity.cmd.city.deny.all.ride:
+  minecity.cmd.city.deny.all.ride.exec:
     default: op
-  minecity.cmd.city.allow.all.enter:
+  minecity.cmd.city.allow.all.enter.exec:
     default: op
-  minecity.cmd.city.allow.all.click:
+  minecity.cmd.city.allow.all.click.exec:
     default: op
-  minecity.cmd.city.allow.all.pickup:
+  minecity.cmd.city.allow.all.pickup.exec:
     default: op
-  minecity.cmd.city.allow.all.harvest:
+  minecity.cmd.city.allow.all.harvest.exec:
     default: op
-  minecity.cmd.city.allow.all.open:
+  minecity.cmd.city.allow.all.open.exec:
     default: op
-  minecity.cmd.city.allow.all.pvp:
+  minecity.cmd.city.allow.all.pvp.exec:
     default: op
-  minecity.cmd.city.allow.all.pvc:
+  minecity.cmd.city.allow.all.pvc.exec:
     default: op
-  minecity.cmd.city.allow.all.modify:
+  minecity.cmd.city.allow.all.modify.exec:
     default: op
-  minecity.cmd.city.allow.all.vehicle:
+  minecity.cmd.city.allow.all.vehicle.exec:
     default: op
-  minecity.cmd.city.allow.all.ride:
+  minecity.cmd.city.allow.all.ride.exec:
     default: op
-  minecity.cmd.city.clear.all.enter:
+  minecity.cmd.city.clear.all.enter.exec:
     default: op
-  minecity.cmd.city.clear.all.click:
+  minecity.cmd.city.clear.all.click.exec:
     default: op
-  minecity.cmd.city.clear.all.pickup:
+  minecity.cmd.city.clear.all.pickup.exec:
     default: op
-  minecity.cmd.city.clear.all.harvest:
+  minecity.cmd.city.clear.all.harvest.exec:
     default: op
-  minecity.cmd.city.clear.all.open:
+  minecity.cmd.city.clear.all.open.exec:
     default: op
-  minecity.cmd.city.clear.all.pvp:
+  minecity.cmd.city.clear.all.pvp.exec:
     default: op
-  minecity.cmd.city.clear.all.pvc:
+  minecity.cmd.city.clear.all.pvc.exec:
     default: op
-  minecity.cmd.city.clear.all.modify:
+  minecity.cmd.city.clear.all.modify.exec:
     default: op
-  minecity.cmd.city.clear.all.vehicle:
+  minecity.cmd.city.clear.all.vehicle.exec:
     default: op
-  minecity.cmd.city.clear.all.ride:
+  minecity.cmd.city.clear.all.ride.exec:
     default: op
-  minecity.cmd.plot.deny.enter:
+  minecity.cmd.plot.deny.enter.exec:
     default: op
-  minecity.cmd.plot.deny.click:
+  minecity.cmd.plot.deny.click.exec:
     default: op
-  minecity.cmd.plot.deny.pickup:
+  minecity.cmd.plot.deny.pickup.exec:
     default: op
-  minecity.cmd.plot.deny.harvest:
+  minecity.cmd.plot.deny.harvest.exec:
     default: op
-  minecity.cmd.plot.deny.open:
+  minecity.cmd.plot.deny.open.exec:
     default: op
-  minecity.cmd.plot.deny.pvp:
+  minecity.cmd.plot.deny.pvp.exec:
     default: op
-  minecity.cmd.plot.deny.pvc:
+  minecity.cmd.plot.deny.pvc.exec:
     default: op
-  minecity.cmd.plot.deny.modify:
+  minecity.cmd.plot.deny.modify.exec:
     default: op
-  minecity.cmd.plot.deny.vehicle:
+  minecity.cmd.plot.deny.vehicle.exec:
     default: op
-  minecity.cmd.plot.deny.ride:
+  minecity.cmd.plot.deny.ride.exec:
     default: op
-  minecity.cmd.plot.allow.enter:
+  minecity.cmd.plot.allow.enter.exec:
     default: op
-  minecity.cmd.plot.allow.click:
+  minecity.cmd.plot.allow.click.exec:
     default: op
-  minecity.cmd.plot.allow.pickup:
+  minecity.cmd.plot.allow.pickup.exec:
     default: op
-  minecity.cmd.plot.allow.harvest:
+  minecity.cmd.plot.allow.harvest.exec:
     default: op
-  minecity.cmd.plot.allow.open:
+  minecity.cmd.plot.allow.open.exec:
     default: op
-  minecity.cmd.plot.allow.pvp:
+  minecity.cmd.plot.allow.pvp.exec:
     default: op
-  minecity.cmd.plot.allow.pvc:
+  minecity.cmd.plot.allow.pvc.exec:
     default: op
-  minecity.cmd.plot.allow.modify:
+  minecity.cmd.plot.allow.modify.exec:
     default: op
-  minecity.cmd.plot.allow.vehicle:
+  minecity.cmd.plot.allow.vehicle.exec:
     default: op
-  minecity.cmd.plot.allow.ride:
+  minecity.cmd.plot.allow.ride.exec:
     default: op
-  minecity.cmd.plot.clear.enter:
+  minecity.cmd.plot.clear.enter.exec:
     default: op
-  minecity.cmd.plot.clear.click:
+  minecity.cmd.plot.clear.click.exec:
     default: op
-  minecity.cmd.plot.clear.pickup:
+  minecity.cmd.plot.clear.pickup.exec:
     default: op
-  minecity.cmd.plot.clear.harvest:
+  minecity.cmd.plot.clear.harvest.exec:
     default: op
-  minecity.cmd.plot.clear.open:
+  minecity.cmd.plot.clear.open.exec:
     default: op
-  minecity.cmd.plot.clear.pvp:
+  minecity.cmd.plot.clear.pvp.exec:
     default: op
-  minecity.cmd.plot.clear.pvc:
+  minecity.cmd.plot.clear.pvc.exec:
     default: op
-  minecity.cmd.plot.clear.modify:
+  minecity.cmd.plot.clear.modify.exec:
     default: op
-  minecity.cmd.plot.clear.vehicle:
+  minecity.cmd.plot.clear.vehicle.exec:
     default: op
-  minecity.cmd.plot.clear.ride:
+  minecity.cmd.plot.clear.ride.exec:
     default: op
-  minecity.cmd.plot.deny.all.enter:
+  minecity.cmd.plot.deny.all.enter.exec:
     default: op
-  minecity.cmd.plot.deny.all.click:
+  minecity.cmd.plot.deny.all.click.exec:
     default: op
-  minecity.cmd.plot.deny.all.pickup:
+  minecity.cmd.plot.deny.all.pickup.exec:
     default: op
-  minecity.cmd.plot.deny.all.harvest:
+  minecity.cmd.plot.deny.all.harvest.exec:
     default: op
-  minecity.cmd.plot.deny.all.open:
+  minecity.cmd.plot.deny.all.open.exec:
     default: op
-  minecity.cmd.plot.deny.all.pvp:
+  minecity.cmd.plot.deny.all.pvp.exec:
     default: op
-  minecity.cmd.plot.deny.all.pvc:
+  minecity.cmd.plot.deny.all.pvc.exec:
     default: op
-  minecity.cmd.plot.deny.all.modify:
+  minecity.cmd.plot.deny.all.modify.exec:
     default: op
-  minecity.cmd.plot.deny.all.vehicle:
+  minecity.cmd.plot.deny.all.vehicle.exec:
     default: op
-  minecity.cmd.plot.deny.all.ride:
+  minecity.cmd.plot.deny.all.ride.exec:
     default: op
-  minecity.cmd.plot.allow.all.enter:
+  minecity.cmd.plot.allow.all.enter.exec:
     default: op
-  minecity.cmd.plot.allow.all.click:
+  minecity.cmd.plot.allow.all.click.exec:
     default: op
-  minecity.cmd.plot.allow.all.pickup:
+  minecity.cmd.plot.allow.all.pickup.exec:
     default: op
-  minecity.cmd.plot.allow.all.harvest:
+  minecity.cmd.plot.allow.all.harvest.exec:
     default: op
-  minecity.cmd.plot.allow.all.open:
+  minecity.cmd.plot.allow.all.open.exec:
     default: op
-  minecity.cmd.plot.allow.all.pvp:
+  minecity.cmd.plot.allow.all.pvp.exec:
     default: op
-  minecity.cmd.plot.allow.all.pvc:
+  minecity.cmd.plot.allow.all.pvc.exec:
     default: op
-  minecity.cmd.plot.allow.all.modify:
+  minecity.cmd.plot.allow.all.modify.exec:
     default: op
-  minecity.cmd.plot.allow.all.vehicle:
+  minecity.cmd.plot.allow.all.vehicle.exec:
     default: op
-  minecity.cmd.plot.allow.all.ride:
+  minecity.cmd.plot.allow.all.ride.exec:
     default: op
-  minecity.cmd.plot.clear.all.enter:
+  minecity.cmd.plot.clear.all.enter.exec:
     default: op
-  minecity.cmd.plot.clear.all.click:
+  minecity.cmd.plot.clear.all.click.exec:
     default: op
-  minecity.cmd.plot.clear.all.pickup:
+  minecity.cmd.plot.clear.all.pickup.exec:
     default: op
-  minecity.cmd.plot.clear.all.harvest:
+  minecity.cmd.plot.clear.all.harvest.exec:
     default: op
-  minecity.cmd.plot.clear.all.open:
+  minecity.cmd.plot.clear.all.open.exec:
     default: op
-  minecity.cmd.plot.clear.all.pvp:
+  minecity.cmd.plot.clear.all.pvp.exec:
     default: op
-  minecity.cmd.plot.clear.all.pvc:
+  minecity.cmd.plot.clear.all.pvc.exec:
     default: op
-  minecity.cmd.plot.clear.all.modify:
+  minecity.cmd.plot.clear.all.modify.exec:
     default: op
-  minecity.cmd.plot.clear.all.vehicle:
+  minecity.cmd.plot.clear.all.vehicle.exec:
     default: op
-  minecity.cmd.plot.clear.all.ride:
+  minecity.cmd.plot.clear.all.ride.exec:
     default: op
-  minecity.cmd.plot.perms.enter:
+  minecity.cmd.plot.perms.enter.exec:
     default: op
-  minecity.cmd.plot.perms.click:
+  minecity.cmd.plot.perms.click.exec:
     default: op
-  minecity.cmd.plot.perms.pickup:
+  minecity.cmd.plot.perms.pickup.exec:
     default: op
-  minecity.cmd.plot.perms.harvest:
+  minecity.cmd.plot.perms.harvest.exec:
     default: op
-  minecity.cmd.plot.perms.open:
+  minecity.cmd.plot.perms.open.exec:
     default: op
-  minecity.cmd.plot.perms.pvp:
+  minecity.cmd.plot.perms.pvp.exec:
     default: op
-  minecity.cmd.plot.perms.pvc:
+  minecity.cmd.plot.perms.pvc.exec:
     default: op
-  minecity.cmd.plot.perms.modify:
+  minecity.cmd.plot.perms.modify.exec:
     default: op
-  minecity.cmd.plot.perms.vehicle:
+  minecity.cmd.plot.perms.vehicle.exec:
     default: op
-  minecity.cmd.plot.perms.ride:
+  minecity.cmd.plot.perms.ride.exec:
     default: op
-  minecity.cmd.plot.perms:
+  minecity.cmd.plot.perms.exec:
     default: op
-  minecity.cmd.city.perms.enter:
+  minecity.cmd.city.perms.enter.exec:
     default: op
-  minecity.cmd.city.perms.click:
+  minecity.cmd.city.perms.click.exec:
     default: op
-  minecity.cmd.city.perms.pickup:
+  minecity.cmd.city.perms.pickup.exec:
     default: op
-  minecity.cmd.city.perms.harvest:
+  minecity.cmd.city.perms.harvest.exec:
     default: op
-  minecity.cmd.city.perms.open:
+  minecity.cmd.city.perms.open.exec:
     default: op
-  minecity.cmd.city.perms.pvp:
+  minecity.cmd.city.perms.pvp.exec:
     default: op
-  minecity.cmd.city.perms.pvc:
+  minecity.cmd.city.perms.pvc.exec:
     default: op
-  minecity.cmd.city.perms.modify:
+  minecity.cmd.city.perms.modify.exec:
     default: op
-  minecity.cmd.city.perms.vehicle:
+  minecity.cmd.city.perms.vehicle.exec:
     default: op
-  minecity.cmd.city.perms.ride:
+  minecity.cmd.city.perms.ride.exec:
     default: op
-  minecity.cmd.city.perms:
+  minecity.cmd.city.perms.exec:
     default: op
-  minecity.cmd.city.sell:
+  minecity.cmd.city.sell.exec:
     default: op
-  minecity.cmd.city.buy:
+  minecity.cmd.city.buy.exec:
     default: op
-  minecity.cmd.city.claim.auto:
+  minecity.cmd.auto.claim.exec:
     default: op
-  minecity.cmd.group.create:
+  minecity.cmd.group.create.exec:
     default: op
-  minecity.cmd.group.add:
+  minecity.cmd.group.add.exec:
     default: op
-  minecity.cmd.group.remove:
+  minecity.cmd.group.remove.exec:
     default: op
-  minecity.cmd.group.list:
+  minecity.cmd.group.list.exec:
     default: op
-  minecity.cmd.group.info:
+  minecity.cmd.group.info.exec:
     default: op
-  minecity.cmd.group.delete:
+  minecity.cmd.group.delete.exec:
     default: op
-  minecity.cmd.group.add.manager:
+  minecity.cmd.group.add.manager.exec:
     default: op
-  minecity.cmd.group.remove.manager:
+  minecity.cmd.group.remove.manager.exec:
     default: op
-  minecity.cmd.confirm:
+  minecity.cmd.confirm.exec:
     default: op
-  minecity.cmd.help:
+  minecity.cmd.help.exec:
     default: op
-  minecity.cmd.reload:
+  minecity.cmd.reload.exec:
     default: op
-  minecity.cmd.plot.create:
+  minecity.cmd.plot.create.exec:
     default: op
-  minecity.cmd.plot.rename:
+  minecity.cmd.plot.rename.exec:
     default: op
-  minecity.cmd.plot.return:
+  minecity.cmd.plot.return.exec:
     default: op
-  minecity.cmd.plot.transfer:
+  minecity.cmd.plot.transfer.exec:
     default: op
-  minecity.cmd.plot.delete:
+  minecity.cmd.plot.delete.exec:
     default: op
-  minecity.cmd.plot.info:
+  minecity.cmd.plot.info.exec:
     default: op
-  minecity.cmd.plot.readjust:
+  minecity.cmd.plot.readjust.exec:
     default: op
-  minecity.cmd.city.list:
+  minecity.cmd.city.list.exec:
     default: op
-  minecity.cmd.plot.list:
+  minecity.cmd.plot.list.exec:
     default: op
-  minecity.cmd.plot.sell:
+  minecity.cmd.plot.sell.exec:
     default: op
-  minecity.cmd.plot.buy:
-      default: op
+  minecity.cmd.plot.buy.exec:
+    default: op

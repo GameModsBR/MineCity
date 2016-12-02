@@ -253,14 +253,14 @@ public class CityCommand
                 }), true);
     }
 
-    @Command("city.claim.auto")
+    @Command("auto.claim")
     public CommandResult<Boolean> autoClaim(CommandEvent cmd)
     {
         cmd.sender.toggleAutoClaim();
         if(cmd.sender.getAutoClaim())
-            return new CommandResult<>(new Message("cmd.city.claim.auto.enabled","Auto claiming is now enabled"), Boolean.TRUE);
+            return new CommandResult<>(new Message("cmd.auto.claim.enabled","Auto claiming is now enabled"), Boolean.TRUE);
         else
-            return new CommandResult<>(new Message("cmd.city.claim.auto.disabled","Auto claiming is now disabled"), Boolean.FALSE);
+            return new CommandResult<>(new Message("cmd.auto.claim.disabled","Auto claiming is now disabled"), Boolean.FALSE);
     }
 
     @Slow

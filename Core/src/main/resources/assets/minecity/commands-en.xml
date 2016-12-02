@@ -103,7 +103,7 @@
         <command id="city.claim" parent="city" cmd="claim,expand">
             <desc>Claims a chunk to a city</desc>
         </command>
-        <command id="city.claim.auto" parent="city" cmd="auto-claim">
+        <command id="auto.claim" parent="city" cmd="auto-claim">
             <desc>Automatically attempts to claim a chunk when you cross the chunk boundaries</desc>
         </command>
         <command id="city.disclaim" parent="city" cmd="disclaim,unclaim">
@@ -159,10 +159,10 @@
         <command id="group.delete" parent="group" cmd="delete">
             <desc>Completely deletes a group from a city</desc>
         </command>
-        <command id="group.add.manager" parent="group.manager" cmd="add">
+        <command id="group.manager.add" parent="group.manager" cmd="add">
             <desc>Adds a player as a group manager</desc>
         </command>
-        <command id="group.remove.manager" parent="group.manager" cmd="remove">
+        <command id="group.manager.remove" parent="group.manager" cmd="remove">
             <desc>Demotes a player from group managers</desc>
         </command>
 

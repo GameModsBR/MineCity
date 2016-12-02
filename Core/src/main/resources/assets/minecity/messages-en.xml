@@ -484,10 +484,6 @@
                     <msg id="reached">The city ${city} has reached the maximum number of islands that it can have.</msg>
                 </limits>
                 <msg id="success">This chunk was claimed to ${city} successfully.</msg>
-                <auto>
-                    <msg id="enabled">Auto claiming is now enabled</msg>
-                    <msg id="disabled">Auto claiming is now disabled</msg>
-                </auto>
             </claim>
             <disclaim>
                 <msg id="not-claimed">This chunk is not claimed by any city</msg>
@@ -820,8 +816,46 @@
                     <msg id="ride.arg.reason">reason</msg>
                 </all>
             </clear>
+            <auto>
+                <claim>
+                    <msg id="enabled">Auto claiming is now enabled</msg>
+                    <msg id="disabled">Auto claiming is now disabled</msg>
+                </claim>
+            </auto>
         </city>
         <group>
+            <manager>
+                <add>
+                    <arg>
+                        <msg id="player">player</msg>
+                        <msg id="group">group</msg>
+                    </arg>
+                    <msg id="empty.player">Type a player name</msg>
+                    <msg id="empty.group">Type a group name</msg>
+                    <msg id="not-claimed">You are not inside a city</msg>
+                    <msg id="group-not-found">The group ${group} was not found in ${city}</msg>
+                    <msg id="no-permission">You don't have permission to add managers to groups from ${city}</msg>
+                    <msg id="player-not-found">No player was found with name ${name}</msg>
+                    <msg id="already-manager">The player ${name} is already a manager of the group ${group}</msg>
+                    <msg id="success">The player ${player} is now a manager of the group ${group}</msg>
+                </add>
+                <remove>
+                    <manager>
+                        <arg>
+                            <msg id="player">player</msg>
+                            <msg id="group">group</msg>
+                        </arg>
+                        <msg id="empty.player">Type a player name</msg>
+                        <msg id="empty.group">Type a group name</msg>
+                        <msg id="not-claimed">You are not inside a city</msg>
+                        <msg id="group-not-found">The group ${group} was not found in ${city}</msg>
+                        <msg id="no-permission">You don't have permission to demote players from groups from ${city}</msg>
+                        <msg id="player-not-found">No player was found with name ${name}</msg>
+                        <msg id="not-manager">The player ${name} is not a manager of the group ${group}</msg>
+                        <msg id="success">The player ${player} is no longer a manager of the group ${group}</msg>
+                    </manager>
+                </remove>
+            </manager>
             <create>
                 <msg id="arg.group-name">group-name</msg>
                 <msg id="empty">You need to type a name</msg>
@@ -844,20 +878,6 @@
                 <msg id="player-not-found">No player was found with name ${name}</msg>
                 <msg id="already-member">The player ${name} is already part of the group ${group}</msg>
                 <msg id="success">The player ${player} is now part of the group ${group}</msg>
-                <manager>
-                    <arg>
-                        <msg id="player">player</msg>
-                        <msg id="group">group</msg>
-                    </arg>
-                    <msg id="empty.player">Type a player name</msg>
-                    <msg id="empty.group">Type a group name</msg>
-                    <msg id="not-claimed">You are not inside a city</msg>
-                    <msg id="group-not-found">The group ${group} was not found in ${city}</msg>
-                    <msg id="no-permission">You don't have permission to add managers to groups from ${city}</msg>
-                    <msg id="player-not-found">No player was found with name ${name}</msg>
-                    <msg id="already-manager">The player ${name} is already a manager of the group ${group}</msg>
-                    <msg id="success">The player ${player} is now a manager of the group ${group}</msg>
-                </manager>
             </add>
             <remove>
                 <arg>
@@ -872,20 +892,6 @@
                 <msg id="player-not-found">No player was found with name ${name}</msg>
                 <msg id="not-member">The player ${name} is not a member of the group ${group}</msg>
                 <msg id="success">The player ${player} is no longer part of the group ${group}</msg>
-                <manager>
-                    <arg>
-                        <msg id="player">player</msg>
-                        <msg id="group">group</msg>
-                    </arg>
-                    <msg id="empty.player">Type a player name</msg>
-                    <msg id="empty.group">Type a group name</msg>
-                    <msg id="not-claimed">You are not inside a city</msg>
-                    <msg id="group-not-found">The group ${group} was not found in ${city}</msg>
-                    <msg id="no-permission">You don't have permission to demote players from groups from ${city}</msg>
-                    <msg id="player-not-found">No player was found with name ${name}</msg>
-                    <msg id="not-manager">The player ${name} is not a manager of the group ${group}</msg>
-                    <msg id="success">The player ${player} is no longer a manager of the group ${group}</msg>
-                </manager>
             </remove>
             <list>
                 <msg id="arg.city-name">city</msg>
