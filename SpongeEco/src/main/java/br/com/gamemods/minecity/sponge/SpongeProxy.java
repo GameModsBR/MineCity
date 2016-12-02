@@ -2,12 +2,16 @@ package br.com.gamemods.minecity.sponge;
 
 import br.com.gamemods.minecity.api.Async;
 import br.com.gamemods.minecity.api.PlayerID;
+import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.world.WorldDim;
 import br.com.gamemods.minecity.economy.BalanceResult;
 import br.com.gamemods.minecity.economy.EconomyProxy;
 import br.com.gamemods.minecity.economy.OperationResult;
+import br.com.gamemods.minecity.permission.PermissionProxy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
@@ -19,27 +23,55 @@ import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.service.economy.transaction.ResultType;
 import org.spongepowered.api.service.economy.transaction.TransactionResult;
+import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
-@Plugin(id = "minecityecosponge", dependencies = @Dependency(id="minecity"), name = "MineCity-Sponge",
-        description = "MineCity's module that implements Sponge's Economy support.")
-public class SpongeEconomy implements EconomyProxy
+@Plugin(id = "minecitysponge", dependencies = @Dependency(id="minecity"), name = "MineCity-Sponge",
+        description = "MineCity's module that implements Sponge's Economy and Permission support.")
+public class SpongeProxy implements EconomyProxy, PermissionProxy
 {
     private final SpongeBalance NO_ACCOUNT = new SpongeBalance(false);
 
     @Nullable
     private EconomyService eco;
 
+    @Nullable
+    private UserStorageService userStorage;
+
     @Listener
     public void onEconomyChange(ChangeServiceProviderEvent event)
     {
-        if(event.getService().equals(EconomyService.class))
+        Class<?> service = event.getService();
+        if(service.equals(EconomyService.class))
             eco = (EconomyService) event.getNewProvider();
+        else if(service.equals(UserStorageService.class))
+            userStorage = (UserStorageService) event.getNewProvider();
+    }
+
+    @Override
+    public boolean hasPermission(CommandSender sender, String perm)
+    {
+        Object handler = sender.getHandler();
+        if(handler instanceof Subject)
+            return ((Subject) handler).hasPermission(perm);
+
+        if(!sender.isPlayer())
+            return sender.isOp();
+
+        UserStorageService storage = this.userStorage;
+        if(storage == null)
+            this.userStorage = storage = Sponge.getServiceManager().provide(UserStorageService.class)
+                    .orElseThrow(() -> new IllegalStateException("No user storage service was found!"));
+
+        Optional<User> result = storage.get(sender.getPlayerId().getUniqueId());
+        return result.isPresent() && result.get().hasPermission(perm);
     }
 
     @NotNull

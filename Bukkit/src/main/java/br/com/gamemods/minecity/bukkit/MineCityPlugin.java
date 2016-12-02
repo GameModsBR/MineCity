@@ -76,6 +76,7 @@ public class MineCityPlugin extends JavaPlugin
 
         if(getServer().getPluginManager().isPluginEnabled("Vault"))
         {
+            getLogger().info("Vault found. Enabling Vault support");
             EconomyLayer.register("vault", VaultProviders.ECONOMY);
             PermissionLayer.register("vault", VaultProviders.PERMISSION);
         }
@@ -83,7 +84,9 @@ public class MineCityPlugin extends JavaPlugin
         try
         {
             Class.forName("org.spongepowered.api.Sponge");
+            getLogger().info("Sponge API found. Enabling Sponge support");
             EconomyLayer.register("sponge", SpongeProviders.ECONOMY);
+            PermissionLayer.register("sponge", SpongeProviders.PERMISSION);
         }
         catch(ClassNotFoundException ignored)
         {

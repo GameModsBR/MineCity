@@ -333,7 +333,9 @@ public class MineCityForge implements Server, ChunkProvider, WorldProvider
         try
         {
             Class.forName("org.spongepowered.api.Sponge");
+            logger.info("Sponge API found, enabling Sponge support");
             EconomyLayer.register("sponge", SpongeProviders.ECONOMY);
+            PermissionLayer.register("sponge", SpongeProviders.PERMISSION);
         }
         catch(ClassNotFoundException ignored)
         {
