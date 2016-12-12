@@ -342,6 +342,9 @@ public class MineCity
     public ClaimedChunk unloadChunk(@NotNull ChunkPos pos)
     {
         ClaimedChunk chunk = chunks.remove(pos);
+        if(chunk != null)
+            chunk.invalidate();
+
         chunk = getChunkProvider().map(p-> p.getClaim(pos)).orElse(chunk);
 
         if(chunk != null)

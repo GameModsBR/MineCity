@@ -1,6 +1,6 @@
 name: MineCity
 version: 1.0.0-SNAPSHOT
-main: br.com.gamemods.minecity.bukkit.MineCityPlugin
+main: br.com.gamemods.minecity.bukkit.MineCityBukkitPlugin
 author: joserobjr
 softdepend: [Vault]
 

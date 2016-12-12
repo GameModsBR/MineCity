@@ -1,0 +1,23 @@
+{
+  "required": true,
+  "minVersion": "0.5.7",
+  "package": "br.com.gamemods.minecity.sponge.core.mixin",
+  "refmap": "mixins.minecity.refmap.json",
+  "target": "@env(DEFAULT)",
+  "compatibilityLevel": "JAVA_8",
+  "server": [
+    "MixinBlockState",
+    "MixinBlockTrait",
+    "MixinBlockType",
+    "MixinChunk",
+    "MixinEntity",
+    "MixinIBlockState",
+    "MixinIProperty",
+    "MixinServer",
+    "MixinTileEntity",
+    "MixinWorld"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,70 @@
+buildscript {
+    repositories {
+        maven {
+            name = 'forge'
+            url = 'http://files.minecraftforge.net/maven'
+        }
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
+    }
+
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
+    }
+}
+
+plugins {
+    id 'org.spongepowered.plugin' version '0.7'
+    id 'net.minecrell.vanillagradle.server' version '2.2-3'
+}
+
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile project(':Core')
+    compile project(':Reactive')
+    compile project(':SpongeEco')
+    //compile 'org.spongepowered:spongecommon:5.1.0-SNAPSHOT:dev'
+    compile 'org.spongepowered:mixin:0.5.17-SNAPSHOT'
+}
+
+minecraft {
+    version = '1.10.2'
+    mappings = 'snapshot_20161027'
+    makeObfSourceJar = false
+}
+
+// Mixins
+sourceSets {
+    main {
+        refMap = "mixins.minecity.refmap.json"
+    }
+}
+
+jar {
+    manifest.attributes(
+            'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+            'MixinConfigs': 'mixins.minecity.refmap.json',
+            'ForceLoadAsMod' : 'true'
+    )
+}
+
+shadowJar {
+    dependencies {
+        include(project(':Core'))
+        include(project(':Reactive'))
+        include(project(':SpongeEco'))
+    }
+
+    baseName = 'MineCity-Sponge'
+    classifier = null
+}
+
+build.finalizedBy shadowJar

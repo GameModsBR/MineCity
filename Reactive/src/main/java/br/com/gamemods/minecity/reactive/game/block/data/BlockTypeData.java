@@ -1,0 +1,62 @@
+package br.com.gamemods.minecity.reactive.game.block.data;
+
+import br.com.gamemods.minecity.reactive.ReactiveLayer;
+import br.com.gamemods.minecity.reactive.game.block.ReactiveBlockType;
+import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockTypeData;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
+
+/**
+ * Information about a general block, the base of the block states.
+ */
+public interface BlockTypeData extends SupplierBlockTypeData
+{
+    Object getBlockType();
+
+    /**
+     * The reactive object that will react to events related to this block type.
+     */
+    @NotNull
+    default Optional<ReactiveBlockType> getReactiveBlockType()
+    {
+        return ReactiveLayer.getReactor().getBlockReactor().getBlockType(this);
+    }
+
+    /**
+     * @see ReactiveBlockType#getBlockRole()
+     */
+    @NotNull
+    default BlockRole getBlockTypeRole()
+    {
+        return getReactiveBlockType().map(ReactiveBlockType::getBlockRole).orElse(BlockRole.DECORATIVE);
+    }
+
+    /**
+     * The string that represents this block type. Might not be available on all server implementations.
+     */
+    @NotNull
+    default Optional<String> getBlockIdName()
+    {
+        return Optional.empty();
+    }
+
+    /**
+     * The integer that represents this block. Might not be available on all server implementations.
+     */
+    @NotNull
+    default Optional<Integer> getBlockId()
+    {
+        return Optional.empty();
+    }
+
+    /**
+     * Returns itself
+     */
+    @NotNull
+    @Override
+    default BlockTypeData getBlockTypeData()
+    {
+        return this;
+    }
+}

@@ -1,1 +1,1 @@
-include 'Core', 'Bukkit', 'UnitTest', 'Forge:Base', 'Forge:1.7.10', 'Forge:1.10.2', 'VaultEco', 'Forge:1.7.10:UCS', 'SpongeEco'
+include 'Core', 'Bukkit', 'UnitTest', 'VaultEco', 'SpongeEco', 'Reactive', 'Sponge'

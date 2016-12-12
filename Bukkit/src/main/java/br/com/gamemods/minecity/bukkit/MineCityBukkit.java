@@ -51,7 +51,7 @@ public class MineCityBukkit implements Server, Listener
     public final ExecutorService loadingTasks;
     public final MineCity mineCity;
     public final BukkitScheduler scheduler;
-    public final MineCityPlugin plugin;
+    public final MineCityBukkitPlugin plugin;
     public final Logger logger;
     public final Map<Player, BukkitPlayer> playerMap = new HashMap<>();
     public final Map<PlayerID, BukkitPlayer> playerIdMap = new HashMap<>();
@@ -61,7 +61,7 @@ public class MineCityBukkit implements Server, Listener
     private String selectionToolTitle;
     private List<String> selectionToolLore;
 
-    public MineCityBukkit(MineCityPlugin plugin, MineCityConfig config, BukkitTransformer transformer)
+    public MineCityBukkit(MineCityBukkitPlugin plugin, MineCityConfig config, BukkitTransformer transformer)
     {
         this.transformer = transformer;
         this.plugin = plugin;

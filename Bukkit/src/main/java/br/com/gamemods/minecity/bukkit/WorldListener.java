@@ -49,7 +49,7 @@ public class WorldListener implements Listener
                 bukkit.mineCity.loadChunk(bukkit.chunk(chunk));
                 bukkit.markEntities(Arrays.stream(entities));
             }
-            catch(DataSourceException e)
+            catch(Exception e)
             {
                 bukkit.logger.log(Level.SEVERE, "Failed to load the chunk: "+
                         event.getWorld().getName()+" "+chunk.getX()+"."+chunk.getZ(), e
