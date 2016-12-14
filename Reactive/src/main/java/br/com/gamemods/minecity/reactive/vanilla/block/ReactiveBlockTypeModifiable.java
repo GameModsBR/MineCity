@@ -20,6 +20,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface ReactiveBlockTypeModifiable extends ReactiveBlockType
 {
+    ReactiveBlockTypeModifiable INSTANCE = new ReactiveBlockTypeModifiable(){};
+
     @NotNull
     @Override
     default BlockRole getBlockRole()

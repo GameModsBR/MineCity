@@ -18,6 +18,16 @@ public final class InteractReaction
         useBlock = useBlock.combine(reaction);
     }
 
+    public void combineItem(Reaction reaction)
+    {
+        useItem = useItem.combine(reaction);
+    }
+
+    public void combineAction(Reaction reaction)
+    {
+        action = action.combine(reaction);
+    }
+
     @NotNull
     public Reaction getUseBlock()
     {

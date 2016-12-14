@@ -1,5 +1,5 @@
 /**
  * Common reactions in vanilla blocks
  */
-@javax.annotation.ParametersAreNonnullByDefault
+@br.com.gamemods.minecity.api.NotNullByDefault
 package br.com.gamemods.minecity.reactive.vanilla.block;

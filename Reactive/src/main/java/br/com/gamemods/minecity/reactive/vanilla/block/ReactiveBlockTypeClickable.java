@@ -19,6 +19,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface ReactiveBlockTypeClickable extends ReactiveBlockType
 {
+    ReactiveBlockTypeClickable INSTANCE = new ReactiveBlockTypeClickable(){};
+
     @NotNull
     @Override
     default BlockRole getBlockRole()

@@ -5,10 +5,11 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.reactive.game.block.data.BlockStateData;
 import br.com.gamemods.minecity.reactive.game.block.data.BlockTypeData;
+import br.com.gamemods.minecity.reactive.game.block.data.TileEntityData;
 import br.com.gamemods.minecity.reactive.game.entity.ReactiveEntity;
 import br.com.gamemods.minecity.reactive.game.entity.data.Hand;
 import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
-import br.com.gamemods.minecity.reactive.game.server.ReactiveChunk;
+import br.com.gamemods.minecity.reactive.game.server.data.ChunkData;
 import br.com.gamemods.minecity.reactive.reaction.InteractReaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +23,7 @@ import java.util.stream.Stream;
 public final class ReactiveBlock
 {
     @NotNull
-    private final ReactiveChunk chunk;
+    private final ChunkData chunk;
 
     @NotNull
     private final BlockPos pos;
@@ -31,16 +32,16 @@ public final class ReactiveBlock
     private final BlockStateData state;
 
     @Nullable
-    private final ReactiveTileEntity tileEntity;
+    private final TileEntityData tileEntity;
 
-    public ReactiveBlock(ReactiveChunk chunk, BlockPos pos, BlockStateData state)
+    public ReactiveBlock(ChunkData chunk, BlockPos pos, BlockStateData state)
     {
         if(!chunk.getChunkPos().equals(pos.getChunk()))
             throw new IllegalArgumentException("chunk.chunkPos != pos.chunk");
         this.chunk = chunk;
         this.pos = pos;
         this.state = state;
-        this.tileEntity = chunk.getReactiveTileEntity(pos).orElse(null);
+        this.tileEntity = chunk.getTileEntityData(pos).orElse(null);
     }
 
     @NotNull
@@ -66,13 +67,15 @@ public final class ReactiveBlock
                 Stream.of(state.getBlockTypeData().getReactiveBlockType().orElse(null), state.getReactiveBlockState().orElse(null)),
                 Stream.concat(
                         state.reactiveTraitStream(),
-                        tileEntity != null? Stream.of(tileEntity) : Stream.empty()
+                        Optional.ofNullable(tileEntity)
+                                .flatMap(TileEntityData::getReactiveTileEntity)
+                                .map(Stream::of).orElse(Stream.empty())
                 )
         ).filter(prop-> prop != null);
     }
 
     @NotNull
-    public ReactiveChunk getChunk()
+    public ChunkData getChunk()
     {
         return chunk;
     }
@@ -96,7 +99,7 @@ public final class ReactiveBlock
     }
 
     @NotNull
-    public Optional<ReactiveTileEntity> getTileEntity()
+    public Optional<TileEntityData> getTileEntity()
     {
         return Optional.ofNullable(tileEntity);
     }

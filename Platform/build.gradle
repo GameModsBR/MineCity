@@ -15,7 +15,11 @@ subprojects {
             dependencies {
                 include(dependency({ it.moduleGroup.startsWith('org.mcstats.bukkit') }))
                 include(dependency({ it.moduleGroup == project.group }))
+                include(dependency('org.codehaus.groovy:groovy-all'))
+                include(dependency('org.jetbrains:annotations'))
             }
+
+            exclude 'dummyThing'
 
             baseName = 'MineCity-'+project.name.replace(':','-')
             classifier = null

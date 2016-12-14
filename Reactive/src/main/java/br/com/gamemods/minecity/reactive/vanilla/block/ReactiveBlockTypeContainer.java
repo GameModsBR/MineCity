@@ -19,6 +19,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface ReactiveBlockTypeContainer extends ReactiveBlockType
 {
+    ReactiveBlockTypeContainer INSTANCE = new ReactiveBlockTypeContainer(){};
+
     @NotNull
     @Override
     default BlockRole getBlockRole()

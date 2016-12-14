@@ -1,2 +1,2 @@
-@javax.annotation.ParametersAreNonnullByDefault
+@br.com.gamemods.minecity.api.NotNullByDefault
 package br.com.gamemods.minecity.reactive.reactor.builtin;

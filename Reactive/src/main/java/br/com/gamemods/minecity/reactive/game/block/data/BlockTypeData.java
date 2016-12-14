@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.reactive.ReactiveLayer;
 import br.com.gamemods.minecity.reactive.game.block.ReactiveBlockType;
 import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockTypeData;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -21,6 +22,11 @@ public interface BlockTypeData extends SupplierBlockTypeData
     default Optional<ReactiveBlockType> getReactiveBlockType()
     {
         return ReactiveLayer.getReactor().getBlockReactor().getBlockType(this);
+    }
+
+    default void setReactive(@Nullable ReactiveBlockType reactiveBlock)
+    {
+        System.out.println("Interface SET! ");
     }
 
     /**

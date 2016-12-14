@@ -1,5 +1,7 @@
 package br.com.gamemods.minecity.reactive.game.entity.data;
 
+import java.util.Arrays;
+
 public enum Hand
 {
     MAIN, OFF;
@@ -13,5 +15,10 @@ public enum Hand
     public void setInstance(Object instance)
     {
         this.instance = instance;
+    }
+
+    public static Hand from(Object instance)
+    {
+        return Arrays.stream(values()).filter(it-> instance.equals(it.instance)).findFirst().get();
     }
 }

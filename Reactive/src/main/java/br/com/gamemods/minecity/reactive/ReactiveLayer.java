@@ -1,6 +1,5 @@
 package br.com.gamemods.minecity.reactive;
 
-import br.com.gamemods.minecity.api.NotNullByDefault;
 import br.com.gamemods.minecity.reactive.game.block.data.*;
 import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockStateData;
 import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockTypeData;
@@ -21,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
-@NotNullByDefault
 public class ReactiveLayer
 {
     @Nullable
@@ -47,13 +45,13 @@ public class ReactiveLayer
         return Objects.requireNonNull(manipulator, "No data manipulator was registered");
     }
 
-    public static void setManipulator(Manipulator manipulator)
+    public static void setManipulator(@NotNull Manipulator manipulator)
     {
         ReactiveLayer.manipulator = Objects.requireNonNull(manipulator, "Cannot set the manipulator to null");
     }
 
     @NotNull
-    public static Optional<BlockTypeData> getBlockType(Object block)
+    public static Optional<BlockTypeData> getBlockType(@NotNull Object block)
     {
         if(block instanceof SupplierBlockTypeData)
             return Optional.of(((SupplierBlockTypeData) block).getBlockTypeData());
@@ -62,7 +60,7 @@ public class ReactiveLayer
     }
 
     @NotNull
-    public static Optional<BlockStateData> getBlockState(Object blockState)
+    public static Optional<BlockStateData> getBlockState(@NotNull Object blockState)
     {
         if(blockState instanceof SupplierBlockStateData)
             return Optional.of(((SupplierBlockStateData) blockState).getBlockStateData());
@@ -71,7 +69,7 @@ public class ReactiveLayer
     }
 
     @NotNull
-    public static Optional<TileEntityData> getTileEntity(Object tileEntity)
+    public static Optional<TileEntityData> getTileEntity(@NotNull Object tileEntity)
     {
         if(tileEntity instanceof SupplierTileEntityData)
             return Optional.of(((SupplierTileEntityData) tileEntity).getTileEntityData());
@@ -80,7 +78,7 @@ public class ReactiveLayer
     }
 
     @NotNull
-    public static Optional<BlockTraitData<?>> getBlockTrait(Object blockTrait)
+    public static Optional<BlockTraitData<?>> getBlockTrait(@NotNull Object blockTrait)
     {
         if(blockTrait instanceof BlockTraitData)
             return Optional.of(((BlockTraitData<?>) blockTrait).getBlockTraitData());
@@ -98,7 +96,7 @@ public class ReactiveLayer
     }
 
     @NotNull
-    public static Optional<ChunkData> getChunk(Object chunk)
+    public static Optional<ChunkData> getChunk(@NotNull Object chunk)
     {
         if(chunk instanceof SupplierChunkData)
             return Optional.of(((SupplierChunkData) chunk).getChunkData());
@@ -107,7 +105,7 @@ public class ReactiveLayer
     }
 
     @NotNull
-    public static Optional<ServerData> getServerData(Object server)
+    public static Optional<ServerData> getServerData(@NotNull Object server)
     {
         if(server instanceof SupplierServerData)
             return Optional.of(((SupplierServerData) server).getServerData());

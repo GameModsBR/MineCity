@@ -6,15 +6,16 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.permission.Identity;
-import br.com.gamemods.minecity.api.world.ChunkPos;
-import br.com.gamemods.minecity.api.world.EntityPos;
-import br.com.gamemods.minecity.api.world.MinecraftEntity;
-import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.api.world.*;
+import br.com.gamemods.minecity.reactive.ReactiveLayer;
+import br.com.gamemods.minecity.reactive.game.block.ReactiveBlock;
 import br.com.gamemods.minecity.sponge.cmd.*;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.ProxySource;
 import org.spongepowered.api.entity.Entity;
@@ -210,6 +211,30 @@ public class MineCitySponge implements Server
         return new EntityPos(world(location.getExtent()),
                 location.getX(), location.getY(), location.getZ(),
                 (float) rotation.getX(), (float) rotation.getY()
+        );
+    }
+
+    public ReactiveBlock reactiveBlock(BlockSnapshot snapshot, @Nullable World world)
+    {
+        World blockWorld;
+        if(world != null && snapshot.getWorldUniqueId().equals(world.getUniqueId()))
+            blockWorld = world;
+        else
+            blockWorld = Sponge.getServer().getWorld(snapshot.getWorldUniqueId()).orElseThrow(()->
+                    new IllegalStateException("The world "+snapshot.getWorldUniqueId()+" is not loaded!")
+            );
+
+        Vector3i pos = snapshot.getPosition();
+        BlockPos blockPos = new BlockPos(world(blockWorld), pos.getX(), pos.getY(), pos.getZ());
+        ChunkPos chunkPos = blockPos.getChunk();
+        Chunk chunk = blockWorld.getChunk(chunkPos.x, 0, chunkPos.z).orElseThrow(()->
+                new IllegalStateException("The chunk "+chunkPos+" is not loaded")
+        );
+
+        return new ReactiveBlock(
+                ReactiveLayer.getChunk(chunk).get(),
+                blockPos,
+                ReactiveLayer.getBlockState(snapshot.getState()).get()
         );
     }
 }

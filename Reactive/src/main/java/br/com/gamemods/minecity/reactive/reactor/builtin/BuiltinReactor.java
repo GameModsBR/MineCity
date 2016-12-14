@@ -1,15 +1,20 @@
 package br.com.gamemods.minecity.reactive.reactor.builtin;
 
-import br.com.gamemods.minecity.reactive.reactor.*;
+import br.com.gamemods.minecity.reactive.reactor.EntityReactor;
+import br.com.gamemods.minecity.reactive.reactor.ItemReactor;
+import br.com.gamemods.minecity.reactive.reactor.Reactor;
+import br.com.gamemods.minecity.reactive.reactor.ServerReactor;
 import org.jetbrains.annotations.NotNull;
 
 public class BuiltinReactor implements Reactor
 {
+    private BuiltinBlockReactor blockReactor = new BuiltinBlockReactor();
+
     @NotNull
     @Override
-    public BlockReactor getBlockReactor()
+    public BuiltinBlockReactor getBlockReactor()
     {
-        return null;
+        return blockReactor;
     }
 
     @NotNull
