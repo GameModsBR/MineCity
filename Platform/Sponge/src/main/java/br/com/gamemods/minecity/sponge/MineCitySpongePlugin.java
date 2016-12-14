@@ -55,6 +55,7 @@ import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.Chunk;
 import org.xml.sax.SAXException;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -64,7 +65,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
-@Plugin(id="minecity", name="MineCity", authors = "joserobjr")
+@Plugin(id="minecity", name="MineCity", version = "@VERSION@", authors = "joserobjr", description = "@DESC@")
 public class MineCitySpongePlugin
 {
     @Inject
@@ -260,8 +261,13 @@ public class MineCitySpongePlugin
             ReactiveLayer.setManipulator(new SpongeManipulator(sponge));
             ReactiveLayer.setReactor(new BuiltinReactor());
 
+            Path scripts = configDir.resolve("scripts");
+            File scriptsDir = scripts.toFile();
+            if(!scriptsDir.isDirectory() && !scriptsDir.mkdirs())
+                logger.warn("Failed to create the directory: "+scriptsDir);
+
             ScriptEngine engine = new ScriptEngine(
-                    configDir.resolve("scripts").toUri().toURL(),
+                    scripts.toUri().toURL(),
                     ReactiveLayer.class.getResource("/minecity/scripts/"),
                     ReactiveLayer.class.getResource("/minecity/scripts/minecity/")
             );
@@ -358,7 +364,7 @@ public class MineCitySpongePlugin
         ReactiveBlock block = sponge.reactiveBlock(event.getTargetBlock(), player.getWorld());
         InteractReaction reaction = block.rightClick(null, Hand.from(event.getHandType()), null, null, null);
         /*
-        ReactiveLayer.getBlockType(event.getTargetBlock().getState().getType()).get()
+        ReactiveLayer.getBlockTypeData(event.getTargetBlock().getState().getType()).get()
                 .getReactiveBlockType().get().reactRightClick(
                         reaction, null, Hand.from(event.getHandType()), null,
                         block, null, null

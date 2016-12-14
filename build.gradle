@@ -80,11 +80,10 @@ project(':Reactive') {
     }
 
     sourceSets {
-        main.resources.srcDirs += 'src/main/scripts'
+        main.java.srcDirs += 'src/main/scripts'
     }
 
     jar {
-        exclude('minecity')
         into 'minecity/scripts/minecity/', {
             from 'src/main/scripts/minecity'
         }

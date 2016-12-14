@@ -28,7 +28,7 @@ public abstract class MixinBlockType implements MixedBlockType
         if(blockTypeData != null)
             return blockTypeData;
 
-        return blockTypeData = ReactiveLayer.getBlockManipulator().getBlockType(this).get();
+        return blockTypeData = ReactiveLayer.getBlockManipulator().getBlockTypeData(this).get();
     }
 
     @NotNull

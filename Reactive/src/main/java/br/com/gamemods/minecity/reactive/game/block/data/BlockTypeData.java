@@ -3,6 +3,7 @@ package br.com.gamemods.minecity.reactive.game.block.data;
 import br.com.gamemods.minecity.reactive.ReactiveLayer;
 import br.com.gamemods.minecity.reactive.game.block.ReactiveBlockType;
 import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockTypeData;
+import br.com.gamemods.minecity.reactive.game.item.data.ItemData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,6 +15,12 @@ import java.util.Optional;
 public interface BlockTypeData extends SupplierBlockTypeData
 {
     Object getBlockType();
+
+    BlockStateData getDefaultBlockStateData();
+
+    Optional<ItemData> getItemData();
+
+    Optional<BlockTraitData<?>> getTraitData(String traitId);
 
     /**
      * The reactive object that will react to events related to this block type.

@@ -56,7 +56,7 @@ public class ReactiveLayer
         if(block instanceof SupplierBlockTypeData)
             return Optional.of(((SupplierBlockTypeData) block).getBlockTypeData());
 
-        return getBlockManipulator().getBlockType(block);
+        return getBlockManipulator().getBlockTypeData(block);
     }
 
     @NotNull
@@ -65,7 +65,7 @@ public class ReactiveLayer
         if(blockState instanceof SupplierBlockStateData)
             return Optional.of(((SupplierBlockStateData) blockState).getBlockStateData());
 
-        return getBlockManipulator().getBlockState(blockState);
+        return getBlockManipulator().getBlockStateData(blockState);
     }
 
     @NotNull
@@ -74,7 +74,7 @@ public class ReactiveLayer
         if(tileEntity instanceof SupplierTileEntityData)
             return Optional.of(((SupplierTileEntityData) tileEntity).getTileEntityData());
 
-        return getBlockManipulator().getTileEntity(tileEntity);
+        return getBlockManipulator().getTileEntityData(tileEntity);
     }
 
     @NotNull
@@ -83,7 +83,7 @@ public class ReactiveLayer
         if(blockTrait instanceof BlockTraitData)
             return Optional.of(((BlockTraitData<?>) blockTrait).getBlockTraitData());
 
-        return getBlockManipulator().getBlockTrait(blockTrait);
+        return getBlockManipulator().getBlockTraitData(blockTrait);
     }
 
     @NotNull

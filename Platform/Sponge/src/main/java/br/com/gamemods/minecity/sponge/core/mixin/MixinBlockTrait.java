@@ -27,7 +27,7 @@ public abstract class MixinBlockTrait<T extends Comparable<T>> implements MixedB
         if(blockTraitData != null)
             return blockTraitData;
 
-        return blockTraitData = (BlockTraitData<T>) ReactiveLayer.getBlockManipulator().getBlockTrait(this).get();
+        return blockTraitData = (BlockTraitData<T>) ReactiveLayer.getBlockManipulator().getBlockTraitData(this).get();
     }
 
     @NotNull

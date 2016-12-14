@@ -9,6 +9,7 @@
     "MixinBlockState",
     "MixinBlockTrait",
     "MixinBlockType",
+    "MixinItem",
     "MixinChunk",
     "MixinEntity",
     "MixinIBlockState",

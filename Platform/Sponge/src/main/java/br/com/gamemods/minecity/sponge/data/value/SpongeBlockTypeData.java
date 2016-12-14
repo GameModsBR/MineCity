@@ -1,7 +1,10 @@
 package br.com.gamemods.minecity.sponge.data.value;
 
 import br.com.gamemods.minecity.reactive.game.block.ReactiveBlockType;
+import br.com.gamemods.minecity.reactive.game.block.data.BlockStateData;
+import br.com.gamemods.minecity.reactive.game.block.data.BlockTraitData;
 import br.com.gamemods.minecity.reactive.game.block.data.BlockTypeData;
+import br.com.gamemods.minecity.reactive.game.item.data.ItemData;
 import br.com.gamemods.minecity.sponge.data.manipulator.reactive.SpongeManipulator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,6 +45,24 @@ public class SpongeBlockTypeData implements BlockTypeData
     public BlockType getBlockType()
     {
         return blockType;
+    }
+
+    @Override
+    public BlockStateData getDefaultBlockStateData()
+    {
+        return manipulator.block.getBlockStateData(blockType.getDefaultState());
+    }
+
+    @Override
+    public Optional<ItemData> getItemData()
+    {
+        return blockType.getItem().map(manipulator.item::getItemData);
+    }
+
+    @Override
+    public Optional<BlockTraitData<?>> getTraitData(String traitId)
+    {
+        return blockType.getTrait(traitId).map(manipulator.block::getBlockTraitData);
     }
 
     @NotNull

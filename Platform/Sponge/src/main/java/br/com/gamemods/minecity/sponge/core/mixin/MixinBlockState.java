@@ -28,7 +28,7 @@ public abstract class MixinBlockState implements MixedBlockState
         if(blockStateData != null)
             return blockStateData;
 
-        return blockStateData = ReactiveLayer.getBlockManipulator().getBlockState(this).get();
+        return blockStateData = ReactiveLayer.getBlockManipulator().getBlockStateData(this).get();
     }
 
     @NotNull

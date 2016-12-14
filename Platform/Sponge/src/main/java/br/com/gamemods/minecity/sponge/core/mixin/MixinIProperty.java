@@ -15,6 +15,6 @@ public interface MixinIProperty<T extends Comparable<T>> extends SupplierBlockTr
     @Override
     default BlockTraitData<T> getBlockTraitData()
     {
-        return (BlockTraitData<T>) ReactiveLayer.getBlockManipulator().getBlockTrait(this).get();
+        return (BlockTraitData<T>) ReactiveLayer.getBlockManipulator().getBlockTraitData(this).get();
     }
 }

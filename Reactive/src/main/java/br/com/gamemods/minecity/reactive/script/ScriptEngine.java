@@ -25,6 +25,21 @@ public class ScriptEngine
     public Object load(String modId) throws ResourceException, ScriptException
     {
         modId = modId.toLowerCase();
-        return engine.run(modId+"/"+modId+".groovy", binding);
+        try
+        {
+            return engine.run(modId+"/"+modId+".groovy", binding);
+        }
+        catch(ResourceException e)
+        {
+            try
+            {
+                return engine.run(modId+".groovy", binding);
+            }
+            catch(Exception e2)
+            {
+                e.addSuppressed(e2);
+                throw e;
+            }
+        }
     }
 }

@@ -45,12 +45,12 @@ public class SpongeBlockStateData implements BlockStateData
     @Override
     public BlockTypeData getBlockTypeData()
     {
-        return manipulator.block.getBlockType(blockState.getType());
+        return manipulator.block.getBlockTypeData(blockState.getType());
     }
 
     @Override
     public Stream<BlockTraitData<?>> traitStream()
     {
-        return blockState.getTraits().stream().map(manipulator.block::getBlockTrait);
+        return blockState.getTraits().stream().map(manipulator.block::getBlockTraitData);
     }
 }

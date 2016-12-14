@@ -14,6 +14,6 @@ public interface MixinIBlockState extends SupplierBlockStateData
     @Override
     default BlockStateData getBlockStateData()
     {
-        return ReactiveLayer.getBlockManipulator().getBlockState(this).get();
+        return ReactiveLayer.getBlockManipulator().getBlockStateData(this).get();
     }
 }

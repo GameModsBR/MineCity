@@ -15,7 +15,7 @@ public interface BlockManipulator
      * @return The extracted data
      */
     @NotNull
-    Optional<BlockTypeData> getBlockType(@NotNull Object block);
+    Optional<BlockTypeData> getBlockTypeData(@NotNull Object block);
 
     /**
      * Extract information about a block state.
@@ -23,7 +23,7 @@ public interface BlockManipulator
      * @return The extracted data
      */
     @NotNull
-    Optional<BlockStateData> getBlockState(@NotNull Object blockState);
+    Optional<BlockStateData> getBlockStateData(@NotNull Object blockState);
 
     /**
      * Extract information about a tile entity.
@@ -31,7 +31,7 @@ public interface BlockManipulator
      * @return The extracted data
      */
     @NotNull
-    Optional<TileEntityData> getTileEntity(@NotNull Object tileEntity);
+    Optional<TileEntityData> getTileEntityData(@NotNull Object tileEntity);
 
     /**
      * Extract information about a block trait.
@@ -39,5 +39,5 @@ public interface BlockManipulator
      * @return The extracted data
      */
     @NotNull
-    Optional<BlockTraitData<?>> getBlockTrait(@NotNull Object blockTrait);
+    Optional<BlockTraitData<?>> getBlockTraitData(@NotNull Object blockTrait);
 }

@@ -16,10 +16,9 @@ import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.block.trait.BlockTrait;
 import org.spongepowered.api.data.DataTransactionResult;
 
-import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Supplier;
+
+import static br.com.gamemods.minecity.sponge.data.manipulator.reactive.SpongeManipulator.handleSupplier;
 
 public class SpongeBlockManipulator implements BlockManipulator
 {
@@ -31,27 +30,9 @@ public class SpongeBlockManipulator implements BlockManipulator
         this.manipulator = manipulator;
     }
 
-    private <Sup, Raw, Data> Data handleSupplier(ThreadLocal<Raw> threadLocal, Raw object, Class<Sup> tClass,
-                                                 Function<Sup, Data> getter, Supplier<Data> creator)
-    {
-        if(threadLocal.get() == object || !tClass.isInstance(object))
-            return creator.get();
-
-        Sup casted = tClass.cast(object);
-        try
-        {
-            threadLocal.set(object);
-            return Objects.requireNonNull(getter.apply(casted));
-        }
-        finally
-        {
-            threadLocal.set(null);
-        }
-    }
-
     @NotNull
     @Override
-    public Optional<BlockTypeData> getBlockType(@NotNull Object block)
+    public Optional<BlockTypeData> getBlockTypeData(@NotNull Object block)
     {
         if(block instanceof CharSequence)
         {
@@ -63,10 +44,10 @@ public class SpongeBlockManipulator implements BlockManipulator
         if(!(block instanceof BlockType))
             return Optional.empty();
 
-        return Optional.of(getBlockType((BlockType) block));
+        return Optional.of(getBlockTypeData((BlockType) block));
     }
 
-    public BlockTypeData getBlockType(@NotNull BlockType blockType)
+    public BlockTypeData getBlockTypeData(@NotNull BlockType blockType)
     {
         return handleSupplier(handlingBlockType, blockType, SupplierBlockTypeData.class,
                 SupplierBlockTypeData::getBlockTypeData,
@@ -76,30 +57,30 @@ public class SpongeBlockManipulator implements BlockManipulator
 
     @NotNull
     @Override
-    public Optional<BlockStateData> getBlockState(@NotNull Object blockState)
+    public Optional<BlockStateData> getBlockStateData(@NotNull Object blockState)
     {
         if(!(blockState instanceof BlockState))
             return Optional.empty();
 
-        return Optional.of(getBlockState((BlockState) blockState));
+        return Optional.of(getBlockStateData((BlockState) blockState));
     }
 
-    public BlockStateData getBlockState(BlockState blockState)
+    public BlockStateData getBlockStateData(BlockState blockState)
     {
         return new SpongeBlockStateData(manipulator, blockState);
     }
 
     @NotNull
     @Override
-    public Optional<TileEntityData> getTileEntity(@NotNull Object tileEntity)
+    public Optional<TileEntityData> getTileEntityData(@NotNull Object tileEntity)
     {
         if(!(tileEntity instanceof TileEntityData))
             return Optional.empty();
 
-        return Optional.of(getTileEntity((TileEntity) tileEntity));
+        return Optional.of(getTileEntityData((TileEntity) tileEntity));
     }
 
-    public TileEntityData getTileEntity(TileEntity tileEntity)
+    public TileEntityData getTileEntityData(TileEntity tileEntity)
     {
         Optional<TileEntityData> opt = tileEntity.get(MineCityKeys.TILE_ENTITY_DATA);
         if(opt.isPresent())
@@ -115,15 +96,15 @@ public class SpongeBlockManipulator implements BlockManipulator
 
     @NotNull
     @Override
-    public Optional<BlockTraitData<?>> getBlockTrait(@NotNull Object blockTrait)
+    public Optional<BlockTraitData<?>> getBlockTraitData(@NotNull Object blockTrait)
     {
         if(!(blockTrait instanceof BlockTrait))
             return Optional.empty();
 
-        return Optional.of(getBlockTrait((BlockTrait<?>) blockTrait));
+        return Optional.of(getBlockTraitData((BlockTrait<?>) blockTrait));
     }
 
-    public <T extends Comparable<T>> BlockTrait<T> getBlockTrait(BlockTraitData<T> traitData)
+    public <T extends Comparable<T>> BlockTrait<T> getBlockTraitData(BlockTraitData<T> traitData)
     {
         if(traitData instanceof SpongeBlockTraitData)
             return ((SpongeBlockTraitData<T>) traitData).trait;
@@ -131,7 +112,7 @@ public class SpongeBlockManipulator implements BlockManipulator
         throw new UnsupportedOperationException("Unsupported trait: "+traitData.getClass()+": "+traitData);
     }
 
-    public <T extends Comparable<T>> BlockTraitData<T> getBlockTrait(BlockTrait<T> blockTrait)
+    public <T extends Comparable<T>> BlockTraitData<T> getBlockTraitData(BlockTrait<T> blockTrait)
     {
         return new SpongeBlockTraitData<>(manipulator, blockTrait);
     }

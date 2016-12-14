@@ -28,7 +28,7 @@ public abstract class MixinTileEntity implements MixedTileEntity
         if(tileEntityData != null)
             return tileEntityData;
 
-        return tileEntityData = ReactiveLayer.getBlockManipulator().getTileEntity(this).get();
+        return tileEntityData = ReactiveLayer.getBlockManipulator().getTileEntityData(this).get();
     }
 
     @NotNull
