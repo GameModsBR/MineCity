@@ -8,3 +8,8 @@ before_script:
   - mysql -uroot -e "create user 'unit_test'@'localhost' identified by 'unit_test';"
   - mysql -uroot -e "grant all privileges on minecity_test.* to 'unit_test'@'localhost'"
   - mysql -uroot -e "flush privileges;"
+sudo: false
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
