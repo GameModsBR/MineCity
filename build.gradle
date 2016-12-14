@@ -1,34 +1,41 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
-    }
-}
-
-allprojects {
-    apply plugin: "java"
-    group= "br.com.gamemods.minecity"
-    version = "1.0.A.3-SNAPSHOT"
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-    tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
-    }
-}
-
 subprojects {
+    plugins.withType(JavaPlugin).whenPluginAdded {
+        group= 'br.com.gamemods.minecity'
+        version = '1.0.A.3-SNAPSHOT'
+
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+        tasks.withType(JavaCompile) {
+            options.encoding = 'UTF-8'
+        }
+
+        configurations {
+            provided
+        }
+
+        sourceSets.main { compileClasspath += configurations.provided }
+
+        dependencies {
+            compile 'org.jetbrains:annotations:13.0'
+
+            testCompile 'junit:junit:4.12'
+            testCompile 'org.powermock:powermock-module-junit4:1.6.5'
+            testCompile 'org.powermock:powermock-api-mockito:1.6.5'
+            testCompile project(':UnitTest')
+            testCompile 'mysql:mysql-connector-java:5.1.32'
+        }
+    }
+
     repositories {
         mavenCentral()
+        jcenter()
         maven {
             name = 'gamemods-nexus'
             url = 'http://nexus.gamemods.com.br/content/groups/public/'
         }
         maven {
-            name = "spigot-nexus"
-            url = "https://hub.spigotmc.org/nexus/content/groups/public/"
+            name = 'spigot-nexus'
+            url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
         }
         maven {
             url = 'https://oss.sonatype.org/content/groups/public/'
@@ -38,8 +45,12 @@ subprojects {
             url = 'http://repo.mcstats.org/content/repositories/public'
         }
         maven {
+            name = 'forge'
+            url = 'http://files.minecraftforge.net/maven'
+        }
+        maven {
             name = 'sponge'
-            url = 'http://repo.spongepowered.org/maven'
+            url = 'https://repo.spongepowered.org/maven'
         }
         maven {
             name = 'vault-repo'
@@ -49,90 +60,28 @@ subprojects {
             url = 'https://jitpack.io'
         }
     }
+}
 
+
+project(':Core') {
+    apply plugin: 'java'
     dependencies {
-        compile "org.jetbrains:annotations:13.0"
-        compile "com.google.code.findbugs:jsr305:1.3.9"
-        testCompile "org.luaj:luaj-jse:3.0.1"
-
-        testCompile "junit:junit:4.12"
-        testCompile "org.powermock:powermock-module-junit4:1.6.5"
-        testCompile "org.powermock:powermock-api-mockito:1.6.5"
-        testCompile project(":UnitTest")
-        testCompile "mysql:mysql-connector-java:5.1.32"
+        compile 'com.google.code.findbugs:jsr305:1.3.9' // TODO Remove this dependency
+        testCompile 'org.luaj:luaj-jse:3.0.1'
     }
 }
 
 project(':Reactive') {
+    apply plugin: 'java'
     dependencies {
         compile project(':Core')
+        compile 'com.google.code.findbugs:jsr305:1.3.9'
     }
-}
-
-project(':VaultEco') {
-    dependencies {
-        compile project(':Core')
-        compile "net.milkbowl.vault:VaultAPI:1.6"
-        compile "org.bukkit:bukkit:1.8-R0.1-SNAPSHOT"
-    }
-}
-
-project(':SpongeEco') {
-    dependencies {
-        compile project(':Core')
-        compile 'org.spongepowered:spongeapi:5.1.0-SNAPSHOT'
-    }
-}
-
-project(':Bukkit') {
-    apply plugin: 'com.github.johnrengelman.shadow'
-
-    configurations {
-        shade
-        compile.extendsFrom shade
-    }
-
-    dependencies {
-        shade project(':Core')
-        shade project(':VaultEco')
-        shade(project(':SpongeEco')) {
-            transitive = false
-        }
-        //compile files("run/BuildTools/Spigot/Spigot-Server/target/original-spigot-1.10.2-R0.1-SNAPSHOT.jar")
-        //compile files("run/BuildTools/spigot-1.10.2.jar")
-        compile "org.spigotmc:spigot-api:1.10.2-R0.1-SNAPSHOT"
-        compile "org.mcstats.bukkit:metrics:R8-SNAPSHOT"
-    }
-
-    jar {
-        configurations.shade.each { dep ->
-            from(project.zipTree(dep)){
-                include 'br/**', '*.yml', '*.info', 'assets/minecity/**'
-            }
-        }
-    }
-
-    shadowJar {
-        dependencies {
-            //noinspection GroovyAssignabilityCheck
-            include(dependency("org.mcstats.bukkit:metrics:R8-SNAPSHOT"))
-            include(project(':Core'))
-            include(project(':VaultEco'))
-            include(project(':SpongeEco'))
-        }
-
-        baseName = 'MineCity-Bukkit-MC-1.10.2'
-        classifier = null
-        relocate 'org.mcstats', 'br.com.gamemods.minecity.bukkit.mcstats'
-    }
-
-    jar.enabled = false
-
-    build.finalizedBy shadowJar
 }
 
 project(':UnitTest') {
+    apply plugin: 'java'
     dependencies {
-        compile "org.assertj:assertj-core:3.1.0"
+        compile 'org.assertj:assertj-core:3.1.0'
     }
 }

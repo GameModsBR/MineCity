@@ -20,7 +20,7 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-project(':Forge:Base') {
+project(':Platform:Forge:Base') {
     archivesBaseName = "MineCity-Forge-Base"
 
     sourceCompatibility = 1.8
@@ -42,10 +42,5 @@ minecraft {
 
 dependencies {
     compile project(':Core')
-    compile(project(':VaultEco')) {
-        transitive = false
-    }
-    compile(project(':SpongeEco')) {
-        transitive = false
-    }
+    compile project(':Economy')
 }

@@ -1,1 +1,9 @@
-include 'Core', 'Bukkit', 'UnitTest', 'VaultEco', 'SpongeEco', 'Reactive', 'Sponge'
+// Base API
+include 'Core', 'Reactive', 'UnitTest'
+
+// Economy and Permissions
+include 'Economy:SpongeProxy', 'Economy:Vault'
+
+// Server Platforms
+include 'Platform:Bukkit', 'Platform:Sponge'/*,
+        'Platform:Forge:Base', 'Platform:Forge:1.7.10', 'Platform:Forge:1.10.2' */

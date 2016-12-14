@@ -1,0 +1,32 @@
+apply plugin: 'base'
+
+configurations {
+    compile
+    //compile.transitive = false
+}
+
+dependencies {
+    compile project(':Economy:SpongeProxy')
+    compile project(':Economy:Vault')
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    dependencies {
+        compile project(':Core')
+    }
+}
+
+project(':Economy:Vault') {
+    dependencies {
+        provided "net.milkbowl.vault:VaultAPI:1.6"
+        provided "org.bukkit:bukkit:1.8-R0.1-SNAPSHOT"
+    }
+}
+
+project(':Economy:SpongeProxy') {
+    dependencies {
+        provided 'org.spongepowered:spongeapi:5.1.0-SNAPSHOT'
+    }
+}

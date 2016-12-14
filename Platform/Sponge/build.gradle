@@ -21,6 +21,7 @@ plugins {
     id 'net.minecrell.vanillagradle.server' version '2.2-3'
 }
 
+apply plugin: 'java'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'com.github.johnrengelman.shadow'
 
@@ -28,9 +29,9 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    compile project(':Core')
     compile project(':Reactive')
-    compile project(':SpongeEco')
+    //compile project(path: ':Economy', configuration: 'compile')
+    compile 'org.spongepowered:spongeapi:5.1.0-SNAPSHOT'
     //compile 'org.spongepowered:spongecommon:5.1.0-SNAPSHOT:dev'
     compile 'org.spongepowered:mixin:0.5.17-SNAPSHOT'
 }
@@ -56,11 +57,10 @@ jar {
     )
 }
 
+/*
 shadowJar {
     dependencies {
-        include(project(':Core'))
-        include(project(':Reactive'))
-        include(project(':SpongeEco'))
+        include(dependency({ it.moduleGroup == project.group }))
     }
 
     baseName = 'MineCity-Sponge'
@@ -68,3 +68,4 @@ shadowJar {
 }
 
 build.finalizedBy shadowJar
+*/

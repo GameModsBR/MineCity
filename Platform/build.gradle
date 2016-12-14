@@ -1,0 +1,62 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
+}
+
+subprojects {
+    plugins.withType(JavaPlugin).whenPluginAdded {
+        dependencies {
+            compile project(':Core')
+            compile project(path: ':Economy', configuration: 'compile')
+        }
+    }
+
+    plugins.withType(Class.forName('com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin')).whenPluginAdded {
+        shadowJar {
+            dependencies {
+                include(dependency({ it.moduleGroup.startsWith('org.mcstats.bukkit') }))
+                include(dependency({ it.moduleGroup == project.group }))
+            }
+
+            baseName = 'MineCity-'+project.name.replace(':','-')
+            classifier = null
+            relocate 'org.mcstats', 'br.com.gamemods.minecity.lib.mcstats'
+        }
+
+        build.finalizedBy shadowJar
+    }
+}
+
+project(':Platform:Bukkit') {
+    apply plugin: 'java'
+    apply plugin: 'com.github.johnrengelman.shadow'
+
+    dependencies {
+        /*
+        compile project(':Core')
+        compile project(path: ':Economy', configuration: 'compile')
+        //compile files('run/BuildTools/Spigot/Spigot-Server/target/original-spigot-1.10.2-R0.1-SNAPSHOT.jar')
+        //compile files('run/BuildTools/spigot-1.10.2.jar')
+        */
+        compile 'org.spigotmc:spigot-api:1.10.2-R0.1-SNAPSHOT'
+        compile 'org.mcstats.bukkit:metrics:R8-SNAPSHOT'
+    }
+
+    jar.enabled = false
+
+    /*
+    shadowJar {
+        dependencies {
+            include(dependency({ it.moduleGroup == 'org.mcstats.bukkit' }))
+            include(dependency({ it.moduleGroup == project.group }))
+        }
+
+        baseName = 'MineCity-Bukkit-MC-1.10.2'
+        classifier = null
+        relocate 'org.mcstats', 'br.com.gamemods.minecity.bukkit.mcstats'
+    }
+
+    jar.enabled = false
+
+    build.finalizedBy shadowJar
+    */
+}
