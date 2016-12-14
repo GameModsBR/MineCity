@@ -86,7 +86,7 @@ public class SpongeBlockManipulator implements BlockManipulator
         if(!(blockTrait instanceof BlockTrait))
             return Optional.empty();
 
-        return Optional.of(getBlockTrait((BlockTrait<?>) blockTrait));
+        return Optional.of(getBlockTrait((BlockTrait) blockTrait));
     }
 
     public <T extends Comparable<T>> BlockTrait<T> getBlockTrait(BlockTraitData<T> traitData)
