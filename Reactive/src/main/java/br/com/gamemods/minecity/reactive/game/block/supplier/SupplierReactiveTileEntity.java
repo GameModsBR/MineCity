@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface SupplierReactiveTileEntity
 {
     @NotNull
-    Optional<? extends ReactiveTileEntity> getReactiveTileEntity();
+    Optional<ReactiveTileEntity> getReactiveTileEntity();
 }

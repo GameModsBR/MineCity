@@ -7,7 +7,7 @@ import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierTileEn
 import br.com.gamemods.minecity.reactive.game.entity.data.EntityData;
 import br.com.gamemods.minecity.reactive.game.entity.data.EntityManipulator;
 import br.com.gamemods.minecity.reactive.game.entity.data.supplier.SupplierEntityData;
-import br.com.gamemods.minecity.reactive.game.item.data.ItemManipulator;
+import br.com.gamemods.minecity.reactive.game.item.data.*;
 import br.com.gamemods.minecity.reactive.game.server.data.ChunkData;
 import br.com.gamemods.minecity.reactive.game.server.data.ServerData;
 import br.com.gamemods.minecity.reactive.game.server.data.ServerManipulator;
@@ -84,6 +84,30 @@ public class ReactiveLayer
             return Optional.of(((BlockTraitData<?>) blockTrait).getBlockTraitData());
 
         return getBlockManipulator().getBlockTraitData(blockTrait);
+    }
+
+    @NotNull
+    public static Optional<ItemData> getItemData(@NotNull Object item)
+    {
+        return getItemManipulator().getItemData(item);
+    }
+
+    @NotNull
+    public static Optional<ItemStackData> getItemStackData(@NotNull Object stack)
+    {
+        return getItemManipulator().getItemStackData(stack);
+    }
+
+    @NotNull
+    public static Optional<ItemStateData> getItemStateData(@NotNull Object state)
+    {
+        return getItemManipulator().getItemStateData(state);
+    }
+
+    @NotNull
+    public static Optional<ItemTraitData<?>> getItemTraitData(@NotNull Object trait)
+    {
+        return getItemManipulator().getItemTraitData(trait);
     }
 
     @NotNull

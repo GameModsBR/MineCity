@@ -8,4 +8,13 @@ public interface ItemManipulator
 {
     @NotNull
     Optional<ItemData> getItemData(@NotNull Object item);
+
+    @NotNull
+    Optional<ItemStackData> getItemStackData(@NotNull Object stack);
+
+    @NotNull
+    Optional<ItemStateData> getItemStateData(@NotNull Object state);
+
+    @NotNull
+    Optional<ItemTraitData<?>> getItemTraitData(@NotNull Object trait);
 }

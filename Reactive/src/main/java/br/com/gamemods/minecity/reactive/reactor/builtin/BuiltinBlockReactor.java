@@ -35,7 +35,7 @@ public class BuiltinBlockReactor implements BlockReactor
     {
         Object blockState = data.getBlockState();
         if(blockState instanceof SupplierReactiveBlockState)
-            return ((SupplierReactiveBlockState) blockState).getReactiveBlockState().map(ReactiveBlockState.class::cast);
+            return ((SupplierReactiveBlockState) blockState).getReactiveBlockState();
         return Optional.empty();
     }
 
@@ -45,7 +45,7 @@ public class BuiltinBlockReactor implements BlockReactor
     {
         Object tileEntity = data.getTileEntity();
         if(tileEntity instanceof SupplierReactiveTileEntity)
-            return ((SupplierReactiveTileEntity) tileEntity).getReactiveTileEntity().map(ReactiveTileEntity.class::cast);
+            return ((SupplierReactiveTileEntity) tileEntity).getReactiveTileEntity();
         return Optional.empty();
     }
 
@@ -56,7 +56,7 @@ public class BuiltinBlockReactor implements BlockReactor
     {
         Object blockTrait = data.getBlockTrait();
         if(blockTrait instanceof SupplierReactiveBlockTrait)
-            return ((SupplierReactiveBlockTrait<T>) blockTrait).getReactiveBlockTrait().map(ReactiveBlockTrait.class::cast);
+            return ((SupplierReactiveBlockTrait<T>) blockTrait).getReactiveBlockTrait();
         return Optional.empty();
     }
 }

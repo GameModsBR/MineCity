@@ -1,12 +1,13 @@
 package br.com.gamemods.minecity.sponge.data.manipulator.reactive;
 
-import br.com.gamemods.minecity.reactive.game.item.data.ItemData;
-import br.com.gamemods.minecity.reactive.game.item.data.ItemManipulator;
+import br.com.gamemods.minecity.reactive.game.item.data.*;
 import br.com.gamemods.minecity.reactive.game.item.data.supplier.SupplierItemData;
 import br.com.gamemods.minecity.sponge.data.value.SpongeItemData;
+import br.com.gamemods.minecity.sponge.data.value.SpongeItemStackData;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.util.Optional;
 
@@ -45,5 +46,37 @@ public class SpongeItemManipulator implements ItemManipulator
                 SupplierItemData::getItemData,
                 ()-> new SpongeItemData(manipulator, itemType)
         );
+    }
+
+    @NotNull
+    @Override
+    public Optional<ItemStackData> getItemStackData(@NotNull Object stack)
+    {
+        if(!(stack instanceof ItemStack))
+            return Optional.empty();
+
+        return Optional.of(getItemStackData((ItemStack) stack));
+    }
+
+    public SpongeItemStackData getItemStackData(ItemStack stack)
+    {
+        return new SpongeItemStackData(manipulator, stack);
+    }
+
+    @NotNull
+    @Override
+    public Optional<ItemStateData> getItemStateData(@NotNull Object state)
+    {
+        if(!(state instanceof ItemStack))
+            return Optional.empty();
+
+        return Optional.of(getItemStackData((ItemStack) state));
+    }
+
+    @NotNull
+    @Override
+    public Optional<ItemTraitData<?>> getItemTraitData(@NotNull Object trait)
+    {
+        return Optional.empty();
     }
 }

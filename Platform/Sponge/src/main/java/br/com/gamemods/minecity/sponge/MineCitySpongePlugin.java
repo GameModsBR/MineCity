@@ -4,7 +4,6 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.command.LegacyFormat;
 import br.com.gamemods.minecity.api.command.Message;
-import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.unchecked.UncheckedException;
@@ -12,15 +11,13 @@ import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.economy.EconomyLayer;
 import br.com.gamemods.minecity.permission.PermissionLayer;
 import br.com.gamemods.minecity.reactive.ReactiveLayer;
-import br.com.gamemods.minecity.reactive.game.block.ReactiveBlock;
 import br.com.gamemods.minecity.reactive.game.entity.data.Hand;
-import br.com.gamemods.minecity.reactive.reaction.InteractReaction;
 import br.com.gamemods.minecity.reactive.reactor.builtin.BuiltinReactor;
 import br.com.gamemods.minecity.reactive.script.ScriptEngine;
-import br.com.gamemods.minecity.sponge.cmd.SpongeCommandSource;
 import br.com.gamemods.minecity.sponge.cmd.SpongeRootCommand;
 import br.com.gamemods.minecity.sponge.cmd.SpongeTransformer;
 import br.com.gamemods.minecity.sponge.data.manipulator.reactive.SpongeManipulator;
+import br.com.gamemods.minecity.sponge.listeners.ActionListener;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.inject.Inject;
 import groovy.util.ResourceException;
@@ -33,12 +30,9 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.data.type.HandTypes;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
-import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
@@ -51,7 +45,6 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
-import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.Chunk;
 import org.xml.sax.SAXException;
 
@@ -62,7 +55,6 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 @Plugin(id="minecity", name="MineCity", version = "@VERSION@", authors = "joserobjr", description = "@DESC@")
@@ -261,6 +253,8 @@ public class MineCitySpongePlugin
             ReactiveLayer.setManipulator(new SpongeManipulator(sponge));
             ReactiveLayer.setReactor(new BuiltinReactor());
 
+            Sponge.getEventManager().registerListeners(this, new ActionListener(sponge));
+
             Path scripts = configDir.resolve("scripts");
             File scriptsDir = scripts.toFile();
             if(!scriptsDir.isDirectory() && !scriptsDir.mkdirs())
@@ -347,58 +341,6 @@ public class MineCitySpongePlugin
 
         if(reloadTask != null)
             reloadTask.cancel();
-    }
-
-    @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onInteractBlock(final InteractBlockEvent.Secondary event, @First Player player)
-    {
-        /*
-        ItemStack stackInHand = player.getItemInHand(HandTypes.MAIN_HAND).orElseGet(()-> ItemStack.of(ItemTypes.NONE, 0));
-        player.sendMessage(Text.builder("HAND_ID: "+stackInHand.getItem().getName() ).color(TextColors.YELLOW).build());
-        player.sendMessage(Text.builder("HAND_DURABILITY: "+stackInHand.get(DurabilityData.class).map(DurabilityData::durability).map(BaseValue::get) ).color(TextColors.YELLOW).build());
-        player.sendMessage(Text.builder("HAND_STATE: "+stackInHand.get(BlockItemData.class).map(BlockItemData::state).map(BaseValue::get) ).color(TextColors.YELLOW).build());
-        player.sendMessage(Text.builder("HAND_NAME_ID: "+stackInHand.getTranslation().getId() ).color(TextColors.YELLOW).build());
-        player.sendMessage(Text.builder("HAND_NAME_EN: "+stackInHand.getTranslation().get(Locale.ENGLISH) ).color(TextColors.YELLOW).build());
-        player.sendMessage(Text.builder("HAND_NAME_DEF: ").color(TextColors.YELLOW).append(Text.of(stackInHand.getTranslation())).build());
-        */
-        ReactiveBlock block = sponge.reactiveBlock(event.getTargetBlock(), player.getWorld());
-        InteractReaction reaction = block.rightClick(null, Hand.from(event.getHandType()), null, null, null);
-        /*
-        ReactiveLayer.getBlockTypeData(event.getTargetBlock().getState().getType()).get()
-                .getReactiveBlockType().get().reactRightClick(
-                        reaction, null, Hand.from(event.getHandType()), null,
-                        block, null, null
-                );
-        */
-
-        SpongeCommandSource<?> sender = sponge.sender(player);
-        AtomicBoolean notify = new AtomicBoolean(true);
-        reaction.getAction().can(sponge.mineCity, sender).ifPresent(denial-> {
-            event.setCancelled(true);
-            if(notify.get())
-            {
-                sender.send(FlagHolder.wrapDeny(denial));
-                notify.set(false);
-            }
-        });
-
-        reaction.getUseItem().can(sponge.mineCity, sender).ifPresent(denial-> {
-            event.setUseItemResult(Tristate.FALSE);
-            if(notify.get())
-            {
-                sender.send(FlagHolder.wrapDeny(denial));
-                notify.set(false);
-            }
-        });
-
-        reaction.getUseBlock().can(sponge.mineCity, sender).ifPresent(denial-> {
-            event.setUseBlockResult(Tristate.FALSE);
-            if(notify.get())
-            {
-                sender.send(FlagHolder.wrapDeny(denial));
-                notify.set(false);
-            }
-        });
     }
 
     @Listener(order = Order.POST)

@@ -31,9 +31,9 @@ public abstract class MixinEntity implements MixedEntity
         return entityData = ReactiveLayer.getEntityManipulator().getEntityData(this).get();
     }
 
-    @Nullable
+    @NotNull
     @Override
-    public Optional<? extends ReactiveEntity> getReactiveEntity()
+    public Optional<ReactiveEntity> getReactiveEntity()
     {
         return reactiveEntity.get();
     }

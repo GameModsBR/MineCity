@@ -49,7 +49,7 @@ public class SpongeBlockStateData implements BlockStateData
     }
 
     @Override
-    public Stream<BlockTraitData<?>> traitStream()
+    public Stream<BlockTraitData<?>> blockTraitStream()
     {
         return blockState.getTraits().stream().map(manipulator.block::getBlockTraitData);
     }

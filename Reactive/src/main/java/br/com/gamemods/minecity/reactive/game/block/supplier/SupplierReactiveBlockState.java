@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface SupplierReactiveBlockState
 {
     @NotNull
-    Optional<? extends ReactiveBlockState> getReactiveBlockState();
+    Optional<ReactiveBlockState> getReactiveBlockState();
 }

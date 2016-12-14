@@ -6,9 +6,11 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.reactive.ReactiveLayer;
 import br.com.gamemods.minecity.reactive.game.block.ReactiveBlock;
+import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
 import br.com.gamemods.minecity.sponge.cmd.*;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
@@ -21,6 +23,8 @@ import org.spongepowered.api.command.source.ProxySource;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.scheduler.SpongeExecutorService;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Locatable;
@@ -214,6 +218,13 @@ public class MineCitySponge implements Server
         );
     }
 
+    public ReactiveItemStack reactiveStack(@Nullable ItemStack stack)
+    {
+        return new ReactiveItemStack(
+                ReactiveLayer.getItemStackData(stack == null? ItemStack.of(ItemTypes.NONE, 0) : stack).get()
+        );
+    }
+
     public ReactiveBlock reactiveBlock(BlockSnapshot snapshot, @Nullable World world)
     {
         World blockWorld;
@@ -236,5 +247,10 @@ public class MineCitySponge implements Server
                 blockPos,
                 ReactiveLayer.getBlockState(snapshot.getState()).get()
         );
+    }
+
+    public PrecisePoint precisePoint(Vector3d point)
+    {
+        return new PrecisePoint(point.getX(), point.getY(), point.getZ());
     }
 }

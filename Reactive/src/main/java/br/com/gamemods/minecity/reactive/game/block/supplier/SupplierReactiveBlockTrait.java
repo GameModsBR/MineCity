@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface SupplierReactiveBlockTrait<T extends Comparable<T>>
 {
     @NotNull
-    Optional<? extends ReactiveBlockTrait<T>> getReactiveBlockTrait();
+    Optional<ReactiveBlockTrait<T>> getReactiveBlockTrait();
 }

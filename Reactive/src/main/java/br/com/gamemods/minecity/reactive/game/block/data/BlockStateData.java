@@ -70,18 +70,18 @@ public interface BlockStateData extends SupplierBlockStateData
     @NotNull
     default Collection<BlockTraitData<?>> getBlockTraits()
     {
-        return traitStream().collect(Collectors.toList());
+        return blockTraitStream().collect(Collectors.toList());
     }
 
-    Stream<BlockTraitData<?>> traitStream();
+    Stream<BlockTraitData<?>> blockTraitStream();
 
     /**
      * A stream containing all traits presents in this state that can react to events.
      */
     @NotNull
-    default Stream<ReactiveBlockTrait<?>> reactiveTraitStream()
+    default Stream<ReactiveBlockTrait<?>> reactiveBlockTraitStream()
     {
-        return traitStream().map(BlockTraitData::getReactiveBlockTrait)
+        return blockTraitStream().map(BlockTraitData::getReactiveBlockTrait)
                 .filter(Optional::isPresent).map(Optional::get);
     }
 
