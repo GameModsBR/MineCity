@@ -9,10 +9,10 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.DoubleBlockReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.DoubleBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.NoReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
+import br.com.gamemods.minecity.reactive.reaction.SingleBlockReaction;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
 

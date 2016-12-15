@@ -21,7 +21,7 @@ plugins {
 }
 */
 project(':Platform:Forge:Base') {
-    archivesBaseName = "MineCity-Forge-Base"
+    //archivesBaseName = "MineCity-Forge-Base"
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -40,7 +40,9 @@ minecraft {
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
+/*
 dependencies {
-    compile project(':Core')
+    compile project(':Reactive')
     compile project(':Economy')
 }
+*/

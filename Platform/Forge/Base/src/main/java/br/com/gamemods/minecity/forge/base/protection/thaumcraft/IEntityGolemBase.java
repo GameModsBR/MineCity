@@ -13,7 +13,8 @@ import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.ModEnv;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.*;
+import br.com.gamemods.minecity.forge.base.protection.reaction.ForgeReaction;
+import br.com.gamemods.minecity.reactive.reaction.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import org.jetbrains.annotations.Nullable;
@@ -122,7 +123,7 @@ public interface IEntityGolemBase extends IEntityCreature
             byte core = getCore();
 
             if(core == -1 && itemName.equals("item.ItemGolemCore"))
-                return transfer(new SingleBlockReaction(getBlockPos(fp.getServer()), PermissionFlag.MODIFY), fp)
+                return new ForgeReaction(transfer(new SingleBlockReaction(getBlockPos(fp.getServer()), PermissionFlag.MODIFY), fp))
                         .onDenyUpdateInventory().addDenialListener((reaction, permissible, flag, pos, message) -> {
                             sendAllWatchableData(player);
                         });

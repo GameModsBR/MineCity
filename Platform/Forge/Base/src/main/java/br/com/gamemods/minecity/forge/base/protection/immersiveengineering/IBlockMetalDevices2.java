@@ -10,9 +10,9 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.TriggeredReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.ForgeSingleBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
+import br.com.gamemods.minecity.reactive.reaction.SingleBlockReaction;
 import org.jetbrains.annotations.Nullable;
 
 @Referenced(at = ModInterfacesTransformer.class)
@@ -48,7 +48,7 @@ public interface IBlockMetalDevices2 extends IBlockOpenReactor
 
         if(tile instanceof ITileEntityChargingStation)
         {
-            TriggeredReaction react = new SingleBlockReaction(pos, PermissionFlag.OPEN);
+            ForgeSingleBlockReaction react = new ForgeSingleBlockReaction(pos, PermissionFlag.OPEN);
             react.onDenyUpdateInventory();
             react.addDenialListener((reaction, permissible, flag, pos1, message) ->
                 player.sendBlockAndTile(pos)

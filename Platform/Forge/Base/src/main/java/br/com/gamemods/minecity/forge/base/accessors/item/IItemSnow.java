@@ -9,9 +9,9 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.ForgeSingleBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.NoReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
 
 @Referenced(at = ForgeInterfaceTransformer.class)
 public interface IItemSnow extends IItemBlock
@@ -37,7 +37,7 @@ public interface IItemSnow extends IItemBlock
 
             if(i <= 7)
             {
-                SingleBlockReaction reaction = new SingleBlockReaction(pos, PermissionFlag.MODIFY);
+                ForgeSingleBlockReaction reaction = new ForgeSingleBlockReaction(pos, PermissionFlag.MODIFY);
                 reaction.onDenyUpdateInventory();
                 return reaction;
             }

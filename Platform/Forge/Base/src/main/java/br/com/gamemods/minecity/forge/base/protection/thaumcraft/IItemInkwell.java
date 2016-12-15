@@ -11,8 +11,8 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.BlockAndSidesReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
+import br.com.gamemods.minecity.reactive.reaction.BlockAndSidesReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
 
 import java.util.EnumSet;
 

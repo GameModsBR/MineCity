@@ -5,7 +5,7 @@ plugins {
 subprojects {
     plugins.withType(JavaPlugin).whenPluginAdded {
         dependencies {
-            compile project(':Core')
+            compile project(':Reactive')
             compile project(path: ':Economy', configuration: 'compile')
         }
     }

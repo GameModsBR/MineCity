@@ -7,8 +7,8 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.ForgeSingleBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
 
 @Referenced(at = ModInterfacesTransformer.class)
 public interface IBlockClickGUIReactor extends IBlockClickReactor
@@ -17,7 +17,7 @@ public interface IBlockClickGUIReactor extends IBlockClickReactor
     default Reaction reactRightClick(BlockPos pos, IState state, IEntityPlayerMP player, IItemStack stack,
                                      boolean offHand, Direction face)
     {
-        SingleBlockReaction reaction = new SingleBlockReaction(pos, PermissionFlag.CLICK);
+        ForgeSingleBlockReaction reaction = new ForgeSingleBlockReaction(pos, PermissionFlag.CLICK);
         reaction.onDenyCloseScreen(player);
         return reaction;
     }

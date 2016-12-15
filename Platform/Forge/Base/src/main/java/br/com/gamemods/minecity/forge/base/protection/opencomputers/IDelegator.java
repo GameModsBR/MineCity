@@ -10,8 +10,8 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItem;
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.ShapeBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.ForgeShapeBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
 
 @Referenced(at = ModInterfacesTransformer.class)
 public interface IDelegator extends IItem
@@ -21,7 +21,7 @@ public interface IDelegator extends IItem
                                           IState state, BlockPos pos, Direction face)
     {
         if(stack.getUnlocalizedName().equals("item.oc.Drone"))
-            return new ShapeBlockReaction(player.getServer().world(player.getIWorld()),
+            return new ForgeShapeBlockReaction(player.getServer().world(player.getIWorld()),
                     new Cuboid(pos, pos.add(1,1,1)), PermissionFlag.VEHICLE
             ).onDenyUpdateInventory();
 

@@ -10,9 +10,9 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.ForgeSingleBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.NoReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
 
 @Referenced(at = ModInterfacesTransformer.class)
 public interface IKeyboard extends ISimpleBlock
@@ -61,7 +61,7 @@ public interface IKeyboard extends ISimpleBlock
         }
         */
 
-        SingleBlockReaction reaction = new SingleBlockReaction(pos, PermissionFlag.CLICK);
+        ForgeSingleBlockReaction reaction = new ForgeSingleBlockReaction(pos, PermissionFlag.CLICK);
         reaction.onDenyCloseScreen(player);
         return reaction/*.combine(
                 ((IScreen) screen).reactRightClickActivation(screenPos, screenState, player, stack, offHand, face)

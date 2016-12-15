@@ -6,9 +6,10 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.CropCardTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.ForgeSingleBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.NoReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
+import br.com.gamemods.minecity.reactive.reaction.SingleBlockReaction;
 
 @Referenced(at = CropCardTransformer.class)
 public interface ICropCard
@@ -28,7 +29,7 @@ public interface ICropCard
             return NoReaction.INSTANCE;
 
         IItemStack gain = getGain(crop);
-        SingleBlockReaction reaction = new SingleBlockReaction(pos, PermissionFlag.HARVEST);
+        ForgeSingleBlockReaction reaction = new ForgeSingleBlockReaction(pos, PermissionFlag.HARVEST);
         if(gain != null)
             reaction.allowToPickup(player, item-> item.getStack().getIItem() == gain.getIItem() && item.getStack().getMeta() == gain.getMeta());
         return reaction;
@@ -39,6 +40,6 @@ public interface ICropCard
         if(!canBeHarvested(crop))
             return new SingleBlockReaction(pos, PermissionFlag.MODIFY);
 
-        return new SingleBlockReaction(pos, PermissionFlag.MODIFY).allowToPickupHarvest(player);
+        return new ForgeSingleBlockReaction(pos, PermissionFlag.MODIFY).allowToPickupHarvest(player);
     }
 }

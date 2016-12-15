@@ -22,7 +22,7 @@ import br.com.gamemods.minecity.forge.base.accessors.world.Positioned;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.*;
+import br.com.gamemods.minecity.reactive.reaction.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.item.EntityItem;

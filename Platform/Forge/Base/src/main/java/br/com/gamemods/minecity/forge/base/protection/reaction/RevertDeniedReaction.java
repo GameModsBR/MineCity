@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.MineCityForge;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlockSnapshot;
+import br.com.gamemods.minecity.reactive.reaction.TriggeredReaction;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 
 import java.util.*;
@@ -15,6 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+@Deprecated
 public class RevertDeniedReaction extends TriggeredReaction
 {
     private MineCityForge mod;

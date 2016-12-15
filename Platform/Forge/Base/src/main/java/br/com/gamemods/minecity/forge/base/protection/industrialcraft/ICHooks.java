@@ -24,8 +24,8 @@ import br.com.gamemods.minecity.forge.base.core.transformer.mod.industrialcraft.
 import br.com.gamemods.minecity.forge.base.protection.ModHooks;
 import br.com.gamemods.minecity.forge.base.protection.ShooterDamageSource;
 import br.com.gamemods.minecity.forge.base.protection.reaction.RevertDeniedReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
 import br.com.gamemods.minecity.forge.base.protection.vanilla.EntityProtections;
+import br.com.gamemods.minecity.reactive.reaction.SingleBlockReaction;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;

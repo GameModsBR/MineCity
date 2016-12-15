@@ -10,9 +10,9 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.MultiBlockReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.ForgeSingleBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.MultiBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public interface IScreen extends ISimpleBlock
     default Reaction reactRightClickActivation(BlockPos pos, IState state, IEntityPlayerMP player,
                                                IItemStack stack, boolean offHand, Direction face)
     {
-        SingleBlockReaction reaction = new SingleBlockReaction(pos, PermissionFlag.CLICK);
+        ForgeSingleBlockReaction reaction = new ForgeSingleBlockReaction(pos, PermissionFlag.CLICK);
         reaction.onDenyCloseScreen(player);
         return reaction;
     }

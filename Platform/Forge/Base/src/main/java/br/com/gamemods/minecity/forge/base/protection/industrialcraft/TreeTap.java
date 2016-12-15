@@ -10,9 +10,10 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.ForgeSingleBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.NoReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
+import br.com.gamemods.minecity.reactive.reaction.SingleBlockReaction;
 
 @Referenced(at = ModInterfacesTransformer.class)
 public interface TreeTap extends IItemIC2
@@ -60,7 +61,7 @@ public interface TreeTap extends IItemIC2
             return NoReaction.INSTANCE;
 
         if(sameFace)
-            return new SingleBlockReaction(pos, wet? PermissionFlag.HARVEST : PermissionFlag.MODIFY)
+            return new ForgeSingleBlockReaction(pos, wet? PermissionFlag.HARVEST : PermissionFlag.MODIFY)
                     .allowToPickupHarvest(player);
 
         return NoReaction.INSTANCE;

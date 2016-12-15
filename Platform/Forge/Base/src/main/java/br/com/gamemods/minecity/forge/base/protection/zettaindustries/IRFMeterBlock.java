@@ -9,9 +9,9 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.ForgeSingleBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.NoReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
 
 @Referenced(at = ModInterfacesTransformer.class)
 public interface IRFMeterBlock extends IBlockOpenReactor
@@ -24,7 +24,7 @@ public interface IRFMeterBlock extends IBlockOpenReactor
         {
             if(stack.getIItem().getUnlocalizedName().equals("item.dyePowder"))
             {
-                SingleBlockReaction react = new SingleBlockReaction(pos, PermissionFlag.MODIFY);
+                ForgeSingleBlockReaction react = new ForgeSingleBlockReaction(pos, PermissionFlag.MODIFY);
                 react.onDenyUpdateBlockAndTile(player);
                 return react;
             }
@@ -34,7 +34,7 @@ public interface IRFMeterBlock extends IBlockOpenReactor
 
         if(player.isSneaking())
         {
-            SingleBlockReaction react = new SingleBlockReaction(pos, PermissionFlag.MODIFY);
+            ForgeSingleBlockReaction react = new ForgeSingleBlockReaction(pos, PermissionFlag.MODIFY);
             react.onDenyUpdateBlockAndTileForced(player);
             return react;
         }

@@ -9,7 +9,7 @@ import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.ForgeInterfaceTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.*;
+import br.com.gamemods.minecity.reactive.reaction.*;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;

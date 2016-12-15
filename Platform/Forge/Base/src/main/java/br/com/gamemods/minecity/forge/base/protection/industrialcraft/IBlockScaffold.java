@@ -10,8 +10,8 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.ForgeSingleBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
 
 @Referenced(at = ModInterfacesTransformer.class)
 public interface IBlockScaffold extends IBlock
@@ -28,6 +28,6 @@ public interface IBlockScaffold extends IBlock
                 break;
         }
 
-        return new SingleBlockReaction(new BlockPos(pos, pos.x, y, pos.z), PermissionFlag.MODIFY).onDenyUpdateBlock(player);
+        return new ForgeSingleBlockReaction(new BlockPos(pos, pos.x, y, pos.z), PermissionFlag.MODIFY).onDenyUpdateBlock(player);
     }
 }

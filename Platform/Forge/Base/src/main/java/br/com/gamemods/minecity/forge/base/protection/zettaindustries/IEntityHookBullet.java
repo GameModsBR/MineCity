@@ -13,8 +13,8 @@ import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTra
 import br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IEntityRevolverShot;
 import br.com.gamemods.minecity.forge.base.protection.immersiveengineering.IItemWireCoil;
 import br.com.gamemods.minecity.forge.base.protection.immersiveengineering.ImmersiveHooks;
-import br.com.gamemods.minecity.forge.base.protection.reaction.NoReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
+import br.com.gamemods.minecity.reactive.reaction.NoReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
 
 import java.util.List;
 

@@ -8,8 +8,8 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP
 import br.com.gamemods.minecity.forge.base.accessors.world.IWorldServer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.forge.item.ItemBucketTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.ObservedReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
+import br.com.gamemods.minecity.reactive.reaction.ObservedReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
 
 @Referenced(at = ItemBucketTransformer.class)
 public interface IItemBucket extends IItem

@@ -3,7 +3,7 @@ package br.com.gamemods.minecity.forge.base.accessors.item;
 import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.forge.base.accessors.block.IBlock;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
 
 public interface ItemBlockBase extends IItem
 {

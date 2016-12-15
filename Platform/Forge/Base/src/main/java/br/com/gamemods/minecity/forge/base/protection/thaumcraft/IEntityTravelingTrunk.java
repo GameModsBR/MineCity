@@ -12,7 +12,8 @@ import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.command.ForgePlayer;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.*;
+import br.com.gamemods.minecity.forge.base.protection.reaction.ForgeReaction;
+import br.com.gamemods.minecity.reactive.reaction.*;
 import br.com.gamemods.minecity.structure.ClaimedChunk;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.pathfinding.PathFinder;
@@ -45,7 +46,7 @@ public interface IEntityTravelingTrunk extends IEntityLiving, EntityOwnable
         else
             reaction = new SingleBlockReaction(pos, PermissionFlag.OPEN);
 
-        return reaction.allowToPickup(player, entity-> entity.getStack().getIItem() instanceof IItemTrunkSpawner);
+        return new ForgeReaction(reaction).allowToPickup(player, entity-> entity.getStack().getIItem() instanceof IItemTrunkSpawner);
     }
 
     @Nullable

@@ -10,9 +10,9 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP
 import br.com.gamemods.minecity.forge.base.accessors.item.IItemStack;
 import br.com.gamemods.minecity.forge.base.core.Referenced;
 import br.com.gamemods.minecity.forge.base.core.transformer.mod.ModInterfacesTransformer;
-import br.com.gamemods.minecity.forge.base.protection.reaction.BlockAndSidesReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
+import br.com.gamemods.minecity.forge.base.protection.reaction.ForgeSingleBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.BlockAndSidesReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
 
 
 @Referenced(at = ModInterfacesTransformer.class)
@@ -28,7 +28,7 @@ public interface IBlockJar extends IBlockOpenReactor
     default Reaction reactRightClick(BlockPos pos, IState state, IEntityPlayerMP player, IItemStack stack,
                                      boolean offHand, Direction face)
     {
-        return new SingleBlockReaction(pos,
+        return new ForgeSingleBlockReaction(pos,
                 stack != null && stack.getIItem() instanceof IItemResource && stack.getMeta() == 13?
                     PermissionFlag.MODIFY:
                     PermissionFlag.OPEN

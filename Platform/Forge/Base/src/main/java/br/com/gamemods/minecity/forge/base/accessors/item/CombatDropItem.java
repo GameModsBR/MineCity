@@ -9,10 +9,10 @@ import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntity;
 import br.com.gamemods.minecity.forge.base.accessors.entity.base.IEntityPlayerMP;
 import br.com.gamemods.minecity.forge.base.accessors.entity.item.IEntityItem;
 import br.com.gamemods.minecity.forge.base.accessors.entity.projectile.ProjectileShooter;
-import br.com.gamemods.minecity.forge.base.protection.reaction.BlameOtherInheritedReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.DoubleBlockReaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.Reaction;
-import br.com.gamemods.minecity.forge.base.protection.reaction.SingleBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.BlameOtherInheritedReaction;
+import br.com.gamemods.minecity.reactive.reaction.DoubleBlockReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
+import br.com.gamemods.minecity.reactive.reaction.SingleBlockReaction;
 
 public interface CombatDropItem extends IItem
 {
