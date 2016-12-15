@@ -16,7 +16,7 @@ public class LivingSource<Entity extends Living, Source extends CommandSource> e
     @Override
     public Direction getCardinalDirection()
     {
-        Vector3d headRotation = entity.getHeadRotation();
+        Vector3d headRotation = subject.getHeadRotation();
         float yaw = (float) headRotation.getY();
         double d = (double)((yaw + 180.0F)*8.0F/360.0F) + 0.5D;
         int i = (int) d;

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public final class InteractEvent
+public final class Interaction
 {
     private final Click click;
     private final EntityData entity;
@@ -24,8 +24,8 @@ public final class InteractEvent
     private InteractReaction reactionBlock = new InteractReaction();
     private InteractReaction reactionItemLast = new InteractReaction();
 
-    public InteractEvent(Click click, EntityData entity, Hand hand, ReactiveItemStack itemStack,
-                         ReactiveBlock block, Direction blockFace,PrecisePoint clickPoint)
+    public Interaction(Click click, EntityData entity, Hand hand, ReactiveItemStack itemStack,
+                       ReactiveBlock block, Direction blockFace, PrecisePoint clickPoint)
     {
         this.click = click;
         this.entity = entity;

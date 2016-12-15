@@ -9,7 +9,7 @@ import br.com.gamemods.minecity.reactive.reaction.*
  */
 class ReactiveTNT implements ReactiveBlockType {
     @Override
-    Reaction reactRightClick(InteractEvent event) {
+    Reaction reactRightClick(Interaction event) {
 
         if(event.stack.itemData.matches('minecraft:flint_and_steel'))
             new SingleBlockReaction(event.block.position, PermissionFlag.MODIFY)

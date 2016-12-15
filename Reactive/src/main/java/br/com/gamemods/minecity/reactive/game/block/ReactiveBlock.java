@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.reactive.game.block;
 
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.reactive.game.block.data.BlockSnapshotData;
 import br.com.gamemods.minecity.reactive.game.block.data.BlockStateData;
 import br.com.gamemods.minecity.reactive.game.block.data.TileEntityData;
 import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockStateData;
@@ -11,6 +12,7 @@ import br.com.gamemods.minecity.reactive.reaction.Reaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -23,46 +25,57 @@ public final class ReactiveBlock implements SupplierBlockStateData, SupplierChun
     private final ChunkData chunk;
 
     @NotNull
-    private final BlockPos pos;
-
-    @NotNull
-    private final BlockStateData state;
+    private final BlockSnapshotData snapshot;
 
     @Nullable
     private final TileEntityData tileEntity;
 
-    public ReactiveBlock(ChunkData chunk, BlockPos pos, BlockStateData state)
+    public ReactiveBlock(ChunkData chunk, BlockSnapshotData snapshot)
     {
-        if(!chunk.getChunkPos().equals(pos.getChunk()))
-            throw new IllegalArgumentException("chunk.chunkPos != pos.chunk");
+        if(!chunk.getChunkPos().equals(snapshot.getPosition().getChunk()))
+            throw new IllegalArgumentException("chunk.chunkPos != snapshot.position.chunk");
+
         this.chunk = chunk;
-        this.pos = pos;
-        this.state = state;
-        this.tileEntity = chunk.getTileEntityData(pos).orElse(null);
+        this.snapshot = snapshot;
+        tileEntity = chunk.getTileEntityData(snapshot.getPosition()).orElse(null);
     }
 
     @NotNull
-    public Reaction rightClick(InteractEvent event)
+    public Reaction rightClick(Interaction event)
     {
-        if(event.getBlock() != this)
-            throw new IllegalArgumentException(event.getBlock()+" != "+this);
+        if(event.getBlock() != this) throw new IllegalArgumentException(event.getBlock()+" != "+this);
 
-        return propertyStream().map(prop -> prop.reactRightClick(event)).reduce(Reaction::combine).orElse(NoReaction.INSTANCE);
+        return propertyStream()
+                .map(prop -> prop.reactRightClick(event))
+                .reduce(Reaction::combine)
+                .orElse(NoReaction.INSTANCE);
     }
 
     @NotNull
-    public Reaction leftClick(InteractEvent event)
+    public Reaction leftClick(Interaction event)
     {
-        if(event.getBlock() != this)
-            throw new IllegalArgumentException(event.getBlock()+" != "+this);
+        if(event.getBlock() != this) throw new IllegalArgumentException(event.getBlock()+" != "+this);
 
-        return propertyStream().map(prop -> prop.reactLeftClick(event)).reduce(Reaction::combine).orElse(NoReaction.INSTANCE);
+        return propertyStream().map(prop -> prop.reactLeftClick(event))
+                .reduce(Reaction::combine)
+                .orElse(NoReaction.INSTANCE);
     }
 
     @NotNull
     public Stream<ReactiveBlockProperty> propertyStream()
     {
-        return Stream.concat(Stream.of(state.getBlockTypeData().getReactiveBlockType().orElse(null), state.getReactiveBlockState().orElse(null)), Stream.concat(state.reactiveBlockTraitStream(), Optional.ofNullable(tileEntity).flatMap(TileEntityData::getReactiveTileEntity).map(Stream::of).orElse(Stream.empty()))).filter(prop -> prop != null);
+        return Stream.concat(
+                Stream.of(
+                        snapshot.getBlockTypeData().getReactiveBlockType().orElse(null),
+                        snapshot.getBlockStateData().getReactiveBlockState().orElse(null)
+                ),
+                Stream.concat(
+                        snapshot.getBlockStateData().reactiveBlockTraitStream(),
+                        snapshot.getTileEntityData()
+                                .flatMap(TileEntityData::getReactiveTileEntity)
+                                .map(Stream::of).orElse(Stream.empty())
+                )
+        ).filter(Objects::nonNull);
     }
 
     @Override
@@ -75,13 +88,20 @@ public final class ReactiveBlock implements SupplierBlockStateData, SupplierChun
     @NotNull
     public BlockPos getPosition()
     {
-        return pos;
+        return snapshot.getPosition();
     }
 
     @NotNull
     public Optional<TileEntityData> getTileEntity()
     {
-        return Optional.ofNullable(tileEntity);
+        return snapshot.getTileEntityData();
+    }
+
+    @NotNull
+    @Override
+    public BlockStateData getBlockStateData()
+    {
+        return snapshot.getBlockStateData();
     }
 
     @Override
@@ -91,30 +111,28 @@ public final class ReactiveBlock implements SupplierBlockStateData, SupplierChun
         if(o == null || getClass() != o.getClass()) return false;
 
         ReactiveBlock that = (ReactiveBlock) o;
-        return chunk.equals(that.chunk) && pos.equals(that.pos) && state.equals(that.state) && (tileEntity != null ? tileEntity.equals(that.tileEntity) : that.tileEntity == null);
+
+        return chunk.equals(that.chunk) &&
+                snapshot.equals(that.snapshot) &&
+                (tileEntity != null ? tileEntity.equals(that.tileEntity) : that.tileEntity == null);
     }
 
     @Override
     public int hashCode()
     {
         int result = chunk.hashCode();
-        result = 31 * result+pos.hashCode();
-        result = 31 * result+state.hashCode();
+        result = 31 * result+snapshot.hashCode();
         result = 31 * result+(tileEntity != null ? tileEntity.hashCode() : 0);
         return result;
     }
 
-    @NotNull
     @Override
     public String toString()
     {
-        return "ReactiveBlock{"+"chunk="+chunk+", pos="+pos+", state="+state+", tileEntity="+tileEntity+'}';
-    }
-
-    @NotNull
-    @Override
-    public BlockStateData getBlockStateData()
-    {
-        return state;
+        return "ReactiveBlock{"+
+                "chunk="+chunk+
+                ", snapshot="+snapshot+
+                ", tileEntity="+tileEntity+
+                '}';
     }
 }

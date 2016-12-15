@@ -6,12 +6,14 @@ import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
 import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.reactive.ReactiveLayer;
 import br.com.gamemods.minecity.reactive.game.block.ReactiveBlock;
 import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
 import br.com.gamemods.minecity.sponge.cmd.*;
+import br.com.gamemods.minecity.sponge.data.value.SpongeEntityData;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import org.jetbrains.annotations.Nullable;
@@ -124,18 +126,28 @@ public class MineCitySponge implements Server
         return original;
     }
 
-    public SpongeCommandSource<?> sender(CommandSource source)
+    public Permissible permissible(Object subject)
     {
-        CommandSource original = original(source);
-        if(original instanceof Player)
-            return new PlayerSender(this, (Player) original);
-        else if(original instanceof Living)
-            return new LivingSource<>(this, source, (Living) source);
-        else if(original instanceof Entity)
-            return new EntitySource<>(this, source, (Entity) source);
-        else if(original instanceof Locatable)
-            return new LocatableSource<>(this, source, (Locatable) source);
-        return new SpongeCommandSource<>(this, source);
+        if(subject instanceof CommandSource)
+            return sender(subject, (CommandSource) subject);
+
+        if(subject instanceof Entity)
+            return ((SpongeEntityData) ReactiveLayer.getEntityData(subject).get()).getMinecraftEntity();
+
+        throw new UnsupportedOperationException("Unsupported subject: "+subject.getClass()+" "+subject);
+    }
+
+    public SpongeCommandSource<?,?> sender(Object subject, CommandSource source)
+    {
+        if(subject instanceof Player)
+            return new PlayerSender(this, (Player) subject);
+        else if(subject instanceof Living)
+            return new LivingSource<>(this, source, (Living) subject);
+        else if(subject instanceof Entity)
+            return new EntitySource<>(this, source, (Entity) subject);
+        else if(subject instanceof Locatable)
+            return new LocatableSource<>(this, source, (Locatable) subject);
+        return new SpongeCommandSource<>(this, subject, source);
     }
 
     public Identity<UUID> identity(Entity entity)
@@ -244,8 +256,7 @@ public class MineCitySponge implements Server
 
         return new ReactiveBlock(
                 ReactiveLayer.getChunk(chunk).get(),
-                blockPos,
-                ReactiveLayer.getBlockState(snapshot.getState()).get()
+                ReactiveLayer.getBlockSnapshotData(snapshot).get()
         );
     }
 
@@ -286,5 +297,10 @@ public class MineCitySponge implements Server
             case NORTH_WEST: return org.spongepowered.api.util.Direction.NORTHWEST;
             default: throw new UnsupportedOperationException(targetSide.toString());
         }
+    }
+
+    public BlockPos blockPos(Location<World> location)
+    {
+        return new BlockPos(world(location.getExtent()), location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 }

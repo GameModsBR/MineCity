@@ -4,12 +4,10 @@ import br.com.gamemods.minecity.reactive.game.block.data.*;
 import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockTypeData;
 import br.com.gamemods.minecity.sponge.data.manipulator.boxed.MineCityKeys;
 import br.com.gamemods.minecity.sponge.data.manipulator.boxed.TileEntityDataManipulator;
-import br.com.gamemods.minecity.sponge.data.value.SpongeBlockStateData;
-import br.com.gamemods.minecity.sponge.data.value.SpongeBlockTraitData;
-import br.com.gamemods.minecity.sponge.data.value.SpongeBlockTypeData;
-import br.com.gamemods.minecity.sponge.data.value.SpongeTileEntityData;
+import br.com.gamemods.minecity.sponge.data.value.*;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.tileentity.TileEntity;
@@ -104,7 +102,7 @@ public class SpongeBlockManipulator implements BlockManipulator
         return Optional.of(getBlockTraitData((BlockTrait<?>) blockTrait));
     }
 
-    public <T extends Comparable<T>> BlockTrait<T> getBlockTraitData(BlockTraitData<T> traitData)
+    public <T extends Comparable<T>> BlockTrait<T> getBlockTrait(BlockTraitData<T> traitData)
     {
         if(traitData instanceof SpongeBlockTraitData)
             return ((SpongeBlockTraitData<T>) traitData).trait;
@@ -115,5 +113,21 @@ public class SpongeBlockManipulator implements BlockManipulator
     public <T extends Comparable<T>> BlockTraitData<T> getBlockTraitData(BlockTrait<T> blockTrait)
     {
         return new SpongeBlockTraitData<>(manipulator, blockTrait);
+    }
+
+    @NotNull
+    @Override
+    public Optional<BlockSnapshotData> getBlockSnapshotData(@NotNull Object blockSnapshot)
+    {
+        if(!(blockSnapshot instanceof BlockSnapshot))
+            return Optional.empty();
+
+        return Optional.of(getBlockSnapshotData((BlockSnapshot) blockSnapshot));
+    }
+
+    @NotNull
+    public SpongeBlockSnapshotData getBlockSnapshotData(@NotNull BlockSnapshot blockSnapshot)
+    {
+        return new SpongeBlockSnapshotData(manipulator, blockSnapshot);
     }
 }

@@ -14,17 +14,15 @@ import java.util.Optional;
 
 public class EntitySource<E extends Entity, Source extends CommandSource> extends LocatableSource<E, Source>
 {
-    protected final E entity;
     public EntitySource(MineCitySponge server, Source source, E entity)
     {
         super(server, source, entity);
-        this.entity = entity;
     }
 
     @Override
     public EntityPos getPosition()
     {
-        return server.entityPos(entity);
+        return server.entityPos(subject);
     }
 
     @Nullable
@@ -38,7 +36,7 @@ public class EntitySource<E extends Entity, Source extends CommandSource> extend
                     new Object[]{"name",pos.world.name()}
             );
 
-        if(entity.transferToWorld(world.get(), new Vector3d(pos.x, pos.y, pos.z)))
+        if(subject.transferToWorld(world.get(), new Vector3d(pos.x, pos.y, pos.z)))
             return null;
 
         return new Message("action.teleport.cancelled", "The teleport were cancelled");

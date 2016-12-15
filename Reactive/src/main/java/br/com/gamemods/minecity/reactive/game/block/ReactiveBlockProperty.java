@@ -11,7 +11,7 @@ public interface ReactiveBlockProperty
     /**
      * Determine the reaction that would happen when an entity right clicks it
      */
-    default Reaction reactRightClick(InteractEvent event)
+    default Reaction reactRightClick(Interaction event)
     {
         return NoReaction.INSTANCE;
     }
@@ -19,7 +19,17 @@ public interface ReactiveBlockProperty
     /**
      * Determine the reaction that would happen when an entity left clicks it
      */
-    default Reaction reactLeftClick(InteractEvent event)
+    default Reaction reactLeftClick(Interaction event)
+    {
+        return NoReaction.INSTANCE;
+    }
+
+    default Reaction reactPlaceOne(Modification event)
+    {
+        return NoReaction.INSTANCE;
+    }
+
+    default Reaction reactPlaceMany(Modification event)
     {
         return NoReaction.INSTANCE;
     }

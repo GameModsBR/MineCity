@@ -8,31 +8,40 @@ import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.sponge.MineCitySponge;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.command.CommandSource;
 
 import java.util.Arrays;
 
-public class SpongeCommandSource<Source extends CommandSource> implements CommandSender
+public class SpongeCommandSource<Subject, Source extends CommandSource> implements CommandSender
 {
     public final MineCitySponge server;
+
+    @Nullable
     public final Source source;
 
-    public SpongeCommandSource(MineCitySponge server, Source source)
+    @NotNull
+    public final Subject subject;
+
+    public SpongeCommandSource(MineCitySponge server, @NotNull Subject subject, @Nullable Source source)
     {
         this.source = source;
+        this.subject = subject;
         this.server = server;
     }
 
     @Override
     public void send(Message message)
     {
-        source.sendMessage(server.transformer.toText(message));
+        if(source != null)
+            source.sendMessage(server.transformer.toText(message));
     }
 
     @Override
     public void send(Message[] messages)
     {
-        source.sendMessages(()-> Arrays.stream(messages).map(server.transformer::toText).iterator());
+        if(source != null)
+            source.sendMessages(()-> Arrays.stream(messages).map(server.transformer::toText).iterator());
     }
 
     @Override
@@ -66,10 +75,11 @@ public class SpongeCommandSource<Source extends CommandSource> implements Comman
         return server;
     }
 
+    @Nullable
     @Override
-    public Source getHandler()
+    public Subject getHandler()
     {
-        return source;
+        return subject;
     }
 
     @Override

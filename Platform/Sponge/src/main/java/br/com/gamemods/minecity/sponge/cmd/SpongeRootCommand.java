@@ -38,7 +38,7 @@ public class SpongeRootCommand implements CommandCallable
         List<String> path = new ArrayList<>(args.length + 1);
         path.add(label);
         path.addAll(Arrays.asList(args));
-        instance.mineCity.commands.invoke(instance.sender(source), path);
+        instance.mineCity.commands.invoke(instance.sender(source, source), path);
         return CommandResult.success();
     }
 

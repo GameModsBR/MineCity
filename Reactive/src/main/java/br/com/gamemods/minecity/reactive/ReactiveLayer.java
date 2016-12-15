@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.reactive;
 
 import br.com.gamemods.minecity.reactive.game.block.data.*;
+import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockSnapshotData;
 import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockStateData;
 import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockTypeData;
 import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierTileEntityData;
@@ -66,6 +67,14 @@ public class ReactiveLayer
             return Optional.of(((SupplierBlockStateData) blockState).getBlockStateData());
 
         return getBlockManipulator().getBlockStateData(blockState);
+    }
+
+    public static Optional<BlockSnapshotData> getBlockSnapshotData(@NotNull Object snapshot)
+    {
+        if(snapshot instanceof SupplierBlockSnapshotData)
+            return Optional.of(((SupplierBlockSnapshotData) snapshot).getBlockSnapshotData());
+
+        return getBlockManipulator().getBlockSnapshotData(snapshot);
     }
 
     @NotNull

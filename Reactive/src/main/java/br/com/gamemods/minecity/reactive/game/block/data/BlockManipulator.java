@@ -40,4 +40,7 @@ public interface BlockManipulator
      */
     @NotNull
     Optional<BlockTraitData<?>> getBlockTraitData(@NotNull Object blockTrait);
+
+    @NotNull
+    Optional<BlockSnapshotData> getBlockSnapshotData(@NotNull Object blockSnapshot);
 }

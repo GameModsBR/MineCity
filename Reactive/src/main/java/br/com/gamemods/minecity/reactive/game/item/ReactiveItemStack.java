@@ -1,6 +1,8 @@
 package br.com.gamemods.minecity.reactive.game.item;
 
-import br.com.gamemods.minecity.reactive.game.block.InteractEvent;
+import br.com.gamemods.minecity.reactive.game.block.Interaction;
+import br.com.gamemods.minecity.reactive.game.block.Modification;
+import br.com.gamemods.minecity.reactive.game.block.PreModification;
 import br.com.gamemods.minecity.reactive.game.item.data.ItemStackData;
 import br.com.gamemods.minecity.reactive.game.item.data.supplier.SupplierItemStackData;
 import br.com.gamemods.minecity.reactive.reaction.NoReaction;
@@ -25,13 +27,38 @@ public final class ReactiveItemStack implements SupplierItemStackData
     }
 
     @NotNull
-    public Reaction rightClickFirst(InteractEvent event)
+    public Reaction rightClickFirst(Interaction event)
     {
         return NoReaction.INSTANCE;
     }
 
     @NotNull
-    public Reaction rightClickLast(InteractEvent event)
+    public Reaction rightClickLast(Interaction event)
+    {
+        return NoReaction.INSTANCE;
+    }
+
+    public Reaction blockPlace(Modification modification)
+    {
+        return NoReaction.INSTANCE;
+    }
+
+    public Reaction blockBreak(Modification modification)
+    {
+        return NoReaction.INSTANCE;
+    }
+
+    public Reaction blockReplace(Modification modification)
+    {
+        return NoReaction.INSTANCE;
+    }
+
+    public Reaction blockGrow(Modification modification)
+    {
+        return NoReaction.INSTANCE;
+    }
+
+    public Reaction blockChangePre(PreModification modification)
     {
         return NoReaction.INSTANCE;
     }

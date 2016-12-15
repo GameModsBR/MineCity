@@ -21,7 +21,7 @@ public class PlayerSender extends LivingSource<Player, Player>
     @Override
     public PlayerID getPlayerId()
     {
-        return PlayerID.get(source.getUniqueId(), source.getName());
+        return PlayerID.get(subject.getUniqueId(), subject.getName());
     }
 
     @NotNull

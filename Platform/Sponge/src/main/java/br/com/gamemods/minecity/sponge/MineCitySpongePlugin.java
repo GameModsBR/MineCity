@@ -64,7 +64,7 @@ public class MineCitySpongePlugin
     private Logger logger;
 
     @Inject
-    @DefaultConfig(sharedRoot = true)
+    @DefaultConfig(sharedRoot = false)
     private ConfigurationLoader<CommentedConfigurationNode> configManager;
 
     @Inject
@@ -287,7 +287,7 @@ public class MineCitySpongePlugin
             sponge.mineCity.dataSource.initDB();
             sponge.mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands-"+lang+".xml"));
 
-            sponge.mineCity.commands.getRootCommands().stream().forEachOrdered(name->
+            sponge.mineCity.commands.getRootCommands().forEach(name->
                     Sponge.getCommandManager().register(this, new SpongeRootCommand(sponge, name), name)
             );
 
