@@ -264,8 +264,8 @@ public class MineCitySponge implements Server
             case UP: return Direction.UP;
             case DOWN: return Direction.DOWN;
             case NORTHEAST: return Direction.NORTH_EAST;
-            case SOUTH_SOUTHEAST: return Direction.SOUTH_EAST;
-            case SOUTH_SOUTHWEST: return Direction.SOUTH_WEST;
+            case SOUTHEAST: return Direction.SOUTH_EAST;
+            case SOUTHWEST: return Direction.SOUTH_WEST;
             case NORTHWEST: return Direction.NORTH_WEST;
             default: throw new UnsupportedOperationException(targetSide.toString());
         }
@@ -281,8 +281,8 @@ public class MineCitySponge implements Server
             case UP: return org.spongepowered.api.util.Direction.UP;
             case DOWN: return org.spongepowered.api.util.Direction.DOWN;
             case NORTH_EAST: return org.spongepowered.api.util.Direction.NORTHEAST;
-            case SOUTH_EAST: return org.spongepowered.api.util.Direction.SOUTH_SOUTHEAST;
-            case SOUTH_WEST: return org.spongepowered.api.util.Direction.SOUTH_SOUTHWEST;
+            case SOUTH_EAST: return org.spongepowered.api.util.Direction.SOUTHEAST;
+            case SOUTH_WEST: return org.spongepowered.api.util.Direction.SOUTHWEST;
             case NORTH_WEST: return org.spongepowered.api.util.Direction.NORTHWEST;
             default: throw new UnsupportedOperationException(targetSide.toString());
         }
