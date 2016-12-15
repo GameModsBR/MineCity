@@ -1,9 +1,11 @@
 package br.com.gamemods.minecity.reactive.game.block;
 
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.reactive.ReactiveLayer;
 import br.com.gamemods.minecity.reactive.game.entity.data.EntityData;
 import br.com.gamemods.minecity.reactive.game.entity.data.Hand;
 import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
+import br.com.gamemods.minecity.reactive.game.server.data.ChunkData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,6 +67,11 @@ public final class Modification
         changes.get(cursor).setValid(valid);
     }
 
+    public BlockPos getPosition()
+    {
+        return changes.get(cursor).getOriginal().getPosition();
+    }
+
     public int getCursor()
     {
         return cursor;
@@ -103,5 +110,10 @@ public final class Modification
     public Optional<Hand> getUsedHand()
     {
         return Optional.ofNullable(usedHand);
+    }
+
+    public ChunkData getChunk()
+    {
+        return getBlockChange().getOriginal().getChunk().get();
     }
 }

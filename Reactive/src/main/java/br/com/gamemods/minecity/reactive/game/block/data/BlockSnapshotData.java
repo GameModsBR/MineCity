@@ -2,9 +2,11 @@ package br.com.gamemods.minecity.reactive.game.block.data;
 
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.reactive.ReactiveLayer;
 import br.com.gamemods.minecity.reactive.game.block.Modification;
 import br.com.gamemods.minecity.reactive.game.block.PreModification;
 import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockSnapshotData;
+import br.com.gamemods.minecity.reactive.game.server.data.ChunkData;
 import br.com.gamemods.minecity.reactive.reaction.Reaction;
 import br.com.gamemods.minecity.reactive.reaction.SingleBlockReaction;
 import org.jetbrains.annotations.NotNull;
@@ -60,5 +62,10 @@ public interface BlockSnapshotData extends SupplierBlockSnapshotData
     default Reaction preModification(PreModification mod)
     {
         return new SingleBlockReaction(getPosition(), PermissionFlag.MODIFY);
+    }
+
+    default Optional<ChunkData> getChunk()
+    {
+        return ReactiveLayer.getChunk(getPosition().getChunk());
     }
 }

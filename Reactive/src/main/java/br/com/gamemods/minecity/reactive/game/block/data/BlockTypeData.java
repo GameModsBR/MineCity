@@ -72,4 +72,19 @@ public interface BlockTypeData extends SupplierBlockTypeData
     {
         return this;
     }
+
+    default boolean matches(Object block)
+    {
+        if(equals(block))
+            return true;
+
+        if(block instanceof CharSequence)
+            return getBlockIdName().map(block.toString()::equals).orElse(false);
+
+        //noinspection SimplifiableIfStatement
+        if(block instanceof SupplierBlockTypeData)
+            return equals(((SupplierBlockTypeData) block).getBlockTypeData());
+
+        return false;
+    }
 }

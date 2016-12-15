@@ -7,8 +7,10 @@ import br.com.gamemods.minecity.reactive.game.entity.data.Hand;
 import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
 import br.com.gamemods.minecity.reactive.reaction.InteractReaction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public final class Interaction
@@ -18,6 +20,7 @@ public final class Interaction
     private final Hand hand;
     private final ReactiveItemStack itemStack;
     private final ReactiveBlock block;
+    @Nullable
     private final Direction blockFace;
     private final PrecisePoint clickPoint;
     private InteractReaction reactionItemFirst = new InteractReaction();
@@ -25,7 +28,7 @@ public final class Interaction
     private InteractReaction reactionItemLast = new InteractReaction();
 
     public Interaction(Click click, EntityData entity, Hand hand, ReactiveItemStack itemStack,
-                       ReactiveBlock block, Direction blockFace, PrecisePoint clickPoint)
+                       ReactiveBlock block, @Nullable Direction blockFace, PrecisePoint clickPoint)
     {
         this.click = click;
         this.entity = entity;
@@ -85,9 +88,9 @@ public final class Interaction
         return block;
     }
 
-    public Direction getBlockFace()
+    public Optional<Direction> getBlockFace()
     {
-        return blockFace;
+        return Optional.ofNullable(blockFace);
     }
 
     public PrecisePoint getClickPoint()

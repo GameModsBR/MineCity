@@ -7,7 +7,7 @@ import br.com.gamemods.minecity.reactive.reaction.*
 /**
  * Check for MODIFY permission when a block is right clicked with a FlintAndSteel in hand
  */
-class ReactiveTNT implements ReactiveBlockType {
+class TNT implements ReactiveBlockType {
     @Override
     Reaction reactRightClick(Interaction event) {
 

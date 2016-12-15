@@ -265,9 +265,11 @@ public class MineCitySponge implements Server
         return new PrecisePoint(point.getX(), point.getY(), point.getZ());
     }
 
+    @Nullable
     public Direction direction(org.spongepowered.api.util.Direction targetSide)
     {
         switch(targetSide) {
+            case NONE: return null;
             case NORTH: return Direction.NORTH;
             case SOUTH: return Direction.SOUTH;
             case EAST: return Direction.EAST;
@@ -282,8 +284,11 @@ public class MineCitySponge implements Server
         }
     }
 
-    public org.spongepowered.api.util.Direction direction(Direction targetSide)
+    public org.spongepowered.api.util.Direction direction(@Nullable Direction targetSide)
     {
+        if(targetSide == null)
+            return org.spongepowered.api.util.Direction.NONE;
+
         switch(targetSide) {
             case NORTH: return org.spongepowered.api.util.Direction.NORTH;
             case SOUTH: return org.spongepowered.api.util.Direction.SOUTH;

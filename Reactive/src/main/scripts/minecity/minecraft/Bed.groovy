@@ -5,7 +5,7 @@ import br.com.gamemods.minecity.reactive.game.block.*
 import br.com.gamemods.minecity.reactive.game.block.data.BlockRole
 import br.com.gamemods.minecity.reactive.reaction.*
 
-class ReactiveBed implements ReactiveBlockType {
+class Bed implements ReactiveBlockType {
 
     @Override
     BlockRole getBlockRole() {

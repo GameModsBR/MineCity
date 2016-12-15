@@ -94,4 +94,6 @@ public interface BlockStateData extends SupplierBlockStateData
     {
         return this;
     }
+
+    boolean isReplaceable();
 }

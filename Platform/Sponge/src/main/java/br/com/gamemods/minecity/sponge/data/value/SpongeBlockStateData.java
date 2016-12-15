@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.sponge.data.manipulator.reactive.SpongeManipulat
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.trait.BlockTrait;
+import org.spongepowered.api.data.property.block.ReplaceableProperty;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -52,5 +53,11 @@ public class SpongeBlockStateData implements BlockStateData
     public Stream<BlockTraitData<?>> blockTraitStream()
     {
         return blockState.getTraits().stream().map(manipulator.block::getBlockTraitData);
+    }
+
+    @Override
+    public boolean isReplaceable()
+    {
+        return blockState.getProperty(ReplaceableProperty.class).map(ReplaceableProperty::getValue).orElse(false);
     }
 }

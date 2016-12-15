@@ -18,7 +18,6 @@ blockType([
 
         // Does not extends Container
         block('Cauldron'), 'minecraft:cauldron',
-        block('Anvil'), 'minecraft:anvil',
         block('Cake'), 'minecraft:cake'
 ]) {
     setReactive containerBlock
@@ -51,7 +50,6 @@ blockType([
         block('Structure'), 'minecraft:structure_block',
 
         // Does not extends Container
-        block('DragonEgg'), 'minecraft:dragon_egg',
         block('RedstoneComparator'), 'minecraft:unpowered_comparator',
         'minecraft:powered_comparator',
         block('RedstoneRepeater'), 'minecraft:unpowered_repeater',
@@ -63,7 +61,7 @@ blockType([
 blockType([
         block('TNT'), 'minecraft:tnt'
 ]) {
-    setReactive new ReactiveTNT()
+    setReactive new TNT()
 }
 
 ////////////////////////////// CLICKABLE //////////////////////////////
@@ -99,5 +97,25 @@ blockType([
 blockType([
         block('Bed'), 'minecraft:bed'
 ]) {
-    setReactive new ReactiveBed()
+    setReactive new Bed()
+}
+
+/////////////////////////////// GRAVITY ///////////////////////////////
+blockType([
+        block('Sand'), 'minecraft:sand',
+        block('Gravel'), 'minecraft:gravel'
+]) {
+    setReactive new Sand()
+}
+
+blockType([
+        block('Anvil'), 'minecraft:anvil',
+]) {
+    setReactive new Anvil()
+}
+
+blockType([
+        block('DragonEgg'), 'minecraft:dragon_egg',
+]) {
+    setReactive new DragonEgg()
 }

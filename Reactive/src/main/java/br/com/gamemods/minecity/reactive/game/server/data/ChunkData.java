@@ -2,6 +2,8 @@ package br.com.gamemods.minecity.reactive.game.server.data;
 
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
+import br.com.gamemods.minecity.reactive.game.block.data.BlockStateData;
+import br.com.gamemods.minecity.reactive.game.block.data.BlockTypeData;
 import br.com.gamemods.minecity.reactive.game.block.data.TileEntityData;
 import br.com.gamemods.minecity.reactive.game.server.data.supplier.SupplierChunkData;
 import org.jetbrains.annotations.NotNull;
@@ -44,5 +46,14 @@ public interface ChunkData extends SupplierChunkData
     default ChunkData getChunkData()
     {
         return this;
+    }
+
+    @NotNull
+    BlockStateData getBlockStateData(BlockPos pos);
+
+    @NotNull
+    default BlockTypeData getBlockTypeData(BlockPos pos)
+    {
+        return getBlockStateData(pos).getBlockTypeData();
     }
 }

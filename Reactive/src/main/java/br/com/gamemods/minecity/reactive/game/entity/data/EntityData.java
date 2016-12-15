@@ -11,6 +11,7 @@ import br.com.gamemods.minecity.reactive.reaction.InteractReaction;
 import br.com.gamemods.minecity.reactive.reaction.NoReaction;
 import br.com.gamemods.minecity.reactive.reaction.Reaction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -33,8 +34,8 @@ public interface EntityData
     @NotNull
     Optional<ChunkData> getChunkData();
 
-    default InteractReaction onRightClick(Hand hand, ReactiveItemStack stack, ReactiveBlock block, Direction side,
-                                          PrecisePoint point)
+    default InteractReaction onRightClick(Hand hand, ReactiveItemStack stack, ReactiveBlock block,
+                                          @Nullable Direction side, PrecisePoint point)
     {
         Interaction event = new Interaction(Interaction.Click.RIGHT, this, hand, stack, block, side, point);
 
