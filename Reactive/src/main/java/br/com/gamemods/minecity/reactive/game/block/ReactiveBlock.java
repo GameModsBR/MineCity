@@ -1,17 +1,13 @@
 package br.com.gamemods.minecity.reactive.game.block;
 
-import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.BlockPos;
-import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.reactive.game.block.data.BlockStateData;
 import br.com.gamemods.minecity.reactive.game.block.data.TileEntityData;
 import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockStateData;
-import br.com.gamemods.minecity.reactive.game.entity.data.EntityData;
-import br.com.gamemods.minecity.reactive.game.entity.data.Hand;
-import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
 import br.com.gamemods.minecity.reactive.game.server.data.ChunkData;
 import br.com.gamemods.minecity.reactive.game.server.data.supplier.SupplierChunkData;
-import br.com.gamemods.minecity.reactive.reaction.InteractReaction;
+import br.com.gamemods.minecity.reactive.reaction.NoReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,33 +42,27 @@ public final class ReactiveBlock implements SupplierBlockStateData, SupplierChun
     }
 
     @NotNull
-    public InteractReaction rightClick(EntityData entity, Hand hand, ReactiveItemStack stack, Direction face, PrecisePoint point)
+    public Reaction rightClick(InteractEvent event)
     {
-        InteractReaction reaction = new InteractReaction();
-        propertyStream().forEachOrdered(prop-> prop.reactRightClick(reaction, entity, hand, stack, this, face, point));
-        return reaction;
+        if(event.getBlock() != this)
+            throw new IllegalArgumentException(event.getBlock()+" != "+this);
+
+        return propertyStream().map(prop -> prop.reactRightClick(event)).reduce(Reaction::combine).orElse(NoReaction.INSTANCE);
     }
 
     @NotNull
-    public InteractReaction leftClick(EntityData entity, Hand hand, ReactiveItemStack stack, Direction face, PrecisePoint point)
+    public Reaction leftClick(InteractEvent event)
     {
-        InteractReaction reaction = new InteractReaction();
-        propertyStream().forEachOrdered(prop-> prop.reactLeftClick(reaction, entity, hand, stack, this, face, point));
-        return reaction;
+        if(event.getBlock() != this)
+            throw new IllegalArgumentException(event.getBlock()+" != "+this);
+
+        return propertyStream().map(prop -> prop.reactLeftClick(event)).reduce(Reaction::combine).orElse(NoReaction.INSTANCE);
     }
 
     @NotNull
     public Stream<ReactiveBlockProperty> propertyStream()
     {
-        return Stream.concat(
-                Stream.of(state.getBlockTypeData().getReactiveBlockType().orElse(null), state.getReactiveBlockState().orElse(null)),
-                Stream.concat(
-                        state.reactiveBlockTraitStream(),
-                        Optional.ofNullable(tileEntity)
-                                .flatMap(TileEntityData::getReactiveTileEntity)
-                                .map(Stream::of).orElse(Stream.empty())
-                )
-        ).filter(prop-> prop != null);
+        return Stream.concat(Stream.of(state.getBlockTypeData().getReactiveBlockType().orElse(null), state.getReactiveBlockState().orElse(null)), Stream.concat(state.reactiveBlockTraitStream(), Optional.ofNullable(tileEntity).flatMap(TileEntityData::getReactiveTileEntity).map(Stream::of).orElse(Stream.empty()))).filter(prop -> prop != null);
     }
 
     @Override
@@ -101,11 +91,7 @@ public final class ReactiveBlock implements SupplierBlockStateData, SupplierChun
         if(o == null || getClass() != o.getClass()) return false;
 
         ReactiveBlock that = (ReactiveBlock) o;
-        return chunk.equals(that.chunk)
-                && pos.equals(that.pos)
-                && state.equals(that.state)
-                && (tileEntity != null ? tileEntity.equals(that.tileEntity) : that.tileEntity == null)
-        ;
+        return chunk.equals(that.chunk) && pos.equals(that.pos) && state.equals(that.state) && (tileEntity != null ? tileEntity.equals(that.tileEntity) : that.tileEntity == null);
     }
 
     @Override
@@ -122,12 +108,7 @@ public final class ReactiveBlock implements SupplierBlockStateData, SupplierChun
     @Override
     public String toString()
     {
-        return "ReactiveBlock{"+
-                "chunk="+chunk+
-                ", pos="+pos+
-                ", state="+state+
-                ", tileEntity="+tileEntity+
-                '}';
+        return "ReactiveBlock{"+"chunk="+chunk+", pos="+pos+", state="+state+", tileEntity="+tileEntity+'}';
     }
 
     @NotNull

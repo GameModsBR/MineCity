@@ -45,4 +45,12 @@ public final class InteractReaction
     {
         return action;
     }
+
+    public InteractReaction combine(InteractReaction other)
+    {
+        useBlock = useBlock.combine(other.useBlock);
+        useItem = useItem.combine(other.useItem);
+        action = action.combine(other.action);
+        return this;
+    }
 }

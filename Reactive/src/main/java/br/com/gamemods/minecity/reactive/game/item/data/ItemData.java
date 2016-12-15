@@ -1,5 +1,7 @@
 package br.com.gamemods.minecity.reactive.game.item.data;
 
+import br.com.gamemods.minecity.reactive.game.item.data.supplier.SupplierItemData;
+
 import java.util.Optional;
 
 /**
@@ -13,7 +15,16 @@ public interface ItemData
 
     default boolean matches(Object data)
     {
-        //TODO Implement
+        if(equals(data))
+            return true;
+
+        if(data instanceof CharSequence)
+            return getItemIdName().map(data.toString()::equals).orElse(false);
+
+        //noinspection SimplifiableIfStatement
+        if(data instanceof SupplierItemData)
+            return equals(((SupplierItemData) data).getItemData());
+
         return false;
     }
 }

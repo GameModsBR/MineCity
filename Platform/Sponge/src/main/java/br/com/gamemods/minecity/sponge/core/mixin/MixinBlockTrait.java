@@ -32,7 +32,7 @@ public abstract class MixinBlockTrait<T extends Comparable<T>> implements MixedB
 
     @NotNull
     @Override
-    public Optional<? extends ReactiveBlockTrait<T>> getReactiveBlockTrait()
+    public Optional<ReactiveBlockTrait<T>> getReactiveBlockTrait()
     {
         return reactiveBlockTrait.get();
     }

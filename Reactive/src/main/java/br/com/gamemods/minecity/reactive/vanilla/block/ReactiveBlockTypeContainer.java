@@ -1,18 +1,12 @@
 package br.com.gamemods.minecity.reactive.vanilla.block;
 
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
-import br.com.gamemods.minecity.api.shape.PrecisePoint;
-import br.com.gamemods.minecity.api.world.Direction;
-import br.com.gamemods.minecity.reactive.game.block.ReactiveBlock;
+import br.com.gamemods.minecity.reactive.game.block.InteractEvent;
 import br.com.gamemods.minecity.reactive.game.block.ReactiveBlockType;
 import br.com.gamemods.minecity.reactive.game.block.data.BlockRole;
-import br.com.gamemods.minecity.reactive.game.entity.data.EntityData;
-import br.com.gamemods.minecity.reactive.game.entity.data.Hand;
-import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
-import br.com.gamemods.minecity.reactive.reaction.InteractReaction;
+import br.com.gamemods.minecity.reactive.reaction.Reaction;
 import br.com.gamemods.minecity.reactive.reaction.SingleBlockReaction;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A block that can store things inside it and open its storage on right click.
@@ -29,10 +23,8 @@ public interface ReactiveBlockTypeContainer extends ReactiveBlockType
     }
 
     @Override
-    default void reactRightClick(InteractReaction reaction, EntityData entity, Hand hand,
-                                 ReactiveItemStack stack, ReactiveBlock block, Direction face,
-                                 @Nullable PrecisePoint point)
+    default Reaction reactRightClick(InteractEvent event)
     {
-        reaction.combineBlock(new SingleBlockReaction(block.getPosition(), PermissionFlag.OPEN));
+        return new SingleBlockReaction(event.getBlock().getPosition(), PermissionFlag.OPEN);
     }
 }

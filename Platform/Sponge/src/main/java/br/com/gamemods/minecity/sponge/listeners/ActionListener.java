@@ -1,12 +1,16 @@
 package br.com.gamemods.minecity.sponge.listeners;
 
 import br.com.gamemods.minecity.api.permission.FlagHolder;
+import br.com.gamemods.minecity.api.shape.PrecisePoint;
+import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.reactive.ReactiveLayer;
 import br.com.gamemods.minecity.reactive.game.block.ReactiveBlock;
+import br.com.gamemods.minecity.reactive.game.entity.data.EntityData;
 import br.com.gamemods.minecity.reactive.game.entity.data.Hand;
+import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
 import br.com.gamemods.minecity.reactive.reaction.InteractReaction;
 import br.com.gamemods.minecity.sponge.MineCitySponge;
 import br.com.gamemods.minecity.sponge.cmd.SpongeCommandSource;
-import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -28,15 +32,15 @@ public class ActionListener
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onInteractBlock(final InteractBlockEvent.Secondary event, @First Player player)
     {
+        Hand hand = Hand.from(event.getHandType());
+        Direction side = sponge.direction(event.getTargetSide());
+        PrecisePoint point = event.getInteractionPoint().map(sponge::precisePoint).orElse(null);
+
+        EntityData entity = ReactiveLayer.getEntityData(player).get();
         ReactiveBlock block = sponge.reactiveBlock(event.getTargetBlock(), player.getWorld());
-        HandType type = event.getHandType();
-        InteractReaction reaction = block.rightClick(
-                null,
-                Hand.from(type),
-                sponge.reactiveStack(player.getItemInHand(type).orElse(null)),
-                null,
-                event.getInteractionPoint().map(sponge::precisePoint).orElse(null)
-        );
+        ReactiveItemStack stack = sponge.reactiveStack(player.getItemInHand(event.getHandType()).orElse(null));
+
+        InteractReaction reaction = entity.onRightClick(hand, stack, block, side, point);
 
         SpongeCommandSource<?> sender = sponge.sender(player);
         AtomicBoolean notify = new AtomicBoolean(true);

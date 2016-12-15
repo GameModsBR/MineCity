@@ -17,7 +17,7 @@ public abstract class MixinBlockState implements MixedBlockState
 {
     @Nullable
     private BlockStateData blockStateData;
-    private Reactive<? extends ReactiveBlockState> reactiveBlockState = new Reactive<>(()->
+    private Reactive<ReactiveBlockState> reactiveBlockState = new Reactive<>(()->
             ReactiveLayer.getBlockReactor().getBlockState(getBlockStateData())
     );
 
@@ -33,7 +33,7 @@ public abstract class MixinBlockState implements MixedBlockState
 
     @NotNull
     @Override
-    public Optional<? extends ReactiveBlockState> getReactiveBlockState()
+    public Optional<ReactiveBlockState> getReactiveBlockState()
     {
         return reactiveBlockState.get();
     }

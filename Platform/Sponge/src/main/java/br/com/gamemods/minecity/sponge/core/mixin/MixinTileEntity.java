@@ -33,7 +33,7 @@ public abstract class MixinTileEntity implements MixedTileEntity
 
     @NotNull
     @Override
-    public Optional<? extends ReactiveTileEntity> getReactiveTileEntity()
+    public Optional<ReactiveTileEntity> getReactiveTileEntity()
     {
         return reactiveTileEntity.get();
     }

@@ -221,7 +221,7 @@ public class MineCitySponge implements Server
     public ReactiveItemStack reactiveStack(@Nullable ItemStack stack)
     {
         return new ReactiveItemStack(
-                ReactiveLayer.getItemStackData(stack == null? ItemStack.of(ItemTypes.NONE, 0) : stack).get()
+                ReactiveLayer.getItemStackData(stack == null? ItemStack.of(ItemTypes.NONE, 1) : stack).get()
         );
     }
 
@@ -252,5 +252,39 @@ public class MineCitySponge implements Server
     public PrecisePoint precisePoint(Vector3d point)
     {
         return new PrecisePoint(point.getX(), point.getY(), point.getZ());
+    }
+
+    public Direction direction(org.spongepowered.api.util.Direction targetSide)
+    {
+        switch(targetSide) {
+            case NORTH: return Direction.NORTH;
+            case SOUTH: return Direction.SOUTH;
+            case EAST: return Direction.EAST;
+            case WEST: return Direction.WEST;
+            case UP: return Direction.UP;
+            case DOWN: return Direction.DOWN;
+            case NORTHEAST: return Direction.NORTH_EAST;
+            case SOUTH_SOUTHEAST: return Direction.SOUTH_EAST;
+            case SOUTH_SOUTHWEST: return Direction.SOUTH_WEST;
+            case NORTHWEST: return Direction.NORTH_WEST;
+            default: throw new UnsupportedOperationException(targetSide.toString());
+        }
+    }
+
+    public org.spongepowered.api.util.Direction direction(Direction targetSide)
+    {
+        switch(targetSide) {
+            case NORTH: return org.spongepowered.api.util.Direction.NORTH;
+            case SOUTH: return org.spongepowered.api.util.Direction.SOUTH;
+            case EAST: return org.spongepowered.api.util.Direction.EAST;
+            case WEST: return org.spongepowered.api.util.Direction.WEST;
+            case UP: return org.spongepowered.api.util.Direction.UP;
+            case DOWN: return org.spongepowered.api.util.Direction.DOWN;
+            case NORTH_EAST: return org.spongepowered.api.util.Direction.NORTHEAST;
+            case SOUTH_EAST: return org.spongepowered.api.util.Direction.SOUTH_SOUTHEAST;
+            case SOUTH_WEST: return org.spongepowered.api.util.Direction.SOUTH_SOUTHWEST;
+            case NORTH_WEST: return org.spongepowered.api.util.Direction.NORTHWEST;
+            default: throw new UnsupportedOperationException(targetSide.toString());
+        }
     }
 }
