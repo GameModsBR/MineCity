@@ -40,6 +40,7 @@ public class PlayerSender extends LivingSource<Player, Player>
     public PlayerSender(MineCitySponge server, Player source)
     {
         super(server, source, source);
+        server.logger.info("New PlayerSender instance: "+this);
     }
 
     @Override

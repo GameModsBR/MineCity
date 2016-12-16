@@ -29,8 +29,13 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.HandInteractEvent;
 import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.filter.cause.Named;
+import org.spongepowered.api.event.filter.type.Exclude;
+import org.spongepowered.api.event.impl.AbstractEvent;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.Location;
@@ -54,8 +59,15 @@ public class ActionListener
         this.sponge = sponge;
     }
 
+    @Listener(order = Order.PRE)
+    @Exclude(MoveEntityEvent.class)
+    public void debug(AbstractEvent event, @First Player player)
+    {
+        sponge.logger.info("Event: "+event);
+    }
+
     @Listener(order = Order.POST)
-    public void onInteract(HandInteractEvent event, @First Entity entity)
+    public void onInteract(HandInteractEvent event, @Named(NamedCause.SOURCE) Entity entity)
     {
         lastEntityInteractEvent = event;
     }
@@ -69,7 +81,7 @@ public class ActionListener
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onInteractBlock(InteractBlockEvent.Secondary event, @First Entity subject)
+    public void onInteractBlock(InteractBlockEvent.Secondary event, @Named(NamedCause.SOURCE) Entity subject)
     {
         HandType handType = event.getHandType();
         Hand hand = Hand.from(handType);
@@ -146,30 +158,31 @@ public class ActionListener
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onBlockPlace(ChangeBlockEvent.Place event, @First Entity subject)
+    public void onBlockPlace(ChangeBlockEvent.Place event, @Named(NamedCause.SOURCE) Entity subject)
     {
         onBlockChange(event, subject, EntityData::onBlockPlace);
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onBlockBreak(ChangeBlockEvent.Break event, @First Entity subject)
+    public void onBlockBreak(ChangeBlockEvent.Break event, @Named(NamedCause.SOURCE) Entity subject)
     {
         onBlockChange(event, subject, EntityData::onBlockBreak);
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onBlockReplace(ChangeBlockEvent.Modify event, @First Entity subject)
+    public void onBlockReplace(ChangeBlockEvent.Modify event, @Named(NamedCause.SOURCE) Entity subject)
     {
         onBlockChange(event, subject, EntityData::onBlockReplace);
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onBlockGrow(ChangeBlockEvent.Grow event, @First Entity subject)
+    public void onBlockGrow(ChangeBlockEvent.Grow event, @Named(NamedCause.SOURCE) Entity subject)
     {
         onBlockChange(event, subject, EntityData::onBlockGrow);
     }
 
-    public void onBlockChangePre(ChangeBlockEvent.Pre event, @First Entity subject)
+    //@Listener(order = Order.FIRST, beforeModifications = true)
+    public void onBlockChangePre(ChangeBlockEvent.Pre event, @Named(NamedCause.SOURCE) Entity subject)
     {
         HandInteractEvent interact = this.lastEntityInteractEvent;
         if(interact != null && interact.getCause().first(Entity.class).orElse(null) != subject)

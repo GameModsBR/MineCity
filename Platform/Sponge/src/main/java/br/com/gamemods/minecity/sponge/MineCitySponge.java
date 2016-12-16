@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.Server;
+import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.Permissible;
@@ -13,7 +14,8 @@ import br.com.gamemods.minecity.reactive.ReactiveLayer;
 import br.com.gamemods.minecity.reactive.game.block.ReactiveBlock;
 import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
 import br.com.gamemods.minecity.sponge.cmd.*;
-import br.com.gamemods.minecity.sponge.data.value.SpongeEntityData;
+import br.com.gamemods.minecity.sponge.core.mixed.MixedEntity;
+import br.com.gamemods.minecity.sponge.data.value.SpongeMinecraftEntity;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import org.jetbrains.annotations.Nullable;
@@ -38,6 +40,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -132,12 +135,38 @@ public class MineCitySponge implements Server
             return sender(subject, (CommandSource) subject);
 
         if(subject instanceof Entity)
-            return ((SpongeEntityData) ReactiveLayer.getEntityData(subject).get()).getMinecraftEntity();
+            return sender(subject, null);
 
         throw new UnsupportedOperationException("Unsupported subject: "+subject.getClass()+" "+subject);
     }
 
-    public SpongeCommandSource<?,?> sender(Object subject, CommandSource source)
+    public MinecraftEntity entity(Entity subject, Supplier<EntitySource> source)
+    {
+        if(subject instanceof MixedEntity)
+        {
+            MixedEntity mix = (MixedEntity) subject;
+            SpongeMinecraftEntity entity = mix.getMinecraftEntity();
+            if(entity == null)
+            {
+                entity = new SpongeMinecraftEntity(this, subject, source.get());
+                mix.setMinecraftEntity(entity);
+            }
+
+            return entity;
+        }
+
+        throw new UnsupportedOperationException("Missing MixinEntity");
+    }
+
+    public CommandSender sender(Object subject, CommandSource source)
+    {
+        if(subject instanceof Entity)
+            return entity((Entity) subject, ()-> (EntitySource) createSender(subject, source)).getCommandSender();
+
+        return createSender(subject, source);
+    }
+
+    private SpongeCommandSource<?,?> createSender(Object subject, CommandSource source)
     {
         if(subject instanceof Player)
             return new PlayerSender(this, (Player) subject);
@@ -159,7 +188,7 @@ public class MineCitySponge implements Server
 
     public MinecraftEntity.Type type(Entity entity)
     {
-        return MinecraftEntity.Type.UNCLASSIFIED;
+        return SpongeMinecraftEntity.type(entity.getType());
     }
 
     public PlayerID identity(Player player)

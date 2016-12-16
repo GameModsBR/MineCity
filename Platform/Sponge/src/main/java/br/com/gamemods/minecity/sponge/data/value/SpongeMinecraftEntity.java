@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.sponge.MineCitySponge;
+import br.com.gamemods.minecity.sponge.cmd.EntitySource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.entity.*;
@@ -32,9 +33,9 @@ public class SpongeMinecraftEntity implements MinecraftEntity
     private final MineCitySponge sponge;
     private final Entity entity;
     private final Identity<UUID> identity;
-    private final CommandSender sender;
+    private final EntitySource sender;
 
-    public SpongeMinecraftEntity(MineCitySponge sponge, Entity entity, CommandSender sender)
+    public SpongeMinecraftEntity(MineCitySponge sponge, Entity entity, EntitySource sender)
     {
         this.sponge = sponge;
         this.entity = entity;

@@ -30,7 +30,7 @@ targetCompatibility = 1.8
 
 dependencies {
     compile project(':Reactive')
-    compile 'org.spongepowered:spongeapi:5.1.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:6.0.0-SNAPSHOT'
     //compile 'org.spongepowered:spongecommon:5.1.0-SNAPSHOT:dev'
     compile 'org.spongepowered:mixin:0.5.17-SNAPSHOT'
 }

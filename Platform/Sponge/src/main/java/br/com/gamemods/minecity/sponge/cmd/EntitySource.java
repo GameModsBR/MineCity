@@ -28,7 +28,7 @@ public class EntitySource<E extends Entity, Source extends CommandSource> extend
     @Override
     public MinecraftEntity getMinecraftEntity()
     {
-        return entityData.getMinecraftEntity();
+        return server.entity(subject, ()->this);
     }
 
     @Override
