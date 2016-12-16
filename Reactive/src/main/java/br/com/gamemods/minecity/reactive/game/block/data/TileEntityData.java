@@ -19,6 +19,6 @@ public interface TileEntityData
     @NotNull
     default Optional<ReactiveTileEntity> getReactiveTileEntity()
     {
-        return ReactiveLayer.getReactor().getBlockReactor().getTileEntity(this);
+        return ReactiveLayer.getReactor().getBlockReactor().getReactiveTileEntity(this);
     }
 }

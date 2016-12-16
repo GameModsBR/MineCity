@@ -81,4 +81,12 @@ public class SpongeBlockSnapshotData implements BlockSnapshotData
     {
         return manipulator.block.getBlockStateData(snapshot.getState());
     }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeBlockSnapshotData{"+
+                "snapshot="+snapshot+
+                '}';
+    }
 }

@@ -34,4 +34,12 @@ public class SpongeItemData implements ItemData
     {
         return item;
     }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeItemData{"+
+                "item="+item+
+                '}';
+    }
 }

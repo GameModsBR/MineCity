@@ -342,4 +342,13 @@ public class MineCitySponge implements Server
     {
         return (PlayerSender) sender(player, player);
     }
+
+    @Override
+    public String toString()
+    {
+        return "MineCitySponge{"+
+                "mineCity="+mineCity+
+                ", locale="+locale+
+                '}';
+    }
 }

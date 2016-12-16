@@ -245,4 +245,12 @@ public class ActionListener
             sender.send(FlagHolder.wrapDeny(reason));
         });
     }
+
+    @Override
+    public String toString()
+    {
+        return "ActionListener{"+
+                "lastEntityInteractEvent="+lastEntityInteractEvent+
+                '}';
+    }
 }

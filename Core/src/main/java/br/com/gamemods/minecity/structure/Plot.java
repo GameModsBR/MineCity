@@ -173,10 +173,13 @@ public final class Plot extends ExceptStoredHolder
         }
 
         Message message = generalPermissions.get(action);
-        if(message != null)
-            return Optional.of(mark(message, action));
+        if(message == null)
+            return Optional.empty();
 
-        return island.getCity().can(identity, action);
+        if(owner == null && island.getCity().can(identity, action).isPresent())
+            return Optional.empty();
+
+        return Optional.of(mark(message, action));
     }
 
     @NotNull
@@ -209,10 +212,13 @@ public final class Plot extends ExceptStoredHolder
         }
 
         Message message = generalPermissions.get(action);
-        if(message != null)
-            return Optional.of(mark(message, action));
+        if(message == null)
+            return Optional.empty();
 
-        return island.getCity().can(identity, action);
+        if(owner == null && island.getCity().can(identity, action).isPresent())
+            return Optional.empty();
+
+        return Optional.of(mark(message, action));
     }
 
     @Slow

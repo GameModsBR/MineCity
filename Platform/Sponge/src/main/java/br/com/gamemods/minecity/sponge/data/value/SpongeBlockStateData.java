@@ -60,4 +60,12 @@ public class SpongeBlockStateData implements BlockStateData
     {
         return blockState.getProperty(ReplaceableProperty.class).map(ReplaceableProperty::getValue).orElse(false);
     }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeBlockStateData{"+
+                "blockState="+blockState+
+                '}';
+    }
 }

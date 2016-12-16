@@ -24,7 +24,7 @@ public interface BlockStateData extends SupplierBlockStateData
     @NotNull
     default Optional<ReactiveBlockState> getReactiveBlockState()
     {
-        return ReactiveLayer.getReactor().getBlockReactor().getBlockState(this);
+        return ReactiveLayer.getReactor().getBlockReactor().getReactiveBlockState(this);
     }
 
     /**

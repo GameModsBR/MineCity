@@ -15,15 +15,15 @@ import java.util.Optional;
 public interface BlockReactor
 {
     @NotNull
-    Optional<ReactiveBlockType> getBlockType(BlockTypeData block);
+    Optional<ReactiveBlockType> getReactiveBlockType(BlockTypeData block);
 
     @NotNull
-    Optional<ReactiveBlockState> getBlockState(BlockStateData blockState);
+    Optional<ReactiveBlockState> getReactiveBlockState(BlockStateData blockState);
 
 
     @NotNull
-    Optional<ReactiveTileEntity> getTileEntity(TileEntityData tileEntity);
+    Optional<ReactiveTileEntity> getReactiveTileEntity(TileEntityData tileEntity);
 
     @NotNull
-    <T extends Comparable<T>> Optional<ReactiveBlockTrait<T>> getBlockTrait(BlockTraitData<T> blockTrait);
+    <T extends Comparable<T>> Optional<ReactiveBlockTrait<T>> getReactiveBlockTrait(BlockTraitData<T> blockTrait);
 }

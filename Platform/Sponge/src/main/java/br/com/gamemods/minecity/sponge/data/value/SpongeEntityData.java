@@ -43,4 +43,12 @@ public class SpongeEntityData implements EntityData
 
         return Optional.of(manipulator.server.getChunkData(chunk.get()));
     }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeEntityData{"+
+                "entity="+entity+
+                '}';
+    }
 }

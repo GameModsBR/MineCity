@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface EntityReactor
 {
     @NotNull
-    Optional<ReactiveEntity> getEntity(Object entity);
+    Optional<ReactiveEntity> getReactiveEntity(Object entity);
 }

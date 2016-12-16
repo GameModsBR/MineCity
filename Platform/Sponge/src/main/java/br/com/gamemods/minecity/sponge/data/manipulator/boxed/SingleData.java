@@ -78,5 +78,21 @@ public abstract class SingleData
         {
             return 1;
         }
+
+        @Override
+        public String toString()
+        {
+            return "Immutable{"+
+                    "key="+key+
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString()
+    {
+        return "SingleData{"+
+                "key="+key+
+                '}';
     }
 }

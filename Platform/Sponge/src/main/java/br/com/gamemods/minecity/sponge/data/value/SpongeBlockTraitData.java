@@ -52,4 +52,12 @@ public class SpongeBlockTraitData<T extends Comparable<T>> implements BlockTrait
     {
         return trait.getPredicate();
     }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeBlockTraitData{"+
+                "trait="+trait+
+                '}';
+    }
 }

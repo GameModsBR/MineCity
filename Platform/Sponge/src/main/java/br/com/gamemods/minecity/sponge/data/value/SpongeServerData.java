@@ -20,4 +20,12 @@ public class SpongeServerData implements ServerData
     {
         return server;
     }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeServerData{"+
+                "server="+server+
+                '}';
+    }
 }

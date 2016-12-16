@@ -83,4 +83,14 @@ public class SpongeRootCommand implements CommandCallable
     {
         return Text.of("/"+label);
     }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeRootCommand{"+
+                "instance="+instance+
+                ", label='"+label+'\''+
+                ", info="+info+
+                '}';
+    }
 }

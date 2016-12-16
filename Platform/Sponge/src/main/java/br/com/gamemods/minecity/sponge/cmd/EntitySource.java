@@ -53,4 +53,12 @@ public class EntitySource<E extends Entity, Source extends CommandSource> extend
 
         return new Message("action.teleport.cancelled", "The teleport were cancelled");
     }
+
+    @Override
+    public String toString()
+    {
+        return "EntitySource{"+
+                "entityData="+entityData+
+                '}';
+    }
 }

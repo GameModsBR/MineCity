@@ -21,7 +21,7 @@ public class BuiltinBlockReactor implements BlockReactor
 {
     @NotNull
     @Override
-    public Optional<ReactiveBlockType> getBlockType(BlockTypeData data)
+    public Optional<ReactiveBlockType> getReactiveBlockType(BlockTypeData data)
     {
         Object blockType = data.getBlockType();
         if(blockType instanceof SupplierReactiveBlockType)
@@ -31,7 +31,7 @@ public class BuiltinBlockReactor implements BlockReactor
 
     @NotNull
     @Override
-    public Optional<ReactiveBlockState> getBlockState(BlockStateData data)
+    public Optional<ReactiveBlockState> getReactiveBlockState(BlockStateData data)
     {
         Object blockState = data.getBlockState();
         if(blockState instanceof SupplierReactiveBlockState)
@@ -41,7 +41,7 @@ public class BuiltinBlockReactor implements BlockReactor
 
     @NotNull
     @Override
-    public Optional<ReactiveTileEntity> getTileEntity(TileEntityData data)
+    public Optional<ReactiveTileEntity> getReactiveTileEntity(TileEntityData data)
     {
         Object tileEntity = data.getTileEntity();
         if(tileEntity instanceof SupplierReactiveTileEntity)
@@ -52,7 +52,7 @@ public class BuiltinBlockReactor implements BlockReactor
     @SuppressWarnings("unchecked")
     @NotNull
     @Override
-    public <T extends Comparable<T>> Optional<ReactiveBlockTrait<T>> getBlockTrait(BlockTraitData<T> data)
+    public <T extends Comparable<T>> Optional<ReactiveBlockTrait<T>> getReactiveBlockTrait(BlockTraitData<T> data)
     {
         Object blockTrait = data.getBlockTrait();
         if(blockTrait instanceof SupplierReactiveBlockTrait)

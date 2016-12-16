@@ -23,7 +23,7 @@ public interface BlockTraitData<T extends Comparable<T>> extends SupplierBlockTr
     @NotNull
     default Optional<ReactiveBlockTrait<T>> getReactiveBlockTrait()
     {
-        return ReactiveLayer.getReactor().getBlockReactor().getBlockTrait(this);
+        return ReactiveLayer.getReactor().getBlockReactor().getReactiveBlockTrait(this);
     }
 
     /**

@@ -224,5 +224,26 @@ public class PlayerSender extends LivingSource<Player, Player>
                 }
             }).submit(server.plugin);
         }
+
+        @Override
+        public String toString()
+        {
+            return "SpongeSelection{"+
+                    "autoHide="+autoHide+
+                    ", autoClear="+autoClear+
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString()
+    {
+        return "PlayerSender{"+
+                "adminMode="+adminMode+
+                ", autoClaim="+autoClaim+
+                ", selection="+selection+
+                ", confirmAction="+confirmAction+
+                ", confirmCode='"+confirmCode+'\''+
+                '}';
     }
 }

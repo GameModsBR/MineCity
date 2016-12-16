@@ -61,4 +61,13 @@ public class SpongeChunkData implements ChunkData
         BlockVolume volume = chunk.containsBlock(pos.x, pos.y, pos.z)? chunk : chunk.getWorld();
         return manipulator.block.getBlockStateData(volume.getBlock(pos.x, pos.y, pos.z));
     }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeChunkData{"+
+                "chunk="+chunk+
+                ", pos="+pos+
+                '}';
+    }
 }

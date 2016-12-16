@@ -29,10 +29,7 @@ public class SpongeBlockTypeData implements BlockTypeData
     @Override
     public Optional<ReactiveBlockType> getReactiveBlockType()
     {
-        if(reactive != null)
-            return Optional.of(reactive);
-
-        return BlockTypeData.super.getReactiveBlockType();
+        return Optional.ofNullable(reactive);
     }
 
     @Override
@@ -77,5 +74,14 @@ public class SpongeBlockTypeData implements BlockTypeData
     public Optional<Integer> getBlockId()
     {
         return Optional.empty();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeBlockTypeData{"+
+                "blockType="+blockType+
+                ", reactive="+reactive+
+                '}';
     }
 }

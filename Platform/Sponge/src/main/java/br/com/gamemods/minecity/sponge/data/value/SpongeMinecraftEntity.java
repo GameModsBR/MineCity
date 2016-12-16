@@ -163,4 +163,14 @@ public class SpongeMinecraftEntity implements MinecraftEntity
 
         return Type.UNCLASSIFIED;
     }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeMinecraftEntity{"+
+                "entity="+entity+
+                ", identity="+identity+
+                ", sender="+sender+
+                '}';
+    }
 }

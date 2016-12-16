@@ -1,7 +1,9 @@
 package br.com.gamemods.minecity.sponge.data.manipulator.reactive;
 
+import br.com.gamemods.minecity.reactive.game.item.ReactiveItem;
 import br.com.gamemods.minecity.reactive.game.item.data.*;
 import br.com.gamemods.minecity.reactive.game.item.data.supplier.SupplierItemData;
+import br.com.gamemods.minecity.reactive.reactor.ItemReactor;
 import br.com.gamemods.minecity.sponge.data.value.SpongeItemData;
 import br.com.gamemods.minecity.sponge.data.value.SpongeItemStackData;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +15,7 @@ import java.util.Optional;
 
 import static br.com.gamemods.minecity.sponge.data.manipulator.reactive.SpongeManipulator.handleSupplier;
 
-public class SpongeItemManipulator implements ItemManipulator
+public class SpongeItemManipulator implements ItemManipulator, ItemReactor
 {
     private final SpongeManipulator manipulator;
     private final ThreadLocal<ItemType> handlingItemType = new ThreadLocal<>();
@@ -50,6 +52,13 @@ public class SpongeItemManipulator implements ItemManipulator
 
     @NotNull
     @Override
+    public Optional<ReactiveItem> getReactiveItem(Object item)
+    {
+        return Optional.empty();
+    }
+
+    @NotNull
+    @Override
     public Optional<ItemStackData> getItemStackData(@NotNull Object stack)
     {
         if(!(stack instanceof ItemStack))
@@ -78,5 +87,14 @@ public class SpongeItemManipulator implements ItemManipulator
     public Optional<ItemTraitData<?>> getItemTraitData(@NotNull Object trait)
     {
         return Optional.empty();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeItemManipulator{"+
+                "manipulator="+manipulator+
+                ", handlingItemType="+handlingItemType+
+                '}';
     }
 }

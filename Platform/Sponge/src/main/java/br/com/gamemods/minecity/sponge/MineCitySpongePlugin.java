@@ -12,7 +12,6 @@ import br.com.gamemods.minecity.economy.EconomyLayer;
 import br.com.gamemods.minecity.permission.PermissionLayer;
 import br.com.gamemods.minecity.reactive.ReactiveLayer;
 import br.com.gamemods.minecity.reactive.game.entity.data.Hand;
-import br.com.gamemods.minecity.reactive.reactor.builtin.BuiltinReactor;
 import br.com.gamemods.minecity.reactive.script.ScriptEngine;
 import br.com.gamemods.minecity.sponge.cmd.SpongeRootCommand;
 import br.com.gamemods.minecity.sponge.cmd.SpongeTransformer;
@@ -250,8 +249,9 @@ public class MineCitySpongePlugin
         try
         {
             sponge = new MineCitySponge(this, config, transformer, logger);
-            ReactiveLayer.setManipulator(new SpongeManipulator(sponge));
-            ReactiveLayer.setReactor(new BuiltinReactor());
+            SpongeManipulator manipulator = new SpongeManipulator(sponge);
+            ReactiveLayer.setManipulator(manipulator);
+            ReactiveLayer.setReactor(manipulator);
 
             Sponge.getEventManager().registerListeners(this, new ActionListener(sponge));
 
@@ -369,7 +369,7 @@ public class MineCitySpongePlugin
     public void onChunkLoadPre(LoadChunkEvent event)
     {
         Chunk chunk = event.getTargetChunk();
-        //logger.info("CLPA:"+ReactiveLayer.getChunk(chunk));
+        //logger.info("CLPA:"+ReactiveLayer.getReactiveChunk(chunk));
         Vector3i pos = chunk.getPosition();
         //logger.info("CLPB:"+(chunk instanceof MixedChunk));
     }
@@ -412,5 +412,15 @@ public class MineCitySpongePlugin
     public void onEntitySpawn(SpawnEntityEvent event)
     {
         event.getEntities().forEach(ReactiveLayer::getEntityData);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "MineCitySpongePlugin{"+
+                "configDir="+configDir+
+                ", lang='"+lang+'\''+
+                ", sponge="+sponge+
+                '}';
     }
 }

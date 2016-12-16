@@ -28,7 +28,7 @@ public interface BlockTypeData extends SupplierBlockTypeData
     @NotNull
     default Optional<ReactiveBlockType> getReactiveBlockType()
     {
-        return ReactiveLayer.getReactor().getBlockReactor().getBlockType(this);
+        return ReactiveLayer.getReactor().getBlockReactor().getReactiveBlockType(this);
     }
 
     default void setReactive(@Nullable ReactiveBlockType reactiveBlock)

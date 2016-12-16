@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
+@SuppressWarnings("ClassHasNoToStringMethod")
 @Mixin(World.class)
 public abstract class MixinWorld implements MixedWorld
 {

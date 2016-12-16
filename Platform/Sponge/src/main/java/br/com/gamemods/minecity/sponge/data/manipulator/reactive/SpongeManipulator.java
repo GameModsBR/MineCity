@@ -1,6 +1,6 @@
 package br.com.gamemods.minecity.sponge.data.manipulator.reactive;
 
-import br.com.gamemods.minecity.reactive.reactor.Manipulator;
+import br.com.gamemods.minecity.reactive.reactor.*;
 import br.com.gamemods.minecity.sponge.MineCitySponge;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class SpongeManipulator implements Manipulator
+public class SpongeManipulator implements Manipulator, Reactor
 {
     public final MineCitySponge sponge;
     public final SpongeEntityManipulator entity;
@@ -53,7 +53,21 @@ public class SpongeManipulator implements Manipulator
 
     @NotNull
     @Override
+    public BlockReactor getBlockReactor()
+    {
+        return block;
+    }
+
+    @NotNull
+    @Override
     public SpongeItemManipulator getItemManipulator()
+    {
+        return item;
+    }
+
+    @NotNull
+    @Override
+    public ItemReactor getItemReactor()
     {
         return item;
     }
@@ -67,8 +81,30 @@ public class SpongeManipulator implements Manipulator
 
     @NotNull
     @Override
+    public EntityReactor getEntityReactor()
+    {
+        return entity;
+    }
+
+    @NotNull
+    @Override
     public SpongeServerManipulator getServerManipulator()
     {
         return server;
+    }
+
+    @NotNull
+    @Override
+    public ServerReactor getServerReactor()
+    {
+        return server;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeManipulator{"+
+                "sponge="+sponge+
+                '}';
     }
 }

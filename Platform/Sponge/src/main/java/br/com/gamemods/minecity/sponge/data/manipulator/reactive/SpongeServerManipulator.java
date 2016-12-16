@@ -1,9 +1,13 @@
 package br.com.gamemods.minecity.sponge.data.manipulator.reactive;
 
+import br.com.gamemods.minecity.api.world.BlockPos;
+import br.com.gamemods.minecity.api.world.ChunkPos;
+import br.com.gamemods.minecity.reactive.game.server.ReactiveChunk;
 import br.com.gamemods.minecity.reactive.game.server.data.ChunkData;
 import br.com.gamemods.minecity.reactive.game.server.data.ServerData;
 import br.com.gamemods.minecity.reactive.game.server.data.ServerManipulator;
 import br.com.gamemods.minecity.reactive.game.server.data.WorldData;
+import br.com.gamemods.minecity.reactive.reactor.ServerReactor;
 import br.com.gamemods.minecity.sponge.data.value.SpongeChunkData;
 import br.com.gamemods.minecity.sponge.data.value.SpongeServerData;
 import br.com.gamemods.minecity.sponge.data.value.SpongeWorldData;
@@ -15,7 +19,7 @@ import org.spongepowered.api.world.World;
 
 import java.util.Optional;
 
-public class SpongeServerManipulator implements ServerManipulator
+public class SpongeServerManipulator implements ServerManipulator, ServerReactor
 {
     private final SpongeManipulator manipulator;
     private final SpongeServerData serverData;
@@ -30,6 +34,17 @@ public class SpongeServerManipulator implements ServerManipulator
     @Override
     public Optional<ChunkData> getChunkData(@NotNull Object chunk)
     {
+        if(chunk instanceof BlockPos)
+            chunk = ((BlockPos) chunk).getChunk();
+
+        if(chunk instanceof ChunkPos)
+        {
+            ChunkPos pos = (ChunkPos) chunk;
+            return manipulator.sponge.world(pos.world)
+                    .flatMap(world -> world.getChunk(pos.x, 0, pos.z))
+                    .map(this::getChunkData);
+        }
+
         if(!(chunk instanceof Chunk))
             return Optional.empty();
 
@@ -41,6 +56,13 @@ public class SpongeServerManipulator implements ServerManipulator
     {
         // TODO Find a way to cache this alongside with the Chunk, ChunkPos or ClaimedChunk objects
         return new SpongeChunkData(manipulator, chunk);
+    }
+
+    @NotNull
+    @Override
+    public Optional<ReactiveChunk> getReactiveChunk(Object chunk)
+    {
+        return Optional.empty();
     }
 
     @NotNull
@@ -76,5 +98,14 @@ public class SpongeServerManipulator implements ServerManipulator
             return serverData;
 
         return new SpongeServerData(manipulator, server);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeServerManipulator{"+
+                "manipulator="+manipulator+
+                ", serverData="+serverData+
+                '}';
     }
 }

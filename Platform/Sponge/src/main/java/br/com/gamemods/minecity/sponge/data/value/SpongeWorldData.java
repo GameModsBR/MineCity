@@ -30,4 +30,12 @@ public class SpongeWorldData implements WorldData
     {
         return manipulator.server.getServerData(Sponge.getServer());
     }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeWorldData{"+
+                "world="+world+
+                '}';
+    }
 }

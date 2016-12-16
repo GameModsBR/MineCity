@@ -37,4 +37,12 @@ public class SpongeItemStackData implements ItemStackData, ItemStateData
     {
         return Stream.empty();
     }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeItemStackData{"+
+                "stack="+stack+
+                '}';
+    }
 }

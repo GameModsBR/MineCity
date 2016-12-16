@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@Deprecated
 public class Reactive<T>
 {
     private final Supplier<Optional<T>> loader;

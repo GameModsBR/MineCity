@@ -1,7 +1,12 @@
 package br.com.gamemods.minecity.sponge.data.manipulator.reactive;
 
+import br.com.gamemods.minecity.reactive.game.block.ReactiveBlockState;
+import br.com.gamemods.minecity.reactive.game.block.ReactiveBlockTrait;
+import br.com.gamemods.minecity.reactive.game.block.ReactiveBlockType;
+import br.com.gamemods.minecity.reactive.game.block.ReactiveTileEntity;
 import br.com.gamemods.minecity.reactive.game.block.data.*;
 import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockTypeData;
+import br.com.gamemods.minecity.reactive.reactor.BlockReactor;
 import br.com.gamemods.minecity.sponge.data.manipulator.boxed.MineCityKeys;
 import br.com.gamemods.minecity.sponge.data.manipulator.boxed.TileEntityDataManipulator;
 import br.com.gamemods.minecity.sponge.data.value.*;
@@ -18,7 +23,7 @@ import java.util.Optional;
 
 import static br.com.gamemods.minecity.sponge.data.manipulator.reactive.SpongeManipulator.handleSupplier;
 
-public class SpongeBlockManipulator implements BlockManipulator
+public class SpongeBlockManipulator implements BlockManipulator, BlockReactor
 {
     private final SpongeManipulator manipulator;
     private final ThreadLocal<BlockType> handlingBlockType = new ThreadLocal<>();
@@ -55,6 +60,16 @@ public class SpongeBlockManipulator implements BlockManipulator
 
     @NotNull
     @Override
+    public Optional<ReactiveBlockType> getReactiveBlockType(BlockTypeData block)
+    {
+        if(block instanceof SpongeBlockTypeData)
+            return block.getReactiveBlockType();
+
+        return Optional.empty();
+    }
+
+    @NotNull
+    @Override
     public Optional<BlockStateData> getBlockStateData(@NotNull Object blockState)
     {
         if(!(blockState instanceof BlockState))
@@ -66,6 +81,13 @@ public class SpongeBlockManipulator implements BlockManipulator
     public BlockStateData getBlockStateData(BlockState blockState)
     {
         return new SpongeBlockStateData(manipulator, blockState);
+    }
+
+    @NotNull
+    @Override
+    public Optional<ReactiveBlockState> getReactiveBlockState(BlockStateData blockState)
+    {
+        return Optional.empty();
     }
 
     @NotNull
@@ -94,6 +116,13 @@ public class SpongeBlockManipulator implements BlockManipulator
 
     @NotNull
     @Override
+    public Optional<ReactiveTileEntity> getReactiveTileEntity(TileEntityData tileEntity)
+    {
+        return Optional.empty();
+    }
+
+    @NotNull
+    @Override
     public Optional<BlockTraitData<?>> getBlockTraitData(@NotNull Object blockTrait)
     {
         if(!(blockTrait instanceof BlockTrait))
@@ -117,6 +146,13 @@ public class SpongeBlockManipulator implements BlockManipulator
 
     @NotNull
     @Override
+    public <T extends Comparable<T>> Optional<ReactiveBlockTrait<T>> getReactiveBlockTrait(BlockTraitData<T> blockTrait)
+    {
+        return Optional.empty();
+    }
+
+    @NotNull
+    @Override
     public Optional<BlockSnapshotData> getBlockSnapshotData(@NotNull Object blockSnapshot)
     {
         if(!(blockSnapshot instanceof BlockSnapshot))
@@ -129,5 +165,13 @@ public class SpongeBlockManipulator implements BlockManipulator
     public SpongeBlockSnapshotData getBlockSnapshotData(@NotNull BlockSnapshot blockSnapshot)
     {
         return new SpongeBlockSnapshotData(manipulator, blockSnapshot);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeBlockManipulator{"+
+                "manipulator="+manipulator+
+                '}';
     }
 }

@@ -20,4 +20,12 @@ public class SpongeTileEntityData implements TileEntityData
     {
         return tileEntity;
     }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeTileEntityData{"+
+                "tileEntity="+tileEntity+
+                '}';
+    }
 }

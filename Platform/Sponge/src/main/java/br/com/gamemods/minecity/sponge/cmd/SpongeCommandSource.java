@@ -87,4 +87,14 @@ public class SpongeCommandSource<Subject, Source extends CommandSource> implemen
     {
         return false;
     }
+
+    @Override
+    public String toString()
+    {
+        return "SpongeCommandSource{"+
+                "server="+server+
+                ", source="+source+
+                ", subject="+subject+
+                '}';
+    }
 }

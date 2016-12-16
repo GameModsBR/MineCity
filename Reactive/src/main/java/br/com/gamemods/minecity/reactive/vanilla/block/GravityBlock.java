@@ -19,13 +19,13 @@ public interface GravityBlock extends ReactiveBlockProperty
     {
         BlockTypeData blockType = chunk.getBlockTypeData(pos.add(Direction.DOWN));
 
-        return !(blockType.matches("minecraft:air")
+        return blockType.matches("minecraft:air")
                 || blockType.matches("minecraft:fire")
                 || blockType.matches("minecraft:water")
                 || blockType.matches("minecraft:flowing_water")
                 || blockType.matches("minecraft:lava")
                 || blockType.matches("minecraft:flowing_lava")
-        );
+        ;
     }
 
     default boolean willFallThrough(ChunkData chunk, BlockPos pos)

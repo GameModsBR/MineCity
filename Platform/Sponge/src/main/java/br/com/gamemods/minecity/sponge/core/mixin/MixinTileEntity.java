@@ -10,15 +10,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
-import java.util.Optional;
-
+@SuppressWarnings("ClassHasNoToStringMethod")
 @Mixin(TileEntity.class)
 public abstract class MixinTileEntity implements MixedTileEntity
 {
     @Nullable
     private TileEntityData tileEntityData;
     private Reactive<ReactiveTileEntity> reactiveTileEntity = new Reactive<>(()->
-            ReactiveLayer.getBlockReactor().getTileEntity(getTileEntityData())
+            ReactiveLayer.getBlockReactor().getReactiveTileEntity(getTileEntityData())
     );
 
     @NotNull
@@ -29,12 +28,5 @@ public abstract class MixinTileEntity implements MixedTileEntity
             return tileEntityData;
 
         return tileEntityData = ReactiveLayer.getBlockManipulator().getTileEntityData(this).get();
-    }
-
-    @NotNull
-    @Override
-    public Optional<ReactiveTileEntity> getReactiveTileEntity()
-    {
-        return reactiveTileEntity.get();
     }
 }
