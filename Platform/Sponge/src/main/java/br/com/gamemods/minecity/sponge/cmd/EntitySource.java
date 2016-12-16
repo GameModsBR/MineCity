@@ -2,7 +2,10 @@ package br.com.gamemods.minecity.sponge.cmd;
 
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.EntityPos;
+import br.com.gamemods.minecity.api.world.MinecraftEntity;
+import br.com.gamemods.minecity.reactive.ReactiveLayer;
 import br.com.gamemods.minecity.sponge.MineCitySponge;
+import br.com.gamemods.minecity.sponge.data.value.SpongeEntityData;
 import com.flowpowered.math.vector.Vector3d;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,9 +17,18 @@ import java.util.Optional;
 
 public class EntitySource<E extends Entity, Source extends CommandSource> extends LocatableSource<E, Source>
 {
+    protected final SpongeEntityData entityData;
     public EntitySource(MineCitySponge server, Source source, E entity)
     {
         super(server, source, entity);
+        entityData = (SpongeEntityData) ReactiveLayer.getEntityData(entity).get();
+    }
+
+    @Nullable
+    @Override
+    public MinecraftEntity getMinecraftEntity()
+    {
+        return entityData.getMinecraftEntity();
     }
 
     @Override

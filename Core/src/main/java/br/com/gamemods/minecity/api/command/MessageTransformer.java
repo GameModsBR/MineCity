@@ -127,6 +127,11 @@ public class MessageTransformer
     {
         Component component = toComponent(message);
         component.apply(Locale.getDefault(), message.getArgs());
+        return toJson(component);
+    }
+
+    protected String toJson(Component component)
+    {
         StringBuilder sb = new StringBuilder("[\"\",");
         component.toJson(sb);
         sb.append(']');

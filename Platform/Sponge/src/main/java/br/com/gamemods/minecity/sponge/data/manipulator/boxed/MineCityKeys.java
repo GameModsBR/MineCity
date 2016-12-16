@@ -22,6 +22,11 @@ public class MineCityKeys
             DataQuery.of("MineCityTE"), "minecity:tile_entity", "Tile Entity Data"
     );
 
+    public static final Key<Value<Integer>> ITEM_TOOL = KeyFactory.makeSingleKey(
+            TypeToken.of(Integer.class),
+            new TypeToken<Value<Integer>>(){},
+            DataQuery.of("MineCityTool"), "minecity:tool", "Item Tool Data"
+    );
 
     private MineCityKeys()
     {}

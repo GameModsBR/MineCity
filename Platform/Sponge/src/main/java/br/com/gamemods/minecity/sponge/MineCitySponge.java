@@ -308,4 +308,9 @@ public class MineCitySponge implements Server
     {
         return new BlockPos(world(location.getExtent()), location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
+
+    public PlayerSender player(Player player)
+    {
+        return (PlayerSender) sender(player, player);
+    }
 }
