@@ -49,7 +49,8 @@ permissions:
       minecity.user: true
       minecity.bypass: true
       minecity.cmd.admin.exec: true
-      minecity.cmd.reload.exec: true
+      minecity.cmd.configs.reload.exec: true
+      minecity.cmd.reactive.reload.exec: true
       minecity.cmd.nature.deny: true
       minecity.cmd.nature.allow: true
       minecity.cmd.auto.claim.exec: true
@@ -760,8 +761,10 @@ permissions:
     default: op
   minecity.cmd.help.exec:
     default: op
-  minecity.cmd.reload.exec:
+  minecity.cmd.configs.reload.exec:
     default: op
+  minecity.cmd.reactive.reload.exec:
+      default: op
   minecity.cmd.plot.create.exec:
     default: op
   minecity.cmd.plot.rename.exec:

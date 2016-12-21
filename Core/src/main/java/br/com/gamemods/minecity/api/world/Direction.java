@@ -26,6 +26,7 @@ public enum Direction
     public static final List<Direction> intermediate = Arrays.asList(NORTH_EAST, SOUTH_EAST, SOUTH_WEST, NORTH_WEST);
     public static final List<Direction> cardinal8 = Arrays.asList(NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST);
 
+    @SuppressWarnings("Duplicates")
     public static Direction get(int x, int y, int z) throws NoSuchElementException
     {
         if(y < 0)

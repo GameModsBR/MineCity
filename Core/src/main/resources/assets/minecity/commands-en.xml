@@ -86,8 +86,11 @@
         <command id="help" parent="city,group,root,plot" cmd="help">
             <desc>Show information about MineCity's commands</desc>
         </command>
-        <command id="reload" parent="root" cmd="reload">
+        <command id="configs.reload" parent="root" cmd="reload">
             <desc>Reloads the messages from the disk</desc>
+        </command>
+        <command id="reactive.reload" parent="root" cmd="reload-protections">
+            <desc>Reloads the protections from the disk</desc>
         </command>
         <command id="admin" parent="root" cmd="admin,adm">
             <desc>Toggles your admin mode</desc>

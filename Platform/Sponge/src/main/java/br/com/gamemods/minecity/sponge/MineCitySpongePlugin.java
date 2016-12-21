@@ -2,8 +2,7 @@ package br.com.gamemods.minecity.sponge;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
-import br.com.gamemods.minecity.api.command.LegacyFormat;
-import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.unchecked.UncheckedException;
@@ -15,6 +14,7 @@ import br.com.gamemods.minecity.reactive.game.entity.data.Hand;
 import br.com.gamemods.minecity.reactive.script.ScriptEngine;
 import br.com.gamemods.minecity.sponge.cmd.SpongeRootCommand;
 import br.com.gamemods.minecity.sponge.cmd.SpongeTransformer;
+import br.com.gamemods.minecity.sponge.core.mixed.MixedBlockType;
 import br.com.gamemods.minecity.sponge.data.manipulator.reactive.SpongeManipulator;
 import br.com.gamemods.minecity.sponge.listeners.ActionListener;
 import com.flowpowered.math.vector.Vector3i;
@@ -26,6 +26,7 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.data.type.HandTypes;
@@ -243,6 +244,20 @@ public class MineCitySpongePlugin
             holder.deny(flag);
     }
 
+    @Command("reactive.reload")
+    public CommandResult<?> reloadReactions(CommandEvent cmd)
+    {
+        SpongeManipulator manipulator = new SpongeManipulator(sponge);
+        ReactiveLayer.setManipulator(manipulator);
+        ReactiveLayer.setReactor(manipulator);
+        Sponge.getGame().getRegistry().getAllOf(BlockType.class).forEach(type-> {
+            ReactiveLayer.getBlockType(type).get().setReactive(null);
+            if(type instanceof MixedBlockType)
+                ((MixedBlockType) type).setBlockTypeData(null);
+        });
+        return CommandResult.success();
+    }
+
     @Listener
     public void onGameServerAboutToStart(GameAboutToStartServerEvent event) throws DataSourceException, SAXException, IOException
     {
@@ -252,6 +267,7 @@ public class MineCitySpongePlugin
             SpongeManipulator manipulator = new SpongeManipulator(sponge);
             ReactiveLayer.setManipulator(manipulator);
             ReactiveLayer.setReactor(manipulator);
+            sponge.mineCity.commands.registerCommands(this);
 
             Sponge.getEventManager().registerListeners(this, new ActionListener(sponge));
 

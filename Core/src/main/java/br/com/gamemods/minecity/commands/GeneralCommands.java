@@ -29,7 +29,7 @@ public class GeneralCommands
         return confirm.result;
     }
 
-    @Command("reload")
+    @Command("configs.reload")
     public static CommandResult<?> reload(CommandEvent cmd) throws IOException, SAXException
     {
         String lang = cmd.mineCity.locale.toLanguageTag();

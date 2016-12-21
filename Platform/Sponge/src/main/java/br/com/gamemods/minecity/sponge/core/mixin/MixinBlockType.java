@@ -24,4 +24,10 @@ public abstract class MixinBlockType implements MixedBlockType
 
         return blockTypeData = ReactiveLayer.getBlockManipulator().getBlockTypeData(this).get();
     }
+
+    @Override
+    public void setBlockTypeData(@Nullable BlockTypeData blockTypeData)
+    {
+        this.blockTypeData = blockTypeData;
+    }
 }

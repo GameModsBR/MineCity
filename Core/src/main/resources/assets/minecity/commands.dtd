@@ -35,7 +35,7 @@
 <!ENTITY % PlotResetAllCommands "plot.clear.all.enter|plot.clear.all.click|plot.clear.all.pickup|plot.clear.all.harvest|plot.clear.all.open|plot.clear.all.pvp|plot.clear.all.pvc|plot.clear.all.modify|plot.clear.all.vehicle|plot.clear.all.ride">
 <!ENTITY % PlotPermListCommands "plot.perms.enter|plot.perms.click|plot.perms.pickup|plot.perms.harvest|plot.perms.open|plot.perms.pvp|plot.perms.pvc|plot.perms.modify|plot.perms.vehicle|plot.perms.ride|plot.perms">
 <!ENTITY % GroupCommands "group.create|group.add|group.remove|group.list|group.info|group.delete|group.manager.add|group.manager.remove">
-<!ENTITY % GeneralCommands "confirm|help|reload|admin">
+<!ENTITY % GeneralCommands "confirm|help|configs.reload|reactive.reload|admin">
 
 <!ENTITY % NaturePermCommands "%NatureAllowCommands;|%NatureDenyCommands;|%NaturePermListCommands;">
 <!ENTITY % PlotPermCommands "%PlotAllowCommands;|%PlotDenyCommands;|%PlotAllowAllCommands;|%PlotDenyAllCommands;|%PlotPermListCommands;|%CityResetCommands;|%CityResetAllCommands;">
