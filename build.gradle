@@ -1,7 +1,7 @@
 subprojects {
     plugins.withType(JavaPlugin).whenPluginAdded {
         group= 'br.com.gamemods.minecity'
-        version = '1.0.A.3-SNAPSHOT'
+        version = '1.0.A.4-SNAPSHOT'
 
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
