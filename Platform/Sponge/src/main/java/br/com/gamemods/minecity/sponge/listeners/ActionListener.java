@@ -256,7 +256,7 @@ public class ActionListener
         });
     }
 
-    //@Listener(order = Order.FIRST, beforeModifications = true)
+    @Listener(order = Order.FIRST, beforeModifications = true)
     public void onBlockChangePre(ChangeBlockEvent.Pre event, @Named(NamedCause.SOURCE) Entity subject)
     {
         HandInteractEvent interact = this.lastEntityInteractEvent;
@@ -288,7 +288,23 @@ public class ActionListener
         });
     }
 
+    @Listener(order = Order.FIRST, beforeModifications = true)
+    public void onBlockChangePre(ChangeBlockEvent.Pre event, @Named(NamedCause.SOURCE) BlockSnapshot subject)
+    {
+        BlockSnapshotData snapshot = ReactiveLayer.getBlockSnapshotData(subject).get();
+        List<BlockSnapshotData> changeList = event.getLocations().stream()
+                .map(Location::createSnapshot).map(ReactiveLayer::getBlockSnapshotData)
+                .map(Optional::get).collect(toList());
 
+        PreModification modification = new PreModification(changeList, snapshot, null, null);
+        Reaction reaction = snapshot.onBlockChangePre(modification);
+
+        Permissible sender = sponge.permissible(subject);
+        reaction.can(sponge.mineCity, sender).ifPresent(reason-> {
+            event.setCancelled(true);
+            sender.send(FlagHolder.wrapDeny(reason));
+        });
+    }
 
     @Override
     public String toString()

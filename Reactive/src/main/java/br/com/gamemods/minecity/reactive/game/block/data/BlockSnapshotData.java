@@ -112,4 +112,15 @@ public interface BlockSnapshotData extends SupplierBlockSnapshotData
 
         return reaction.get();
     }
+
+    default Reaction onBlockChangePre(PreModification modification)
+    {
+        AtomicReference<Reaction> reaction = new AtomicReference<>(
+                modification.getUsedStack().map(stack-> stack.blockChangePre(modification)).orElse(NoReaction.INSTANCE)
+        );
+
+        modification.forEach(mod-> reaction.getAndUpdate(it-> it.combine(mod.getSnapshot().preModification(mod))));
+
+        return reaction.get();
+    }
 }

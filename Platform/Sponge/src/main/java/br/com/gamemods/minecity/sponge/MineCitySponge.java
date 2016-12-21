@@ -12,6 +12,8 @@ import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.reactive.ReactiveLayer;
 import br.com.gamemods.minecity.reactive.game.block.ReactiveBlock;
+import br.com.gamemods.minecity.reactive.game.block.data.BlockSnapshotData;
+import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockSnapshotData;
 import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
 import br.com.gamemods.minecity.sponge.cmd.*;
 import br.com.gamemods.minecity.sponge.core.mixed.MixedEntity;
@@ -136,6 +138,19 @@ public class MineCitySponge implements Server
 
         if(subject instanceof Entity)
             return sender(subject, null);
+
+        if(subject instanceof SupplierBlockSnapshotData)
+            subject = ((SupplierBlockSnapshotData) subject).getBlockSnapshotData();
+
+        if(subject instanceof BlockSnapshot)
+            subject = ReactiveLayer.getBlockSnapshotData(subject).get();
+
+        if(subject instanceof BlockSnapshotData)
+        {
+            BlockSnapshotData data = (BlockSnapshotData) subject;
+            BlockPos pos = data.getPosition();
+            return mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).owner();
+        }
 
         throw new UnsupportedOperationException("Unsupported subject: "+subject.getClass()+" "+subject);
     }
