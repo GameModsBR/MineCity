@@ -15,6 +15,12 @@ public class ModInterfacesTransformer extends InsertInterfaceTransformer
     {
         Map<String, String> r = new HashMap<>();
 
+        r.put("crazypants.enderio.machine.AbstractMachineBlock",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenReactor");
+
+        r.put("cpw.mods.ironchest.BlockIronChest",
+                "br.com.gamemods.minecity.forge.base.accessors.block.IBlockOpenReactor");
+
         r.put("thaumcraft.common.items.ItemInkwell",
                 "br.com.gamemods.minecity.forge.base.protection.thaumcraft.IItemInkwell");
 
