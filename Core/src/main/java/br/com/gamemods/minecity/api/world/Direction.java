@@ -16,6 +16,9 @@ public enum Direction
     SOUTH_EAST(1,0,1, 9),
     SOUTH_WEST(-1,0,1, 6),
     NORTH_WEST(-1,0,-1, 7),
+
+    @Deprecated
+    NONE(0,0,0, 10),
     ;
     public final int x, y, z;
     private final byte oppositeIndex;

@@ -27,6 +27,9 @@ public class FrostUtil
     @NotNull
     public static Direction toDirection(EnumFacing face)
     {
+        if(face == null)
+            return Direction.NONE;
+
         switch(face)
         {
             case NORTH: return Direction.NORTH;
