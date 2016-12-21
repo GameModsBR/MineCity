@@ -20,6 +20,7 @@ import br.com.gamemods.minecity.sponge.MineCitySponge;
 import br.com.gamemods.minecity.sponge.data.manipulator.boxed.MineCityKeys;
 import br.com.gamemods.minecity.structure.DisplayedSelection;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.ArmorEquipable;
@@ -158,27 +159,101 @@ public class ActionListener
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onBlockPlace(ChangeBlockEvent.Place event, @Named(NamedCause.SOURCE) Entity subject)
+    public void onBlockPlaceByEntity(ChangeBlockEvent.Place event, @Named(NamedCause.SOURCE) Entity subject)
     {
-        onBlockChange(event, subject, EntityData::onBlockPlace);
+        onBlockChangeByEntity(event, subject, EntityData::onBlockPlace);
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onBlockBreak(ChangeBlockEvent.Break event, @Named(NamedCause.SOURCE) Entity subject)
+    public void onBlockBreakByEntity(ChangeBlockEvent.Break event, @Named(NamedCause.SOURCE) Entity subject)
     {
-        onBlockChange(event, subject, EntityData::onBlockBreak);
+        onBlockChangeByEntity(event, subject, EntityData::onBlockBreak);
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onBlockReplace(ChangeBlockEvent.Modify event, @Named(NamedCause.SOURCE) Entity subject)
+    public void onBlockReplaceByEntity(ChangeBlockEvent.Modify event, @Named(NamedCause.SOURCE) Entity subject)
     {
-        onBlockChange(event, subject, EntityData::onBlockReplace);
+        onBlockChangeByEntity(event, subject, EntityData::onBlockReplace);
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)
-    public void onBlockGrow(ChangeBlockEvent.Grow event, @Named(NamedCause.SOURCE) Entity subject)
+    public void onBlockGrowByEntity(ChangeBlockEvent.Grow event, @Named(NamedCause.SOURCE) Entity subject)
     {
-        onBlockChange(event, subject, EntityData::onBlockGrow);
+        onBlockChangeByEntity(event, subject, EntityData::onBlockGrow);
+    }
+
+    private EntityData requireEntity(Entity entity)
+    {
+        return ReactiveLayer.getEntityData(entity).get();
+    }
+
+    private void onBlockChangeByEntity(ChangeBlockEvent event, Entity subject, BiFunction<EntityData, Modification, Reaction> operation)
+    {
+        Hand hand = null;
+        ReactiveItemStack stack = null;
+
+        HandInteractEvent interact = this.lastEntityInteractEvent;
+        if(interact != null)
+        {
+            HandType handType = interact.getHandType();
+            hand = Hand.from(handType);
+            stack = getStackFromEntity(subject, handType);
+        }
+
+        onBlockChange(event, subject, requireEntity(subject), hand, stack, operation);
+    }
+
+    private BlockSnapshotData requireBlock(BlockSnapshot snapshot)
+    {
+        return ReactiveLayer.getBlockSnapshotData(snapshot).get();
+    }
+
+    @Listener(order = Order.FIRST, beforeModifications = true)
+    public void onBlockPlaceByBlock(ChangeBlockEvent.Place event, @Named(NamedCause.SOURCE) BlockSnapshot subject)
+    {
+        onBlockChangeByBlock(event, subject, BlockSnapshotData::onBlockPlace);
+    }
+
+    @Listener(order = Order.FIRST, beforeModifications = true)
+    public void onBlockBreakByBlock(ChangeBlockEvent.Break event, @Named(NamedCause.SOURCE) BlockSnapshot subject)
+    {
+        onBlockChangeByBlock(event, subject, BlockSnapshotData::onBlockBreak);
+    }
+
+    @Listener(order = Order.FIRST, beforeModifications = true)
+    public void onBlockReplaceByBlock(ChangeBlockEvent.Modify event, @Named(NamedCause.SOURCE) BlockSnapshot subject)
+    {
+        onBlockChangeByBlock(event, subject, BlockSnapshotData::onBlockReplace);
+    }
+
+    @Listener(order = Order.FIRST, beforeModifications = true)
+    public void onBlockGrowByBlock(ChangeBlockEvent.Grow event, @Named(NamedCause.SOURCE) BlockSnapshot subject)
+    {
+        onBlockChangeByBlock(event, subject, BlockSnapshotData::onBlockGrow);
+    }
+
+    private void onBlockChangeByBlock(ChangeBlockEvent event, BlockSnapshot source, BiFunction<BlockSnapshotData, Modification, Reaction> operation)
+    {
+        onBlockChange(event, source, requireBlock(source), null, null, operation);
+    }
+
+    private <D> void onBlockChange(ChangeBlockEvent event, Object subject, D cause, @Nullable Hand hand,
+                                   @Nullable ReactiveItemStack stack, BiFunction<D, Modification, Reaction> operation)
+    {
+        List<BlockChange> changeList = event.getTransactions().stream()
+                .map(tran -> new BlockChange(
+                        ReactiveLayer.getBlockSnapshotData(tran.getOriginal()).get(),
+                        ReactiveLayer.getBlockSnapshotData(tran.getFinal()).get()
+                )).collect(toList());
+
+        Modification modification = new Modification(changeList, cause, stack, hand);
+        Reaction reaction = operation.apply(cause, modification);
+
+        Permissible sender = sponge.permissible(subject);
+        reaction.can(sponge.mineCity, sender).ifPresent(reason-> {
+            event.setCancelled(true);
+            sender.send(FlagHolder.wrapDeny(reason));
+        });
     }
 
     //@Listener(order = Order.FIRST, beforeModifications = true)
@@ -213,38 +288,7 @@ public class ActionListener
         });
     }
 
-    private void onBlockChange(ChangeBlockEvent event, Entity subject, BiFunction<EntityData, Modification, Reaction> operation)
-    {
-        HandInteractEvent interact = this.lastEntityInteractEvent;
-        if(interact != null && interact.getCause().first(Entity.class).orElse(null) != subject)
-            interact = null;
 
-        Hand hand = null;
-        ReactiveItemStack stack = null;
-
-        if(interact != null)
-        {
-            HandType handType = interact.getHandType();
-            hand = Hand.from(handType);
-            stack = getStackFromEntity(subject, handType);
-        }
-
-        EntityData entity = ReactiveLayer.getEntityData(subject).get();
-        List<BlockChange> changeList = event.getTransactions().stream()
-                .map(tran -> new BlockChange(
-                        ReactiveLayer.getBlockSnapshotData(tran.getOriginal()).get(),
-                        ReactiveLayer.getBlockSnapshotData(tran.getFinal()).get()
-                )).collect(toList());
-
-        Modification modification = new Modification(changeList, entity, stack, hand);
-        Reaction reaction = operation.apply(entity, modification);
-
-        Permissible sender = sponge.permissible(subject);
-        reaction.can(sponge.mineCity, sender).ifPresent(reason-> {
-            event.setCancelled(true);
-            sender.send(FlagHolder.wrapDeny(reason));
-        });
-    }
 
     @Override
     public String toString()
