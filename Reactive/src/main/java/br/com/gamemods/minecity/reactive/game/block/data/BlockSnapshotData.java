@@ -56,6 +56,9 @@ public interface BlockSnapshotData extends SupplierBlockSnapshotData
 
     default Reaction beingReplaced(Modification mod)
     {
+        if(mod.getBlockChange().getReplaced().getBlockTypeData().equals(getBlockTypeData()))
+            return NoReaction.INSTANCE;
+
         return new SingleBlockReaction(getPosition(), PermissionFlag.MODIFY);
     }
 
@@ -66,7 +69,7 @@ public interface BlockSnapshotData extends SupplierBlockSnapshotData
 
     default Reaction preModification(PreModification mod)
     {
-        return new SingleBlockReaction(getPosition(), PermissionFlag.MODIFY);
+        return NoReaction.INSTANCE;
     }
 
     default Optional<ChunkData> getChunk()
