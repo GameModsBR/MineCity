@@ -20,7 +20,7 @@
         <group id="nature" parent=",root" cmd="natureza,mundo">
             <desc>Todos os comandos relacionados à natureza</desc>
         </group>
-        <group id="nature.allow" parent="nature" cmd="permitir">
+        <group id="nature.allow" parent="nature" cmd="deixar,permitir">
             <desc>Concede permissões</desc>
         </group>
         <group id="nature.deny" parent="nature" cmd="proibir">
@@ -29,7 +29,7 @@
         <group id="nature.check" parent="nature" cmd="ver,checar">
             <desc>Mostra detalhes sobre as permissões</desc>
         </group>
-        <group id="city.allow" parent="city" cmd="permitir">
+        <group id="city.allow" parent="city" cmd="deixar,permitir">
             <desc>Concede permissões</desc>
         </group>
         <group id="city.deny" parent="city" cmd="proibir">
@@ -53,7 +53,7 @@
         <group id="city.cancel" parent="city" cmd="cancelar,abortar">
             <desc>Cancela uma ação relacionada a cidade</desc>
         </group>
-        <group id="plot.allow" parent="plot" cmd="permitir">
+        <group id="plot.allow" parent="plot" cmd="deixar,permitir">
             <desc>Concede permissões</desc>
         </group>
         <group id="plot.deny" parent="plot" cmd="proibir">
