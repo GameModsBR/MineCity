@@ -3,14 +3,15 @@ package br.com.gamemods.minecity.sponge.cmd;
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.PlayerID;
 import br.com.gamemods.minecity.api.command.*;
+import br.com.gamemods.minecity.api.permission.GroupID;
 import br.com.gamemods.minecity.api.unchecked.UFunction;
-import br.com.gamemods.minecity.api.world.BlockPos;
-import br.com.gamemods.minecity.api.world.Direction;
-import br.com.gamemods.minecity.api.world.WorldDim;
+import br.com.gamemods.minecity.api.world.*;
 import br.com.gamemods.minecity.sponge.MineCitySponge;
 import br.com.gamemods.minecity.sponge.data.manipulator.boxed.ItemToolManipulator;
+import br.com.gamemods.minecity.sponge.listeners.PlayerMovement;
 import br.com.gamemods.minecity.structure.DisplayedSelection;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.DataTransactionResult;
@@ -20,12 +21,12 @@ import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.title.Title;
 import org.spongepowered.api.world.World;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -36,11 +37,119 @@ public class PlayerSender extends LivingSource<Player, Player>
     private SpongeSelection selection;
     private UFunction<CommandSender, CommandResult<?>> confirmAction;
     private String confirmCode;
+    private final PlayerMovement mov;
+    @Nullable
+    private Set<GroupID> groups;
 
     public PlayerSender(MineCitySponge server, Player source)
     {
         super(server, source, source);
         server.logger.info("New PlayerSender instance: "+this);
+        mov = new PlayerMovement(this);
+        server.runAsynchronously(() ->
+        {
+            try
+            {
+                groups = new HashSet<>(server.mineCity.dataSource.getEntityGroups(getPlayerId()));
+            }
+            catch(Exception e)
+            {
+                Optional<MinecraftEntity> entity = Optional.ofNullable(getMinecraftEntity());
+                server.logger.error("An error occurred while loading the "+ entity.map(MinecraftEntity::getEntityName).orElse(getPlayerId().getName())+"'s groups!", e);
+                entity.ifPresent(minecraftEntity -> server.callSyncMethod(() -> minecraftEntity.kick(
+                        new Message("task.player.load.groups.failed",
+                        "Oops, an error occurred while loading your groups: ${error}",
+                        Message.errorArgs(e)
+                ))));
+            }
+        });
+    }
+
+    public void tick()
+    {
+        mov.checkStepOnFakeBlock();
+        updateGroups();
+        mov.checkPosition();
+        checkItemUse();
+    }
+
+    private void checkItemUse()
+    {
+        // TODO Complete this implementation
+        /*
+        // TODO Find a way to do that without mixin
+        ItemStack itemInUse = subject instanceof MixedEntityLivingBase? (((MixedEntityLivingBase) subject).getActiveStack()) : null;
+        if(itemInUse != null)
+        {
+            Reaction reaction = itemInUse.getIItem().reactItemUseTick(player, itemInUse, player.getActiveItemUseCount());
+            Optional<Message> denial = reaction.can(mod.mineCity, player);
+            if(denial.isPresent())
+            {
+                player.stopUsingItem();
+                send(FlagHolder.wrapDeny(denial.get()));
+                player.sendResetItemInHand();
+            }
+        }
+        */
+    }
+
+    public void updateGroups()
+    {
+        Queue<EntityUpdate> entityUpdates = server.mineCity.entityUpdates;
+        EntityUpdate update = entityUpdates.peek();
+        if(update == null || !update.identity.equals(getPlayerId()))
+            return;
+
+        if(groups == null)
+        {
+            if(entityUpdates.size() > 1)
+                entityUpdates.add(entityUpdates.poll());
+            return;
+        }
+
+        entityUpdates.poll();
+        switch(update.type)
+        {
+            case GROUP_ADDED:
+                groups.add(update.groupId);
+                break;
+
+            case GROUP_REMOVED:
+                groups.remove(update.groupId);
+                break;
+
+            default:
+                server.logger.error("Unsupported update entity type: "+update.type);
+        }
+    }
+
+    @Nullable
+    public SpongeSelection getSelection()
+    {
+        return selection;
+    }
+
+    public void sendNotification(Message title, Message subtitle)
+    {
+        if(server.mineCity.useTitles)
+            sendTitle(title, subtitle);
+        else if(subtitle == null)
+            send(new Message("",LegacyFormat.DARK_GRAY+" ~ "+LegacyFormat.GRAY+"${name}", new Object[]{"name", title}));
+        else
+            send(new Message("",LegacyFormat.DARK_GRAY+" ~ ${title} :"+LegacyFormat.GRAY+" ${sub}", new Object[][]{
+                    {"sub", subtitle},
+                    {"title", title}
+            }));
+    }
+
+    public void sendTitle(Message title, Message subtitle)
+    {
+        Title.Builder builder = Title.builder().fadeIn(10).stay(70).fadeOut(20);
+
+        builder.title(title != null? server.transformer.toText(title) : Text.EMPTY);
+        builder.subtitle(subtitle != null? server.transformer.toText(subtitle) : Text.EMPTY);
+
+        subject.sendTitle(builder.build());
     }
 
     @Override

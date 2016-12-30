@@ -170,13 +170,15 @@ public class ActionListener
         onBlockChangeByEntity(event, subject, EntityData::onBlockBreak);
     }
 
+    /*
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onBlockReplaceByEntity(ChangeBlockEvent.Modify event, @Named(NamedCause.SOURCE) Entity subject)
     {
         onBlockChangeByEntity(event, subject, EntityData::onBlockReplace);
     }
+    */
 
-    @Listener(order = Order.FIRST, beforeModifications = true)
+    @Listener(order  = Order.FIRST, beforeModifications = true)
     public void onBlockGrowByEntity(ChangeBlockEvent.Grow event, @Named(NamedCause.SOURCE) Entity subject)
     {
         onBlockChangeByEntity(event, subject, EntityData::onBlockGrow);
@@ -220,11 +222,13 @@ public class ActionListener
         onBlockChangeByBlock(event, subject, BlockSnapshotData::onBlockBreak);
     }
 
+    /*
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onBlockReplaceByBlock(ChangeBlockEvent.Modify event, @Named(NamedCause.SOURCE) BlockSnapshot subject)
     {
         onBlockChangeByBlock(event, subject, BlockSnapshotData::onBlockReplace);
     }
+    */
 
     @Listener(order = Order.FIRST, beforeModifications = true)
     public void onBlockGrowByBlock(ChangeBlockEvent.Grow event, @Named(NamedCause.SOURCE) BlockSnapshot subject)
@@ -256,7 +260,7 @@ public class ActionListener
         });
     }
 
-    @Listener(order = Order.FIRST, beforeModifications = true)
+    //@Listener(order = Order.FIRST, beforeModifications = true)
     public void onBlockChangePre(ChangeBlockEvent.Pre event, @Named(NamedCause.SOURCE) Entity subject)
     {
         HandInteractEvent interact = this.lastEntityInteractEvent;
@@ -288,7 +292,7 @@ public class ActionListener
         });
     }
 
-    @Listener(order = Order.FIRST, beforeModifications = true)
+    //@Listener(order = Order.FIRST, beforeModifications = true)
     public void onBlockChangePre(ChangeBlockEvent.Pre event, @Named(NamedCause.SOURCE) BlockSnapshot subject)
     {
         BlockSnapshotData snapshot = ReactiveLayer.getBlockSnapshotData(subject).get();

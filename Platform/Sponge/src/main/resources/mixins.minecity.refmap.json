@@ -16,7 +16,8 @@
     "MixinIProperty",
     "MixinServer",
     "MixinTileEntity",
-    "MixinWorld"
+    "MixinWorld",
+    "MixinEntityLivingBase"
   ],
   "injectors": {
     "defaultRequire": 1

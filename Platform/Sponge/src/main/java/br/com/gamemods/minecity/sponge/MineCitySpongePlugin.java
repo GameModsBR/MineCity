@@ -76,6 +76,7 @@ public class MineCitySpongePlugin
     private String lang;
     private MineCitySponge sponge;
     private Task reloadTask;
+    private Task playerTickTask;
 
     @Listener
     public void onGameConstruct(GameConstructionEvent event)
@@ -312,6 +313,11 @@ public class MineCitySpongePlugin
                     .execute(sponge.mineCity::reloadQueuedChunk)
                     .intervalTicks(1)
                     .delayTicks(1)
+                    .submit(this);
+
+            playerTickTask =Sponge.getScheduler().createTaskBuilder()
+                    .execute(()-> Sponge.getServer().getOnlinePlayers().forEach(player -> sponge.player(player).tick()))
+                    .intervalTicks(1)
                     .submit(this);
         }
         catch(Exception e)
