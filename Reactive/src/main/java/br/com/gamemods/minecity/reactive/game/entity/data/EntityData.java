@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.reactive.game.entity.data;
 
+import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
@@ -33,6 +34,13 @@ public interface EntityData
      */
     @NotNull
     Optional<ChunkData> getChunkData();
+
+    boolean sendBlockUpdate(int x, int y, int z);
+
+    default boolean sendBlockUpdate(Point point)
+    {
+        return sendBlockUpdate(point.x, point.y, point.z);
+    }
 
     default InteractReaction onRightClick(Hand hand, ReactiveItemStack stack, ReactiveBlock block,
                                           @Nullable Direction side, PrecisePoint point)

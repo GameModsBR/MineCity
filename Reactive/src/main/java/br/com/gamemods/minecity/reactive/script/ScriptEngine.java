@@ -38,7 +38,7 @@ public class ScriptEngine
             catch(Exception e2)
             {
                 e.addSuppressed(e2);
-                throw e;
+                throw new ScriptException("Failed to load the protection script for "+modId);
             }
         }
     }

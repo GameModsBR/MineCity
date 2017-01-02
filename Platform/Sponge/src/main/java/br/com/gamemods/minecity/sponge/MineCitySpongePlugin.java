@@ -308,6 +308,7 @@ public class MineCitySpongePlugin
 
     private void loadScripts()
     {
+        logger.info("Loading scripts...");
         Sponge.getPluginManager().getPlugins().forEach(plugin ->
                 {
                     try

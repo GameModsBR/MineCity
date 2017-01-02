@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.reactive.game.entity.data.EntityData;
 import br.com.gamemods.minecity.reactive.game.server.data.ChunkData;
 import br.com.gamemods.minecity.sponge.data.manipulator.reactive.SpongeManipulator;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.api.effect.Viewer;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.world.Chunk;
 
@@ -31,6 +32,18 @@ public class SpongeEntityData implements EntityData
     public EntityPos getEntityPosition()
     {
         return manipulator.sponge.entityPos(entity);
+    }
+
+    @Override
+    public boolean sendBlockUpdate(int x, int y, int z)
+    {
+        if(entity instanceof Viewer)
+        {
+            ((Viewer) entity).sendBlockChange(x, y, z, entity.getWorld().getBlock(x, y, z));
+            return true;
+        }
+
+        return false;
     }
 
     @NotNull

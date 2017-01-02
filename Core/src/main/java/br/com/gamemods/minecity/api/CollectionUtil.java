@@ -13,6 +13,11 @@ import java.util.stream.StreamSupport;
 
 public class CollectionUtil
 {
+    public static <T> Stream<T> combine(T obj, Stream<T> stream)
+    {
+        return Stream.of(Stream.of(obj), stream).flatMap(Function.identity());
+    }
+
     public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor)
     {
         Map<Object,Boolean> seen = new ConcurrentHashMap<>();

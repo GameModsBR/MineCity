@@ -15,6 +15,15 @@ blockType([
         block('Dispenser'), 'minecraft:dispenser',
         block('Dropper'), 'minecraft:dropper',
         block('Jukebox'), 'minecraft:jukebox',
+        block('ShulkerBox'),
+        'minecraft:white_shulker_box', 'minecraft:black_shulker_box',
+        'minecraft:blue_shulker_box', 'minecraft:cyan_shulker_box',
+        'minecraft:brown_shulker_box', 'minecraft:orange_shulker_box',
+        'minecraft:gray_shulker_box', 'minecraft:silver_shulker_box',
+        'minecraft:green_shulker_box', 'minecraft:lime_shulker_box',
+        'minecraft:red_shulker_box', 'minecraft:light_blue_shulker_box',
+        'minecraft:magenta_shulker_box', 'minecraft:yellow_shulker_box',
+        'minecraft:pink_shulker_box', 'minecraft:purple_shulker_box',
 
         // Does not extends Container
         block('Cauldron'), 'minecraft:cauldron',
@@ -65,16 +74,22 @@ blockType([
 }
 
 ////////////////////////////// CLICKABLE //////////////////////////////
-blockTrait(['minecraft:door_half', 'minecraft:trap_door_half']) {
+// Traits
+blockTrait(['minecraft:lever_variant', 'minecraft:trap_door_half']) {
     setReactive clickableBlock
 }
+
+blockTrait('minecraft:door_half') {
+    setReactive new Door()
+}
+
+// Types
 blockType([
         block('Door'), 'minecraft:wooden_door', 'minecraft:spruce_door',
         'minecraft:birch_door', 'minecraft:jungle_door',
         'minecraft:acacia_door', 'minecraft:dark_oak_door',
 ]) {
-    // TODO: Send block update to block above and below
-    setReactive clickableBlock
+    setReactive new Door()
 }
 
 blockType([

@@ -64,6 +64,18 @@ public interface BlockStateData extends SupplierBlockStateData
     @NotNull
     <V extends Comparable<V>> Optional<V> getTrait(BlockTraitData<V> trait);
 
+    @NotNull
+    default Optional<?> getTrait(String traitId)
+    {
+        return ReactiveLayer.getBlockTrait(traitId).flatMap(this::getTrait);
+    }
+
+    @NotNull
+    default String getTraitString(String traitId)
+    {
+        return getTrait(traitId).map(Object::toString).orElse("");
+    }
+
     /**
      * The traits presents in this state.
      */

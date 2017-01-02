@@ -47,7 +47,10 @@ public abstract class ReactiveScript extends Script
     {
         BlockTraitData<?> data = ReactiveLayer.getBlockTrait(trait).orElse(null);
         if(config == null || data == null)
+        {
+            System.err.println("Block trait: data == null! Trait:"+trait);
             return data;
+        }
 
         config.setDelegate(data);
         config.call();

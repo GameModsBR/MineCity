@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.reactive.ReactiveLayer;
+import br.com.gamemods.minecity.reactive.game.entity.data.supplier.SupplierEntityData;
 import br.com.gamemods.minecity.sponge.MineCitySponge;
 import br.com.gamemods.minecity.sponge.data.value.SpongeEntityData;
 import com.flowpowered.math.vector.Vector3d;
@@ -16,12 +17,20 @@ import org.spongepowered.api.world.World;
 import java.util.Optional;
 
 public class EntitySource<E extends Entity, Source extends CommandSource> extends LocatableSource<E, Source>
+    implements SupplierEntityData
 {
     protected final SpongeEntityData entityData;
     public EntitySource(MineCitySponge server, Source source, E entity)
     {
         super(server, source, entity);
         entityData = (SpongeEntityData) ReactiveLayer.getEntityData(entity).get();
+    }
+
+    @NotNull
+    @Override
+    public SpongeEntityData getEntityData()
+    {
+        return entityData;
     }
 
     @Nullable

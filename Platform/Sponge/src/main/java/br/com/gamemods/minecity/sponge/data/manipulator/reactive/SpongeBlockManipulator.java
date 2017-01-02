@@ -20,7 +20,11 @@ import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.block.trait.BlockTrait;
 import org.spongepowered.api.data.DataTransactionResult;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static br.com.gamemods.minecity.sponge.data.manipulator.reactive.SpongeManipulator.handleSupplier;
 
@@ -29,10 +33,23 @@ public class SpongeBlockManipulator implements BlockManipulator, BlockReactor
     private final SpongeManipulator manipulator;
     private final ThreadLocal<BlockType> handlingBlockType = new ThreadLocal<>();
     private final ThreadLocal<BlockTrait> handlingBlockTrait = new ThreadLocal<>();
+    private final Map<String, BlockTrait<?>> traitMap;
 
     public SpongeBlockManipulator(SpongeManipulator manipulator)
     {
         this.manipulator = manipulator;
+        traitMap = Sponge.getGame().getRegistry().getAllOf(BlockType.class).stream()
+                .map(BlockType::getTraits).flatMap(Collection::stream).distinct()
+                .collect(Collectors.toMap(trait-> {
+                    try
+                    {
+                        return trait.getId();
+                    }
+                    catch(NullPointerException e)
+                    {
+                        return "NOID:"+trait.getName();
+                    }
+                }, Function.identity()));
     }
 
     @NotNull
@@ -129,9 +146,12 @@ public class SpongeBlockManipulator implements BlockManipulator, BlockReactor
     {
         if(blockTrait instanceof CharSequence)
         {
-            blockTrait = Sponge.getGame().getRegistry().getType(BlockTrait.class, blockTrait.toString()).orElse(null);
+            blockTrait = traitMap.get(blockTrait.toString());
             if(blockTrait instanceof SupplierBlockTraitData)
                 return Optional.of(((SupplierBlockTraitData) blockTrait).getBlockTraitData());
+
+            manipulator.sponge.logger.warn("Block trait not found: "+blockTrait);
+            manipulator.sponge.logger.warn(traitMap.toString());
         }
 
         if(!(blockTrait instanceof BlockTrait))
