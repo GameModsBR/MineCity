@@ -317,7 +317,7 @@ public class MineCitySpongePlugin
                     }
                     catch(ResourceException e)
                     {
-                        logger.warn("No reactive definition was found for "+plugin.getId()+": "+e);
+                        logger.warn("No reactive definition was found for "+plugin.getId());
                     }
                     catch(ScriptException e)
                     {

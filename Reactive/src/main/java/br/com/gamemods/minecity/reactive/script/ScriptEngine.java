@@ -35,11 +35,20 @@ public class ScriptEngine
             {
                 return engine.run(modId+".groovy", binding);
             }
-            catch(Exception e2)
+            catch(ResourceException e2)
             {
                 e.addSuppressed(e2);
-                throw new ScriptException("Failed to load the protection script for "+modId);
+                throw e;
             }
+            catch(Exception e2)
+            {
+                e2.addSuppressed(e);
+                throw new ScriptException("Failed to load the protection script for "+modId, e2);
+            }
+        }
+        catch(Exception e)
+        {
+            throw new ScriptException("Failed to load the protection script for "+modId, e);
         }
     }
 }
