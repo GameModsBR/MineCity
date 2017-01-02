@@ -77,6 +77,7 @@ public class MineCitySpongePlugin
     private MineCitySponge sponge;
     private Task reloadTask;
     private Task playerTickTask;
+    private ScriptEngine engine;
 
     @Listener
     public void onGameConstruct(GameConstructionEvent event)
@@ -256,7 +257,29 @@ public class MineCitySpongePlugin
             if(type instanceof MixedBlockType)
                 ((MixedBlockType) type).setBlockTypeData(null);
         });
+        loadScripts();
         return CommandResult.success();
+    }
+
+    private void loadScripts()
+    {
+        Sponge.getPluginManager().getPlugins().forEach(plugin ->
+                {
+                    try
+                    {
+                        engine.load(plugin.getId());
+                    }
+                    catch(ResourceException e)
+                    {
+                        logger.warn("No reactive definition was found for "+plugin.getId()+": "+e);
+                    }
+                    catch(ScriptException e)
+                    {
+                        logger.error("An error has occurred while loading "+plugin.getId()+"'s reactive definitions", e);
+                        throw new UncheckedException(e);
+                    }
+                }
+        );
     }
 
     @Listener
@@ -277,29 +300,13 @@ public class MineCitySpongePlugin
             if(!scriptsDir.isDirectory() && !scriptsDir.mkdirs())
                 logger.warn("Failed to create the directory: "+scriptsDir);
 
-            ScriptEngine engine = new ScriptEngine(
+            engine = new ScriptEngine(
                     scripts.toUri().toURL(),
                     ReactiveLayer.class.getResource("/minecity/scripts/"),
                     ReactiveLayer.class.getResource("/minecity/scripts/minecity/")
             );
 
-            Sponge.getPluginManager().getPlugins().forEach(plugin ->
-                    {
-                        try
-                        {
-                            engine.load(plugin.getId());
-                        }
-                        catch(ResourceException e)
-                        {
-                            logger.warn("No reactive definition was found for "+plugin.getId()+": "+e);
-                        }
-                        catch(ScriptException e)
-                        {
-                            logger.error("An error has occurred while loading "+plugin.getId()+"'s reactive definitions", e);
-                            throw new UncheckedException(e);
-                        }
-                    }
-            );
+            loadScripts();
 
             sponge.mineCity.dataSource.initDB();
             sponge.mineCity.commands.parseXml(MineCity.class.getResourceAsStream("/assets/minecity/commands-"+lang+".xml"));
