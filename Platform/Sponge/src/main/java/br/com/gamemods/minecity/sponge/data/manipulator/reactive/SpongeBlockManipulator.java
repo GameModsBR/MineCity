@@ -144,7 +144,7 @@ public class SpongeBlockManipulator implements BlockManipulator, BlockReactor
     @SuppressWarnings("unchecked")
     public <T extends Comparable<T>> BlockTraitData<T> getBlockTraitData(BlockTrait<T> blockTrait)
     {
-        return handleSupplier(handlingBlockTrait, blockTrait, SupplierBlockTraitData.class,
+        return (BlockTraitData<T>) handleSupplier(handlingBlockTrait, blockTrait, SupplierBlockTraitData.class,
                 SupplierBlockTraitData::getBlockTraitData,
                 ()-> new SpongeBlockTraitData(manipulator, blockTrait)
         );
