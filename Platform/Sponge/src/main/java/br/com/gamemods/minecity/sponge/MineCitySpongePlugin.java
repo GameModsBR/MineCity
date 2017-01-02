@@ -267,7 +267,8 @@ public class MineCitySpongePlugin
         TreeMap<String, String> roleMap = new TreeMap<>();
         Sponge.getGame().getRegistry().getAllOf(BlockType.class).forEach(type-> {
             String id = type.getId();
-            roleMap.put(id, ReactiveLayer.getBlockType(type).flatMap(BlockTypeData::getReactiveBlockType).map(it-> it.getBlockRole()+":"+it.getClass().getName()).orElse(null));
+            roleMap.put(id, ReactiveLayer.getBlockType(type).flatMap(BlockTypeData::getReactiveBlockType)
+                    .map(it-> it.getBlockRole()+":"+it.getClass().getName()+" - "+type.getClass().getName()).orElse(null));
             type.getTraits().forEach(trait ->
             {
                 String traitId;
