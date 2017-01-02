@@ -10,7 +10,6 @@ import br.com.gamemods.minecity.sponge.data.manipulator.reactive.SpongeManipulat
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.extent.BlockVolume;
-import org.spongepowered.api.world.extent.TileEntityVolume;
 
 import java.util.Optional;
 
@@ -52,8 +51,7 @@ public class SpongeChunkData implements ChunkData
     @Override
     public Optional<TileEntityData> getTileEntityData(BlockPos pos) throws IndexOutOfBoundsException
     {
-        TileEntityVolume volume = chunk.containsBlock(pos.x, pos.y, pos.z) ? chunk : chunk.getWorld();
-        return volume.getTileEntity(pos.x, pos.y, pos.z).map(manipulator.block::getTileEntityData);
+        return chunk.getWorld().getTileEntity(pos.x, pos.y, pos.z).map(manipulator.block::getTileEntityData);
     }
 
     @NotNull
