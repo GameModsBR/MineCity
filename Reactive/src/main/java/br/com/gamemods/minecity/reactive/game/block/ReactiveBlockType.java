@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface ReactiveBlockType extends ReactiveBlockProperty
 {
-    ReactiveBlockType INSTANCE = new ReactiveBlockType(){};
+    ReactiveBlockType DECORATIVE = new ReactiveBlockType(){};
 
     /**
      * The default role that this block represents.

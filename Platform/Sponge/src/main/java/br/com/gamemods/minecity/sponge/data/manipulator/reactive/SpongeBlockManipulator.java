@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.reactive.game.block.ReactiveBlockTrait;
 import br.com.gamemods.minecity.reactive.game.block.ReactiveBlockType;
 import br.com.gamemods.minecity.reactive.game.block.ReactiveTileEntity;
 import br.com.gamemods.minecity.reactive.game.block.data.*;
+import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockTraitData;
 import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockTypeData;
 import br.com.gamemods.minecity.reactive.reactor.BlockReactor;
 import br.com.gamemods.minecity.sponge.data.manipulator.boxed.MineCityKeys;
@@ -27,6 +28,7 @@ public class SpongeBlockManipulator implements BlockManipulator, BlockReactor
 {
     private final SpongeManipulator manipulator;
     private final ThreadLocal<BlockType> handlingBlockType = new ThreadLocal<>();
+    private final ThreadLocal<BlockTrait> handlingBlockTrait = new ThreadLocal<>();
 
     public SpongeBlockManipulator(SpongeManipulator manipulator)
     {
@@ -139,9 +141,13 @@ public class SpongeBlockManipulator implements BlockManipulator, BlockReactor
         throw new UnsupportedOperationException("Unsupported trait: "+traitData.getClass()+": "+traitData);
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Comparable<T>> BlockTraitData<T> getBlockTraitData(BlockTrait<T> blockTrait)
     {
-        return new SpongeBlockTraitData<>(manipulator, blockTrait);
+        return handleSupplier(handlingBlockTrait, blockTrait, SupplierBlockTraitData.class,
+                SupplierBlockTraitData::getBlockTraitData,
+                ()-> new SpongeBlockTraitData(manipulator, blockTrait)
+        );
     }
 
     @NotNull

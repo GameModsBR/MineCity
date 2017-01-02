@@ -4,6 +4,7 @@ import br.com.gamemods.minecity.reactive.ReactiveLayer;
 import br.com.gamemods.minecity.reactive.game.block.ReactiveBlockTrait;
 import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockTraitData;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -25,6 +26,8 @@ public interface BlockTraitData<T extends Comparable<T>> extends SupplierBlockTr
     {
         return ReactiveLayer.getReactor().getBlockReactor().getReactiveBlockTrait(this);
     }
+
+    void setReactive(@Nullable ReactiveBlockTrait<T> reactiveBlock);
 
     /**
      * The name of this trait, it can be linked to the Minecraft block trait system.

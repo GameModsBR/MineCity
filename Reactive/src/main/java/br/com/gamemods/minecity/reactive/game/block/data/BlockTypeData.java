@@ -31,10 +31,7 @@ public interface BlockTypeData extends SupplierBlockTypeData
         return ReactiveLayer.getReactor().getBlockReactor().getReactiveBlockType(this);
     }
 
-    default void setReactive(@Nullable ReactiveBlockType reactiveBlock)
-    {
-        System.out.println("Interface SET! ");
-    }
+    void setReactive(@Nullable ReactiveBlockType reactiveBlock);
 
     /**
      * @see ReactiveBlockType#getBlockRole()

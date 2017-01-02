@@ -16,8 +16,7 @@ public class SpongeBlockTypeData implements BlockTypeData
 {
     private final SpongeManipulator manipulator;
     private final BlockType blockType;
-    @Nullable
-    private ReactiveBlockType reactive;
+    private ReactiveBlockType reactive = ReactiveBlockType.DECORATIVE;
 
     public SpongeBlockTypeData(SpongeManipulator manipulator, BlockType blockType)
     {
@@ -29,13 +28,13 @@ public class SpongeBlockTypeData implements BlockTypeData
     @Override
     public Optional<ReactiveBlockType> getReactiveBlockType()
     {
-        return Optional.ofNullable(reactive);
+        return Optional.of(reactive);
     }
 
     @Override
     public void setReactive(@Nullable ReactiveBlockType reactiveBlock)
     {
-        reactive = reactiveBlock;
+        reactive = reactiveBlock == null? ReactiveBlockType.DECORATIVE : reactiveBlock;
     }
 
     @Override

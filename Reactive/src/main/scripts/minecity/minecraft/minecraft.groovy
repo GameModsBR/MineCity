@@ -65,6 +65,9 @@ blockType([
 }
 
 ////////////////////////////// CLICKABLE //////////////////////////////
+blockTrait(['minecraft:door_half', 'minecraft:trap_door_half']) {
+    setReactive clickableBlock
+}
 blockType([
         block('Door'), 'minecraft:wooden_door', 'minecraft:spruce_door',
         'minecraft:birch_door', 'minecraft:jungle_door',

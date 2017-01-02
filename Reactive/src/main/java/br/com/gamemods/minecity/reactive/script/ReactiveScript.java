@@ -2,10 +2,11 @@ package br.com.gamemods.minecity.reactive.script;
 
 import br.com.gamemods.minecity.reactive.ReactiveLayer;
 import br.com.gamemods.minecity.reactive.game.block.ReactiveBlockType;
+import br.com.gamemods.minecity.reactive.game.block.data.BlockTraitData;
 import br.com.gamemods.minecity.reactive.game.block.data.BlockTypeData;
-import br.com.gamemods.minecity.reactive.vanilla.block.ReactiveBlockTypeClickable;
-import br.com.gamemods.minecity.reactive.vanilla.block.ReactiveBlockTypeContainer;
-import br.com.gamemods.minecity.reactive.vanilla.block.ReactiveBlockTypeModifiable;
+import br.com.gamemods.minecity.reactive.vanilla.block.ReactiveBlockClickable;
+import br.com.gamemods.minecity.reactive.vanilla.block.ReactiveBlockContainer;
+import br.com.gamemods.minecity.reactive.vanilla.block.ReactiveBlockModifiable;
 import groovy.lang.Closure;
 import groovy.lang.Script;
 import org.jetbrains.annotations.NotNull;
@@ -17,10 +18,10 @@ import java.util.stream.Collectors;
 
 public abstract class ReactiveScript extends Script
 {
-    public static ReactiveBlockTypeClickable clickableBlock = ReactiveBlockTypeClickable.INSTANCE;
-    public static ReactiveBlockTypeContainer containerBlock = ReactiveBlockTypeContainer.INSTANCE;
-    public static ReactiveBlockTypeModifiable modifiableBlock = ReactiveBlockTypeModifiable.INSTANCE;
-    public static ReactiveBlockType decorativeBlock = ReactiveBlockType.INSTANCE;
+    public static ReactiveBlockClickable clickableBlock = ReactiveBlockClickable.INSTANCE;
+    public static ReactiveBlockContainer containerBlock = ReactiveBlockContainer.INSTANCE;
+    public static ReactiveBlockModifiable modifiableBlock = ReactiveBlockModifiable.INSTANCE;
+    public static ReactiveBlockType decorativeBlock = ReactiveBlockType.DECORATIVE;
 
     @Nullable
     public BlockTypeData blockType(@NotNull Object block, @Nullable Closure config)
@@ -38,6 +39,25 @@ public abstract class ReactiveScript extends Script
     {
         return blocks.stream()
                 .map(block-> blockType(block, config))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    public BlockTraitData<?> blockTrait(@NotNull Object trait, @Nullable Closure config)
+    {
+        BlockTraitData<?> data = ReactiveLayer.getBlockTrait(trait).orElse(null);
+        if(config == null || data == null)
+            return data;
+
+        config.setDelegate(data);
+        config.call();
+        return data;
+    }
+
+    public List<BlockTraitData<?>> blockTrait(@NotNull List<?> traits, @Nullable Closure config)
+    {
+        return traits.stream()
+                .map(trait-> blockTrait(trait, config))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }

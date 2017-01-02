@@ -1,22 +1,39 @@
 package br.com.gamemods.minecity.sponge.data.value;
 
+import br.com.gamemods.minecity.reactive.game.block.ReactiveBlockTrait;
 import br.com.gamemods.minecity.reactive.game.block.data.BlockTraitData;
 import br.com.gamemods.minecity.reactive.reactor.Manipulator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.block.trait.BlockTrait;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class SpongeBlockTraitData<T extends Comparable<T>> implements BlockTraitData<T>
 {
     private final Manipulator manipulator;
     public final BlockTrait<T> trait;
+    @Nullable
+    private ReactiveBlockTrait<T> reactive;
 
     public SpongeBlockTraitData(Manipulator manipulator, BlockTrait<T> trait)
     {
         this.manipulator = manipulator;
         this.trait = trait;
+    }
+
+    @NotNull
+    @Override
+    public Optional<ReactiveBlockTrait<T>> getReactiveBlockTrait()
+    {
+        return Optional.ofNullable(reactive);
+    }
+
+    public void setReactive(@Nullable ReactiveBlockTrait<T> reactive)
+    {
+        this.reactive = reactive;
     }
 
     @Override
