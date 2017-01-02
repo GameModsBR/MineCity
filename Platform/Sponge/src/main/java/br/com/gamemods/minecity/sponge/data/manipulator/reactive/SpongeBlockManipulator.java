@@ -127,6 +127,13 @@ public class SpongeBlockManipulator implements BlockManipulator, BlockReactor
     @Override
     public Optional<BlockTraitData<?>> getBlockTraitData(@NotNull Object blockTrait)
     {
+        if(blockTrait instanceof CharSequence)
+        {
+            blockTrait = Sponge.getGame().getRegistry().getType(BlockTrait.class, blockTrait.toString()).orElse(null);
+            if(blockTrait instanceof SupplierBlockTraitData)
+                return Optional.of(((SupplierBlockTraitData) blockTrait).getBlockTraitData());
+        }
+
         if(!(blockTrait instanceof BlockTrait))
             return Optional.empty();
 
