@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.reactive.game.block.data;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -9,6 +10,9 @@ import java.util.Optional;
  */
 public interface BlockManipulator
 {
+    @NotNull
+    Collection<BlockTypeData> findBlockTypes(@NotNull Class<?> filter);
+
     /**
      * Extract information about a block type.
      * @param block The server object that represents a block type.

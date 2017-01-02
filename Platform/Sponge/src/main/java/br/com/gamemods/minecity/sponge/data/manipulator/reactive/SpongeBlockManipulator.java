@@ -54,6 +54,14 @@ public class SpongeBlockManipulator implements BlockManipulator, BlockReactor
 
     @NotNull
     @Override
+    public Collection<BlockTypeData> findBlockTypes(@NotNull Class<?> filter)
+    {
+        return Sponge.getGame().getRegistry().getAllOf(BlockType.class).stream().filter(filter::isInstance)
+                .map(this::getBlockTypeData).collect(Collectors.toList());
+    }
+
+    @NotNull
+    @Override
     public Optional<BlockTypeData> getBlockTypeData(@NotNull Object block)
     {
         if(block instanceof CharSequence)
