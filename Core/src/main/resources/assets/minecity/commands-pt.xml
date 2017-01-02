@@ -92,8 +92,8 @@
         <command id="configs.reload" parent="root" cmd="recarregar,reload">
             <desc>Recarrega as mensagens do disco</desc>
         </command>
-        <command id="configs.reload" parent="root" cmd="recarregar-protecoes,reload-protections">
-            <desc>Recarrega as configurações do disco</desc>
+        <command id="reactive.reload" parent="root" cmd="recarregar-protecoes,reload-protections">
+            <desc>Recarrega as proteções do disco</desc>
         </command>
         <command id="admin" parent="root" cmd="admin,adm">
             <desc>Alterna o seu modo de administrador</desc>
