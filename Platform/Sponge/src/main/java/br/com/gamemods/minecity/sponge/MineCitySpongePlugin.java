@@ -10,6 +10,8 @@ import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.economy.EconomyLayer;
 import br.com.gamemods.minecity.permission.PermissionLayer;
 import br.com.gamemods.minecity.reactive.ReactiveLayer;
+import br.com.gamemods.minecity.reactive.game.block.data.BlockTraitData;
+import br.com.gamemods.minecity.reactive.game.block.data.BlockTypeData;
 import br.com.gamemods.minecity.reactive.game.entity.data.Hand;
 import br.com.gamemods.minecity.reactive.script.ScriptEngine;
 import br.com.gamemods.minecity.sponge.cmd.SpongeRootCommand;
@@ -48,12 +50,10 @@ import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.world.Chunk;
 import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Path;
-import java.util.Locale;
-import java.util.Optional;
+import java.text.DateFormat;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -258,6 +258,29 @@ public class MineCitySpongePlugin
                 ((MixedBlockType) type).setBlockTypeData(null);
         });
         loadScripts();
+        return CommandResult.success();
+    }
+
+    @Command("dump.blocks")
+    public CommandResult<?> dumpBlocks(CommandEvent cmd) throws IOException
+    {
+        TreeMap<String, String> roleMap = new TreeMap<>();
+        Sponge.getGame().getRegistry().getAllOf(BlockType.class).forEach(type-> {
+            String id = type.getId();
+            roleMap.put(id, ReactiveLayer.getBlockType(type).flatMap(BlockTypeData::getReactiveBlockType).map(it-> it.getBlockRole()+":"+it.getClass().getName()).orElse(null));
+            type.getTraits().forEach(trait-> roleMap.put(id+":"+trait.getId(), ReactiveLayer.getBlockTrait(trait).flatMap(BlockTraitData::getReactiveBlockTrait).map(it-> it.getClass().getName()).orElse(null)));
+        });
+
+        try(FileWriter fw = new FileWriter(configDir.resolve("dump_blocks.txt").toFile()); BufferedWriter out = new BufferedWriter(fw))
+        {
+            out.write(DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL).format(new Date()));
+            out.newLine();
+            for(Map.Entry<String, String> entry : roleMap.entrySet())
+            {
+                out.write(entry.getKey()+": "+entry.getValue());
+                out.newLine();
+            }
+        }
         return CommandResult.success();
     }
 

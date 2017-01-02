@@ -5,6 +5,9 @@
         <group id="root" cmd="minecity,mc">
             <desc>Todos os comandos do MineCity</desc>
         </group>
+        <group id="dump" parent="root" cmd="despejar,dump">
+            <desc>Despeja informações do sistema no sistema de arquivos</desc>
+        </group>
         <group id="city" parent=",root" cmd="cidade,c">
             <desc>Todos os comandos relacionados a cidades</desc>
         </group>
@@ -94,6 +97,9 @@
         </command>
         <command id="admin" parent="root" cmd="admin,adm">
             <desc>Alterna o seu modo de administrador</desc>
+        </command>
+        <command id="dump.blocks" parent="dump" cmd="blocks,blocos">
+            <desc>Despeja os tipos e traços dos blocos</desc>
         </command>
 
         <!-- Gerência -->

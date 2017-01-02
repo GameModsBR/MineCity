@@ -5,6 +5,9 @@
         <group id="root" cmd="minecity,mc">
             <desc>All MineCity commands</desc>
         </group>
+        <group id="dump" parent="root" cmd="dump">
+            <desc>Dumps information about the system to the filesystem</desc>
+        </group>
         <group id="city" parent=",root" cmd="city,town,c,t">
             <desc>All city related commands</desc>
         </group>
@@ -94,6 +97,9 @@
         </command>
         <command id="admin" parent="root" cmd="admin,adm">
             <desc>Toggles your admin mode</desc>
+        </command>
+        <command id="dump.blocks" parent="dump" cmd="blocks">
+            <desc>Dumps the block types and traits</desc>
         </command>
 
         <!-- Management -->
