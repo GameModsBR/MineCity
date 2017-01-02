@@ -2,17 +2,18 @@ package br.com.gamemods.minecity.sponge.core.mixin;
 
 import br.com.gamemods.minecity.sponge.core.mixed.MixedEntityLivingBase;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.world.World;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(EntityLivingBase.class)
-public abstract class MixinEntityLivingBase extends EntityLivingBase implements MixedEntityLivingBase
+public abstract class MixinEntityLivingBase implements MixedEntityLivingBase
 {
-    public MixinEntityLivingBase(World worldIn)
-    {
-        super(worldIn);
-    }
+    @Shadow
+    public abstract boolean isElytraFlying();
+
+    @Shadow
+    public abstract net.minecraft.item.ItemStack getActiveItemStack();
 
     @Override
     public boolean isFlyingOnElytra()
