@@ -94,7 +94,7 @@ public final class ReactiveBlock implements SupplierBlockStateData, SupplierChun
     @NotNull
     public Optional<TileEntityData> getTileEntity()
     {
-        return snapshot.getTileEntityData();
+        return Optional.ofNullable(tileEntity);
     }
 
     @NotNull
