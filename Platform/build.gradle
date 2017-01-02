@@ -25,8 +25,6 @@ subprojects {
             classifier = null
             relocate 'org.mcstats', 'br.com.gamemods.minecity.lib.mcstats'
         }
-
-        build.finalizedBy shadowJar
     }
 }
 
@@ -46,21 +44,5 @@ project(':Platform:Bukkit') {
     }
 
     jar.enabled = false
-
-    /*
-    shadowJar {
-        dependencies {
-            include(dependency({ it.moduleGroup == 'org.mcstats.bukkit' }))
-            include(dependency({ it.moduleGroup == project.group }))
-        }
-
-        baseName = 'MineCity-Bukkit-MC-1.10.2'
-        classifier = null
-        relocate 'org.mcstats', 'br.com.gamemods.minecity.bukkit.mcstats'
-    }
-
-    jar.enabled = false
-
     build.finalizedBy shadowJar
-    */
 }

@@ -268,16 +268,38 @@ public class MineCitySpongePlugin
         Sponge.getGame().getRegistry().getAllOf(BlockType.class).forEach(type-> {
             String id = type.getId();
             roleMap.put(id, ReactiveLayer.getBlockType(type).flatMap(BlockTypeData::getReactiveBlockType).map(it-> it.getBlockRole()+":"+it.getClass().getName()).orElse(null));
-            type.getTraits().forEach(trait-> roleMap.put(id+":"+trait.getId(), ReactiveLayer.getBlockTrait(trait).flatMap(BlockTraitData::getReactiveBlockTrait).map(it-> it.getClass().getName()).orElse(null)));
+            type.getTraits().forEach(trait ->
+            {
+                String traitId;
+                try
+                {
+                    traitId = trait.getId();
+                }
+                catch(NullPointerException e)
+                {
+                    logger.warn("The trait "+trait+" does not have an ID!");
+                    traitId = "NOID!"+trait.getName();
+                }
+
+                roleMap.put(id+" | "+traitId, ReactiveLayer
+                        .getBlockTrait(trait)
+                        .flatMap(BlockTraitData::getReactiveBlockTrait)
+                        .map(it -> it.getClass().getName())
+                        .orElse(null));
+            });
         });
 
         try(FileWriter fw = new FileWriter(configDir.resolve("dump_blocks.txt").toFile()); BufferedWriter out = new BufferedWriter(fw))
         {
+            out.write("// ");
             out.write(DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL).format(new Date()));
             out.newLine();
             for(Map.Entry<String, String> entry : roleMap.entrySet())
             {
-                out.write(entry.getKey()+": "+entry.getValue());
+                if(!entry.getKey().contains(" | "))
+                    out.newLine();
+
+                out.write(entry.getKey()+" - "+entry.getValue());
                 out.newLine();
             }
         }

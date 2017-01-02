@@ -8,15 +8,20 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(EntityLivingBase.class)
 public abstract class MixinEntityLivingBase implements MixedEntityLivingBase
 {
+    private EntityLivingBase self()
+    {
+        return ((EntityLivingBase) (Object) this);
+    }
+
     @Override
     public boolean isFlyingOnElytra()
     {
-        return ((EntityLivingBase) (Object) this).isElytraFlying();
+        return self().isElytraFlying();
     }
 
     @Override
     public ItemStack getActiveStack()
     {
-        return (ItemStack) (Object) ((EntityLivingBase) (Object) this).getActiveItemStack();
+        return (ItemStack) (Object) self().getActiveItemStack();
     }
 }
