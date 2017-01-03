@@ -349,6 +349,7 @@ public class MineCitySpongePlugin
 
             engine = new ScriptEngine(
                     scripts.toUri().toURL(),
+                    scripts.resolve("minecity").toUri().toURL(),
                     ReactiveLayer.class.getResource("/minecity/scripts/"),
                     ReactiveLayer.class.getResource("/minecity/scripts/minecity/")
             );
