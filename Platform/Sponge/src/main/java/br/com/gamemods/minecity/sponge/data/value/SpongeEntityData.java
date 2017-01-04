@@ -4,11 +4,14 @@ import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.reactive.game.entity.data.EntityData;
 import br.com.gamemods.minecity.reactive.game.server.data.ChunkData;
 import br.com.gamemods.minecity.sponge.data.manipulator.reactive.SpongeManipulator;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.play.server.SPacketUpdateHealth;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.manipulator.mutable.entity.FoodData;
 import org.spongepowered.api.effect.Viewer;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Chunk;
 
 import java.util.Optional;
@@ -55,17 +58,20 @@ public class SpongeEntityData implements EntityData
         {
             Player player = (Player) entity;
             FoodData data = player.getFoodData();
-            double exhaustion = data.exhaustion().get();
             int foodLevel = data.foodLevel().get();
             double saturation = data.saturation().get();
 
-            data.exhaustion().set(exhaustion-1 >= 0? exhaustion+1 : exhaustion-1);
-            data.foodLevel().set(foodLevel-1 >= 0? foodLevel+1 : foodLevel-1);
-            data.saturation().set(saturation-1 >=0 ? saturation+1 : saturation-1);
-
-            data.exhaustion().set(exhaustion);
-            data.foodLevel().set(foodLevel);
-            data.saturation().set(saturation);
+            try
+            {
+                EntityPlayerMP entityPlayer = (EntityPlayerMP) player;
+                entityPlayer.connection.sendPacket(new SPacketUpdateHealth(player.health().get().floatValue(), foodLevel, (float) saturation));
+            }
+            catch(Error | Exception e)
+            {
+                int diff = foodLevel -1 >= 0? 1 : -1;
+                data.foodLevel().set(foodLevel+diff);
+                Task.builder().delayTicks(0).execute(()-> data.foodLevel().set(foodLevel-diff)).submit(manipulator.sponge.plugin);
+            }
             return true;
         }
 
