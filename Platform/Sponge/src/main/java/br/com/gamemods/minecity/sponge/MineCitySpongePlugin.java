@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.sponge;
 
 import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.MineCityConfig;
+import br.com.gamemods.minecity.api.StringUtil;
 import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
@@ -335,7 +336,7 @@ public class MineCitySpongePlugin
                 .getPluginManager()
                 .getPlugins()
                 .stream()
-                .map(PluginContainer::getId).map(String::toLowerCase)
+                .map(PluginContainer::getId).map(StringUtil::identity)
                 .collect(Collectors.toList());
 
         logger.info("Loading prioritized scripts...");
