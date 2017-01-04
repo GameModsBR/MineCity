@@ -23,5 +23,10 @@ public enum BlockRole
     /**
      * A block that modify itself when clicked. Like repeaters and comparators
      */
-    MODIFIABLE
+    MODIFIABLE,
+
+    /**
+     * A block that can be harvested. Like melons, cactus and crops
+     */
+    HARVESTEABLE
 }
