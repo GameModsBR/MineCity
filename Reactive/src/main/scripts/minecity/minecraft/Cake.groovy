@@ -11,6 +11,6 @@ class Cake implements ReactiveBlockType {
 
     @Override
     Reaction reactRightClick(Interaction event) {
-        new SingleBlockReaction(event.block.position, PermissionFlag.MODIFY).onDenySendHunger()
+        new SingleBlockReaction(event.block.position, PermissionFlag.CLICK).onDenySendHunger()
     }
 }
