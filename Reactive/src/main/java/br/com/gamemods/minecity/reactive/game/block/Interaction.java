@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.reactive.game.block;
 
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.reactive.game.block.data.BlockStateData;
 import br.com.gamemods.minecity.reactive.game.entity.data.EntityData;
 import br.com.gamemods.minecity.reactive.game.entity.data.Hand;
 import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
@@ -86,6 +87,11 @@ public final class Interaction
     public ReactiveBlock getBlock()
     {
         return block;
+    }
+
+    public BlockStateData getBlockState()
+    {
+        return getBlock().getBlockStateData();
     }
 
     public Optional<Direction> getBlockFace()

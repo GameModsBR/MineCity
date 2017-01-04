@@ -27,9 +27,14 @@ blockType([
 
         // Does not extends Container
         block('Cauldron'), 'minecraft:cauldron',
-        block('Cake'), 'minecraft:cake'
 ]) {
     setReactive containerBlock
+}
+
+blockType([
+        block('Cake'), 'minecraft:cake'
+]) {
+    setReactive new Cake()
 }
 
 //////////////////////// DECORATIVE CONTAINERS ////////////////////////

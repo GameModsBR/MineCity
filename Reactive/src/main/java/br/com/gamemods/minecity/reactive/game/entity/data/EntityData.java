@@ -42,6 +42,8 @@ public interface EntityData
         return sendBlockUpdate(point.x, point.y, point.z);
     }
 
+    boolean sendHungerUpdate();
+
     default InteractReaction onRightClick(Hand hand, ReactiveItemStack stack, ReactiveBlock block,
                                           @Nullable Direction side, PrecisePoint point)
     {
