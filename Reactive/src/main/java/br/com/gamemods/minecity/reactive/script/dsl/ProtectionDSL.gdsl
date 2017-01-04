@@ -16,7 +16,7 @@ contributor(ctx, {
     if (call) {
         def method = call.bind()
         def clazz = method?.containingClass
-        if ('br.com.gamemods.minecity.reactive.script.ReactiveScript'.equals(clazz?.qualName)) {
+        if ('br.com.gamemods.minecity.reactive.script.ReactiveScript' == clazz?.qualName) {
             delegatesTo(findClass('br.com.gamemods.minecity.reactive.game.block.data.BlockTypeData')?.getNavigationElement())
         }
     }
@@ -25,7 +25,7 @@ contributor(ctx, {
     if (call) {
         def method = call.bind()
         def clazz = method?.containingClass
-        if ('br.com.gamemods.minecity.reactive.script.ReactiveScript'.equals(clazz?.qualName)) {
+        if ('br.com.gamemods.minecity.reactive.script.ReactiveScript' == clazz?.qualName) {
             delegatesTo(findClass('br.com.gamemods.minecity.reactive.game.block.data.BlockTraitData')?.getNavigationElement())
         }
     }

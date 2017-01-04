@@ -5,6 +5,6 @@ import minecity.minecraft.CheckTileInventory
 import net.minecraft.block.Block
 
 blockType(Block) {
-    if(!reactiveBlockType.isPresent())
+    if(!reactiveBlockType.filter({ it != decorativeBlock }).isPresent())
         setReactive new CheckTileInventory(blockRole: BlockRole.DECORATIVE)
 }
