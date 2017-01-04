@@ -17,16 +17,16 @@ public abstract class TriggeredReaction implements Reaction
     private List<ReactionListener> denialListeners;
     private List<ReactionListener> allowListeners;
 
-    public void onDenySendBlockUpdateAt(int x, int y, int z)
+    public TriggeredReaction onDenySendBlockUpdateAt(int x, int y, int z)
     {
-        addDenialListener((reaction, permissible, flag, pos, message) ->
+        return addDenialListener((reaction, permissible, flag, pos, message) ->
                 ReactiveLayer.getEntityData(permissible).ifPresent(entity-> entity.sendBlockUpdate(x, y, z))
         );
     }
 
-    public void onDenySendBlockUpdateAt(Point first, Point... points)
+    public TriggeredReaction onDenySendBlockUpdateAt(Point first, Point... points)
     {
-        addDenialListener((reaction, permissible, flag, pos, message) ->
+        return addDenialListener((reaction, permissible, flag, pos, message) ->
                 ReactiveLayer.getEntityData(permissible).ifPresent(entity->
                         CollectionUtil.combine(first, Arrays.stream(points)).forEach(entity::sendBlockUpdate)
                 )
