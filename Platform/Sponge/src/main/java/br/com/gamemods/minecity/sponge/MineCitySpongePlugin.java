@@ -44,6 +44,7 @@ import org.spongepowered.api.event.world.UnloadWorldEvent;
 import org.spongepowered.api.event.world.chunk.LoadChunkEvent;
 import org.spongepowered.api.event.world.chunk.UnloadChunkEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
@@ -56,6 +57,8 @@ import java.text.DateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Plugin(id="minecity", name="MineCity", version = "@VERSION@", authors = "joserobjr", description = "@DESC@")
 public class MineCitySpongePlugin
@@ -307,26 +310,42 @@ public class MineCitySpongePlugin
         return CommandResult.success();
     }
 
+    private void loadScript(String modId)
+    {
+        try
+        {
+            logger.info("Loading "+modId+".groovy");
+            engine.load(modId);
+        }
+        catch(ResourceException e)
+        {
+            logger.warn("No reactive definition was found for "+modId);
+        }
+        catch(ScriptException e)
+        {
+            logger.error("An error has occurred while loading "+modId+"'s reactive definitions", e);
+            throw new UncheckedException(e);
+        }
+    }
+
     private void loadScripts()
     {
-        logger.info("Loading scripts...");
-        Sponge.getPluginManager().getPlugins().forEach(plugin ->
-                {
-                    try
-                    {
-                        engine.load(plugin.getId());
-                    }
-                    catch(ResourceException e)
-                    {
-                        logger.warn("No reactive definition was found for "+plugin.getId());
-                    }
-                    catch(ScriptException e)
-                    {
-                        logger.error("An error has occurred while loading "+plugin.getId()+"'s reactive definitions", e);
-                        throw new UncheckedException(e);
-                    }
-                }
-        );
+        logger.info("Gathering mod ids...");
+        List<String> loadedMods = Sponge
+                .getPluginManager()
+                .getPlugins()
+                .stream()
+                .map(PluginContainer::getId).map(String::toLowerCase)
+                .collect(Collectors.toList());
+
+        logger.info("Loading prioritized scripts...");
+        Stream.of("minecraft", "mcp", "fml", "forge", "spongeapi", "sponge", "minecity", "minecitysponge")
+                .filter(loadedMods::remove)
+                .forEachOrdered(this::loadScript);
+
+        logger.info("Loading remaining scripts...");
+        loadedMods.forEach(this::loadScript);
+        logger.info("The script loading procedure has been completed");
     }
 
     @Listener

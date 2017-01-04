@@ -1,0 +1,5 @@
+package minecity
+
+/**
+ * No blocks
+ */

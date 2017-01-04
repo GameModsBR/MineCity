@@ -27,20 +27,32 @@ public abstract class ReactiveScript extends Script
     public BlockTypeData blockType(@NotNull Object block, @Nullable Closure config)
     {
         BlockTypeData data = ReactiveLayer.getBlockType(block).orElse(null);
-        if(data == null && config != null && block instanceof CharSequence)
-            try
+        if(data == null && config != null)
+        {
+            Class<?> clazz = null;
+            if(block instanceof Class)
+                clazz = (Class<?>) block;
+            else if(block instanceof CharSequence)
+                try
+                {
+                    clazz = Class.forName(block.toString());
+                }
+                catch(ClassNotFoundException ignored)
+                {
+                }
+
+            if(clazz != null)
             {
-                ReactiveLayer.getBlockManipulator().findBlockTypes(Class.forName(block.toString()))
-                        .forEach(blockTypeData -> {
+                ReactiveLayer.getBlockManipulator().findBlockTypes(clazz)
+                        .forEach(blockTypeData ->
+                        {
                             Closure clone = (Closure) config.clone();
                             clone.setDelegate(blockTypeData);
                             clone.call();
                         });
                 return null;
             }
-            catch(ClassNotFoundException ignored)
-            {
-            }
+        }
 
         if(config == null || data == null)
             return data;

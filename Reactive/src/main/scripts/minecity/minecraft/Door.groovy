@@ -10,9 +10,9 @@ class Door implements ReactiveBlockClickable {
 
     @Override
     Reaction reactRightClick(Interaction event) {
-        def reaction = new SingleBlockReaction(event.block.position, PermissionFlag.CLICK)
-        if(event.block.blockStateData.getTraitString('minecraft:door_half') == "upper")
-            reaction.onDenySendBlockUpdateAt(event.block.position.add(Direction.DOWN))
-        return reaction
+        new SingleBlockReaction(event.block.position, PermissionFlag.CLICK).with {
+            if(event.block.blockStateData.getTraitString('minecraft:door_half') == "upper")
+                onDenySendBlockUpdateAt(event.block.position.add(Direction.DOWN))
+        }
     }
 }

@@ -4,28 +4,20 @@ import br.com.gamemods.minecity.api.permission.PermissionFlag
 import br.com.gamemods.minecity.reactive.game.block.*
 import br.com.gamemods.minecity.reactive.game.block.data.BlockRole
 import br.com.gamemods.minecity.reactive.reaction.*
+import net.minecraft.inventory.IInventory
 
 class CheckTileInventory implements ReactiveBlockType {
 
-    BlockRole role
-    PermissionFlag flag
-
-    CheckTileInventory(BlockRole role = BlockRole.CONTAINER, PermissionFlag flag = PermissionFlag.OPEN) {
-        this.role = role
-        this.flag = flag
-    }
-
-    @Override
-    BlockRole getBlockRole() {
-        role
-    }
+    BlockRole blockRole = BlockRole.CONTAINER
+    PermissionFlag flag = PermissionFlag.OPEN
 
     @Override
     Reaction reactRightClick(Interaction event) {
-        def tile = event.block.tileEntity
-        if(!tile.isPresent() || !(tile.get().tileEntity instanceof net.minecraft.inventory.IInventory))
-            return NoReaction.INSTANCE
-
-        return new SingleBlockReaction(event.block.position, flag)
+        event.block.tileEntity.with {
+            if(filter{ it.tileEntity instanceof IInventory }.isPresent())
+                new SingleBlockReaction(event.block.position, flag)
+            else
+                NoReaction.INSTANCE
+        }
     }
 }

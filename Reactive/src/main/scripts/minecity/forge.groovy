@@ -1,5 +1,10 @@
 package minecity
 
-/**
- * Do nothing, this files exists just to remove a warning about missing reactive definitions.
- */
+import br.com.gamemods.minecity.reactive.game.block.data.BlockRole
+import minecity.minecraft.CheckTileInventory
+import net.minecraft.block.Block
+
+blockType(Block) {
+    if(!reactiveBlockType.isPresent())
+        setReactive new CheckTileInventory(blockRole: BlockRole.DECORATIVE)
+}
