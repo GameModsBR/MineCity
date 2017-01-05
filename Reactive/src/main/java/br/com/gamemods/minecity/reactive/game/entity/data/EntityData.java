@@ -35,6 +35,8 @@ public interface EntityData
     @NotNull
     Optional<ChunkData> getChunkData();
 
+    boolean sendInventoryUpdate();
+
     boolean sendBlockUpdate(int x, int y, int z);
 
     default boolean sendBlockUpdate(Point point)

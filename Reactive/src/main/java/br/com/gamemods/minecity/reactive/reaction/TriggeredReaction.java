@@ -19,9 +19,19 @@ public abstract class TriggeredReaction implements Reaction
     private List<ReactionListener> denialListeners;
     private List<ReactionListener> allowListeners;
 
+    public TriggeredReaction onDenySendInventoryUpdate()
+    {
+        return onDenyDo(EntityData::sendInventoryUpdate);
+    }
+
     public TriggeredReaction onDenySendBlockUpdateAt(int x, int y, int z)
     {
         return onDenyDo(entity-> entity.sendBlockUpdate(x, y, z));
+    }
+
+    public TriggeredReaction onDenySendBlockUpdateAt(Point point)
+    {
+        return onDenySendBlockUpdateAt(point.x, point.y, point.z);
     }
 
     public TriggeredReaction onDenySendBlockUpdateAt(Point first, Point... points)

@@ -40,6 +40,26 @@ public class SpongeEntityData implements EntityData
     }
 
     @Override
+    public boolean sendInventoryUpdate()
+    {
+        if(!(entity instanceof Player))
+            return false;
+
+        try
+        {
+            EntityPlayerMP player = (EntityPlayerMP) entity;
+            player.inventoryContainer.inventoryItemStacks.clear();
+            player.inventoryContainer.detectAndSendChanges();
+            return true;
+        }
+        catch(Error | Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
     public boolean sendBlockUpdate(int x, int y, int z)
     {
         if(entity instanceof Viewer)

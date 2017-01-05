@@ -59,7 +59,6 @@ blockType([
         block('EndPortal'), 'minecraft:end_portal_frame',
         block('Beacon'), 'minecraft:beacon',
         block('DaylightDetector'), 'minecraft:daylight_detector',
-        block('FlowerPot'), 'minecraft:flower_pot',
         block('Note'), 'minecraft:noteblock',
         block('Structure'), 'minecraft:structure_block',
 
@@ -70,6 +69,12 @@ blockType([
         'minecraft:powered_repeater'
 ]) {
     setReactive modifiableBlock
+}
+
+blockType([
+        block('FlowerPot'), 'minecraft:flower_pot',
+]) {
+    setReactive new FlowerPot()
 }
 
 blockType([
