@@ -13,6 +13,8 @@ import org.spongepowered.api.data.manipulator.mutable.entity.FoodData;
 import org.spongepowered.api.effect.Viewer;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Chunk;
 
@@ -58,7 +60,12 @@ public class SpongeEntityData implements EntityData
             try
             {
                 EntityPlayerMP player = (EntityPlayerMP) entity;
-                ((List) inventoryItemStacks.get(player.inventoryContainer)).clear();
+
+                @SuppressWarnings("unchecked")
+                List<ItemStack> list = ((List) inventoryItemStacks.get(player.inventoryContainer));
+                for(int i = 0; i < list.size(); i++)
+                    list.set(i, ItemStack.of(ItemTypes.COBBLESTONE, 3));
+
                 player.inventoryContainer.detectAndSendChanges();
                 return true;
             }
