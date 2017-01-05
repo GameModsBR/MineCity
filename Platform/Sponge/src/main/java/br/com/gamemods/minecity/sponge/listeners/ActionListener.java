@@ -102,6 +102,7 @@ public class ActionListener
     {
         HandType handType = event.getHandType();
         Hand hand = Hand.from(handType);
+        BlockSnapshot targetBlock = event.getTargetBlock();
         if(subject instanceof Player)
         {
             Player player = (Player) subject;
@@ -115,7 +116,7 @@ public class ActionListener
             {
                 event.setCancelled(true);
 
-                BlockPos block = sponge.blockPos(event.getTargetBlock().getLocation().get());
+                BlockPos block = sponge.blockPos(targetBlock.getLocation().get());
                 DisplayedSelection<?> selection = sponge.player(player).getSelection(block.world);
 
                 if(player.get(Keys.IS_SNEAKING).orElse(false))
@@ -135,11 +136,19 @@ public class ActionListener
             }
         }
 
+        if(targetBlock.getWorldUniqueId().toString().equals("00000000-0000-0000-0000-000000000000"))
+        {
+            event.setCancelled(true);
+            event.setUseBlockResult(Tristate.FALSE);
+            event.setUseItemResult(Tristate.FALSE);
+            throw new IllegalArgumentException("An InteractBlockEvent.Secondary has been fired with an invalid BlockSnapshot: "+targetBlock);
+        }
+
         Direction side = sponge.direction(event.getTargetSide());
         PrecisePoint point = event.getInteractionPoint().map(sponge::precisePoint).orElse(null);
 
         EntityData entity = ReactiveLayer.getEntityData(subject).get();
-        ReactiveBlock block = sponge.reactiveBlock(event.getTargetBlock(), subject.getWorld());
+        ReactiveBlock block = sponge.reactiveBlock(targetBlock, subject.getWorld());
         ReactiveItemStack stack = getStackFromEntity(subject, handType);
 
         InteractReaction reaction = entity.onRightClick(hand, stack, block, side, point);
