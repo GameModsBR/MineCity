@@ -155,6 +155,19 @@ public class MineCitySponge implements Server
         throw new UnsupportedOperationException("Unsupported subject: "+subject.getClass()+" "+subject);
     }
 
+    public MinecraftEntity entity(Entity subject)
+    {
+        if(subject instanceof MixedEntity)
+        {
+            MixedEntity mix = (MixedEntity) subject;
+            SpongeMinecraftEntity entity = mix.getMinecraftEntity();
+            if(entity != null)
+                return entity;
+        }
+
+        return entity(subject, ()-> (EntitySource) createSender(subject, subject instanceof CommandSource? (CommandSource)subject : null));
+    }
+
     public MinecraftEntity entity(Entity subject, Supplier<EntitySource> source)
     {
         if(subject instanceof MixedEntity)

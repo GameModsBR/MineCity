@@ -5,12 +5,14 @@ import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
+import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.reactive.ReactiveLayer;
 import br.com.gamemods.minecity.reactive.game.block.BlockChange;
 import br.com.gamemods.minecity.reactive.game.block.Modification;
 import br.com.gamemods.minecity.reactive.game.block.PreModification;
 import br.com.gamemods.minecity.reactive.game.block.ReactiveBlock;
 import br.com.gamemods.minecity.reactive.game.block.data.BlockSnapshotData;
+import br.com.gamemods.minecity.reactive.game.entity.ReactiveEntity;
 import br.com.gamemods.minecity.reactive.game.entity.data.EntityData;
 import br.com.gamemods.minecity.reactive.game.entity.data.Hand;
 import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
@@ -32,6 +34,7 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
+import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.HandInteractEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.filter.cause.Named;
@@ -79,6 +82,19 @@ public class ActionListener
         return entity instanceof ArmorEquipable
                 ? sponge.reactiveStack(((ArmorEquipable)entity).getItemInHand(hand).orElse(null))
                 : null;
+    }
+
+    @Listener(order = Order.FIRST, beforeModifications = true)
+    public void onItemSpawn(SpawnEntityEvent event)
+    {
+        event.getEntities().removeIf(subject-> {
+            Optional<ReactiveEntity> opt = ReactiveLayer.getEntityReactor().getReactiveEntity(subject);
+            if(!opt.isPresent())
+                return false;
+
+            MinecraftEntity entity = sponge.entity(subject);
+            return opt.get().reactSpawn(entity, sponge.entityPos(subject.getLocation())).can(sponge.mineCity, entity).isPresent();
+        });
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)

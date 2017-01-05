@@ -5,6 +5,7 @@ import br.com.gamemods.minecity.api.command.CommandSender;
 import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.EntityID;
 import br.com.gamemods.minecity.api.permission.Identity;
+import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.api.world.MinecraftEntity;
 import br.com.gamemods.minecity.sponge.MineCitySponge;
 import br.com.gamemods.minecity.sponge.cmd.EntitySource;
@@ -78,6 +79,12 @@ public class SpongeMinecraftEntity implements MinecraftEntity
     public CommandSender getCommandSender()
     {
         return sender;
+    }
+
+    @Override
+    public EntityPos getPosition()
+    {
+        return sponge.entityPos(entity);
     }
 
     @Override

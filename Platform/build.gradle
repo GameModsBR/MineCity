@@ -27,22 +27,3 @@ subprojects {
         }
     }
 }
-
-project(':Platform:Bukkit') {
-    apply plugin: 'java'
-    apply plugin: 'com.github.johnrengelman.shadow'
-
-    dependencies {
-        /*
-        compile project(':Core')
-        compile project(path: ':Economy', configuration: 'compile')
-        //compile files('run/BuildTools/Spigot/Spigot-Server/target/original-spigot-1.10.2-R0.1-SNAPSHOT.jar')
-        //compile files('run/BuildTools/spigot-1.10.2.jar')
-        */
-        compile 'org.spigotmc:spigot-api:1.10.2-R0.1-SNAPSHOT'
-        compile 'org.mcstats.bukkit:metrics:R8-SNAPSHOT'
-    }
-
-    jar.enabled = false
-    build.finalizedBy shadowJar
-}

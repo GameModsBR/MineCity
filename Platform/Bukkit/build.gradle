@@ -1,0 +1,10 @@
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+dependencies {
+    compile 'org.spigotmc:spigot-api:1.10.2-R0.1-SNAPSHOT'
+    compile 'org.mcstats.bukkit:metrics:R8-SNAPSHOT'
+}
+
+jar.enabled = false
+build.finalizedBy shadowJar

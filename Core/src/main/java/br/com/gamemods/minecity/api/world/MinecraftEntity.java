@@ -25,6 +25,8 @@ public interface MinecraftEntity extends Identifiable<UUID>, Permissible
     @Nullable
     CommandSender getCommandSender();
 
+    EntityPos getPosition();
+
     @NotNull
     @Override
     default Identity<UUID> getIdentity()
