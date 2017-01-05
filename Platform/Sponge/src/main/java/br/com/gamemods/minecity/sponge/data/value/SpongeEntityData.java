@@ -9,6 +9,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.network.play.server.SPacketUpdateHealth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.manipulator.mutable.entity.FoodData;
 import org.spongepowered.api.effect.Viewer;
 import org.spongepowered.api.entity.Entity;
@@ -82,7 +83,9 @@ public class SpongeEntityData implements EntityData
     {
         if(entity instanceof Viewer)
         {
-            ((Viewer) entity).sendBlockChange(x, y, z, entity.getWorld().getBlock(x, y, z));
+            Viewer viewer = (Viewer) entity;
+            viewer.sendBlockChange(x, y, z, BlockTypes.AIR.getDefaultState());
+            viewer.sendBlockChange(x, y, z, entity.getWorld().getBlock(x, y, z));
             return true;
         }
 
