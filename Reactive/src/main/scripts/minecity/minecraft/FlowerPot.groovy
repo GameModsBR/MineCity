@@ -8,7 +8,7 @@ class FlowerPot implements ReactiveBlockType {
 
     @Override
     Reaction reactRightClick(Interaction event) {
-        if(event.blockState.getTraitString('contents') == 'empty')
+        if(event.blockState.getTraitString('minecraft:flower_pot_contents') == 'empty')
             new SingleBlockReaction(event.block.position, PermissionFlag.MODIFY)
                 .onDenySendBlockUpdateAt(event.block.position)
                 .onDenySendInventoryUpdate()
