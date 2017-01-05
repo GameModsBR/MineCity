@@ -5,8 +5,10 @@ import br.com.gamemods.minecity.reactive.game.entity.data.EntityData;
 import br.com.gamemods.minecity.reactive.game.server.data.ChunkData;
 import br.com.gamemods.minecity.sponge.data.manipulator.reactive.SpongeManipulator;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.Container;
 import net.minecraft.network.play.server.SPacketUpdateHealth;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.data.manipulator.mutable.entity.FoodData;
 import org.spongepowered.api.effect.Viewer;
 import org.spongepowered.api.entity.Entity;
@@ -14,10 +16,17 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Chunk;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public class SpongeEntityData implements EntityData
 {
+    @Nullable
+    private static final Field inventoryItemStacks = Arrays.stream(Container.class.getDeclaredFields())
+            .filter(fd-> List.class.isAssignableFrom(fd.getType())).findFirst().orElse(null);
+
     private final Entity entity;
     private final SpongeManipulator manipulator;
 
@@ -45,18 +54,20 @@ public class SpongeEntityData implements EntityData
         if(!(entity instanceof Player))
             return false;
 
-        try
-        {
-            EntityPlayerMP player = (EntityPlayerMP) entity;
-            player.inventoryContainer.inventoryItemStacks.clear();
-            player.inventoryContainer.detectAndSendChanges();
-            return true;
-        }
-        catch(Error | Exception e)
-        {
-            e.printStackTrace();
-            return false;
-        }
+        if(inventoryItemStacks != null)
+            try
+            {
+                EntityPlayerMP player = (EntityPlayerMP) entity;
+                ((List) inventoryItemStacks.get(player.inventoryContainer)).clear();
+                player.inventoryContainer.detectAndSendChanges();
+                return true;
+            }
+            catch(Error | Exception e)
+            {
+                e.printStackTrace();
+            }
+
+        return false;
     }
 
     @Override
