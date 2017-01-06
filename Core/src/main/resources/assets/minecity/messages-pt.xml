@@ -1815,6 +1815,10 @@
             <msg id="city-in-sale"><click><suggest cmd='/cidade comprar'/><gold>A cidade ${name} está a venda! Digite /cidade comprar para comprar por ${money}</gold></click></msg>
             <msg id="plot-in-sale"><click><suggest cmd='/lote comprar'/><gold>O lote ${name} está a venda! Digite /lote comprar para comprar por ${money}</gold></click></msg>
         </enter>
+        <harvest>
+            <msg id="chorus-no-flower">Você não pode colher uma planta chorus que não tenha nenhuma flor.</msg>
+            <msg id="not-fully-grown">Esta plantação ainda não cresceu completamente.</msg>
+        </harvest>
     </action>
     <tool>
         <selection>

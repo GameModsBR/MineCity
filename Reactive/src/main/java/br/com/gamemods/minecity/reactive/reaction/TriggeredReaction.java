@@ -1,7 +1,9 @@
 package br.com.gamemods.minecity.reactive.reaction;
 
+import br.com.gamemods.minecity.MineCity;
 import br.com.gamemods.minecity.api.CollectionUtil;
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.Point;
@@ -49,9 +51,68 @@ public abstract class TriggeredReaction implements Reaction
 
     public TriggeredReaction onDenyDo(Consumer<EntityData> entityConsumer)
     {
-        return addDenialListener((reaction, permissible, flag, pos, message) ->
+        return addDenialListener((mineCity, reaction, permissible, flag, pos, message) ->
                 ReactiveLayer.getEntityData(permissible).ifPresent(entityConsumer)
         );
+    }
+
+    public TriggeredReaction onDenySendMessage(Message message)
+    {
+        return addDenialListener((mineCity, reaction, permissible, flag, pos, denial) -> permissible.send(message));
+    }
+
+    public TriggeredReaction onDenySendMessage(Message[] messages)
+    {
+        return addDenialListener((mineCity, reaction, permissible, flag, pos, denial) -> permissible.send(messages));
+    }
+
+    public TriggeredReaction onDenySendDenialMessage(Message message)
+    {
+        return addDenialListener((mineCity, reaction, permissible, flag, pos, denial) -> {
+            message.lastFlag = flag;
+            permissible.send(FlagHolder.wrapDeny(message));
+        });
+    }
+
+    public TriggeredReaction onDenySendDenialMessage(Message[] messages)
+    {
+        return addDenialListener((mineCity, reaction, permissible, flag, pos, denial) -> {
+            for(int i = 0; i < messages.length; i++)
+            {
+                messages[i].lastFlag = flag;
+                messages[i] = FlagHolder.wrapDeny(messages[i]);
+            }
+
+            Arrays.stream(messages).forEach(message -> message.lastFlag = flag);
+            permissible.send(messages);
+        });
+    }
+
+    public TriggeredReaction onDenySendDenialMessage(PermissionFlag flag, Message message)
+    {
+        return addDenialListener((mineCity, reaction, permissible, denialFlag, pos, denial) -> {
+            message.lastFlag = flag;
+            permissible.send(FlagHolder.wrapDeny(message));
+        });
+    }
+
+    public TriggeredReaction onDenySendDenialMessage(PermissionFlag flag, Message[] messages)
+    {
+        return addDenialListener((mineCity, reaction, permissible, denialFlag, pos, denial) -> {
+            for(int i = 0; i < messages.length; i++)
+            {
+                messages[i].lastFlag = flag;
+                messages[i] = FlagHolder.wrapDeny(messages[i]);
+            }
+
+            Arrays.stream(messages).forEach(message -> message.lastFlag = flag);
+            permissible.send(messages);
+        });
+    }
+
+    public TriggeredReaction onAllowExecNextTick(Runnable runnable)
+    {
+        return addAllowListener((mineCity, reaction, permissible, flag, pos, message) -> mineCity.server.callSyncMethod(runnable));
     }
 
     public TriggeredReaction addDenialListener(ReactionListener listener)
@@ -70,19 +131,20 @@ public abstract class TriggeredReaction implements Reaction
         return this;
     }
 
-    protected void onDeny(Permissible permissible, PermissionFlag flag, BlockPos pos, Message message)
+    protected void onDeny(MineCity mineCity, Permissible permissible, PermissionFlag flag, BlockPos pos,
+                          Message message)
     {
         if(denialListeners == null)
             return;
 
-        denialListeners.forEach(listener -> listener.postReaction(this, permissible, flag, pos, message));
+        denialListeners.forEach(listener -> listener.postReaction(mineCity, this, permissible, flag, pos, message));
     }
 
-    protected void onAllow(Permissible permissible, PermissionFlag flag, BlockPos pos)
+    protected void onAllow(MineCity mineCity, Permissible permissible, PermissionFlag flag, BlockPos pos)
     {
         if(allowListeners == null)
             return;
 
-        allowListeners.forEach(listener -> listener.postReaction(this, permissible, flag, pos, null));
+        allowListeners.forEach(listener -> listener.postReaction(mineCity, this, permissible, flag, pos, null));
     }
 }

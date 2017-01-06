@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -74,6 +75,56 @@ public interface BlockStateData extends SupplierBlockStateData
     default String getTraitString(String traitId)
     {
         return getTrait(traitId).map(Object::toString).orElse("");
+    }
+
+    <T extends Comparable<T>> Optional<BlockStateData> withTrait(BlockTraitData<T> trait, T value);
+
+    default <T extends Comparable<T>> Optional<BlockStateData> withTrait(String traitId, Object value)
+    {
+        if(value == null)
+            return Optional.empty();
+
+        @SuppressWarnings("unchecked")
+        BlockTraitData<T> trait = (BlockTraitData) ReactiveLayer.getBlockTrait(traitId).orElse(null);
+        if(trait == null)
+            return Optional.empty();
+
+        Function<Object, Object> caster;
+        Class<T> valueClass = trait.getValueClass();
+        if(valueClass.isInstance(value))
+            caster = Function.identity();
+        else if(valueClass.isAssignableFrom(Integer.class))
+            caster = obj -> Integer.parseInt(obj.toString());
+        else if(valueClass.isAssignableFrom(Boolean.class))
+            caster = obj -> Boolean.parseBoolean(obj.toString());
+        else
+            return Optional.empty();
+
+        try
+        {
+            value = caster.apply(value);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+
+        if(value == null)
+            return Optional.empty();
+
+        T casted;
+        try
+        {
+            casted = valueClass.cast(value);
+        }
+        catch(ClassCastException e)
+        {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+
+        return withTrait(trait, casted);
     }
 
     /**

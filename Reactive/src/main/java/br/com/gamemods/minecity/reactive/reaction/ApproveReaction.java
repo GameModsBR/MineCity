@@ -25,7 +25,7 @@ public class ApproveReaction extends TriggeredReaction
     @Override
     public Stream<Message> stream(MineCity mineCity, Permissible permissible)
     {
-        onAllow(permissible, flag, pos);
+        onAllow(mineCity, permissible, flag, pos);
         return Stream.empty();
     }
 }

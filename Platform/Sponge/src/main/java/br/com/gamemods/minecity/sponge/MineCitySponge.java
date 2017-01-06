@@ -29,6 +29,7 @@ import org.spongepowered.api.command.source.ProxySource;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.scheduler.SpongeExecutorService;
@@ -72,6 +73,11 @@ public class MineCitySponge implements Server
         });
 
         mineCity = new MineCity(this, config, transformer);
+    }
+
+    public Cause cause()
+    {
+        return Cause.source(plugin.container).build();
     }
 
     public ChunkPos chunk(Chunk chunk)

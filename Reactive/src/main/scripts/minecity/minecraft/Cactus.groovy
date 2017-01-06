@@ -12,9 +12,11 @@ class Cactus implements ReactiveBlockType {
 
     @Override
     Reaction reactBeingBroken(Modification event) {
-        if(event.chunk.getBlockTypeData(event.position.add(Direction.DOWN)) == event.blockChange.original.blockTypeData)
-            new SingleBlockReaction(event.position, PermissionFlag.HARVEST)
-        else
-            new SingleBlockReaction(event.position, PermissionFlag.MODIFY)
+        event.chunk.getBlockTypeData(event.position.add(Direction.DOWN)).with {
+            if (it == event.blockChange.original.blockTypeData || it.matches('minecraft:air'))
+                new SingleBlockReaction(event.position, PermissionFlag.HARVEST)
+            else
+                new SingleBlockReaction(event.position, PermissionFlag.MODIFY)
+        }
     }
 }

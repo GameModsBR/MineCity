@@ -65,12 +65,12 @@ public class BlockAndSidesReaction extends TriggeredReaction
             if(denial.isPresent())
             {
                 Message message = denial.get();
-                onDeny(permissible, flag, pos, message);
+                onDeny(mineCity, permissible, flag, pos, message);
                 return message;
             }
             else
             {
-                onAllow(permissible, flag, pos);
+                onAllow(mineCity, permissible, flag, pos);
                 return null;
             }
         }).filter(m-> m != null);

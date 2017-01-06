@@ -32,9 +32,9 @@ public class DoubleBlockReaction extends TriggeredReaction
             Optional<Message> denial = mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos)
                     .can(permissible, flag);
             if(denial.isPresent())
-                onDeny(permissible, flag, pos, denial.get());
+                onDeny(mineCity, permissible, flag, pos, denial.get());
             else
-                onAllow(permissible, flag, pos);
+                onAllow(mineCity, permissible, flag, pos);
             return denial;
         }).filter(Optional::isPresent).map(Optional::get);
     }

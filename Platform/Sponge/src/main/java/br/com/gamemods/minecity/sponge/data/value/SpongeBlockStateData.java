@@ -33,13 +33,22 @@ public class SpongeBlockStateData implements BlockStateData
     @Override
     public <V extends Comparable<V>> Optional<V> getTrait(BlockTraitData<V> traitData)
     {
-        BlockTrait<V> trait;
+        return blockState.getTraitValue(getBlockTrait(traitData));
+    }
+
+    private <V extends Comparable<V>> BlockTrait<V> getBlockTrait(BlockTraitData<V> traitData)
+    {
         if(traitData instanceof SpongeBlockTraitData)
-            trait = ((SpongeBlockTraitData<V>) traitData).trait;
+            return  ((SpongeBlockTraitData<V>) traitData).trait;
         else
             throw new UnsupportedOperationException("Unsupported traitData: "+traitData);
+    }
 
-        return blockState.getTraitValue(trait);
+    @Override
+    public <T extends Comparable<T>> Optional<BlockStateData> withTrait(BlockTraitData<T> trait, T value)
+    {
+        BlockTrait<T> spongeTrait = getBlockTrait(trait);
+        return blockState.withTrait(spongeTrait, value).map(manipulator.block::getBlockStateData);
     }
 
     @NotNull

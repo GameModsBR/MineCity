@@ -176,3 +176,7 @@ blockType('minecraft:pumpkin') {
 blockType(['minecraft:reeds', 'minecraft:cactus']) {
     setReactive new Cactus()
 }
+
+blockType(['minecraft:chorus_flower', 'minecraft:chorus_plant']) {
+    setReactive new Chorus(fruit: blockType('minecraft:chorus_flower', null))
+}

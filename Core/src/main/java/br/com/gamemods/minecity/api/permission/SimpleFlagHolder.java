@@ -75,6 +75,9 @@ public class SimpleFlagHolder implements FlagHolder
     @Override
     public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
     {
+        if(owner().equals(entity.identity()))
+            return Optional.empty();
+
         return Optional.ofNullable(mark(generalPermissions.get(action), action));
     }
 
@@ -82,6 +85,9 @@ public class SimpleFlagHolder implements FlagHolder
     @Override
     public Optional<Message> can(@NotNull Identity<?> identity, @NotNull PermissionFlag action)
     {
+        if(owner().equals(identity))
+            return Optional.empty();
+
         return Optional.ofNullable(mark(generalPermissions.get(action), action));
     }
 

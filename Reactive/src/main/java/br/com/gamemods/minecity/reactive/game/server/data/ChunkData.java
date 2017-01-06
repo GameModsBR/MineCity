@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.reactive.game.server.data;
 
+import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
 import br.com.gamemods.minecity.reactive.game.block.data.BlockStateData;
@@ -31,12 +32,11 @@ public interface ChunkData extends SupplierChunkData
     WorldData getWorldData();
 
     /**
-     * A tile entity that is inside this chunk.
+     * A tile entity from the world checking this chunk first.
      * @param pos The coordinates are related to the world
-     * @throws IndexOutOfBoundsException If the position is not inside this chunk
      */
     @NotNull
-    Optional<TileEntityData> getTileEntityData(BlockPos pos) throws IndexOutOfBoundsException;
+    Optional<TileEntityData> getTileEntityData(Point pos);
 
     /**
      * Returns itself
@@ -56,4 +56,12 @@ public interface ChunkData extends SupplierChunkData
     {
         return getBlockStateData(pos).getBlockTypeData();
     }
+
+    boolean setAir(Point pos);
+
+    boolean setBlock(Point pos, BlockStateData state);
+
+    boolean drop(Point pos);
+
+    boolean dropAsItem(Point pos);
 }

@@ -58,6 +58,9 @@ public class ExceptFlagHolder extends SimpleFlagHolder
     @Override
     public Optional<Message> can(@NotNull Identity<?> identity, @NotNull PermissionFlag action)
     {
+        if(owner().equals(identity))
+            return Optional.empty();
+
         Status status = strictPermission.getOrDefault(action, emptyMap()).get(identity);
         if(status != null)
         {
@@ -103,6 +106,9 @@ public class ExceptFlagHolder extends SimpleFlagHolder
     @Override
     public Optional<Message> can(@NotNull MinecraftEntity entity, @NotNull PermissionFlag action)
     {
+        if(owner().equals(entity.identity()))
+            return Optional.empty();
+
         Status direct = getDirectPermission(entity, action);
         if(direct != null)
         {

@@ -75,6 +75,9 @@ public class MineCitySpongePlugin
     @ConfigDir(sharedRoot = false)
     private Path configDir;
 
+    @Inject
+    public PluginContainer container;
+
     private MineCityConfig config;
     private SpongeTransformer transformer;
     private String lang;
