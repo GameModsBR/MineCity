@@ -3,9 +3,12 @@ package br.com.gamemods.minecity.reactive.game.block;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.reactive.game.block.data.BlockStateData;
+import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockStateData;
 import br.com.gamemods.minecity.reactive.game.entity.data.EntityData;
 import br.com.gamemods.minecity.reactive.game.entity.data.Hand;
 import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
+import br.com.gamemods.minecity.reactive.game.server.data.ChunkData;
+import br.com.gamemods.minecity.reactive.game.server.data.supplier.SupplierChunkData;
 import br.com.gamemods.minecity.reactive.reaction.InteractReaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public final class Interaction
+public final class Interaction implements SupplierBlockStateData, SupplierChunkData
 {
     private final Click click;
     private final EntityData entity;
@@ -38,6 +41,20 @@ public final class Interaction
         this.block = block;
         this.blockFace = blockFace;
         this.clickPoint = clickPoint;
+    }
+
+    @NotNull
+    @Override
+    public BlockStateData getBlockStateData()
+    {
+        return block.getBlockStateData();
+    }
+
+    @NotNull
+    @Override
+    public ChunkData getChunkData()
+    {
+        return block.getChunkData();
     }
 
     public InteractReaction result()

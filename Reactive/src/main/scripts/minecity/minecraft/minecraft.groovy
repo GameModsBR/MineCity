@@ -1,7 +1,11 @@
 package minecity.minecraft
 
-def block(name) {
-    return "net.minecraft.block.Block$name"
+String block(name) {
+    "net.minecraft.block.Block$name"
+}
+
+String item(name) {
+    "net.minecraft.item.Item$name"
 }
 
 ////////////////////////////// CONTAINERS //////////////////////////////
@@ -35,6 +39,18 @@ blockType([
         block('Cake'), 'minecraft:cake'
 ]) {
     setReactive new Cake()
+}
+
+itemType([
+        item('Record'),
+        'minecraft:record_13', 'minecraft:record_cat',
+        'minecraft:record_blocks', 'minecraft:record_chirp',
+        'minecraft:record_far', 'minecraft:record_mall',
+        'minecraft:record_mellohi', 'minecraft:record_stal',
+        'minecraft:record_strad', 'minecraft:record_ward',
+        'minecraft:record_11', 'minecraft:record_wait',
+]) {
+    setReactive new Record()
 }
 
 //////////////////////// DECORATIVE CONTAINERS ////////////////////////

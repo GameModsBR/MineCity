@@ -1,6 +1,8 @@
 package br.com.gamemods.minecity.reactive.game.item.data;
 
+import br.com.gamemods.minecity.reactive.game.item.ReactiveItem;
 import br.com.gamemods.minecity.reactive.game.item.data.supplier.SupplierItemData;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -12,6 +14,8 @@ public interface ItemData
     Optional<String> getItemIdName();
     Optional<Integer> getItemId();
     Object getItem();
+
+    void setReactive(@Nullable ReactiveItem reactiveItem);
 
     default boolean matches(Object data)
     {
@@ -27,4 +31,6 @@ public interface ItemData
 
         return false;
     }
+
+    Optional<ReactiveItem> getReactiveItemType();
 }

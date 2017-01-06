@@ -53,7 +53,7 @@ public interface EntityData
 
         event.getReactionItemFirst().combineAction(stack.rightClickFirst(event));
         event.getReactionBlock().combineBlock(block.rightClick(event));
-        event.getReactionItemLast().combineItem(stack.rightClickFirst(event));
+        event.getReactionItemLast().combineItem(stack.rightClickLast(event));
 
         return event.result();
     }

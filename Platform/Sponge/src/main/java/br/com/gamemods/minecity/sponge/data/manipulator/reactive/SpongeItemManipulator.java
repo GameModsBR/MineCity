@@ -1,6 +1,8 @@
 package br.com.gamemods.minecity.sponge.data.manipulator.reactive;
 
 import br.com.gamemods.minecity.reactive.game.item.ReactiveItem;
+import br.com.gamemods.minecity.reactive.game.item.ReactiveItemState;
+import br.com.gamemods.minecity.reactive.game.item.ReactiveItemTrait;
 import br.com.gamemods.minecity.reactive.game.item.data.*;
 import br.com.gamemods.minecity.reactive.game.item.data.supplier.SupplierItemData;
 import br.com.gamemods.minecity.reactive.reactor.ItemReactor;
@@ -11,7 +13,9 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 
+import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static br.com.gamemods.minecity.sponge.data.manipulator.reactive.SpongeManipulator.handleSupplier;
 
@@ -23,6 +27,13 @@ public class SpongeItemManipulator implements ItemManipulator, ItemReactor
     public SpongeItemManipulator(SpongeManipulator manipulator)
     {
         this.manipulator = manipulator;
+    }
+
+    @Override
+    public Collection<ItemData> findItemTypes(Class<?> clazz)
+    {
+        return Sponge.getGame().getRegistry().getAllOf(ItemType.class).stream().filter(clazz::isInstance)
+                .map(this::getItemData).collect(Collectors.toList());
     }
 
     @NotNull
@@ -48,6 +59,20 @@ public class SpongeItemManipulator implements ItemManipulator, ItemReactor
                 SupplierItemData::getItemData,
                 ()-> new SpongeItemData(manipulator, itemType)
         );
+    }
+
+    @NotNull
+    @Override
+    public Optional<ReactiveItemState> getReactiveItemState(ItemStateData ItemState)
+    {
+        return Optional.empty();
+    }
+
+    @NotNull
+    @Override
+    public <T> Optional<ReactiveItemTrait<T>> getReactiveItemTrait(ItemTraitData<T> itemTrait)
+    {
+        return Optional.empty();
     }
 
     @NotNull

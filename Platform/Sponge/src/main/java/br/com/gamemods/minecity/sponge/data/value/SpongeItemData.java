@@ -1,7 +1,9 @@
 package br.com.gamemods.minecity.sponge.data.value;
 
+import br.com.gamemods.minecity.reactive.game.item.ReactiveItem;
 import br.com.gamemods.minecity.reactive.game.item.data.ItemData;
 import br.com.gamemods.minecity.sponge.data.manipulator.reactive.SpongeManipulator;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.item.ItemType;
 
 import java.util.Optional;
@@ -11,10 +13,25 @@ public class SpongeItemData implements ItemData
     private final SpongeManipulator manipulator;
     private final ItemType item;
 
+    @Nullable
+    private ReactiveItem reactive;
+
     public SpongeItemData(SpongeManipulator manipulator, ItemType item)
     {
         this.manipulator = manipulator;
         this.item = item;
+    }
+
+    @Override
+    public Optional<ReactiveItem> getReactiveItemType()
+    {
+        return Optional.ofNullable(reactive);
+    }
+
+    @Override
+    public void setReactive(@Nullable ReactiveItem reactive)
+    {
+        this.reactive = reactive;
     }
 
     @Override

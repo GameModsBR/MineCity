@@ -2,6 +2,7 @@ package br.com.gamemods.minecity.reactive.game.item.data;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.Optional;
 
 public interface ItemManipulator
@@ -17,4 +18,6 @@ public interface ItemManipulator
 
     @NotNull
     Optional<ItemTraitData<?>> getItemTraitData(@NotNull Object trait);
+
+    Collection<ItemData> findItemTypes(Class<?> clazz);
 }

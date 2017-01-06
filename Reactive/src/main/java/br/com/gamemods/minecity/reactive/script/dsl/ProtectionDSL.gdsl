@@ -8,25 +8,3 @@ contributor(ctx) {
     if (protectionScript)
         delegatesTo(protectionScript)
 }
-
-ctx = context(scope: closureScope())
-
-contributor(ctx, {
-    def call = enclosingCall("blockType")
-    if (call) {
-        def method = call.bind()
-        def clazz = method?.containingClass
-        if ('br.com.gamemods.minecity.reactive.script.ReactiveScript' == clazz?.qualName) {
-            delegatesTo(findClass('br.com.gamemods.minecity.reactive.game.block.data.BlockTypeData')?.getNavigationElement())
-        }
-    }
-
-    call = enclosingCall("blockTrait")
-    if (call) {
-        def method = call.bind()
-        def clazz = method?.containingClass
-        if ('br.com.gamemods.minecity.reactive.script.ReactiveScript' == clazz?.qualName) {
-            delegatesTo(findClass('br.com.gamemods.minecity.reactive.game.block.data.BlockTraitData')?.getNavigationElement())
-        }
-    }
-})

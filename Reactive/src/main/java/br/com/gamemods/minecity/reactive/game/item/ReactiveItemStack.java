@@ -9,6 +9,9 @@ import br.com.gamemods.minecity.reactive.reaction.NoReaction;
 import br.com.gamemods.minecity.reactive.reaction.Reaction;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+import java.util.stream.Stream;
+
 public final class ReactiveItemStack implements SupplierItemStackData
 {
     @NotNull
@@ -17,6 +20,18 @@ public final class ReactiveItemStack implements SupplierItemStackData
     public ReactiveItemStack(@NotNull ItemStackData stack)
     {
         this.stack = stack;
+    }
+
+    @NotNull
+    public Stream<ReactiveItemProperty> propertyStream()
+    {
+        return Stream.concat(
+                Stream.of(
+                        stack.getItemData().getReactiveItemType().orElse(null),
+                        stack.getItemStateData().getReactiveItemState().orElse(null)
+                ),
+                stack.getItemStateData().reactiveItemTraitStream()
+        ).filter(Objects::nonNull);
     }
 
     @NotNull
@@ -29,13 +44,23 @@ public final class ReactiveItemStack implements SupplierItemStackData
     @NotNull
     public Reaction rightClickFirst(Interaction event)
     {
-        return NoReaction.INSTANCE;
+        if(event.getStack() != this)  throw new IllegalArgumentException(event.getStack()+" != "+this);
+
+        return propertyStream()
+                .map(prop -> prop.reactRightClickFirst(event))
+                .reduce(Reaction::combine)
+                .orElse(NoReaction.INSTANCE);
     }
 
     @NotNull
     public Reaction rightClickLast(Interaction event)
     {
-        return NoReaction.INSTANCE;
+        if(event.getStack() != this) throw new IllegalArgumentException(event.getStack()+" != "+this);
+
+        return propertyStream()
+                .map(prop -> prop.reactRightClickLast(event))
+                .reduce(Reaction::combine)
+                .orElse(NoReaction.INSTANCE);
     }
 
     public Reaction blockPlace(Modification modification)
