@@ -68,4 +68,21 @@ public class SpongeBlockStateData implements BlockStateData
                 "blockState="+blockState+
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if(this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+
+        SpongeBlockStateData that = (SpongeBlockStateData) o;
+
+        return blockState.equals(that.blockState);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return blockState.hashCode();
+    }
 }

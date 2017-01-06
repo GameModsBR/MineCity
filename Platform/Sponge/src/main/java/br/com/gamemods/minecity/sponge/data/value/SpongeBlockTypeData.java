@@ -83,4 +83,21 @@ public class SpongeBlockTypeData implements BlockTypeData
                 ", reactive="+reactive+
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if(this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+
+        SpongeBlockTypeData that = (SpongeBlockTypeData) o;
+
+        return blockType.equals(that.blockType);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return blockType.hashCode();
+    }
 }

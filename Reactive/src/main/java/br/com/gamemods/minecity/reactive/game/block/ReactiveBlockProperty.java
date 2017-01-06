@@ -33,4 +33,14 @@ public interface ReactiveBlockProperty
     {
         return NoReaction.INSTANCE;
     }
+
+    default Reaction reactBeingReplaced(Modification event)
+    {
+        return NoReaction.INSTANCE;
+    }
+
+    default Reaction reactBeingBroken(Modification event)
+    {
+        return NoReaction.INSTANCE;
+    }
 }

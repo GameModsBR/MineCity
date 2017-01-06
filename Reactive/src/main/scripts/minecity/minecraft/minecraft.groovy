@@ -163,3 +163,16 @@ blockType([
 ]) {
     setReactive new DragonEgg()
 }
+
+/////////////////////////////// HARVESTS ///////////////////////////////
+blockType('minecraft:melon_block') {
+    setReactive new Melon()
+}
+
+blockType('minecraft:pumpkin') {
+    setReactive new Melon(stem: 'minecraft:pumpkin_stem')
+}
+
+blockType(['minecraft:reeds', 'minecraft:cactus']) {
+    setReactive new Cactus()
+}

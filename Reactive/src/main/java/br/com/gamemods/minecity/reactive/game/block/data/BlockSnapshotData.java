@@ -1,23 +1,23 @@
 package br.com.gamemods.minecity.reactive.game.block.data;
 
-import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.reactive.ReactiveLayer;
 import br.com.gamemods.minecity.reactive.game.block.BlockChange;
 import br.com.gamemods.minecity.reactive.game.block.Modification;
 import br.com.gamemods.minecity.reactive.game.block.PreModification;
+import br.com.gamemods.minecity.reactive.game.block.ReactiveBlockProperty;
 import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockSnapshotData;
 import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
 import br.com.gamemods.minecity.reactive.game.server.data.ChunkData;
 import br.com.gamemods.minecity.reactive.reaction.NoReaction;
 import br.com.gamemods.minecity.reactive.reaction.Reaction;
-import br.com.gamemods.minecity.reactive.reaction.SingleBlockReaction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public interface BlockSnapshotData extends SupplierBlockSnapshotData
 {
@@ -56,10 +56,10 @@ public interface BlockSnapshotData extends SupplierBlockSnapshotData
 
     default Reaction beingReplaced(Modification mod)
     {
-        if(mod.getBlockChange().getReplaced().getBlockTypeData().equals(getBlockTypeData()))
-            return NoReaction.INSTANCE;
+        Function<ReactiveBlockProperty, Reaction> method = mod.getBlockChange().getReplaced()
+                .getBlockTypeData().matches("minecraft:air")? it-> it.reactBeingBroken(mod) : it-> it.reactBeingReplaced(mod);
 
-        return new SingleBlockReaction(getPosition(), PermissionFlag.MODIFY);
+        return ReactiveLayer.getBlockReactor().getReactiveBlockType(getBlockTypeData()).map(method).orElse(NoReaction.INSTANCE);
     }
 
     default Reaction replacing(Modification mod)
