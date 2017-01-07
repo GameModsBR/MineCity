@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.sponge.listeners;
 
+import br.com.gamemods.minecity.api.command.Message;
 import br.com.gamemods.minecity.api.permission.FlagHolder;
 import br.com.gamemods.minecity.api.permission.Permissible;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
@@ -48,6 +49,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.toList;
 
@@ -181,6 +183,45 @@ public class ActionListener
                 notify.set(false);
             }
         });
+    }
+
+    @Listener(order = Order.FIRST, beforeModifications = true)
+    public void onInteractBlock(InteractBlockEvent.Primary event, @Named(NamedCause.SOURCE) Entity subject)
+    {
+        HandType handType = event.getHandType();
+        Hand hand = Hand.from(handType);
+        BlockSnapshot targetBlock = event.getTargetBlock();
+
+        if(targetBlock.getWorldUniqueId().toString().equals("00000000-0000-0000-0000-000000000000"))
+        {
+            event.setCancelled(true);
+            throw new IllegalArgumentException("An InteractBlockEvent.Primary has been fired with an invalid BlockSnapshot: "+targetBlock);
+        }
+
+        Direction side = sponge.direction(event.getTargetSide());
+        PrecisePoint point = event.getInteractionPoint().map(sponge::precisePoint).orElse(null);
+
+        EntityData entity = ReactiveLayer.getEntityData(subject).get();
+        ReactiveBlock block = sponge.reactiveBlock(targetBlock, subject.getWorld());
+        ReactiveItemStack stack = getStackFromEntity(subject, handType);
+
+        InteractReaction reaction = entity.onLeftClick(hand, stack, block, side, point);
+
+        Permissible sender = sponge.permissible(subject);
+        AtomicBoolean notify = new AtomicBoolean(true);
+
+        Consumer<Message> deny = denial-> {
+            event.setCancelled(true);
+            if(notify.get())
+            {
+                sender.send(FlagHolder.wrapDeny(denial));
+                notify.set(false);
+            }
+        };
+
+        reaction.getAction().can(sponge.mineCity, sender).ifPresent(deny);
+        reaction.getUseItem().can(sponge.mineCity, sender).ifPresent(deny);
+        reaction.getUseBlock().can(sponge.mineCity, sender).ifPresent(deny);
     }
 
     @Listener(order = Order.FIRST, beforeModifications = true)

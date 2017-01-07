@@ -46,6 +46,18 @@ public interface EntityData
 
     boolean sendHungerUpdate();
 
+    default InteractReaction onLeftClick(Hand hand, ReactiveItemStack stack, ReactiveBlock block,
+                                          @Nullable Direction side, PrecisePoint point)
+    {
+        Interaction event = new Interaction(Interaction.Click.LEFT, this, hand, stack, block, side, point);
+
+        //event.getReactionItemFirst().combineAction(stack.leftClickFirst(event));
+        event.getReactionBlock().combineBlock(block.leftClick(event));
+        //event.getReactionItemLast().combineItem(stack.leftClickLast(event));
+
+        return event.result();
+    }
+
     default InteractReaction onRightClick(Hand hand, ReactiveItemStack stack, ReactiveBlock block,
                                           @Nullable Direction side, PrecisePoint point)
     {
