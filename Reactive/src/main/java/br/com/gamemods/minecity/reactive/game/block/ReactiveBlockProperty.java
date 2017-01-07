@@ -43,4 +43,9 @@ public interface ReactiveBlockProperty
     {
         return NoReaction.INSTANCE;
     }
+
+    default Reaction reactStateChange(Modification event)
+    {
+        return NoReaction.INSTANCE;
+    }
 }

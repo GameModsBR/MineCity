@@ -56,8 +56,18 @@ public interface BlockSnapshotData extends SupplierBlockSnapshotData
 
     default Reaction beingReplaced(Modification mod)
     {
-        Function<ReactiveBlockProperty, Reaction> method = mod.getBlockChange().getReplaced()
-                .getBlockTypeData().matches("minecraft:air")? it-> it.reactBeingBroken(mod) : it-> it.reactBeingReplaced(mod);
+        BlockChange blockChange = mod.getBlockChange();
+        BlockSnapshotData replaced = blockChange.getReplaced();
+        Function<ReactiveBlockProperty, Reaction> method;
+
+        if(replaced.getBlockTypeData().matches("minecraft:air"))
+            method = it-> it.reactBeingBroken(mod);
+
+        else if(replaced.getBlockTypeData().equals(blockChange.getOriginal().getBlockTypeData()))
+            method = it-> it.reactStateChange(mod);
+
+        else
+            method = it-> it.reactBeingReplaced(mod);
 
         return ReactiveLayer.getBlockReactor().getReactiveBlockType(getBlockTypeData()).map(method).orElse(NoReaction.INSTANCE);
     }

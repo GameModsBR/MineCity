@@ -72,7 +72,6 @@ blockType([
 blockType([
         // Extends Container
         block('CommandBlock'), 'minecraft:command',
-        block('EndPortal'), 'minecraft:end_portal_frame',
         block('Beacon'), 'minecraft:beacon',
         block('DaylightDetector'), 'minecraft:daylight_detector',
         block('Note'), 'minecraft:noteblock',
@@ -85,6 +84,16 @@ blockType([
         'minecraft:powered_repeater'
 ]) {
     setReactive modifiableBlock
+}
+
+blockType([
+        block('EndPortalFrame'), 'minecraft:end_portal_frame'
+]) {
+    setReactive new EndPortalFrame()
+}
+
+itemType('minecraft:ender_eye') {
+    setReactive new EnderEye()
 }
 
 blockType([

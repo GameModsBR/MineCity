@@ -68,7 +68,15 @@ public interface BlockStateData extends SupplierBlockStateData
     @NotNull
     default Optional<?> getTrait(String traitId)
     {
-        return ReactiveLayer.getBlockTrait(traitId).flatMap(this::getTrait);
+        BlockTraitData<?> trait = ReactiveLayer.getBlockTrait(traitId)
+                .orElseGet(() -> getBlockTraits().stream()
+                        .filter(blockTrait -> blockTrait.getName().equals(traitId))
+                        .findFirst().orElse(null));
+
+        if(trait == null)
+            return Optional.empty();
+
+        return getTrait(trait);
     }
 
     @NotNull

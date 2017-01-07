@@ -2,7 +2,6 @@ package br.com.gamemods.minecity.reactive.game.block;
 
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.reactive.game.block.data.BlockRole;
-import br.com.gamemods.minecity.reactive.reaction.NoReaction;
 import br.com.gamemods.minecity.reactive.reaction.Reaction;
 import br.com.gamemods.minecity.reactive.reaction.SingleBlockReaction;
 import org.jetbrains.annotations.NotNull;
@@ -27,16 +26,6 @@ public interface ReactiveBlockType extends ReactiveBlockProperty
     @Override
     default Reaction reactBeingBroken(Modification event)
     {
-        return new SingleBlockReaction(event.getPosition(), PermissionFlag.MODIFY);
-    }
-
-    @Override
-    default Reaction reactBeingReplaced(Modification event)
-    {
-        BlockChange blockChange = event.getBlockChange();
-        if(blockChange.getReplaced().getBlockTypeData().equals(blockChange.getOriginal().getBlockTypeData()))
-            return NoReaction.INSTANCE;
-
         return new SingleBlockReaction(event.getPosition(), PermissionFlag.MODIFY);
     }
 }
