@@ -1,6 +1,6 @@
 package minecity.harvestcraft
 
-import com.pam.harvestcraft.blocks.blocks.BlockPamCake
+import com.pam.harvestcraft.blocks.blocks.*
 import com.pam.harvestcraft.blocks.growables.*
 import minecity.minecraft.*
 import net.minecraft.block.BlockCrops
@@ -24,4 +24,8 @@ blockType([BlockCrops, BlockPamFruit]) {
 
 blockType(BlockPamFruitLog) {
     setReactive new PamFruitLog()
+}
+
+blockType(BlockBaseGarden) {
+    setReactive new PamGarden()
 }
