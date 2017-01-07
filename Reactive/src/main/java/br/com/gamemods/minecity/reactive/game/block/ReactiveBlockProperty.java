@@ -49,7 +49,7 @@ public interface ReactiveBlockProperty
         return NoReaction.INSTANCE;
     }
 
-    default Reaction reactPreModification(PreModification mod)
+    default Reaction reactPreModification(PreModification event)
     {
         return NoReaction.INSTANCE;
     }

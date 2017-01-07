@@ -10,7 +10,17 @@ class MultiPart implements ReactiveBlockType {
     BlockRole blockRole = BlockRole.MODIFIABLE
 
     @Override
-    Reaction reactPreModification(PreModification mod) {
-        new SingleBlockReaction(mod.snapshot.position, PermissionFlag.MODIFY)
+    Reaction reactPreModification(PreModification event) {
+        new SingleBlockReaction(event.snapshot.position, PermissionFlag.MODIFY)
+    }
+
+    @Override
+    Reaction reactRightClick(Interaction event) {
+        new SingleBlockReaction(event.block.position, PermissionFlag.MODIFY)
+    }
+
+    @Override
+    Reaction reactLeftClick(Interaction event) {
+        new SingleBlockReaction(event.block.position, PermissionFlag.MODIFY)
     }
 }
