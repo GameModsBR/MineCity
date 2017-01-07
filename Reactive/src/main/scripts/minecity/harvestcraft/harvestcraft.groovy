@@ -9,7 +9,7 @@ blockType(BlockPamCake) {
     setReactive new Cake()
 }
 
-blockType(BlockCrops) {
+blockType([BlockCrops, BlockPamFruit]) {
     setReactive(
             reactiveBlockType.filter{ !(it instanceof CheckTileInventory) }.map{it as PamRightClickHarvesting}
             .orElseGet{
@@ -22,10 +22,6 @@ blockType(BlockCrops) {
     )
 }
 
-class PamFruit implements PamRightClickHarvesting {
-
-}
-
-blockType([BlockPamFruit, BlockPamFruitLog]) {
-    setReactive new PamFruit()
+blockType(BlockPamFruitLog) {
+    setReactive new PamFruitLog()
 }
