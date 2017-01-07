@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.reactive.game.item.data.ItemData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -21,6 +22,8 @@ public interface BlockTypeData extends SupplierBlockTypeData
     Optional<ItemData> getItemData();
 
     Optional<BlockTraitData<?>> getTraitData(String traitId);
+
+    Collection<BlockTraitData<?>> getTraits();
 
     /**
      * The reactive object that will react to events related to this block type.

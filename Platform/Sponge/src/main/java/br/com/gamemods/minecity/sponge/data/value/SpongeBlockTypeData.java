@@ -10,7 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.block.BlockType;
 
+import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class SpongeBlockTypeData implements BlockTypeData
 {
@@ -59,6 +61,12 @@ public class SpongeBlockTypeData implements BlockTypeData
     public Optional<BlockTraitData<?>> getTraitData(String traitId)
     {
         return blockType.getTrait(traitId).map(manipulator.block::getBlockTraitData);
+    }
+
+    @Override
+    public Collection<BlockTraitData<?>> getTraits()
+    {
+        return blockType.getTraits().stream().map(manipulator.block::getBlockTraitData).collect(Collectors.toList());
     }
 
     @NotNull

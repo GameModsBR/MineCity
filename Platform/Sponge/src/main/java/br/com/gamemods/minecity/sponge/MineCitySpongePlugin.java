@@ -398,7 +398,7 @@ public class MineCitySpongePlugin
                     .intervalTicks(1)
                     .submit(this);
         }
-        catch(Exception e)
+        catch(Throwable e)
         {
             logger.error("Failed to load MineCity, shutting down the server", e);
             Sponge.getServer().shutdown();

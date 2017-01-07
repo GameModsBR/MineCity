@@ -6,7 +6,7 @@ import br.com.gamemods.minecity.reactive.game.block.data.BlockRole
 import br.com.gamemods.minecity.reactive.reaction.*
 import com.pam.harvestcraft.HarvestCraft
 
-class PamRightClickHarvesting implements ReactiveBlockType {
+trait PamRightClickHarvesting implements ReactiveBlockType {
 
     BlockRole blockRole = BlockRole.HARVESTEABLE
 

@@ -11,7 +11,7 @@ import static br.com.gamemods.minecity.api.permission.PermissionFlag.*
 class Chorus implements ReactiveBlockType {
 
     BlockRole blockRole = BlockRole.HARVESTEABLE
-    BlockTypeData fruit
+    BlockTypeData flower
 
 
     @Override
@@ -55,7 +55,7 @@ class Chorus implements ReactiveBlockType {
         def flowers = [] as Queue<BlockPos>
 
         BlockPos current
-        while ((current = remaining.poll()) != null) {
+        while (current = remaining.poll()) {
             scanned.add current
 
             def type = current == changedPos? event.blockChange.original.blockTypeData : chunk.getBlockTypeData(current)
@@ -84,8 +84,8 @@ class Chorus implements ReactiveBlockType {
 
         else {
 
-            def flowerState = chunk.getBlockStateData(flowers.element()).withTrait('minecraft:chorus_flower_age', 0).orElse(fruit?.defaultBlockStateData)
-            if(flowerState == null)
+            def flowerState = chunk.getBlockStateData(flowers.element()).withTrait('minecraft:chorus_flower_age', 0).orElse(flower?.defaultBlockStateData)
+            if(!flowerState)
                 new SingleBlockReaction(event.position, MODIFY)
             else
                 return new SingleBlockReaction(rootPos, HARVEST).onAllowExecNextTick {

@@ -41,6 +41,13 @@ public abstract class ReactiveScript extends Script
         return null;
     }
 
+    @Nullable
+    public ItemData itemType(@NotNull Object item)
+    {
+        return itemType(item, null);
+    }
+
+    @Nullable
     public ItemData itemType(@NotNull Object item, @Nullable @DelegatesTo(ItemData.class) Closure config)
     {
         ItemData data = ReactiveLayer.getItemData(item).orElse(null);
@@ -68,12 +75,25 @@ public abstract class ReactiveScript extends Script
         return data;
     }
 
+    @NotNull
+    public List<ItemData> itemType(@NotNull List<?> items)
+    {
+        return itemType(items, null);
+    }
+
+    @NotNull
     public List<ItemData> itemType(@NotNull List<?> items, @Nullable @DelegatesTo(ItemData.class) Closure config)
     {
         return items.stream()
                 .map(item-> itemType(item, config))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    @Nullable
+    public BlockTypeData blockType(@NotNull Object block)
+    {
+        return blockType(block, null);
     }
 
     @Nullable
@@ -104,6 +124,13 @@ public abstract class ReactiveScript extends Script
         return data;
     }
 
+    @NotNull
+    public List<BlockTypeData> blockType(@NotNull List<?> blocks)
+    {
+        return blockType(blocks, null);
+    }
+
+    @NotNull
     public List<BlockTypeData> blockType(@NotNull List<?> blocks, @Nullable @DelegatesTo(BlockTypeData.class) Closure config)
     {
         return blocks.stream()
@@ -112,6 +139,13 @@ public abstract class ReactiveScript extends Script
                 .collect(Collectors.toList());
     }
 
+    @Nullable
+    public BlockTraitData<?> blockTrait(@NotNull Object trait)
+    {
+        return blockTrait(trait, null);
+    }
+
+    @Nullable
     public BlockTraitData<?> blockTrait(@NotNull Object trait, @Nullable @DelegatesTo(BlockTraitData.class) Closure config)
     {
         BlockTraitData<?> data = ReactiveLayer.getBlockTrait(trait).orElse(null);
@@ -126,6 +160,13 @@ public abstract class ReactiveScript extends Script
         return data;
     }
 
+    @NotNull
+    public List<BlockTraitData<?>> blockTrait(@NotNull List<?> traits)
+    {
+        return blockTrait(traits, null);
+    }
+
+    @NotNull
     public List<BlockTraitData<?>> blockTrait(@NotNull List<?> traits, @Nullable @DelegatesTo(BlockTraitData.class) Closure config)
     {
         return traits.stream()

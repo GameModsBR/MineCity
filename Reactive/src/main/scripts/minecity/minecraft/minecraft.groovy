@@ -178,5 +178,12 @@ blockType(['minecraft:reeds', 'minecraft:cactus']) {
 }
 
 blockType(['minecraft:chorus_flower', 'minecraft:chorus_plant']) {
-    setReactive new Chorus(fruit: blockType('minecraft:chorus_flower', null))
+    setReactive new Chorus(flower: blockType('minecraft:chorus_flower'))
+}
+
+blockType(['minecraft:wheat', 'minecraft:potatoes', 'minecraft:carrots',
+           'minecraft:nether_wart', 'minecraft:beetroots', 'minecraft:cocoa']
+) {
+    def age = blockTypeData.traits.find { it.name == 'age' && it.valueClass == Integer }
+    setReactive new Crop(age: age, grownAge: (int) age.possibleValues.max() ?: -1)
 }
