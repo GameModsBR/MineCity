@@ -105,7 +105,7 @@ public class ActionListener
         HandType handType = event.getHandType();
         Hand hand = Hand.from(handType);
         BlockSnapshot targetBlock = event.getTargetBlock();
-        boolean nothing = targetBlock.getWorldUniqueId().toString().equals("00000000-0000-0000-0000-000000000000");
+        boolean nothing = targetBlock == BlockSnapshot.NONE;
 
         if(subject instanceof Player && !nothing)
         {
@@ -185,7 +185,7 @@ public class ActionListener
         HandType handType = event.getHandType();
         Hand hand = Hand.from(handType);
         BlockSnapshot targetBlock = event.getTargetBlock();
-        boolean nothing = targetBlock.getWorldUniqueId().toString().equals("00000000-0000-0000-0000-000000000000");
+        boolean nothing = targetBlock == BlockSnapshot.NONE;
 
         Direction side = sponge.direction(event.getTargetSide());
         PrecisePoint point = event.getInteractionPoint().map(sponge::precisePoint).orElse(null);
