@@ -28,4 +28,10 @@ public interface ReactiveBlockType extends ReactiveBlockProperty
     {
         return new SingleBlockReaction(event.getPosition(), PermissionFlag.MODIFY);
     }
+
+    @Override
+    default Reaction reactBeingReplaced(Modification event)
+    {
+        return new SingleBlockReaction(event.getPosition(), PermissionFlag.MODIFY);
+    }
 }
