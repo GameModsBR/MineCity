@@ -13,14 +13,11 @@ blockType(BlockCrops) {
     setReactive(
             reactiveBlockType.filter{ !(it instanceof CheckTileInventory) }.map{it as PamRightClickHarvesting}
             .orElseGet{
-                def age = blockTypeData.traits.find { it.name == 'age' }
+                def age = blockTypeData.traits.find { it.name == 'age' && it.valueClass == Integer }
                 if(blockType instanceof PamCropGrowable)
                     new PamCrop(age: age, grownAge: blockType.matureAge)
                 else
-                    new Crop(age: age, grownAge: age.possibleValues.stream()
-                            .mapToInt{ Integer.parseInt(it.toString()) }
-                            .max().orElse(-1)
-                    ) as PamRightClickHarvesting
+                    new Crop(age: age, grownAge: (int) age?.possibleValues?.max() ?: -1) as PamRightClickHarvesting
             }
     )
 }

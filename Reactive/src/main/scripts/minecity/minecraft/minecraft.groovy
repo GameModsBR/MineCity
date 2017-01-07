@@ -185,5 +185,5 @@ blockType(['minecraft:wheat', 'minecraft:potatoes', 'minecraft:carrots',
            'minecraft:nether_wart', 'minecraft:beetroots', 'minecraft:cocoa']
 ) {
     def age = blockTypeData.traits.find { it.name == 'age' && it.valueClass == Integer }
-    setReactive new Crop(age: age, grownAge: (int) age.possibleValues.max() ?: -1)
+    setReactive new Crop(age: age, grownAge: (int) age?.possibleValues?.max() ?: -1)
 }
