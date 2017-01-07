@@ -311,7 +311,7 @@ public class ActionListener
         });
     }
 
-    //@Listener(order = Order.FIRST, beforeModifications = true)
+    @Listener(order = Order.FIRST, beforeModifications = true)
     public void onBlockChangePre(ChangeBlockEvent.Pre event, @Named(NamedCause.SOURCE) Entity subject)
     {
         HandInteractEvent interact = this.lastEntityInteractEvent;
@@ -343,7 +343,7 @@ public class ActionListener
         });
     }
 
-    //@Listener(order = Order.FIRST, beforeModifications = true)
+    @Listener(order = Order.FIRST, beforeModifications = true)
     public void onBlockChangePre(ChangeBlockEvent.Pre event, @Named(NamedCause.SOURCE) BlockSnapshot subject)
     {
         BlockSnapshotData snapshot = ReactiveLayer.getBlockSnapshotData(subject).get();

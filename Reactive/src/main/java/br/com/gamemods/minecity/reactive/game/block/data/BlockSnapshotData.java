@@ -79,7 +79,7 @@ public interface BlockSnapshotData extends SupplierBlockSnapshotData
 
     default Reaction preModification(PreModification mod)
     {
-        return NoReaction.INSTANCE;
+        return getBlockTypeData().getReactiveBlockType().map(it-> it.reactPreModification(mod)).orElse(NoReaction.INSTANCE);
     }
 
     default Optional<ChunkData> getChunk()
