@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.sponge.data.value;
 
+import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
@@ -103,6 +104,12 @@ public class SpongeChunkData implements ChunkData
             manipulator.sponge.logger.error("Failed to set "+pos+" to "+state, e);
             return false;
         }
+    }
+
+    @Override
+    public Identity<?> getOwner(BlockPos pos)
+    {
+        return manipulator.sponge.mineCity.provideChunk(pos.getChunk()).getFlagHolder(pos).owner();
     }
 
     @Override

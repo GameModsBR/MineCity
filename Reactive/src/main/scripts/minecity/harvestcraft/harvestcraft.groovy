@@ -29,3 +29,7 @@ blockType(BlockPamFruitLog) {
 blockType(BlockBaseGarden) {
     setReactive new PamGarden()
 }
+
+blockType(BeehiveBlock) {
+    setReactive new PamBeeHive()
+}

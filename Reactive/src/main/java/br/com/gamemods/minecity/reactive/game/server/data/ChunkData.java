@@ -1,5 +1,6 @@
 package br.com.gamemods.minecity.reactive.game.server.data;
 
+import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.ChunkPos;
@@ -64,4 +65,6 @@ public interface ChunkData extends SupplierChunkData
     boolean drop(Point pos);
 
     boolean dropAsItem(Point pos);
+
+    Identity<?> getOwner(BlockPos pos);
 }
