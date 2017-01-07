@@ -15,4 +15,14 @@ public interface ReactiveItemProperty
     {
         return NoReaction.INSTANCE;
     }
+
+    default Reaction reactLeftClickFirst(Interaction event)
+    {
+        return NoReaction.INSTANCE;
+    }
+
+    default Reaction reactLeftClickLast(Interaction event)
+    {
+        return NoReaction.INSTANCE;
+    }
 }

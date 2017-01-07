@@ -10,7 +10,7 @@ class EnderEye implements ReactiveItem {
     @Override
     Reaction reactRightClickLast(Interaction event) {
 
-        if(event.blockTypeData.matches('minecraft:end_portal_frame') && event.blockState.getTraitString('eye') == 'false')
+        if(event.blockTypeData?.matches('minecraft:end_portal_frame') && event.blockState.getTraitString('eye') == 'false')
             new SingleBlockReaction(event.block.position, PermissionFlag.MODIFY)
         else
             NoReaction.INSTANCE

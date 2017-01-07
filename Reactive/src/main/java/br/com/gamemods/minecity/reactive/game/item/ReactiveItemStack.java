@@ -63,6 +63,28 @@ public final class ReactiveItemStack implements SupplierItemStackData
                 .orElse(NoReaction.INSTANCE);
     }
 
+    @NotNull
+    public Reaction leftClickFirst(Interaction event)
+    {
+        if(event.getStack() != this)  throw new IllegalArgumentException(event.getStack()+" != "+this);
+
+        return propertyStream()
+                .map(prop -> prop.reactLeftClickFirst(event))
+                .reduce(Reaction::combine)
+                .orElse(NoReaction.INSTANCE);
+    }
+
+    @NotNull
+    public Reaction leftClickLast(Interaction event)
+    {
+        if(event.getStack() != this) throw new IllegalArgumentException(event.getStack()+" != "+this);
+
+        return propertyStream()
+                .map(prop -> prop.reactLeftClickLast(event))
+                .reduce(Reaction::combine)
+                .orElse(NoReaction.INSTANCE);
+    }
+
     public Reaction blockPlace(Modification modification)
     {
         return NoReaction.INSTANCE;

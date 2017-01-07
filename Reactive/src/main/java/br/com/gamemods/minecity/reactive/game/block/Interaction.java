@@ -3,12 +3,12 @@ package br.com.gamemods.minecity.reactive.game.block;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.reactive.game.block.data.BlockStateData;
-import br.com.gamemods.minecity.reactive.game.block.data.supplier.SupplierBlockStateData;
+import br.com.gamemods.minecity.reactive.game.block.data.BlockTypeData;
 import br.com.gamemods.minecity.reactive.game.entity.data.EntityData;
 import br.com.gamemods.minecity.reactive.game.entity.data.Hand;
 import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
 import br.com.gamemods.minecity.reactive.game.server.data.ChunkData;
-import br.com.gamemods.minecity.reactive.game.server.data.supplier.SupplierChunkData;
+import br.com.gamemods.minecity.reactive.game.server.data.WorldData;
 import br.com.gamemods.minecity.reactive.reaction.InteractReaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,12 +17,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public final class Interaction implements SupplierBlockStateData, SupplierChunkData
+public final class Interaction
 {
     private final Click click;
     private final EntityData entity;
     private final Hand hand;
     private final ReactiveItemStack itemStack;
+    @Nullable
     private final ReactiveBlock block;
     @Nullable
     private final Direction blockFace;
@@ -32,7 +33,7 @@ public final class Interaction implements SupplierBlockStateData, SupplierChunkD
     private InteractReaction reactionItemLast = new InteractReaction();
 
     public Interaction(Click click, EntityData entity, Hand hand, ReactiveItemStack itemStack,
-                       ReactiveBlock block, @Nullable Direction blockFace, PrecisePoint clickPoint)
+                       @Nullable ReactiveBlock block, @Nullable Direction blockFace, PrecisePoint clickPoint)
     {
         this.click = click;
         this.entity = entity;
@@ -43,18 +44,33 @@ public final class Interaction implements SupplierBlockStateData, SupplierChunkD
         this.clickPoint = clickPoint;
     }
 
-    @NotNull
-    @Override
-    public BlockStateData getBlockStateData()
+    public boolean hasBlock()
     {
-        return block.getBlockStateData();
+        return block != null;
     }
 
-    @NotNull
-    @Override
+    @Nullable
+    public BlockStateData getBlockStateData()
+    {
+        return block == null? null : block.getBlockStateData();
+    }
+
+    @Nullable
+    public BlockTypeData getBlockTypeData()
+    {
+        return block == null? null : block.getBlockTypeData();
+    }
+
+    @Nullable
     public ChunkData getChunkData()
     {
-        return block.getChunkData();
+        return block == null? null : block.getChunkData();
+    }
+
+    @Nullable
+    public WorldData getWorldData()
+    {
+        return block == null? null : block.getWorldData();
     }
 
     public InteractReaction result()
@@ -101,11 +117,13 @@ public final class Interaction implements SupplierBlockStateData, SupplierChunkD
         return itemStack;
     }
 
+    @NotNull
     public ReactiveBlock getBlock()
     {
-        return block;
+        return Objects.requireNonNull(block, "This interaction does not contains a block");
     }
 
+    @NotNull
     public BlockStateData getBlockState()
     {
         return getBlock().getBlockStateData();
