@@ -10,6 +10,7 @@ import mcjty.rftools.blocks.screens.ScreenControllerBlock
 import mcjty.rftools.blocks.teleporter.*
 import mcjty.rftoolscontrol.blocks.multitank.MultiTankBlock
 import mcjty.rftoolscontrol.blocks.node.NodeBlock
+import minecity.forge.Wrench
 
 blockType([
         MatterTransmitterBlock, MatterReceiverBlock, DialingDeviceBlock, ScreenControllerBlock,
@@ -18,4 +19,8 @@ blockType([
         RelayBlock
 ]) {
     setReactive modifiableBlock
+}
+
+itemType('rftools:smartwrench') {
+    setReactive new Wrench()
 }
