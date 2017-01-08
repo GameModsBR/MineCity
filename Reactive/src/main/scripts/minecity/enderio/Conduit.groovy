@@ -22,4 +22,9 @@ class Conduit implements ReactiveItem, ReactiveBlockType {
     Reaction reactRightClick(Interaction event) {
         reactRightClickFirst(event)
     }
+
+    @Override
+    Reaction reactLeftClick(Interaction event) {
+        reactRightClickFirst(event)
+    }
 }
