@@ -12,8 +12,10 @@ import br.com.gamemods.minecity.reactive.game.item.data.*;
 import br.com.gamemods.minecity.reactive.game.server.data.ChunkData;
 import br.com.gamemods.minecity.reactive.game.server.data.ServerData;
 import br.com.gamemods.minecity.reactive.game.server.data.ServerManipulator;
+import br.com.gamemods.minecity.reactive.game.server.data.WorldData;
 import br.com.gamemods.minecity.reactive.game.server.data.supplier.SupplierChunkData;
 import br.com.gamemods.minecity.reactive.game.server.data.supplier.SupplierServerData;
+import br.com.gamemods.minecity.reactive.game.server.data.supplier.SupplierWorldData;
 import br.com.gamemods.minecity.reactive.reactor.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -144,6 +146,15 @@ public class ReactiveLayer
             return Optional.of(((SupplierServerData) server).getServerData());
 
         return getServerManipulator().getServerData(server);
+    }
+
+    @NotNull
+    public static Optional<WorldData> getWorldData(@NotNull Object world)
+    {
+        if(world instanceof SupplierWorldData)
+            return Optional.of(((SupplierWorldData) world).getWorldData());
+
+        return getServerManipulator().getWorldData(world);
     }
 
     @NotNull

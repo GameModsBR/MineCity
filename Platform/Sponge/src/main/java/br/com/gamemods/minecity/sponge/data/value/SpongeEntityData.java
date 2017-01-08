@@ -1,5 +1,8 @@
 package br.com.gamemods.minecity.sponge.data.value;
 
+import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.reactive.game.entity.data.EntityData;
 import br.com.gamemods.minecity.reactive.game.server.data.ChunkData;
@@ -49,6 +52,25 @@ public class SpongeEntityData implements EntityData
     public EntityPos getEntityPosition()
     {
         return manipulator.sponge.entityPos(entity);
+    }
+
+    @Override
+    public Optional<Message> can(PermissionFlag perm, BlockPos pos)
+    {
+        return manipulator.sponge.mineCity
+                .provideChunk(pos.getChunk()).getFlagHolder(pos)
+                .can(manipulator.sponge.entity(entity), perm);
+    }
+
+    @Override
+    public void send(Message message)
+    {
+        manipulator.sponge.entity(entity).send(message);
+    }
+
+    public void send(Message[] messages)
+    {
+        manipulator.sponge.entity(entity).send(messages);
     }
 
     @Override

@@ -1,7 +1,10 @@
 package br.com.gamemods.minecity.reactive.game.entity.data;
 
+import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
+import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.reactive.game.block.*;
@@ -45,6 +48,8 @@ public interface EntityData
     }
 
     boolean sendHungerUpdate();
+
+    Optional<Message> can(PermissionFlag perm, BlockPos pos);
 
     default InteractReaction onLeftClick(Hand hand, ReactiveItemStack stack, @Nullable ReactiveBlock block,
                                           @Nullable Direction side, PrecisePoint point)
@@ -120,4 +125,7 @@ public interface EntityData
 
         return reaction.get();
     }
+
+    void send(Message message);
+    void send(Message[] messages);
 }

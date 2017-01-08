@@ -34,9 +34,10 @@ public class SpongeMinecraftEntity implements MinecraftEntity
     private final MineCitySponge sponge;
     private final Entity entity;
     private final Identity<UUID> identity;
+    @Nullable
     private final EntitySource sender;
 
-    public SpongeMinecraftEntity(MineCitySponge sponge, Entity entity, EntitySource sender)
+    public SpongeMinecraftEntity(MineCitySponge sponge, Entity entity, @Nullable EntitySource sender)
     {
         this.sponge = sponge;
         this.entity = entity;
@@ -79,6 +80,24 @@ public class SpongeMinecraftEntity implements MinecraftEntity
     public CommandSender getCommandSender()
     {
         return sender;
+    }
+
+    @Override
+    public void send(Message message)
+    {
+        if(sender != null)
+            sender.send(message);
+        else
+            MinecraftEntity.super.send(message);
+    }
+
+    @Override
+    public void send(Message[] messages)
+    {
+        if(sender != null)
+            sender.send(messages);
+        else
+            MinecraftEntity.super.send(messages);
     }
 
     @Override
