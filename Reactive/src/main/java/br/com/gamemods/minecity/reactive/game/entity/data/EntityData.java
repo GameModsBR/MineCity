@@ -41,6 +41,8 @@ public interface EntityData
 
     Identity<?> getIdentity();
 
+    boolean isSneaking();
+
     boolean sendInventoryUpdate();
 
     boolean sendBlockUpdate(int x, int y, int z);

@@ -14,6 +14,7 @@ import net.minecraft.network.play.server.SPacketUpdateHealth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.FoodData;
 import org.spongepowered.api.effect.Viewer;
 import org.spongepowered.api.entity.Entity;
@@ -67,6 +68,12 @@ public class SpongeEntityData implements EntityData
     public Identity<?> getIdentity()
     {
         return manipulator.sponge.entity(entity).identity();
+    }
+
+    @Override
+    public boolean isSneaking()
+    {
+        return entity.get(Keys.IS_SNEAKING).orElse(false);
     }
 
     @Override
