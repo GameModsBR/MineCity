@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.reactive.game.entity.data;
 
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.shape.Point;
 import br.com.gamemods.minecity.api.shape.PrecisePoint;
@@ -37,6 +38,8 @@ public interface EntityData
      */
     @NotNull
     Optional<ChunkData> getChunkData();
+
+    Identity<?> getIdentity();
 
     boolean sendInventoryUpdate();
 

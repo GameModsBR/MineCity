@@ -1,6 +1,7 @@
 package br.com.gamemods.minecity.sponge.data.value;
 
 import br.com.gamemods.minecity.api.command.Message;
+import br.com.gamemods.minecity.api.permission.Identity;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.EntityPos;
@@ -60,6 +61,12 @@ public class SpongeEntityData implements EntityData
         return manipulator.sponge.mineCity
                 .provideChunk(pos.getChunk()).getFlagHolder(pos)
                 .can(manipulator.sponge.entity(entity), perm);
+    }
+
+    @Override
+    public Identity<?> getIdentity()
+    {
+        return manipulator.sponge.entity(entity).identity();
     }
 
     @Override
