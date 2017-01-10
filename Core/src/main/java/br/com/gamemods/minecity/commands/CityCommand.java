@@ -32,7 +32,7 @@ import static br.com.gamemods.minecity.api.StringUtil.identity;
 
 public class CityCommand
 {
-    private static final boolean ENABLE_CACHE = false;
+    public static boolean ENABLE_CACHE = true;
 
     @NotNull
     private final MineCity mineCity;

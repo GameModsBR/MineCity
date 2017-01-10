@@ -34,13 +34,9 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.HandInteractEvent;
-import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.filter.cause.Named;
-import org.spongepowered.api.event.filter.type.Exclude;
-import org.spongepowered.api.event.impl.AbstractEvent;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.Location;
@@ -63,13 +59,6 @@ public class ActionListener
     public ActionListener(MineCitySponge sponge)
     {
         this.sponge = sponge;
-    }
-
-    @Listener(order = Order.PRE)
-    @Exclude(MoveEntityEvent.class)
-    public void debug(AbstractEvent event, @First Player player)
-    {
-        sponge.logger.info("Event: "+event);
     }
 
     @Listener(order = Order.POST)

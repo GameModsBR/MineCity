@@ -7,6 +7,7 @@ import br.com.gamemods.minecity.api.command.*;
 import br.com.gamemods.minecity.api.permission.PermissionFlag;
 import br.com.gamemods.minecity.api.permission.SimpleFlagHolder;
 import br.com.gamemods.minecity.api.unchecked.UncheckedException;
+import br.com.gamemods.minecity.commands.CityCommand;
 import br.com.gamemods.minecity.datasource.api.DataSourceException;
 import br.com.gamemods.minecity.economy.EconomyLayer;
 import br.com.gamemods.minecity.permission.PermissionLayer;
@@ -20,6 +21,7 @@ import br.com.gamemods.minecity.sponge.cmd.SpongeTransformer;
 import br.com.gamemods.minecity.sponge.core.mixed.MixedBlockType;
 import br.com.gamemods.minecity.sponge.data.manipulator.reactive.SpongeManipulator;
 import br.com.gamemods.minecity.sponge.listeners.ActionListener;
+import br.com.gamemods.minecity.sponge.listeners.DebugListener;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.inject.Inject;
 import groovy.util.ResourceException;
@@ -173,6 +175,10 @@ public class MineCitySpongePlugin
             config.dbPass = Optional.ofNullable(getOrSetStr(dbConfig.getNode("pass"), "")).filter(p-> !p.isEmpty()).map(String::getBytes).orElse(null);
             config.locale = Locale.forLanguageTag(Optional.ofNullable(getOrSetStr(root.getNode("general", "language"), "en")).filter(l->!l.isEmpty()).orElse("en"));
             config.useTitle = getOrSetBool(root.getNode("general", "use-titles"), true);
+            if(getOrSetBool(root.getNode("general", "debug"), false))
+            {
+                CityCommand.ENABLE_CACHE = false;
+            }
 
             CommentedConfigurationNode permsConfig = root.getNode("permissions", "default");
             config.defaultNatureDisableCities = getOrSetBool(permsConfig.getNode("nature", "enable-city-creation"), true);
@@ -364,6 +370,8 @@ public class MineCitySpongePlugin
             sponge.mineCity.commands.registerCommands(this);
 
             Sponge.getEventManager().registerListeners(this, new ActionListener(sponge));
+            if(!CityCommand.ENABLE_CACHE)
+                Sponge.getEventManager().registerListeners(this, new DebugListener(sponge));
 
             Path scripts = configDir.resolve("scripts");
             File scriptsDir = scripts.toFile();
