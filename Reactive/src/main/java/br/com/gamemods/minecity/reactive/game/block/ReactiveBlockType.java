@@ -24,6 +24,19 @@ public interface ReactiveBlockType extends ReactiveBlockProperty
     }
 
     @Override
+    default Reaction reactPreModification(PreModification event)
+    {
+        switch(getBlockRole())
+        {
+            case HARVESTEABLE:
+                return new SingleBlockReaction(event.getSnapshot().getPosition(), PermissionFlag.HARVEST);
+
+            default:
+                return new SingleBlockReaction(event.getSnapshot().getPosition(), PermissionFlag.MODIFY);
+        }
+    }
+
+    @Override
     default Reaction reactBeingBroken(Modification event)
     {
         return new SingleBlockReaction(event.getPosition(), PermissionFlag.MODIFY);

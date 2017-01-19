@@ -9,6 +9,7 @@ import br.com.gamemods.minecity.api.world.BlockPos;
 import br.com.gamemods.minecity.api.world.Direction;
 import br.com.gamemods.minecity.api.world.EntityPos;
 import br.com.gamemods.minecity.reactive.game.block.*;
+import br.com.gamemods.minecity.reactive.game.entity.data.supplier.SupplierEntityData;
 import br.com.gamemods.minecity.reactive.game.item.ReactiveItemStack;
 import br.com.gamemods.minecity.reactive.game.server.data.ChunkData;
 import br.com.gamemods.minecity.reactive.game.server.data.ServerManipulator;
@@ -22,7 +23,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
-public interface EntityData
+public interface EntityData extends SupplierEntityData
 {
     Object getEntity();
 
@@ -133,4 +134,11 @@ public interface EntityData
 
     void send(Message message);
     void send(Message[] messages);
+
+    @NotNull
+    @Override
+    default EntityData getEntityData()
+    {
+        return this;
+    }
 }

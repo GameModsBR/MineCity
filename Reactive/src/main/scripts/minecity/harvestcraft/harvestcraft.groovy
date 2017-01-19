@@ -6,7 +6,7 @@ import minecity.minecraft.*
 import net.minecraft.block.BlockCrops
 
 blockType(BlockPamCake) {
-    setReactive new Cake()
+    setReactive new Cake(slices: blockType.CUSTOMBITES)
 }
 
 blockType([BlockCrops, BlockPamFruit]) {

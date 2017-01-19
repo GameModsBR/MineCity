@@ -13,6 +13,10 @@ class Chorus implements ReactiveBlockType {
     BlockRole blockRole = BlockRole.HARVESTEABLE
     BlockTypeData flower
 
+    @Override
+    Reaction reactPreModification(PreModification event) {
+        NoReaction.INSTANCE
+    }
 
     @Override
     Reaction reactBeingBroken(Modification event) {

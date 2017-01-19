@@ -17,6 +17,23 @@ class RobotBlock implements ReactiveBlockType {
     }
 
     @Override
+    Reaction reactPreModification(PreModification event) {
+        event.entityCause.with {
+            if(isPresent()) {
+                event.snapshot.tileEntityData.map { getOwner(it) }.map {
+                    if (it == get().identity.uniqueId)
+                        new ApproveReaction(event.snapshot.position, PermissionFlag.MODIFY)
+                }.orElseGet {
+                    new SingleBlockReaction(event.snapshot.position, PermissionFlag.MODIFY)
+                }
+            }
+            else {
+                new SingleBlockReaction(event.snapshot.position, PermissionFlag.MODIFY)
+            }
+        }
+    }
+
+    @Override
     Reaction reactRightClick(Interaction event) {
         event.block.tileEntity.map{ getOwner(it) }.map {
             if(it == event.entity.identity.uniqueId)
