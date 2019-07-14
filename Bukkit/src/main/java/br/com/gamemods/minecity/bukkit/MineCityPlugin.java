@@ -141,7 +141,7 @@ public class MineCityPlugin extends JavaPlugin
             config.useTitle = yaml.getBoolean("use-titles", true);
             config.defaultNatureDisableCities = !yaml.getBoolean("permissions.default.nature.enable-city-creation", true);
             config.economy = yaml.getString("economy", "none");
-            config.permission = yaml.getString("permissions", "bukkit");
+            config.permission = yaml.getString("permission", "bukkit");
 
             for(PermissionFlag flag: PermissionFlag.values())
             {

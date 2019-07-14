@@ -8,7 +8,7 @@ database:
 economy: vault
 
 # Possible values: Bukkit, Vault, Sponge, None
-permissions: vault
+permission: vault
 
 costs:
   city:
